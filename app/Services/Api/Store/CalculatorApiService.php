@@ -7,6 +7,7 @@ namespace App\Services\Api\Store;
 use App\Models\CalculatorBank;
 use App\Models\CalculatorLead;
 use App\Models\Car;
+use App\Services\TwilioOtpService;
 use Illuminate\Database\Eloquent\Collection;
 
 final class CalculatorApiService
@@ -21,12 +22,20 @@ final class CalculatorApiService
             'phone' => $data['phone'],
             'car_id' => $primaryCarId,
             'details' => [
-                'email' => $data['email'],
+                'email' => $data['email'] ?? null,
                 'city' => $data['city'],
                 'salary' => $data['salary'],
                 'monthly_obligations' => $data['monthly_obligations'],
+                'employer_type' => $data['employer_type'] ?? null,
+                'employer_name' => $data['employer_name'] ?? null,
+                'years_of_service' => $data['years_of_service'] ?? null,
+                'has_mortgage_loan' => $data['has_mortgage_loan'] ?? false,
+                'has_personal_loan' => $data['has_personal_loan'] ?? false,
+                'has_traffic_violations' => $data['has_traffic_violations'] ?? false,
+                'has_simah_default' => $data['has_simah_default'] ?? false,
                 'preferred_bank_id' => $data['preferred_bank_id'] ?? null,
                 'car_ids' => $carIds,
+                'preferred_color' => $data['preferred_color'] ?? null,
                 'notes' => $data['notes'] ?? null,
             ],
         ]);
@@ -34,7 +43,7 @@ final class CalculatorApiService
 
     public function sendOtp(string $phone): array
     {
-        $otpService = app(\App\Services\TwilioOtpService::class);
+        $otpService = app(TwilioOtpService::class);
 
         $result = $otpService->sendOtp($phone);
 
@@ -46,7 +55,7 @@ final class CalculatorApiService
 
     public function verifyOtp(string $phone, string $code): bool
     {
-        $otpService = app(\App\Services\TwilioOtpService::class);
+        $otpService = app(TwilioOtpService::class);
 
         $result = $otpService->verifyOtp($phone, $code);
 

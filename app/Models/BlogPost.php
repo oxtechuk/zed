@@ -17,7 +17,7 @@ class BlogPost extends Model
     protected $fillable = [
         'employee_id', 'title', 'slug', 'thumbnail', 'excerpt', 'content',
         'meta_title', 'meta_description', 'meta_keywords',
-        'is_published', 'is_featured', 'published_at',
+        'is_published', 'is_featured', 'tag', 'published_at',
     ];
 
     protected $appends = ['reading_time'];

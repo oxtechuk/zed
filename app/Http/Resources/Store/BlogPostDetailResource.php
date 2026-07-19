@@ -28,6 +28,7 @@ class BlogPostDetailResource extends JsonResource
             'reading_time' => $this->reading_time,
             'meta_keywords' => $this->meta_keywords,
             'is_featured' => $this->is_featured,
+            'tag' => $this->tag,
             'related_posts' => $this->whenLoaded('relatedPosts', fn () => BlogPostResource::collection($this->relatedPosts),
             ),
         ];

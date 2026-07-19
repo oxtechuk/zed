@@ -15,6 +15,7 @@ class OfferResource extends JsonResource
             'description' => $this->description,
             'image' => $this->image,
             'discount_percent' => $this->discount_percent,
+            'tag' => $this->tag,
             'special_price' => $this->special_price,
             'special_installment' => $this->special_installment,
             'starts_at' => $this->starts_at,

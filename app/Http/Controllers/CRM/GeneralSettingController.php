@@ -12,27 +12,25 @@ class GeneralSettingController extends Controller
     public function index()
     {
         $settings = Setting::all()->pluck('value', 'key');
-        $cars = \App\Models\Car::select('id', 'name')->where('is_active', true)->orderBy('name')->get();
-        $offers = \App\Models\Offer::active()->select('id', 'title')->orderBy('title')->get();
-
-        $bentoCars = $settings['bento_cars'] ?? [];
-        if (! is_array($bentoCars) && is_string($bentoCars)) {
-            $bentoCars = json_decode($bentoCars, true) ?: [];
-        }
 
         $socialMedia = $settings['social_media'] ?? [];
         if (! is_array($socialMedia) && is_string($socialMedia)) {
             $socialMedia = json_decode($socialMedia, true) ?: [];
         }
 
+        $footerQuickLinks = $settings['footer_quick_links'] ?? [];
+        if (! is_array($footerQuickLinks) && is_string($footerQuickLinks)) {
+            $footerQuickLinks = json_decode($footerQuickLinks, true) ?: [];
+        }
+
+        $footerServiceLinks = $settings['footer_service_links'] ?? [];
+        if (! is_array($footerServiceLinks) && is_string($footerServiceLinks)) {
+            $footerServiceLinks = json_decode($footerServiceLinks, true) ?: [];
+        }
+
         $homepageStats = $settings['homepage_stats'] ?? [];
         if (! is_array($homepageStats) && is_string($homepageStats)) {
             $homepageStats = json_decode($homepageStats, true) ?: [];
-        }
-
-        $homepageSections = $settings['homepage_sections'] ?? [];
-        if (! is_array($homepageSections) && is_string($homepageSections)) {
-            $homepageSections = json_decode($homepageSections, true) ?: [];
         }
 
         $aboutSections = $settings['about_sections'] ?? [];
@@ -64,16 +62,13 @@ class GeneralSettingController extends Controller
         $bookingSectionsRaw = $settings['store_booking_sections'] ?? [];
         $bookingSections = is_array($bookingSectionsRaw) ? $bookingSectionsRaw : (json_decode((string) $bookingSectionsRaw, true) ?: []);
 
-        $homeHeroRaw = $settings['store_home_hero'] ?? [];
-        $homeHero = is_array($homeHeroRaw) ? $homeHeroRaw : (json_decode((string) $homeHeroRaw, true) ?: []);
-
         $carsHeroRaw = $settings['store_hero'] ?? [];
         $carsHero = is_array($carsHeroRaw) ? $carsHeroRaw : (json_decode((string) $carsHeroRaw, true) ?: []);
 
         $offersHeroRaw = $settings['store_offers_hero'] ?? [];
         $offersHero = is_array($offersHeroRaw) ? $offersHeroRaw : (json_decode((string) $offersHeroRaw, true) ?: []);
 
-        return view('crm.settings.general', compact('settings', 'cars', 'offers', 'bentoCars', 'socialMedia', 'homepageStats', 'homepageSections', 'aboutSections', 'aboutStats', 'aboutBranches', 'bookingHero', 'bookingSteps', 'bookingSections', 'homeHero', 'carsHero', 'offersHero', 'financeStats'));
+        return view('crm.settings.general', compact('settings', 'socialMedia', 'footerQuickLinks', 'footerServiceLinks', 'homepageStats', 'aboutSections', 'aboutStats', 'aboutBranches', 'bookingHero', 'bookingSteps', 'bookingSections', 'carsHero', 'offersHero', 'financeStats'));
     }
 
     public function seo()
@@ -95,14 +90,12 @@ class GeneralSettingController extends Controller
         // Whitelist of settings to update
         $keys = [
             'site_name', 'footer_text', 'contact_email', 'contact_phone',
-            'contact_whatsapp', 'contact_address', 'bento_cars',
+            'contact_whatsapp', 'contact_address',
             'hero_ad_1_link', 'hero_ad_2_link', 'auto_assign_bookings',
             'page_loader_enabled',
             'twilio_sid', 'twilio_auth_token', 'twilio_whatsapp_number', 'twilio_sms_number',
             'whatsapp_template_new_lead', 'whatsapp_template_status_update',
             'google_analytics_id', 'meta_pixel_id',
-            'homepage_featured',
-            'homepage_sections',
             'about_sections',
             'store_booking_sections',
         ];
@@ -137,6 +130,19 @@ class GeneralSettingController extends Controller
             }
         }
         Setting::updateOrCreate(['key' => 'social_media'], ['value' => $socialMedia]);
+
+        // Handle Footer Quick Links / Service Links
+        $footerQuickLinks = array_values(array_filter(
+            $request->input('footer_quick_links', []),
+            fn (array $link) => ! empty($link['url']) && (! empty($link['title']['ar']) || ! empty($link['title']['en']))
+        ));
+        Setting::updateOrCreate(['key' => 'footer_quick_links'], ['value' => $footerQuickLinks]);
+
+        $footerServiceLinks = array_values(array_filter(
+            $request->input('footer_service_links', []),
+            fn (array $link) => ! empty($link['url']) && (! empty($link['title']['ar']) || ! empty($link['title']['en']))
+        ));
+        Setting::updateOrCreate(['key' => 'footer_service_links'], ['value' => $footerServiceLinks]);
 
         // Handle Homepage Stats Array
         $statValues = $request->input('stat_value', []);
@@ -209,54 +215,6 @@ class GeneralSettingController extends Controller
                 $path = $request->file($fileKey)->store('settings', 'public');
                 Setting::updateOrCreate(['key' => $fileKey], ['value' => $path]);
             }
-        }
-
-        // Handle Hero Slides (Carousel Slider Banners)
-        if ($request->has('hero_slides_submitted')) {
-            $existingSlidesSetting = Setting::where('key', 'hero_slides')->first();
-            $existingSlides = [];
-            if ($existingSlidesSetting && ! empty($existingSlidesSetting->value)) {
-                $existingSlides = is_array($existingSlidesSetting->value) ? $existingSlidesSetting->value : (json_decode($existingSlidesSetting->value, true) ?: []);
-            }
-
-            $newSlides = [];
-            $slidesData = $request->input('hero_slides', []);
-
-            foreach ($slidesData as $index => $slide) {
-                $imagePath = $slide['image_path'] ?? null;
-
-                // Check if a new file is uploaded for this slide
-                if ($request->hasFile("hero_slides.{$index}.image")) {
-                    $path = $request->file("hero_slides.{$index}.image")->store('settings/hero', 'public');
-                    // Delete old image if exists
-                    if ($imagePath && \Storage::disk('public')->exists($imagePath)) {
-                        \Storage::disk('public')->delete($imagePath);
-                    }
-                    $imagePath = $path;
-                }
-
-                // If we have an image path (either new or existing), we add the slide
-                if ($imagePath) {
-                    $newSlides[] = [
-                        'image' => $imagePath,
-                        'link' => $slide['link'] ?? '',
-                        'button_text' => $slide['button_text'] ?? __('اكتشف السيارات'),
-                    ];
-                }
-            }
-
-            // Clean up deleted slides (files that are on disk but not in the new slides)
-            $newPaths = array_column($newSlides, 'image');
-            foreach ($existingSlides as $oldSlide) {
-                $oldPath = $oldSlide['image'] ?? null;
-                if ($oldPath && ! in_array($oldPath, $newPaths)) {
-                    if (\Storage::disk('public')->exists($oldPath)) {
-                        \Storage::disk('public')->delete($oldPath);
-                    }
-                }
-            }
-
-            Setting::updateOrCreate(['key' => 'hero_slides'], ['value' => $newSlides]);
         }
 
         // Handle Promo Popup
@@ -332,21 +290,6 @@ class GeneralSettingController extends Controller
         }
         Setting::updateOrCreate(['key' => 'store_booking_hero'], ['value' => $bookingHeroData]);
 
-        // Handle Home Page Hero
-        $homeHeroData = $request->input('store_home_hero', []);
-        if ($request->hasFile('home_hero_image')) {
-            $existingHomeHero = Setting::where('key', 'store_home_hero')->first();
-            $oldHomeHeroImage = is_array($existingHomeHero?->value) ? ($existingHomeHero->value['image'] ?? null) : null;
-            if ($oldHomeHeroImage && \Storage::disk('public')->exists($oldHomeHeroImage)) {
-                \Storage::disk('public')->delete($oldHomeHeroImage);
-            }
-            $homeHeroData['image'] = $request->file('home_hero_image')->store('settings/home', 'public');
-        } elseif (! isset($homeHeroData['image'])) {
-            $existingHomeHero = Setting::where('key', 'store_home_hero')->first();
-            $homeHeroData['image'] = is_array($existingHomeHero?->value) ? ($existingHomeHero->value['image'] ?? null) : null;
-        }
-        Setting::updateOrCreate(['key' => 'store_home_hero'], ['value' => $homeHeroData]);
-
         // Handle All Cars Page Hero
         $carsHeroData = $request->input('store_hero', []);
         if ($request->hasFile('cars_hero_image')) {
@@ -397,7 +340,6 @@ class GeneralSettingController extends Controller
 
         // Invalidate hero-related cache
         Cache::forget('settings.hero.store_booking_hero');
-        Cache::forget('settings.hero.store_home_hero');
         Cache::forget('settings.hero.store_hero');
         Cache::forget('settings.hero.store_offers_hero');
 

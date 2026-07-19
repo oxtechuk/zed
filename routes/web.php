@@ -28,6 +28,8 @@ use App\Http\Controllers\CRM\BlogController;
 use App\Http\Controllers\CRM\BookingController;
 use App\Http\Controllers\CRM\BrandController;
 use App\Http\Controllers\CRM\BrandTypeController;
+use App\Http\Controllers\CRM\BudgetRangeController;
+use App\Http\Controllers\CRM\CalculatorLeadController;
 use App\Http\Controllers\CRM\CalculatorSettingsController;
 use App\Http\Controllers\CRM\CarCategoryController;
 use App\Http\Controllers\CRM\CarController;
@@ -37,7 +39,10 @@ use App\Http\Controllers\CRM\DashboardController;
 use App\Http\Controllers\CRM\EmployeeController;
 use App\Http\Controllers\CRM\FaqController;
 use App\Http\Controllers\CRM\FeatureController;
+use App\Http\Controllers\CRM\FinanceStepController;
 use App\Http\Controllers\CRM\GeneralSettingController;
+use App\Http\Controllers\CRM\HeroSlideController;
+use App\Http\Controllers\CRM\HomeSectionController;
 use App\Http\Controllers\CRM\LeadController;
 use App\Http\Controllers\CRM\NewsletterSubscriberController;
 use App\Http\Controllers\CRM\NotificationController;
@@ -45,6 +50,7 @@ use App\Http\Controllers\CRM\OfferController;
 use App\Http\Controllers\CRM\PartnerController;
 use App\Http\Controllers\CRM\ProfileController;
 use App\Http\Controllers\CRM\ProjectDesignController;
+use App\Http\Controllers\CRM\PromoCardController;
 use App\Http\Controllers\CRM\ReportController;
 use App\Http\Controllers\CRM\RoleController;
 use App\Http\Controllers\CRM\SafetyFeatureController;
@@ -53,6 +59,7 @@ use App\Http\Controllers\CRM\SpecificationController;
 use App\Http\Controllers\CRM\TaskController;
 use App\Http\Controllers\CRM\TestimonialController;
 use App\Http\Controllers\CRM\TrackingController;
+use App\Http\Controllers\CRM\TranslationController;
 
 // Unique Secure Login
 Route::get('/manager-login', [AuthController::class, 'showLoginForm'])->name('crm.login');
@@ -164,8 +171,8 @@ Route::prefix('crm')->name('crm.')->middleware(['auth:employee', 'guard.employee
 
     // === عملاء الحاسبة ===
     Route::middleware('permission:manage-calculator-leads')->group(function () {
-        Route::get('calculator-leads', [\App\Http\Controllers\CRM\CalculatorLeadController::class, 'index'])->name('calculator-leads.index');
-        Route::delete('calculator-leads/{calculatorLead}', [\App\Http\Controllers\CRM\CalculatorLeadController::class, 'destroy'])->name('calculator-leads.destroy');
+        Route::get('calculator-leads', [CalculatorLeadController::class, 'index'])->name('calculator-leads.index');
+        Route::delete('calculator-leads/{calculatorLead}', [CalculatorLeadController::class, 'destroy'])->name('calculator-leads.destroy');
     });
 
     // === الطلبات (Leads) ===
@@ -224,8 +231,8 @@ Route::prefix('crm')->name('crm.')->middleware(['auth:employee', 'guard.employee
 
     // === إدارة الترجمة ===
     Route::middleware('permission:manage-translations')->group(function () {
-        Route::get('translations', [\App\Http\Controllers\CRM\TranslationController::class, 'index'])->name('translations.index');
-        Route::post('translations', [\App\Http\Controllers\CRM\TranslationController::class, 'update'])->name('translations.update');
+        Route::get('translations', [TranslationController::class, 'index'])->name('translations.index');
+        Route::post('translations', [TranslationController::class, 'update'])->name('translations.update');
     });
 
     // === الإعدادات ===
@@ -255,6 +262,24 @@ Route::prefix('crm')->name('crm.')->middleware(['auth:employee', 'guard.employee
         // الشركاء
         Route::middleware('permission:manage-partners')->group(function () {
             Route::resource('partners', PartnerController::class);
+        });
+
+        // الصفحة الرئيسية (Home CMS)
+        Route::middleware('permission:manage-home-sections')->group(function () {
+            Route::get('home-sections', [HomeSectionController::class, 'index'])->name('home-sections.index');
+            Route::put('home-sections/{homeSection}', [HomeSectionController::class, 'update'])->name('home-sections.update');
+        });
+        Route::middleware('permission:manage-hero-slides')->group(function () {
+            Route::resource('hero-slides', HeroSlideController::class)->except(['create', 'show', 'edit']);
+        });
+        Route::middleware('permission:manage-promo-cards')->group(function () {
+            Route::resource('promo-cards', PromoCardController::class)->except(['create', 'show', 'edit']);
+        });
+        Route::middleware('permission:manage-finance-steps')->group(function () {
+            Route::resource('finance-steps', FinanceStepController::class)->except(['create', 'show', 'edit']);
+        });
+        Route::middleware('permission:manage-budget-ranges')->group(function () {
+            Route::resource('budget-ranges', BudgetRangeController::class)->except(['create', 'show', 'edit']);
         });
 
         // التصميمات

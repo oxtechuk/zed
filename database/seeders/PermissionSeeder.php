@@ -2,15 +2,17 @@
 
 namespace Database\Seeders;
 
+use App\Models\Employee;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class PermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        app()->make(PermissionRegistrar::class)->forgetCachedPermissions();
 
         Permission::where('guard_name', 'employee')
             ->whereNotIn('name', [
@@ -43,6 +45,11 @@ class PermissionSeeder extends Seeder
                 'manage-translations',
                 'manage-settings',
                 'manage-settings-integrations',
+                'manage-home-sections',
+                'manage-hero-slides',
+                'manage-promo-cards',
+                'manage-finance-steps',
+                'manage-budget-ranges',
             ])->delete();
 
         $permissions = [
@@ -75,6 +82,11 @@ class PermissionSeeder extends Seeder
             'manage-translations',
             'manage-settings',
             'manage-settings-integrations',
+            'manage-home-sections',
+            'manage-hero-slides',
+            'manage-promo-cards',
+            'manage-finance-steps',
+            'manage-budget-ranges',
         ];
 
         foreach ($permissions as $permission) {
@@ -94,7 +106,7 @@ class PermissionSeeder extends Seeder
             'manage-tasks',
         ]);
 
-        foreach (\App\Models\Employee::all() as $emp) {
+        foreach (Employee::all() as $emp) {
             if ($emp->role === 'admin') {
                 $emp->assignRole('admin');
             } else {

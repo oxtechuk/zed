@@ -23,6 +23,7 @@ class BlogPostResource extends JsonResource
             ]),
             'categories' => $this->whenLoaded('categories', fn () => BlogCategoryResource::collection($this->categories)),
             'reading_time' => $this->reading_time,
+            'tag' => $this->tag,
         ];
     }
 }

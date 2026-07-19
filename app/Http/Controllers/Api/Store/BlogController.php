@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Store;
 
+use App\Http\Api\Response\Builder\ApiResponseBuilder;
 use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Resources\Store\BlogCategoryResource;
 use App\Http\Resources\Store\BlogPostDetailResource;
@@ -14,7 +15,7 @@ final class BlogController extends ApiBaseController
     public function __construct(
         private readonly BlogApiService $blogService,
     ) {
-        parent::__construct(app(\App\Http\Api\Response\Builder\ApiResponseBuilder::class));
+        parent::__construct(app(ApiResponseBuilder::class));
     }
 
     public function index(Request $request)
@@ -22,7 +23,8 @@ final class BlogController extends ApiBaseController
         $page = (int) $request->get('page', 1);
         $perPage = (int) $request->get('per_page', 10);
         $category = $request->get('category');
-        $result = $this->blogService->list($page, $perPage, $category);
+        $tag = $request->get('tag');
+        $result = $this->blogService->list($page, $perPage, $category, $tag);
 
         $posts = BlogPostResource::collection($result['posts'])->resolve();
         $featuredPosts = BlogPostResource::collection($result['featured_posts'])->resolve();

@@ -13,13 +13,21 @@ final class CalculatorLeadRequest extends ApiBaseRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
-            'email' => ['required', 'email', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
             'salary' => ['required', 'numeric', 'min:0'],
             'monthly_obligations' => ['required', 'numeric', 'min:0'],
+            'employer_type' => ['nullable', 'string', 'in:government,company,institution'],
+            'employer_name' => ['nullable', 'string', 'max:255'],
+            'years_of_service' => ['nullable', 'numeric', 'min:0', 'max:60'],
+            'has_mortgage_loan' => ['nullable', 'boolean'],
+            'has_personal_loan' => ['nullable', 'boolean'],
+            'has_traffic_violations' => ['nullable', 'boolean'],
+            'has_simah_default' => ['nullable', 'boolean'],
             'preferred_bank_id' => ['nullable', 'integer', 'exists:calculator_banks,id'],
             'car_ids' => ['nullable', 'array'],
             'car_ids.*' => ['integer', 'exists:cars,id'],
+            'preferred_color' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string', 'max:500'],
         ];
     }

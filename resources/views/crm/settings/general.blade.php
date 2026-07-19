@@ -13,7 +13,6 @@
 
     <form action="{{ route('crm.settings.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <input type="hidden" name="hero_slides_submitted" value="1">
 
         <div class="row g-4 align-items-start">
 
@@ -33,13 +32,13 @@
 
                         <p class="nav-group-label">{{ __('الصفحة الرئيسية') }}</p>
                         <nav class="nav flex-column gap-1 mb-1">
-                            <button type="button" class="settings-nav-btn" data-tab="home-hero"><i class="bi bi-image"></i> {{ __('هيرو الرئيسية') }}</button>
                             <button type="button" class="settings-nav-btn" data-tab="hero-slides"><i class="bi bi-images"></i> {{ __('شرائح الهيرو') }}</button>
-                            <button type="button" class="settings-nav-btn" data-tab="homepage-featured"><i class="bi bi-star"></i> {{ __('القسم المميز') }}</button>
+                            <button type="button" class="settings-nav-btn" data-tab="bento"><i class="bi bi-grid-3x3-gap"></i> {{ __('البطاقات الترويجية') }}</button>
                             <button type="button" class="settings-nav-btn" data-tab="homepage-sections"><i class="bi bi-layout-text-window"></i> {{ __('نصوص الأقسام') }}</button>
+                            <button type="button" class="settings-nav-btn" data-tab="finance-steps"><i class="bi bi-list-ol"></i> {{ __('خطوات التمويل') }}</button>
+                            <button type="button" class="settings-nav-btn" data-tab="budget-ranges"><i class="bi bi-wallet2"></i> {{ __('نطاقات الميزانية') }}</button>
                             <button type="button" class="settings-nav-btn" data-tab="homepage-stats"><i class="bi bi-bar-chart-line"></i> {{ __('الإحصائيات') }}</button>
                             <button type="button" class="settings-nav-btn" data-tab="finance-stats"><i class="bi bi-bar-chart-line"></i> {{ __('إحصائيات التمويل') }}</button>
-                            <button type="button" class="settings-nav-btn" data-tab="bento"><i class="bi bi-grid-3x3-gap"></i> {{ __('معرض Bento') }}</button>
                         </nav>
 
                         <p class="nav-group-label">{{ __('صفحة السيارات') }}</p>
@@ -231,6 +230,40 @@
                                     <span class="text-muted small">{{ __('لا توجد حسابات بعد') }}</span>
                                 </div>
                                 <p class="text-muted small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i>{{ __('أيقونات Bootstrap Icons:') }} <code>bi-facebook</code>, <code>bi-instagram</code>, <code>bi-tiktok</code>…</p>
+
+                                <div class="d-flex align-items-center justify-content-between mb-3 border-top pt-3 mt-4">
+                                    <h6 class="fw-bold mb-0 small text-dark"><i class="bi bi-link-45deg me-2"></i>{{ __('روابط الفوتر السريعة') }}</h6>
+                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="addFooterLinkRow('quick')">
+                                        <i class="bi bi-plus-lg me-1"></i> {{ __('إضافة') }}
+                                    </button>
+                                </div>
+                                <div id="footer-quick-links-container" class="d-flex flex-column gap-2">
+                                    @foreach($footerQuickLinks as $idx => $link)
+                                    <div class="footer-link-row-quick d-flex align-items-center gap-2 p-3 bg-light rounded-3" id="footer-quick-link-row-{{ $idx }}">
+                                        <input type="text" name="footer_quick_links[{{ $idx }}][title][ar]" class="form-control border-0 bg-white shadow-none" placeholder="{{ __('العنوان (عربي)') }}" value="{{ $link['title']['ar'] ?? '' }}">
+                                        <input type="text" name="footer_quick_links[{{ $idx }}][title][en]" class="form-control border-0 bg-white shadow-none" placeholder="{{ __('العنوان (EN)') }}" value="{{ $link['title']['en'] ?? '' }}">
+                                        <input type="text" name="footer_quick_links[{{ $idx }}][url]" class="form-control border-0 bg-white shadow-none text-start flex-grow-1" dir="ltr" placeholder="/about" value="{{ $link['url'] ?? '' }}">
+                                        <button type="button" class="btn btn-sm btn-light text-danger rounded-circle p-1 lh-1" onclick="removeFooterLinkRow(this)"><i class="bi bi-x-lg"></i></button>
+                                    </div>
+                                    @endforeach
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-between mb-3 border-top pt-3 mt-4">
+                                    <h6 class="fw-bold mb-0 small text-dark"><i class="bi bi-link-45deg me-2"></i>{{ __('روابط الخدمات في الفوتر') }}</h6>
+                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="addFooterLinkRow('service')">
+                                        <i class="bi bi-plus-lg me-1"></i> {{ __('إضافة') }}
+                                    </button>
+                                </div>
+                                <div id="footer-service-links-container" class="d-flex flex-column gap-2">
+                                    @foreach($footerServiceLinks as $idx => $link)
+                                    <div class="footer-link-row-service d-flex align-items-center gap-2 p-3 bg-light rounded-3" id="footer-service-link-row-{{ $idx }}">
+                                        <input type="text" name="footer_service_links[{{ $idx }}][title][ar]" class="form-control border-0 bg-white shadow-none" placeholder="{{ __('العنوان (عربي)') }}" value="{{ $link['title']['ar'] ?? '' }}">
+                                        <input type="text" name="footer_service_links[{{ $idx }}][title][en]" class="form-control border-0 bg-white shadow-none" placeholder="{{ __('العنوان (EN)') }}" value="{{ $link['title']['en'] ?? '' }}">
+                                        <input type="text" name="footer_service_links[{{ $idx }}][url]" class="form-control border-0 bg-white shadow-none text-start flex-grow-1" dir="ltr" placeholder="/calculator" value="{{ $link['url'] ?? '' }}">
+                                        <button type="button" class="btn btn-sm btn-light text-danger rounded-circle p-1 lh-1" onclick="removeFooterLinkRow(this)"><i class="bi bi-x-lg"></i></button>
+                                    </div>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -330,223 +363,63 @@
                     </div>
 
                     {{-- =============================== --}}
-                    {{-- TAB: هيرو الرئيسية              --}}
-                    {{-- =============================== --}}
-                    <div class="settings-pane d-none" id="tab-home-hero">
-                        <div class="card border-0 shadow-sm rounded-4">
-                            <div class="card-header bg-transparent border-0 p-4 pb-0">
-                                <h6 class="fw-bold mb-0">{{ __('هيرو الصفحة الرئيسية') }}</h6>
-                                <p class="text-muted small mb-0">{{ __('العنوان والصورة التي تظهر في أعلى الصفحة الرئيسية') }}</p>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold small text-muted">{{ __('العنوان — عربي') }}</label>
-                                        <input type="text" name="store_home_hero[title][ar]" class="form-control bg-light border-0" value="{{ $homeHero['title']['ar'] ?? '' }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold small text-muted">{{ __('العنوان — إنجليزي') }}</label>
-                                        <input type="text" name="store_home_hero[title][en]" class="form-control bg-light border-0" value="{{ $homeHero['title']['en'] ?? '' }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold small text-muted">{{ __('الوصف — عربي') }}</label>
-                                        <textarea name="store_home_hero[subtitle][ar]" rows="3" class="form-control bg-light border-0">{{ $homeHero['subtitle']['ar'] ?? '' }}</textarea>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold small text-muted">{{ __('الوصف — إنجليزي') }}</label>
-                                        <textarea name="store_home_hero[subtitle][en]" rows="3" class="form-control bg-light border-0">{{ $homeHero['subtitle']['en'] ?? '' }}</textarea>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label fw-semibold small text-muted d-block mb-2">{{ __('صورة الهيرو') }}</label>
-                                        @if(!empty($homeHero['image']))
-                                            <div class="mb-2 rounded-3 overflow-hidden bg-light" style="max-height:120px;">
-                                                <img src="{{ asset('storage/' . $homeHero['image']) }}" class="img-fluid w-100 object-fit-cover" style="max-height:120px;">
-                                            </div>
-                                            <input type="hidden" name="store_home_hero[image]" value="{{ $homeHero['image'] }}">
-                                        @endif
-                                        <input type="file" name="home_hero_image" class="form-control bg-light border-0" accept="image/*">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- =============================== --}}
-                    {{-- TAB: شرائح الهيرو              --}}
+                    {{-- TAB: شرائح الهيرو  (-> شاشة مخصصة) --}}
                     {{-- =============================== --}}
                     <div class="settings-pane d-none" id="tab-hero-slides">
-                        <div class="card border-0 shadow-sm rounded-4">
-                            <div class="card-header bg-transparent border-0 p-4 pb-0 d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h6 class="fw-bold mb-0">{{ __('شرائح الهيرو') }}</h6>
-                                    <p class="text-muted small mb-0">{{ __('الصور الإعلانية في الصفحة الرئيسية') }}</p>
-                                </div>
-                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" onclick="addHeroSlide()">
-                                    <i class="bi bi-plus-lg me-1"></i> {{ __('إضافة شريحة') }}
-                                </button>
-                            </div>
-                            <div class="card-body p-4">
-                                @php
-                                    $heroSlides = isset($settings['hero_slides'])
-                                        ? (is_array($settings['hero_slides']) ? $settings['hero_slides'] : (json_decode($settings['hero_slides'], true) ?: []))
-                                        : [];
-                                @endphp
-                                <div id="hero-slides-container" class="d-flex flex-column gap-3">
-                                    @foreach($heroSlides as $idx => $slide)
-                                    <div class="hero-slide-item card border border-light-subtle rounded-3 shadow-sm" id="hero-slide-{{ $idx }}">
-                                        <div class="card-body p-3">
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <span class="small fw-semibold text-muted">{{ __('شريحة') }} {{ $idx + 1 }}</span>
-                                                <button type="button" class="btn btn-sm btn-light text-danger rounded-circle lh-1 p-1" onclick="removeHeroSlide({{ $idx }})"><i class="bi bi-x-lg"></i></button>
-                                            </div>
-                                            <div class="row g-3">
-                                                <div class="col-md-4">
-                                                    <input type="hidden" name="hero_slides[{{ $idx }}][image_path]" value="{{ $slide['image'] ?? '' }}">
-                                                    @if(isset($slide['image']))
-                                                    <div class="rounded-3 overflow-hidden mb-2" style="height:90px;"><img src="{{ asset('storage/' . $slide['image']) }}" class="w-100 h-100 object-fit-cover"></div>
-                                                    @endif
-                                                    <input type="file" name="hero_slides[{{ $idx }}][image]" class="form-control bg-light border-0 form-control-sm" accept="image/*">
-                                                </div>
-                                                <div class="col-md-8">
-                                                    <div class="row g-2">
-                                                        <div class="col-12">
-                                                            <label class="form-label fw-semibold small text-muted mb-1">{{ __('الرابط') }}</label>
-                                                            <input type="url" name="hero_slides[{{ $idx }}][link]" class="form-control bg-light border-0 text-start form-control-sm" dir="ltr" value="{{ $slide['link'] ?? '' }}" placeholder="https://...">
-                                                        </div>
-                                                        <div class="col-12">
-                                                            <label class="form-label fw-semibold small text-muted mb-1">{{ __('نص الزر') }}</label>
-                                                            <input type="text" name="hero_slides[{{ $idx }}][button_text]" class="form-control bg-light border-0 form-control-sm" value="{{ $slide['button_text'] ?? __('اكتشف السيارات') }}">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-                                <div id="no-slides-msg" class="text-center py-5 bg-light rounded-3 {{ count($heroSlides) > 0 ? 'd-none' : '' }}">
-                                    <i class="bi bi-images fs-1 text-muted opacity-25 d-block mb-1"></i>
-                                    <span class="text-muted small">{{ __('لا توجد شرائح. اضغط "إضافة شريحة" للبدء.') }}</span>
-                                </div>
-                            </div>
-                        </div>
+                        @include('partials.settings-manage-link', [
+                            'icon' => 'bi-images',
+                            'title' => __('شرائح الهيرو'),
+                            'description' => __('الهيرو الرئيسي وشرائحه أصبحا يُداران من شاشة مخصصة (عنوان، وصف، صورة ديسكتوب/موبايل، زر، شارة، ترتيب لكل شريحة).'),
+                            'route' => 'crm.settings.hero-slides.index',
+                            'permission' => 'manage-hero-slides',
+                            'count' => \App\Models\HeroSlide::count(),
+                            'countLabel' => __('شريحة'),
+                        ])
                     </div>
 
                     {{-- =============================== --}}
-                    {{-- TAB: القسم المميز              --}}
-                    {{-- =============================== --}}
-                    <div class="settings-pane d-none" id="tab-homepage-featured">
-                        @php $featured = $settings['homepage_featured'] ?? []; @endphp
-                        <div class="card border-0 shadow-sm rounded-4">
-                            <div class="card-header bg-transparent border-0 p-4 pb-0">
-                                <h6 class="fw-bold mb-0">{{ __('القسم المميز') }}</h6>
-                                <p class="text-muted small mb-0">{{ __('البطل الرئيسي في الصفحة الرئيسية') }}</p>
-                            </div>
-                            <div class="card-body p-4">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold small text-muted">{{ __('العنوان') }} — {{ __('عربي') }}</label>
-                                        <input type="text" name="homepage_featured[title][ar]" class="form-control bg-light border-0" value="{{ $featured['title']['ar'] ?? '' }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold small text-muted">{{ __('العنوان') }} — {{ __('إنجليزي') }}</label>
-                                        <input type="text" name="homepage_featured[title][en]" class="form-control bg-light border-0" value="{{ $featured['title']['en'] ?? '' }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold small text-muted">{{ __('الوصف') }} — {{ __('عربي') }}</label>
-                                        <textarea name="homepage_featured[description][ar]" class="form-control bg-light border-0" rows="3">{{ $featured['description']['ar'] ?? '' }}</textarea>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold small text-muted">{{ __('الوصف') }} — {{ __('إنجليزي') }}</label>
-                                        <textarea name="homepage_featured[description][en]" class="form-control bg-light border-0" rows="3">{{ $featured['description']['en'] ?? '' }}</textarea>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold small text-muted">{{ __('السيارة المميزة') }}</label>
-                                        <select name="homepage_featured[car_id]" class="form-select bg-light border-0">
-                                            <option value="">{{ __('-- اختر سيارة --') }}</option>
-                                            @foreach($cars as $car)
-                                                <option value="{{ $car->id }}" {{ ($featured['car_id'] ?? '') == $car->id ? 'selected' : '' }}>{{ $car->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold small text-muted">{{ __('العرض المميز') }}</label>
-                                        <select name="homepage_featured[offer_id]" class="form-select bg-light border-0">
-                                            <option value="">{{ __('-- اختر عرض --') }}</option>
-                                            @foreach($offers as $offer)
-                                                <option value="{{ $offer->id }}" {{ ($featured['offer_id'] ?? '') == $offer->id ? 'selected' : '' }}>{{ $offer->title }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- =============================== --}}
-                    {{-- TAB: نصوص أقسام الرئيسية       --}}
+                    {{-- TAB: نصوص أقسام الرئيسية (-> شاشة مخصصة) --}}
                     {{-- =============================== --}}
                     <div class="settings-pane d-none" id="tab-homepage-sections">
-                        @php $sec = $homepageSections; @endphp
-                        <div class="d-flex flex-column gap-3">
+                        @include('partials.settings-manage-link', [
+                            'icon' => 'bi-layout-text-window',
+                            'title' => __('نصوص أقسام الرئيسية'),
+                            'description' => __('عنوان ووصف وشارة وزر كل قسم من أقسام الصفحة الرئيسية (البحث، الماركات، السيارات المميزة، البانر الترويجي، أحدث السيارات، الميزانية، التمويل، الفوتر) — بما فيها القسم المميز القديم الذي أصبح جزءاً من البانر الترويجي.'),
+                            'route' => 'crm.settings.home-sections.index',
+                            'permission' => 'manage-home-sections',
+                            'count' => \App\Models\HomeSection::count(),
+                            'countLabel' => __('قسم'),
+                        ])
+                    </div>
 
-                            @php
-                                $hSections = [
-                                    ['id' => 'filter',           'icon' => 'bi-search',          'label' => __('قسم البحث والتصفية'),          'fields' => ['title']],
-                                    ['id' => 'featured_cars',    'icon' => 'bi-star',             'label' => __('السيارات المميزة'),             'fields' => ['badge','title','subtitle','button_text']],
-                                    ['id' => 'offers',           'icon' => 'bi-tag',              'label' => __('العروض'),                      'fields' => ['badge','title','button_text']],
-                                    ['id' => 'highlighted_cars', 'icon' => 'bi-car-front',        'label' => __('السيارات البارزة'),            'fields' => ['badge','title','subtitle','button_text']],
-                                    ['id' => 'finance',          'icon' => 'bi-currency-dollar',  'label' => __('قسم التمويل'),                 'fields' => ['badge','title','subtitle','features','button_text']],
-                                    ['id' => 'brands',           'icon' => 'bi-award',            'label' => __('الماركات'),                    'fields' => ['title','subtitle']],
-                                    ['id' => 'budget',           'icon' => 'bi-wallet2',          'label' => __('قسم الميزانية'),               'fields' => ['badge','title','description','button_text']],
-                                ];
-                                $hFieldLabels = [
-                                    'badge'       => __('الشارة (Badge)'),
-                                    'title'       => __('العنوان'),
-                                    'subtitle'    => __('الوصف'),
-                                    'description' => __('الوصف'),
-                                    'button_text' => __('نص الزر'),
-                                    'features'    => __('النقاط (سطر لكل نقطة)'),
-                                ];
-                                $isTextarea = ['subtitle', 'description', 'features'];
-                            @endphp
+                    {{-- =============================== --}}
+                    {{-- TAB: خطوات التمويل (جديد)        --}}
+                    {{-- =============================== --}}
+                    <div class="settings-pane d-none" id="tab-finance-steps">
+                        @include('partials.settings-manage-link', [
+                            'icon' => 'bi-list-ol',
+                            'title' => __('خطوات التمويل'),
+                            'description' => __('خطوات قسم "كيف يعمل التمويل" في الصفحة الرئيسية — رقم وعنوان ووصف وأيقونة لكل خطوة.'),
+                            'route' => 'crm.settings.finance-steps.index',
+                            'permission' => 'manage-finance-steps',
+                            'count' => \App\Models\FinanceStep::count(),
+                            'countLabel' => __('خطوة'),
+                        ])
+                    </div>
 
-                            @foreach($hSections as $hIdx => $hSec)
-                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                                <button type="button" class="btn text-start p-4 d-flex align-items-center gap-3 collapsed-section-toggle border-0 bg-white rounded-4" onclick="toggleSection('h-{{ $hSec['id'] }}', this)">
-                                    <i class="bi {{ $hSec['icon'] }} text-danger"></i>
-                                    <span class="fw-semibold">{{ $hSec['label'] }}</span>
-                                    <i class="bi bi-chevron-down ms-auto text-muted small toggle-chevron"></i>
-                                </button>
-                                <div class="section-body {{ $hIdx === 0 ? '' : 'd-none' }} border-top" id="h-{{ $hSec['id'] }}">
-                                    <div class="p-4">
-                                        <div class="row g-3">
-                                            @foreach($hSec['fields'] as $field)
-                                            @php $isTA = in_array($field, $isTextarea); @endphp
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-semibold small text-muted">{{ $hFieldLabels[$field] }} — {{ __('عربي') }}</label>
-                                                @if($isTA)
-                                                    <textarea name="homepage_sections[{{ $hSec['id'] }}][{{ $field }}][ar]" class="form-control bg-light border-0" rows="3">{{ $sec[$hSec['id']][$field]['ar'] ?? '' }}</textarea>
-                                                @else
-                                                    <input type="text" name="homepage_sections[{{ $hSec['id'] }}][{{ $field }}][ar]" class="form-control bg-light border-0" value="{{ $sec[$hSec['id']][$field]['ar'] ?? '' }}">
-                                                @endif
-                                            </div>
-                                            <div class="col-md-6">
-                                                <label class="form-label fw-semibold small text-muted">{{ $hFieldLabels[$field] }} — {{ __('إنجليزي') }}</label>
-                                                @if($isTA)
-                                                    <textarea name="homepage_sections[{{ $hSec['id'] }}][{{ $field }}][en]" class="form-control bg-light border-0" rows="3">{{ $sec[$hSec['id']][$field]['en'] ?? '' }}</textarea>
-                                                @else
-                                                    <input type="text" name="homepage_sections[{{ $hSec['id'] }}][{{ $field }}][en]" class="form-control bg-light border-0" value="{{ $sec[$hSec['id']][$field]['en'] ?? '' }}">
-                                                @endif
-                                            </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
-
-                        </div>
+                    {{-- =============================== --}}
+                    {{-- TAB: نطاقات الميزانية (جديد)     --}}
+                    {{-- =============================== --}}
+                    <div class="settings-pane d-none" id="tab-budget-ranges">
+                        @include('partials.settings-manage-link', [
+                            'icon' => 'bi-wallet2',
+                            'title' => __('نطاقات الميزانية'),
+                            'description' => __('التبويبات السعرية في قسم "سيارات حسب ميزانيتك" (مثال: أقل من 300 ألف، 300-500 ألف...).'),
+                            'route' => 'crm.settings.budget-ranges.index',
+                            'permission' => 'manage-budget-ranges',
+                            'count' => \App\Models\BudgetRange::count(),
+                            'countLabel' => __('نطاق'),
+                        ])
                     </div>
 
                     {{-- =============================== --}}
@@ -616,19 +489,15 @@
                     {{-- =============================== --}}
                     <div class="settings-pane d-none" id="tab-bento">
                         <div class="d-flex flex-column gap-4">
-                            <div class="card border-0 shadow-sm rounded-4">
-                                <div class="card-header bg-transparent border-0 p-4 pb-0">
-                                    <h6 class="fw-bold mb-0">{{ __('سيارات Bento') }}</h6>
-                                    <p class="text-muted small mb-0">{{ __('اختر 3-5 سيارات مميزة لعرضها في الرئيسية') }}</p>
-                                </div>
-                                <div class="card-body p-4">
-                                    <select name="bento_cars[]" class="form-select bg-light border-0" multiple style="min-height:220px;">
-                                        @foreach($cars as $car)
-                                            <option value="{{ $car->id }}" {{ in_array($car->id, $bentoCars) ? 'selected' : '' }}>{{ $car->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
+                            @include('partials.settings-manage-link', [
+                                'icon' => 'bi-grid-3x3-gap',
+                                'title' => __('البطاقات الترويجية'),
+                                'description' => __('البطاقات التي كانت تُعرض هنا كسيارات (Bento) استُبدلت ببطاقات CMS حقيقية (عنوان، وصف، صورة، زر، شارة) لأنها ليست سيارات فعلية حسب تصميم الصفحة الرئيسية.'),
+                                'route' => 'crm.settings.promo-cards.index',
+                                'permission' => 'manage-promo-cards',
+                                'count' => \App\Models\PromoCard::count(),
+                                'countLabel' => __('بطاقة'),
+                            ])
 
                             <div class="card border-0 shadow-sm rounded-4">
                                 <div class="card-header bg-transparent border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
@@ -1236,46 +1105,6 @@ function toggleSection(id, btn) {
     btn.classList.toggle('open', !isOpen);
 }
 
-// ===== Hero Slides =====
-function addHeroSlide() {
-    const container = document.getElementById('hero-slides-container');
-    const items = container.querySelectorAll('.hero-slide-item');
-    const idx = items.length > 0 ? parseInt(items[items.length - 1].id.split('-').pop()) + 1 : 0;
-    document.getElementById('no-slides-msg').classList.add('d-none');
-    const div = document.createElement('div');
-    div.className = 'hero-slide-item card border border-light-subtle rounded-3 shadow-sm';
-    div.id = 'hero-slide-' + idx;
-    div.innerHTML = `
-        <div class="card-body p-3">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <span class="small fw-semibold text-muted">{{ __('شريحة جديدة') }}</span>
-                <button type="button" class="btn btn-sm btn-light text-danger rounded-circle lh-1 p-1" onclick="removeHeroSlide(${idx})"><i class="bi bi-x-lg"></i></button>
-            </div>
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <input type="file" name="hero_slides[${idx}][image]" class="form-control bg-light border-0 form-control-sm" accept="image/*" required>
-                </div>
-                <div class="col-md-8">
-                    <div class="row g-2">
-                        <div class="col-12">
-                            <label class="form-label fw-semibold small text-muted mb-1">{{ __('الرابط') }}</label>
-                            <input type="url" name="hero_slides[${idx}][link]" class="form-control bg-light border-0 text-start form-control-sm" dir="ltr" placeholder="https://...">
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold small text-muted mb-1">{{ __('نص الزر') }}</label>
-                            <input type="text" name="hero_slides[${idx}][button_text]" class="form-control bg-light border-0 form-control-sm" value="{{ __('اكتشف السيارات') }}">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>`;
-    container.appendChild(div);
-}
-function removeHeroSlide(idx) {
-    document.getElementById('hero-slide-' + idx)?.remove();
-    if (!document.querySelector('.hero-slide-item')) document.getElementById('no-slides-msg').classList.remove('d-none');
-}
-
 // ===== Social Media =====
 let socialCount = {{ count($socialMedia) }};
 function addSocialRow() {
@@ -1294,6 +1123,27 @@ function addSocialRow() {
 function removeSocialRow(idx) {
     document.getElementById('social-row-' + idx)?.remove();
     if (!document.querySelector('.social-row')) document.getElementById('no-social-msg').classList.remove('d-none');
+}
+
+// ===== Footer Links (quick + service) =====
+let footerQuickLinkCount = {{ count($footerQuickLinks) }};
+let footerServiceLinkCount = {{ count($footerServiceLinks) }};
+function addFooterLinkRow(group) {
+    const isQuick = group === 'quick';
+    const idx = isQuick ? footerQuickLinkCount++ : footerServiceLinkCount++;
+    const name = isQuick ? 'footer_quick_links' : 'footer_service_links';
+    const containerId = isQuick ? 'footer-quick-links-container' : 'footer-service-links-container';
+    const div = document.createElement('div');
+    div.className = 'footer-link-row-' + group + ' d-flex align-items-center gap-2 p-3 bg-light rounded-3';
+    div.innerHTML = `
+        <input type="text" name="${name}[${idx}][title][ar]" class="form-control border-0 bg-white shadow-none" placeholder="{{ __('العنوان (عربي)') }}">
+        <input type="text" name="${name}[${idx}][title][en]" class="form-control border-0 bg-white shadow-none" placeholder="{{ __('العنوان (EN)') }}">
+        <input type="text" name="${name}[${idx}][url]" class="form-control border-0 bg-white shadow-none text-start flex-grow-1" dir="ltr" placeholder="/about">
+        <button type="button" class="btn btn-sm btn-light text-danger rounded-circle p-1 lh-1" onclick="removeFooterLinkRow(this)"><i class="bi bi-x-lg"></i></button>`;
+    document.getElementById(containerId).appendChild(div);
+}
+function removeFooterLinkRow(btn) {
+    btn.closest('[class*="footer-link-row-"]')?.remove();
 }
 
 // ===== Homepage Stats =====

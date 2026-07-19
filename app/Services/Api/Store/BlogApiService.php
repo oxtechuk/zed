@@ -8,6 +8,7 @@ use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Services\Cache\BlogCacheService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 final class BlogApiService
 {
@@ -15,27 +16,32 @@ final class BlogApiService
         private readonly BlogCacheService $cache,
     ) {}
 
-    public function list(int $page = 1, int $perPage = 10, ?string $categorySlug = null): array
+    public function list(int $page = 1, int $perPage = 10, ?string $categorySlug = null, ?string $tag = null): array
     {
         $hero = $this->cache->rememberBlogHero();
 
-        if ($categorySlug) {
-            $category = BlogCategory::where('slug', $categorySlug)->first();
+        if ($categorySlug || ($tag && $tag !== 'all')) {
+            $postIds = null;
 
-            if (! $category) {
-                return [
-                    'hero' => $hero,
-                    'featured_posts' => collect(),
-                    'posts' => collect(),
-                    'meta' => null,
-                ];
+            if ($categorySlug) {
+                $category = BlogCategory::where('slug', $categorySlug)->first();
+
+                if (! $category) {
+                    return [
+                        'hero' => $hero,
+                        'featured_posts' => collect(),
+                        'posts' => collect(),
+                        'meta' => null,
+                    ];
+                }
+
+                $postIds = $category->posts()->published()->pluck('blog_post_id');
             }
-
-            $postIds = $category->posts()->published()->pluck('blog_post_id');
 
             $featuredPosts = BlogPost::published()
                 ->with('categories', 'employee')
-                ->whereIn('id', $postIds)
+                ->when($postIds !== null, fn ($q) => $q->whereIn('id', $postIds))
+                ->when($tag && $tag !== 'all', fn ($q) => $q->where('tag', $tag))
                 ->where('is_featured', true)
                 ->latest('published_at')
                 ->take(3)
@@ -45,7 +51,8 @@ final class BlogApiService
 
             $posts = BlogPost::published()
                 ->with('categories', 'employee')
-                ->whereIn('id', $postIds)
+                ->when($postIds !== null, fn ($q) => $q->whereIn('id', $postIds))
+                ->when($tag && $tag !== 'all', fn ($q) => $q->where('tag', $tag))
                 ->whereNotIn('id', $featuredIds)
                 ->latest('published_at')
                 ->paginate($perPage);
@@ -98,7 +105,7 @@ final class BlogApiService
         return compact('post', 'related');
     }
 
-    public function categories(): \Illuminate\Database\Eloquent\Collection
+    public function categories(): Collection
     {
         return $this->cache->rememberBlogCategories();
     }

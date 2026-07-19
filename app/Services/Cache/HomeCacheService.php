@@ -5,11 +5,16 @@ namespace App\Services\Cache;
 use App\Models\BlogPost;
 use App\Models\Brand;
 use App\Models\BrandType;
+use App\Models\BudgetRange;
 use App\Models\Car;
 use App\Models\CarCategory;
 use App\Models\CarType;
+use App\Models\FinanceStep;
+use App\Models\HeroSlide;
+use App\Models\HomeSection;
 use App\Models\Offer;
 use App\Models\Partner;
+use App\Models\PromoCard;
 use App\Models\Testimonial;
 use Illuminate\Support\Facades\Cache;
 
@@ -111,11 +116,22 @@ class HomeCacheService extends BaseCacheService
                 ];
             })->values();
 
-            $bentoCars = Car::with(['brand', 'images'])
-                ->where('is_active', true)
-                ->latest()
-                ->take(5)
-                ->get();
+            $homeSections = HomeSection::query()->get()->keyBy('key');
+            $promoCards = PromoCard::query()->activeOrdered()->get();
+            $financeSteps = FinanceStep::query()->activeOrdered()->get();
+
+            $budgetRanges = BudgetRange::query()->activeOrdered()->get()->map(function (BudgetRange $range): array {
+                return [
+                    'range' => $range,
+                    'cars' => Car::with(['brand', 'images'])
+                        ->where('is_active', true)
+                        ->where('cash_price', '>=', $range->min)
+                        ->when($range->max !== null, fn ($q) => $q->where('cash_price', '<=', $range->max))
+                        ->latest()
+                        ->limit(8)
+                        ->get(),
+                ];
+            });
 
             $highlightedCars = Car::with(['brand', 'images'])
                 ->where('is_highlighted', '!=', 'none')
@@ -129,14 +145,17 @@ class HomeCacheService extends BaseCacheService
                 ->countBy()
                 ->all();
 
-            $heroSlides = $this->rememberHeroSlides();
+            // Cached as raw models (not $this->rememberHeroSlides()) so locale resolves fresh
+            // on every request instead of being baked into this hour-long cache entry.
+            $heroSlides = HeroSlide::query()->activeOrdered()->get();
 
             return compact(
                 'featuredCars', 'activeOffers', 'brands', 'latestPosts', 'stats',
                 'testimonials', 'partners',
                 'filterBrands', 'filterCategories', 'filterTypes', 'filterYears',
-                'filterBrandTypes', 'filterPrices', 'filterFuels', 'filterHorsepowers', 'highlightCounts', 'bentoCars',
+                'filterBrandTypes', 'filterPrices', 'filterFuels', 'filterHorsepowers', 'highlightCounts',
                 'highlightedCars', 'heroSlides',
+                'homeSections', 'promoCards', 'financeSteps', 'budgetRanges',
             );
         });
 
@@ -153,5 +172,15 @@ class HomeCacheService extends BaseCacheService
     public function forgetHome(): void
     {
         Cache::forget('home.data');
+    }
+
+    /**
+     * Granular per-section cache, used by the new CMS-backed homepage models
+     * (HomeSection, HeroSlide, PromoCard, FinanceStep, BudgetRange, FooterLink).
+     * Kept separate from home.data until the Home API itself is migrated onto them.
+     */
+    public function forgetSection(string $key): void
+    {
+        Cache::forget("home.section.{$key}");
     }
 }

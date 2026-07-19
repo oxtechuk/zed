@@ -17,7 +17,7 @@ class ContactRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255'],
-            'subject' => ['nullable', 'string', 'max:255'],
+            'subject' => ['nullable', 'string', 'in:general_inquiry,financing_request,car_booking,car_import,complaint,other'],
             'country' => ['nullable', 'string', 'max:100'],
             'message' => ['nullable', 'string', 'max:2000'],
         ];

@@ -14,7 +14,7 @@ class Offer extends Model
     public $translatable = ['title', 'description'];
 
     protected $fillable = [
-        'car_id', 'image', 'title', 'description', 'discount_percent',
+        'car_id', 'image', 'title', 'description', 'discount_percent', 'tag',
         'special_price', 'special_installment', 'starts_at', 'ends_at', 'is_active',
     ];
 

@@ -2,6 +2,7 @@
 
 namespace App\Services\Cache;
 
+use App\Models\HeroSlide;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -76,17 +77,39 @@ class BaseCacheService
 
     public function rememberHeroSlides(): array
     {
-        return $this->remember('settings.hero_slides', function () {
-            $setting = Setting::where('key', 'hero_slides')->first();
-
-            if (! $setting || empty($setting->value)) {
-                return [];
-            }
-
-            return is_array($setting->value)
-                ? $setting->value
-                : (json_decode($setting->value, true) ?: []);
+        $slides = $this->remember('settings.hero_slides', function () {
+            return HeroSlide::query()->activeOrdered()->get()->map(fn (HeroSlide $slide): array => [
+                'id' => $slide->id,
+                'title' => $slide->getTranslations('title'),
+                'subtitle' => $slide->getTranslations('subtitle'),
+                'description' => $slide->getTranslations('description'),
+                'image' => $slide->getRawOriginal('image_desktop'),
+                'image_mobile' => $slide->getRawOriginal('image_mobile'),
+                'button_url' => $slide->button_url,
+                'button_text' => $slide->getTranslations('button_text'),
+                'badge' => $slide->getTranslations('badge'),
+            ])->values()->all();
         }, self::TTL_LONG);
+
+        $locale = app()->getLocale();
+
+        return array_map(fn (array $slide): array => [
+            'id' => $slide['id'],
+            'title' => $this->localizeHeroField($slide['title'], $locale),
+            'subtitle' => $this->localizeHeroField($slide['subtitle'], $locale),
+            'description' => $this->localizeHeroField($slide['description'], $locale),
+            'image' => $this->resolveHeroImage($slide['image']),
+            'image_mobile' => $this->resolveHeroImage($slide['image_mobile']),
+            'link' => $slide['button_url'], // kept for backward compatibility with existing consumers
+            'button_url' => $slide['button_url'],
+            'button_text' => $this->localizeHeroField($slide['button_text'], $locale),
+            'badge' => $this->localizeHeroField($slide['badge'], $locale),
+        ], $slides);
+    }
+
+    public function forgetHeroSlides(): void
+    {
+        Cache::forget('settings.hero_slides');
     }
 
     public function forgetSettings(): void

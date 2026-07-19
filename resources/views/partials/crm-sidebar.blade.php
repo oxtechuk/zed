@@ -285,8 +285,8 @@
 
         {{-- ● المحتوى والإعدادات --}}
         @php
-            $contentOpen = $groupActive(['crm.blog','crm.blog-categories','crm.settings.designs','crm.settings.partners','crm.settings.testimonials','crm.settings.faqs','crm.translations']);
-            $canContent = $currentUser->hasAnyPermission(['manage-blog','manage-designs','manage-partners','manage-testimonials','manage-faqs','manage-translations']);
+            $contentOpen = $groupActive(['crm.blog','crm.blog-categories','crm.settings.designs','crm.settings.partners','crm.settings.testimonials','crm.settings.faqs','crm.translations','crm.settings.home-sections','crm.settings.hero-slides','crm.settings.promo-cards','crm.settings.finance-steps','crm.settings.budget-ranges']);
+            $canContent = $currentUser->hasAnyPermission(['manage-blog','manage-designs','manage-partners','manage-testimonials','manage-faqs','manage-translations','manage-home-sections','manage-hero-slides','manage-promo-cards','manage-finance-steps','manage-budget-ranges']);
         @endphp
         @if($canContent)
         <div class="crm-nav-section">
@@ -340,6 +340,46 @@
                     <a href="{{ route('crm.settings.faqs.index') }}"
                        class="crm-sub-link {{ str_starts_with($r,'crm.settings.faqs') ? 'active' : '' }}">
                         <i class="bi bi-question-circle"></i> {{ __('الأسئلة الشائعة') }}
+                    </a>
+                </li>
+                @endcan
+                @can('manage-home-sections')
+                <li>
+                    <a href="{{ route('crm.settings.home-sections.index') }}"
+                       class="crm-sub-link {{ str_starts_with($r,'crm.settings.home-sections') ? 'active' : '' }}">
+                        <i class="bi bi-layout-text-window"></i> {{ __('نصوص أقسام الرئيسية') }}
+                    </a>
+                </li>
+                @endcan
+                @can('manage-hero-slides')
+                <li>
+                    <a href="{{ route('crm.settings.hero-slides.index') }}"
+                       class="crm-sub-link {{ str_starts_with($r,'crm.settings.hero-slides') ? 'active' : '' }}">
+                        <i class="bi bi-images"></i> {{ __('شرائح الهيرو') }}
+                    </a>
+                </li>
+                @endcan
+                @can('manage-promo-cards')
+                <li>
+                    <a href="{{ route('crm.settings.promo-cards.index') }}"
+                       class="crm-sub-link {{ str_starts_with($r,'crm.settings.promo-cards') ? 'active' : '' }}">
+                        <i class="bi bi-grid-3x3-gap"></i> {{ __('البطاقات الترويجية') }}
+                    </a>
+                </li>
+                @endcan
+                @can('manage-finance-steps')
+                <li>
+                    <a href="{{ route('crm.settings.finance-steps.index') }}"
+                       class="crm-sub-link {{ str_starts_with($r,'crm.settings.finance-steps') ? 'active' : '' }}">
+                        <i class="bi bi-list-ol"></i> {{ __('خطوات التمويل') }}
+                    </a>
+                </li>
+                @endcan
+                @can('manage-budget-ranges')
+                <li>
+                    <a href="{{ route('crm.settings.budget-ranges.index') }}"
+                       class="crm-sub-link {{ str_starts_with($r,'crm.settings.budget-ranges') ? 'active' : '' }}">
+                        <i class="bi bi-wallet2"></i> {{ __('نطاقات الميزانية') }}
                     </a>
                 </li>
                 @endcan

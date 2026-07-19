@@ -24,6 +24,10 @@ final class OfferApiService
             $query->whereHas('cars', fn (Builder $q) => $q->where('type', $filters['car_type']));
         }
 
+        if (! empty($filters['tag']) && $filters['tag'] !== 'all') {
+            $query->where('tag', $filters['tag']);
+        }
+
         return $query->paginate($perPage);
     }
 }
