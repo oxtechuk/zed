@@ -12,7 +12,7 @@
 
     <style>
         :root {
-            --primary: #299BE0;
+            --primary: #16254F;
             --primary-dark: #1a7cb5;
             --primary-glow: rgba(41, 155, 224, 0.15);
             --bg-light: #ffffff;

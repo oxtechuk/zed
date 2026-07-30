@@ -148,6 +148,8 @@ export interface HomePageData {
   featured_offers: any[];
   highlighted_cars: CarItem[];
   hero_slides: any[];
+  promo_cards?: any[];
+  finance_steps?: any[];
   featured_section?: FeaturedSection;
   homepage_stats?: HomepageStat[];
   page_sections?: PageSections;

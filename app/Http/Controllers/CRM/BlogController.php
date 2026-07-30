@@ -45,6 +45,7 @@ class BlogController extends Controller
             'categories.*' => 'exists:blog_categories,id',
             'is_published' => 'boolean',
             'is_featured' => 'boolean',
+            'tag' => 'nullable|string|in:popular,exclusive,new,limited',
         ]);
 
         $data['slug'] = Str::slug($data['title']['en']).'-'.uniqid();
@@ -90,6 +91,7 @@ class BlogController extends Controller
             'categories.*' => 'exists:blog_categories,id',
             'is_published' => 'boolean',
             'is_featured' => 'boolean',
+            'tag' => 'nullable|string|in:popular,exclusive,new,limited',
         ]);
 
         $data['is_published'] = $request->boolean('is_published');

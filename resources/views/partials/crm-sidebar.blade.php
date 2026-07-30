@@ -415,7 +415,7 @@
         @endcan
         <form action="{{ route('crm.logout') }}" method="POST">
             @csrf
-            <button type="submit" class="crm-nav-link w-100" style="background:none;border:none;cursor:pointer;color:#299BE0;">
+            <button type="submit" class="crm-nav-link w-100" style="background:none;border:none;cursor:pointer;color:#16254F;">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>{{ __('تسجيل الخروج') }}</span>
             </button>

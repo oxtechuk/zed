@@ -1,11 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { ArrowUpRight, GitCompare } from "lucide-react";
-import { APP_IMAGES } from "../constants/app-images";
-import Button from "./button";
-import Badge from "./Badge";
+import { ArrowUpRight, Scale, Users } from "lucide-react";
 import type { ICarCardProps } from "../interfaces/ICarCardProps";
-import type { ICarSpecProps } from "../interfaces/ICarSpecProps";
 
 export type { ICarCardProps as CarCardProps };
 
@@ -18,7 +14,6 @@ export default function CarCard({
   fuelType,
   transmission,
   seats,
-  oldPrice,
   price,
   monthlyPrice,
   detailsTo,
@@ -30,109 +25,125 @@ export default function CarCard({
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
+  // Dynamic badge text fallback
+  const displayBadge = badgeText || t("carCard.newlyArrived", { defaultValue: "وصل حديثاً" });
+
   return (
     <article
       dir={i18n.dir()}
       onClick={() => navigate(detailsTo)}
-      className="relative mx-auto w-full max-w-[320px] cursor-pointer overflow-hidden rounded-[24px] border border-[#DCE3EB] bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+      className="relative mx-auto w-full max-w-[340px] cursor-pointer overflow-hidden rounded-[24px] border border-[#E5E9F0] bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
     >
-      {badgeText && (
-        <Badge size="md" className="-top-3 start-3 rotate-[-12deg]" bgColor="bg-[var(--brand-secondary-color)]">
-          <span className="text-[11px] font-normal leading-tight">{t("carCard.model")}</span>
-          <span className="text-[15px] font-bold leading-tight">{year}</span>
-        </Badge>
-      )}
-
-      <div className="relative px-3 pt-5">
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); navigate(`/compare?slug=${slug ?? ""}`); }}
-          className="absolute end-5 top-5 z-10 flex h-[34px] items-center gap-1.5 rounded-full bg-[var(--brand-primary-color)] px-4 text-[13px] font-bold text-white"
-        >
-          <GitCompare size={15} />
-          {compareText ?? t("carCard.compare")}
-        </button>
-
-        <div className="flex h-[220px] items-center justify-center">
-          <img
-            src={image}
-            alt={`${brand} ${name}`}
-            className="max-h-full w-full object-contain"
-            loading="lazy"
-          />
-        </div>
+      {/* Newly Arrived Badge */}
+      <div className="absolute top-4 left-4 z-10 rounded-full bg-[#E5C287] px-3.5 py-1.5 text-[12px] font-extrabold text-[#0A1628]">
+        {displayBadge}
       </div>
 
-      <div className="px-5 pb-5">
-        <div className="pb-5">
-          <div className="text-right">
-            <h3 className="truncate text-[22px] font-bold leading-none text-[#111827]" title={`${brand} ${name}`}>
-              {brand} {name}
-            </h3>
+      {/* Image Area */}
+      <div className="relative flex h-[190px] items-center justify-center pt-4">
+        <img
+          src={image}
+          alt={`${brand} ${name}`}
+          className="max-h-full max-w-[85%] object-contain"
+          loading="lazy"
+        />
+      </div>
 
-            <p className="mt-3 truncate text-[11px] text-[#9CA3AF]">
-              {t("carCard.subtitle")}
+      {/* Info Block */}
+      <div className="mt-4 text-right">
+        {/* Brand + Name + Type Badge */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1">
+            <p className="text-[12px] text-[#64748B] font-bold leading-none mb-1.5">
+              {brand} · {year}
+            </p>
+            <h3 className="text-[20px] font-extrabold text-[#0F172A] leading-tight truncate" title={`${brand} ${name}`}>
+              {name}
+            </h3>
+          </div>
+          {type && (
+            <span className="inline-block bg-[#F1F5F9] text-[#64748B] text-[11px] font-bold px-3 py-1 rounded-[8px] whitespace-nowrap">
+              {type}
+            </span>
+          )}
+        </div>
+
+        {/* Specs Badges */}
+        <div className="flex flex-wrap gap-1.5 mt-3.5">
+          {transmission && (
+            <span className="inline-flex items-center bg-[#F3F4F6] text-[#4B5563] text-[12px] font-semibold px-3 py-1.5 rounded-[12px]">
+              {transmission}
+            </span>
+          )}
+          {seats && (
+            <span className="inline-flex items-center gap-1 bg-[#F3F4F6] text-[#4B5563] text-[12px] font-semibold px-3 py-1.5 rounded-[12px]">
+              <Users size={13} className="text-[#6B7280]" />
+              <span>{seats}</span>
+            </span>
+          )}
+          {fuelType && (
+            <span className="inline-flex items-center bg-[#F3F4F6] text-[#4B5563] text-[12px] font-semibold px-3 py-1.5 rounded-[12px]">
+              {fuelType}
+            </span>
+          )}
+        </div>
+
+        {/* Divider Line */}
+        <hr className="border-t border-[#EEF2F6] my-4" />
+
+        {/* Pricing Block */}
+        <div className="flex items-center justify-between mb-5">
+          {/* Cash Price */}
+          <div className="text-right">
+            <p className="text-[11px] text-[#9CA3AF] mb-0.5">{t("carCard.cashPrice")}</p>
+            <p className="text-[19px] font-extrabold text-[#0F172A]">
+              {price}
+            </p>
+          </div>
+
+          {/* Monthly Payment */}
+          <div className="text-left">
+            <p className="text-[11px] text-[#9CA3AF] mb-0.5">{t("carCard.monthlyPayment")}</p>
+            <p className="text-[19px] font-extrabold text-[#E5C287]">
+              {monthlyPrice}
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-2 border-y border-[#EEF2F6] py-5 text-center">
-          <CarSpec icon={APP_IMAGES.GEARBOX_ICON} label={transmission} />
-          <CarSpec icon={APP_IMAGES.CAR_ICON} label={type} />
-          <CarSpec icon={APP_IMAGES.FUEL_ICON} label={fuelType} />
-          <CarSpec icon={APP_IMAGES.SEAT_ICON} label={seats} />
-        </div>
-
-        <div className="mt-5 space-y-3">
-          <div className="flex h-[48px] items-center justify-between rounded-[8px] border border-[#C9DAF5] bg-[#F8FBFF] px-4">
-            <span className="text-[12px] text-[#6FA7DD]">{t("carCard.cashPrice")}</span>
-
-            <span className="text-[24px] font-bold text-[var(--brand-primary-color)]">
-              {price}
-            </span>
-
-            <span className={`text-[10px] text-[#9CA3AF] line-through ${!oldPrice ? "invisible" : ""}`}>
-              {oldPrice || "0"}
-            </span>
-          </div>
-
-          <div className="flex h-[48px] items-center justify-between rounded-[8px] border border-[#FFD5BD] bg-[#FFF8F3] px-4">
-            <span className="text-[12px] text-[#F59B72]">{t("carCard.monthlyPayment")}</span>
-
-            <span className="text-[24px] font-bold text-[var(--brand-secondary-color)]">
-              {monthlyPrice}
-            </span>
-
-            <span className="text-[12px] text-[#F59B72]">{t("carCard.estimated")}</span>
-          </div>
-        </div>
-
-        <div className="mt-8 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-          <Button
-            to={detailsTo}
-            bgColor="bg-transparent"
-            textColor="text-[var(--brand-secondary-color)]"
-            className="group !h-[64px] !w-[58px] !p-0 border border-[var(--brand-secondary-color)] hover:bg-[var(--brand-secondary-color)] text-[var(--brand-secondary-color)] hover:text-white!"
+        {/* Action Row */}
+        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+          {/* Compare Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/compare?slug=${slug ?? ""}`);
+            }}
+            className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full border border-[#E5E7EB] bg-white text-[#4B5563] transition hover:border-[#0F172A] hover:text-[#0F172A] hover:shadow-sm"
+            title={compareText ?? t("carCard.compare")}
           >
-            <ArrowUpRight size={24} className="text-[var(--brand-secondary-color)] group-hover:text-white" />
-          </Button>
-          <Button
-            to={detailsTo}
-            className="!h-[64px] flex-1 text-[18px]"
+            <Scale size={18} />
+          </button>
+
+          {/* Arrow Link Button */}
+          <button
+            type="button"
+            onClick={() => navigate(detailsTo)}
+            className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full border border-[#E5E7EB] bg-white text-[#4B5563] transition hover:border-[#0F172A] hover:text-[#0F172A] hover:shadow-sm"
           >
-            {reserveText ?? t("carCard.reserve")}
-          </Button>
+            <ArrowUpRight size={18} />
+          </button>
+
+          {/* Reserve / Order Button */}
+          <button
+            type="button"
+            onClick={() => navigate(detailsTo)}
+            className="flex-1 h-[48px] rounded-[16px] bg-[#0F1E36] text-[15px] font-bold text-white transition hover:bg-[#1A2E4E] hover:shadow-sm flex items-center justify-center"
+          >
+            {reserveText ?? t("carCard.reserve", { defaultValue: "اطلبها الان" })}
+          </button>
         </div>
       </div>
     </article>
-  );
-}
-
-function CarSpec({ icon, label }: ICarSpecProps) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-2">
-      <img src={icon} alt={label} loading="lazy" className="h-[18px] w-[18px]" />
-      <span className="truncate w-full text-center text-[14px] font-medium leading-none text-[#12439B]">{label}</span>
-    </div>
   );
 }

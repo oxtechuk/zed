@@ -11,10 +11,12 @@
   "nav": {
     "home": "Home",
     "cars": "Cars",
-    "offers": "Best Offers",
-    "about": "About Us",
+    "offers": "Offers",
+    "finance": "Finance Calculator",
     "blog": "Blog",
-    "contact": "Contact Us"
+    "about": "About Us",
+    "contact": "Contact Us",
+    "requestCar": "Request Car"
   },
   "carFinder": {
     "title": "Find a car that suits you",
@@ -67,7 +69,7 @@
     "noCars": "No cars found matching your filters."
   },
   "rootLayout": {
-    "logoAlt": "Knoz Cars",
+    "logoAlt": "Zed Capital",
     "quickLinks": [
       {
         "label": "Home",
@@ -356,9 +358,9 @@
   },
   "offersPage": {
     "hero": {
-      "badge": "Limited Time Offers",
-      "title": "Eid Exclusive Offer from Knoz",
-      "description": "We offer you a selection of the strongest cars with financing solutions and direct discounts on the latest models for Eid.",
+      "badge": "Exclusive Offers",
+      "title": "Offers & Discounts",
+      "description": "Limited offers with exceptional financing terms",
       "primaryButton": "Discover the Offer",
       "secondaryButton": "Finance Calculator"
     },
@@ -366,16 +368,27 @@
       "title": "Browse Offers",
       "categories": {
         "all": "All",
-        "finance": "Financing Offers",
-        "discounts": "Direct Discounts",
-        "models2026": "2026 Models"
+        "popular": "Popular",
+        "exclusive": "Exclusive",
+        "new": "New",
+        "limited": "Limited"
       },
       "card": {
         "priceLabel": "Installment starts from",
         "priceUnit": "/ month",
-        "buttonText": "Discover Offer"
+        "buttonText": "Discover Offer",
+        "benefit": "Benefit from Offer",
+        "continuous": "Continuous Offer"
       },
       "loadMore": "Show More Offers"
+    },
+    "countdown": {
+      "requestEnds": "Request ends soon",
+      "endsIn": "Offer ends in",
+      "days": "Days",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "seconds": "Seconds"
     }
   },
   "carDetails": {

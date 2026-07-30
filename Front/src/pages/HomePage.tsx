@@ -10,7 +10,7 @@ import CarsShowcaseSection from "../components/CarsShowcaseSection";
 import FinanceSolutionsSection from "../components/FinanceSolutionsSection";
 import BudgetCarsSection from "../components/BudgetCarsSection";
 import BrandsSection from "../components/BrandsSection";
-import { getHomePageData, getCars, getFinanceSettings, getBrands } from "../services/api";
+import { getHomePageData, getCars } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
 import type { CarItem, BrandInfo, FilterPrice } from "../types/home.types";
 import type { CarCardProps } from "../components/CarCard";
@@ -124,7 +124,6 @@ export default function Home() {
   const language = useLanguageStore((s) => s.language);
   const [filters, setFilters] = useState<CarFinderValues | null>(null);
   const [activeBudgetRange, setActiveBudgetRange] = useState<string | null>(null);
-  const [brandSearch, setBrandSearch] = useState("");
 
   function parseRangeValue(value: string): { min_price?: number; max_price?: number } {
     if (value.endsWith("-plus")) {
@@ -141,18 +140,6 @@ export default function Home() {
   const { data, isLoading } = useQuery({
     queryKey: ["home-data", language],
     queryFn: getHomePageData,
-  });
-
-  const { data: financeData } = useQuery({
-    queryKey: ["finance-settings", language],
-    queryFn: getFinanceSettings,
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const { data: searchedBrands } = useQuery({
-    queryKey: ["brands-search", brandSearch, language],
-    queryFn: () => getBrands(brandSearch || undefined),
-    staleTime: 2 * 60 * 1000,
   });
 
   const { data: filteredData } = useQuery({
@@ -216,8 +203,8 @@ export default function Home() {
     [budgetFilteredData],
   );
   const brands = useMemo(
-    () => ((brandSearch ? searchedBrands : data?.brands) ?? []).map(mapBrandToCardProps),
-    [brandSearch, searchedBrands, data?.brands],
+    () => (data?.brands ?? []).map(mapBrandToCardProps),
+    [data?.brands],
   );
   const filteredCarCards = useMemo(
     () =>
@@ -242,41 +229,8 @@ export default function Home() {
   return (
     <>
       <HomeHero
-        bannerImage={data?.hero?.image ? getImageUrl(data.hero.image) : APP_IMAGES.HOME_HERO}
-        titleBlue={data?.hero?.title1?.trim() || t("hero.titleBlue")}
-        titleOrange={data?.hero?.title2?.trim() || t("hero.titleOrange")}
-        description={data?.hero?.subtitle?.trim() || t("hero.description")}
-        primaryButtonText={t("hero.primaryButton")}
-        primaryButtonTo="/cars"
-        secondaryButtonText={t("hero.secondaryButton")}
-        secondaryButtonTo="/finance-calculator"
-        cards={[
-          {
-            image: data?.featured_section?.offer?.image
-              ? getImageUrl(data.featured_section.offer.image)
-              : APP_IMAGES.EID,
-            title: data?.featured_section?.offer?.title?.trim() || t("hero.cards.0.title"),
-            description: data?.featured_section?.offer?.description?.trim() || t("hero.cards.0.description"),
-            buttonText: t("hero.cards.0.buttonText"),
-            buttonTo: data?.featured_section?.offer
-              ? `/cars?offerId=${data.featured_section.offer.id}`
-              : "/cars?offerId=1",
-          },
-          {
-            image: data?.featured_section?.car?.main_image
-              ? getImageUrl(data.featured_section.car.main_image)
-              : APP_IMAGES.CAR1,
-            title: data?.featured_section?.car?.name?.trim() || t("hero.cards.1.title"),
-            description: data?.featured_section?.car?.type?.trim() || t("hero.cards.1.description"),
-            buttonText: t("hero.cards.1.buttonText"),
-            buttonTo: data?.featured_section?.car?.slug
-              ? `/cars/${data.featured_section.car.slug}`
-              : "/cars/kia-sportage",
-            badge: data?.featured_section?.car && data.featured_section.car.is_current_year
-              ? String(data.featured_section.car.year)
-              : t("hero.cards.1.badge"),
-          },
-        ]}
+        slides={data?.hero_slides || []}
+        promoCards={data?.promo_cards || []}
       />
 
       <CarFinder
@@ -289,9 +243,19 @@ export default function Home() {
         filterTitle={data?.page_sections?.filter?.title?.trim()}
       />
 
+      <BrandsSection
+        titleBlue=""
+        titleOrange=""
+        description=""
+        buttonText=""
+        buttonTo=""
+        brands={brands}
+        simple={true}
+      />
+
       <FeaturedCarsSection
-        titleBlue={data?.page_sections?.featured_cars?.badge?.trim() || t("featuredCars.titleBlue")}
-        titleOrange={data?.page_sections?.featured_cars?.title?.trim() || t("featuredCars.titleOrange")}
+        titleBlue={data?.page_sections?.featured_cars?.title?.trim() || t("featuredCars.titleOrange")}
+        titleOrange={data?.page_sections?.featured_cars?.badge?.trim() || t("featuredCars.titleBlue")}
         description={data?.page_sections?.featured_cars?.subtitle?.trim() || t("featuredCars.description")}
         buttonText={data?.page_sections?.featured_cars?.button_text?.trim() || t("featuredCars.buttonText")}
         buttonTo="/cars"
@@ -327,39 +291,6 @@ export default function Home() {
         cars={showcaseCars}
       />
 
-      <FinanceSolutionsSection
-        className="mb-5"
-        backgroundImage={APP_IMAGES.BG_IMAGE}
-        titleBlue={financeData?.finance?.badge?.trim() || data?.page_sections?.finance?.badge?.trim() || t("financeSolutions.titleBlue")}
-        titleOrange={financeData?.finance?.title?.trim() || data?.page_sections?.finance?.title?.trim() || t("financeSolutions.titleOrange")}
-        description={financeData?.finance?.subtitle?.trim() || data?.page_sections?.finance?.subtitle?.trim() || t("financeSolutions.description")}
-        buttonText={financeData?.finance?.button_text?.trim() || data?.page_sections?.finance?.button_text?.trim() || t("financeSolutions.buttonText")}
-        buttonTo="/contact"
-        stats={
-          financeData?.stats?.length
-            ? financeData.stats
-            : data?.homepage_stats?.length
-              ? data.homepage_stats
-              : [
-                  { value: "+500", label: t("financeSolutions.stats.0.label") },
-                  { value: "+1000", label: t("financeSolutions.stats.1.label") },
-                  { value: "+50", label: t("financeSolutions.stats.2.label") },
-                ]
-        }
-        features={
-          financeData?.finance?.features?.length
-            ? financeData.finance.features
-            : data?.page_sections?.finance?.features?.length
-              ? data.page_sections.finance.features
-              : [
-                  t("financeSolutions.features.0"),
-                  t("financeSolutions.features.1"),
-                  t("financeSolutions.features.2"),
-                  t("financeSolutions.features.3"),
-                ]
-        }
-      />
-
       <BudgetCarsSection
         titleBlue={data?.page_sections?.budget?.badge?.trim() || t("budgetCars.titleBlue")}
         titleOrange={data?.page_sections?.budget?.title?.trim() || t("budgetCars.titleOrange")}
@@ -374,14 +305,15 @@ export default function Home() {
         ranges={mapFilterPricesToRanges(data?.filter_prices)}
       />
 
-      <BrandsSection
-        titleBlue={data?.page_sections?.brands?.badge?.trim() || t("brandsSection.titleBlue")}
-        titleOrange={data?.page_sections?.brands?.subtitle?.trim() || t("brandsSection.titleOrange")}
-        description={data?.page_sections?.brands?.description?.trim() || t("brandsSection.description")}
-        buttonText={data?.page_sections?.brands?.button_text?.trim() || t("brandsSection.buttonText")}
-        buttonTo="/brands"
-        brands={brands}
-        onSearchChange={setBrandSearch}
+      <FinanceSolutionsSection
+        titleBlue=""
+        titleOrange={data?.page_sections?.finance?.title?.trim() || t("financeSolutions.titleOrange")}
+        description=""
+        buttonText=""
+        buttonTo=""
+        stats={[]}
+        features={[]}
+        steps={data?.finance_steps || []}
       />
     </>
   );

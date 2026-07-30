@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import ContactCtaSection from "../components/ContactCtaSection";
@@ -14,6 +14,7 @@ export default function OffersPage() {
   const { t } = useTranslation();
   useSEO(t("nav.offers"), t("offersPage.hero.description"));
   const language = useLanguageStore((s) => s.language);
+  const [activeCategory, setActiveCategory] = useState<string>("all");
 
   const {
     data: offersResponse,
@@ -21,8 +22,8 @@ export default function OffersPage() {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["offers", language],
-    queryFn: ({ pageParam }) => getOffers(pageParam as number, 12),
+    queryKey: ["offers", language, activeCategory],
+    queryFn: ({ pageParam }) => getOffers(pageParam as number, 12, activeCategory),
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.meta.current_page < lastPage.meta.last_page
@@ -46,15 +47,12 @@ export default function OffersPage() {
         badgeText={hero?.badge || t("offersPage.hero.badge")}
         title={hero?.title || t("offersPage.hero.title")}
         description={hero?.subtitle || t("offersPage.hero.description")}
-        primaryButtonText={t("offersPage.hero.primaryButton")}
-        primaryButtonTo="/cars"
-        secondaryButtonText={t("offersPage.hero.secondaryButton")}
-        secondaryButtonTo="/finance-calculator"
       />
 
       <OffersGridSection
-        title={t("offersPage.grid.title")}
         offers={offers}
+        activeCategory={activeCategory}
+        onCategoryChange={setActiveCategory}
         loadMoreText={
           isFetchingNextPage
             ? t("blogPage.latestArticles.loading")
@@ -72,7 +70,6 @@ export default function OffersPage() {
         phoneText={t("allCarsPage.contactPhone")}
         phoneHref="tel:+966500000000"
         whatsappText={t("allCarsPage.contactWhatsapp")}
-        
         sectionBgColor="var(--brand-CTA-BG-color)"
       />
     </>

@@ -2,8 +2,10 @@
 
 namespace App\Services\Cache;
 
+use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\Setting;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class BlogCacheService extends BaseCacheService
@@ -32,10 +34,10 @@ class BlogCacheService extends BaseCacheService
         });
     }
 
-    public function rememberBlogCategories(): \Illuminate\Database\Eloquent\Collection
+    public function rememberBlogCategories(): Collection
     {
         return $this->remember('blog.categories', function () {
-            return \App\Models\BlogCategory::activeOrdered()
+            return BlogCategory::activeOrdered()
                 ->withCount('posts')
                 ->get();
         }, self::TTL_LONG);
@@ -53,7 +55,7 @@ class BlogCacheService extends BaseCacheService
             $heroSetting = Setting::where('key', 'store_blog_hero')->first();
 
             return $heroSetting ? $heroSetting->value : [
-                'title' => 'مدونة <span class="highlight">جي آر موتورز</span>',
+                'title' => 'مدونة <span class="highlight">زد</span>',
                 'subtitle' => 'تابع أحدث أخبار السيارات، النصائح، والمقالات الحصرية.',
                 'image' => null,
             ];

@@ -5,12 +5,14 @@ namespace App\Http\Controllers\CRM;
 use App\Http\Controllers\Controller;
 use App\Models\Testimonial;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class TestimonialController extends Controller
 {
     public function index()
     {
         $testimonials = Testimonial::all();
+
         return view('crm.settings.testimonials.index', compact('testimonials'));
     }
 
@@ -34,17 +36,22 @@ class TestimonialController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'review_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'review_video' => 'nullable|file|mimes:mp4,mov,ogg,qt,webm|max:20480',
         ]);
 
-        $data = $request->except(['image', 'review_image']);
+        $data = $request->except(['image', 'review_image', 'review_video']);
         $data['is_visible'] = $request->has('is_visible');
-        
+
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('testimonials', 'public');
         }
 
         if ($request->hasFile('review_image')) {
             $data['review_image'] = $request->file('review_image')->store('testimonials/reviews', 'public');
+        }
+
+        if ($request->hasFile('review_video')) {
+            $data['review_video'] = $request->file('review_video')->store('testimonials/videos', 'public');
         }
 
         Testimonial::create($data);
@@ -66,6 +73,7 @@ class TestimonialController extends Controller
     public function edit(string $id)
     {
         $testimonial = Testimonial::findOrFail($id);
+
         return view('crm.settings.testimonials.edit', compact('testimonial'));
     }
 
@@ -83,23 +91,31 @@ class TestimonialController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'review_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'review_video' => 'nullable|file|mimes:mp4,mov,ogg,qt,webm|max:20480',
         ]);
 
-        $data = $request->except(['image', 'review_image']);
+        $data = $request->except(['image', 'review_image', 'review_video']);
         $data['is_visible'] = $request->has('is_visible');
 
         if ($request->hasFile('image')) {
             if ($testimonial->image) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($testimonial->image);
+                Storage::disk('public')->delete($testimonial->image);
             }
             $data['image'] = $request->file('image')->store('testimonials', 'public');
         }
 
         if ($request->hasFile('review_image')) {
             if ($testimonial->review_image) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($testimonial->review_image);
+                Storage::disk('public')->delete($testimonial->review_image);
             }
             $data['review_image'] = $request->file('review_image')->store('testimonials/reviews', 'public');
+        }
+
+        if ($request->hasFile('review_video')) {
+            if ($testimonial->review_video) {
+                Storage::disk('public')->delete($testimonial->review_video);
+            }
+            $data['review_video'] = $request->file('review_video')->store('testimonials/videos', 'public');
         }
 
         $testimonial->update($data);
@@ -113,15 +129,19 @@ class TestimonialController extends Controller
     public function destroy(string $id)
     {
         $testimonial = Testimonial::findOrFail($id);
-        
+
         if ($testimonial->image) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($testimonial->image);
+            Storage::disk('public')->delete($testimonial->image);
         }
 
         if ($testimonial->review_image) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($testimonial->review_image);
+            Storage::disk('public')->delete($testimonial->review_image);
         }
-        
+
+        if ($testimonial->review_video) {
+            Storage::disk('public')->delete($testimonial->review_video);
+        }
+
         $testimonial->delete();
 
         return back()->with('success', __('تم حذف التوصية بنجاح'));

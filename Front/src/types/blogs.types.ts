@@ -23,6 +23,7 @@ export interface BlogPost {
   employee: BlogEmployee;
   categories: BlogCategory[];
   reading_time: number;
+  tag?: string | null;
 }
 
 export interface BlogDetails extends BlogPost {

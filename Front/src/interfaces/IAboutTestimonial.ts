@@ -5,5 +5,6 @@ export interface IAboutTestimonial {
   content: string;
   image: string | null;
   review_image: string | null;
+  review_video: string | null;
   rating: number;
 }

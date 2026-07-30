@@ -52,6 +52,25 @@
                                 @elseif($offer->ends_at && $offer->ends_at < now())
                                     <span class="badge bg-danger-subtle text-danger small">{{ __('منتهي') }}</span>
                                 @endif
+                                @if($offer->tag)
+                                    @php
+                                        $tagColors = [
+                                            'popular' => 'bg-info-subtle text-info',
+                                            'exclusive' => 'bg-warning-subtle text-warning',
+                                            'new' => 'bg-success-subtle text-success',
+                                            'limited' => 'bg-danger-subtle text-danger'
+                                        ];
+                                        $tagNames = [
+                                            'popular' => __('شائع'),
+                                            'exclusive' => __('حصري'),
+                                            'new' => __('جديد'),
+                                            'limited' => __('محدود')
+                                        ];
+                                    @endphp
+                                    <span class="badge {{ $tagColors[$offer->tag] ?? 'bg-light border' }} small">
+                                        {{ $tagNames[$offer->tag] ?? $offer->tag }}
+                                    </span>
+                                @endif
                             </div>
                         </div>
                         @if($offer->discount_percent)
@@ -158,6 +177,17 @@
                                     <label class="form-label fw-bold">{{ __('قسط خاص') }}</label>
                                     <input type="number" name="special_installment" class="form-control bg-light border-0" value="{{ $offer->special_installment }}">
                                 </div>
+                                
+                                <div class="col-md-12">
+                                    <label class="form-label fw-bold">{{ __('وسم العرض (Tag)') }}</label>
+                                    <select name="tag" class="form-select bg-light border-0">
+                                        <option value="">{{ __('بدون وسم') }}</option>
+                                        <option value="popular" {{ $offer->tag == 'popular' ? 'selected' : '' }}>{{ __('شائع') }}</option>
+                                        <option value="exclusive" {{ $offer->tag == 'exclusive' ? 'selected' : '' }}>{{ __('حصري') }}</option>
+                                        <option value="new" {{ $offer->tag == 'new' ? 'selected' : '' }}>{{ __('جديد') }}</option>
+                                        <option value="limited" {{ $offer->tag == 'limited' ? 'selected' : '' }}>{{ __('محدود') }}</option>
+                                    </select>
+                                </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold">{{ __('تاريخ البدء') }}</label>
@@ -261,6 +291,17 @@
                         <div class="col-md-4">
                             <label class="form-label fw-bold">{{ __('قسط شهري يبدأ من') }}</label>
                             <input type="number" name="special_installment" class="form-control bg-light border-0" placeholder="أقل قسط متاح">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">{{ __('وسم العرض (Tag)') }}</label>
+                            <select name="tag" class="form-select bg-light border-0">
+                                <option value="">{{ __('بدون وسم') }}</option>
+                                <option value="popular">{{ __('شائع') }}</option>
+                                <option value="exclusive">{{ __('حصري') }}</option>
+                                <option value="new">{{ __('جديد') }}</option>
+                                <option value="limited">{{ __('محدود') }}</option>
+                            </select>
                         </div>
 
                         <div class="col-md-6">

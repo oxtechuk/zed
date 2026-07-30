@@ -79,6 +79,17 @@
                                 <label class="form-label fw-bold small text-muted d-block text-start">{{ __('تغيير صورة التقييم / المحادثة') }}</label>
                                 <input type="file" name="review_image" class="form-control bg-light border-0 shadow-none" accept="image/*">
                             </div>
+
+                            <div class="mb-4 text-center">
+                                @if($testimonial->review_video)
+                                    <div class="mb-2 p-2 bg-light rounded-4 d-block border border-dashed">
+                                        <video src="{{ asset('storage/' . $testimonial->review_video) }}" class="rounded-3 object-fit-contain shadow-sm" style="max-width: 100%; max-height: 150px;" controls></video>
+                                    </div>
+                                    <label class="form-label fw-bold small text-muted d-block">{{ __('فيديو التقييم الحالي') }}</label>
+                                @endif
+                                <label class="form-label fw-bold small text-muted d-block text-start">{{ __('تغيير فيديو التقييم') }}</label>
+                                <input type="file" name="review_video" class="form-control bg-light border-0 shadow-none" accept="video/*">
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label fw-bold small text-muted">{{ __('التقييم (1-5 نجوم)') }}</label>
                                 <select name="rating" class="form-select bg-light border-0 shadow-none">

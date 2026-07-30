@@ -7,6 +7,7 @@ import DealerCtaSection from "../components/about/DealerCtaSection";
 import LocationsSection from "../components/about/LocationsSection";
 import PartnersSection from "../components/about/PartnersSection";
 import TestimonialsSection from "../components/about/TestimonialsSection";
+import MediaReviewsSection from "../components/about/MediaReviewsSection";
 import ContactCtaSection from "../components/ContactCtaSection";
 import { getAboutPageData } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
@@ -102,8 +103,14 @@ export default function AboutPage() {
       text: t.content,
       avatar: getImageUrl(t.image) || APP_IMAGES.AVATAR_PLACEHOLDER,
       rating: t.rating,
+      reviewImage: getImageUrl(t.review_image) || undefined,
+      reviewVideo: getImageUrl(t.review_video) || undefined,
     }));
   }, [aboutData]);
+
+  const mediaTestimonials = useMemo(() => {
+    return testimonials.filter((t) => t.reviewImage || t.reviewVideo);
+  }, [testimonials]);
 
   return (
     <>
@@ -117,6 +124,8 @@ export default function AboutPage() {
       />
 
       <AboutStorySection {...storySection} />
+
+      <MediaReviewsSection testimonials={mediaTestimonials} />
 
       <PartnersSection
         eyebrow={

@@ -16,6 +16,7 @@ export interface ISettingsData {
   favicon: string;
   site_name: string;
   footer_text: string;
+  footer_description?: string;
   contact: IContactInfo; 
   social_media: ISocialMediaItem[];
 }

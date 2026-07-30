@@ -6,7 +6,7 @@ export interface IOfferCategory {
 }
 
 export interface IOffersGridSectionProps {
-  title: string;
+  title?: string;
   offers: IOfferListCardProps[];
   categories?: IOfferCategory[];
   activeCategory?: string;

@@ -5,6 +5,15 @@ const STORAGE_PREFIX = `${API_ORIGIN}/storage/`;
 export function getImageUrl(path: string | null): string {
   if (!path) return "";
   if (path.startsWith("http://") || path.startsWith("https://")) {
+    try {
+      const url = new URL(path);
+      // Replace stored origin with current window origin for storage files
+      if (url.pathname.startsWith("/storage/")) {
+        return `${window.location.origin}${url.pathname}`;
+      }
+    } catch {
+      // ignore invalid URLs
+    }
     return path.replace(/([^:]\/)\//g, "$1");
   }
   return `${STORAGE_PREFIX}${path}`;

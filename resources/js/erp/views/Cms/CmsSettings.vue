@@ -267,8 +267,8 @@ onMounted(fetchSettings);
 
 <style scoped>
 .nav-tabs .nav-link { background: none; color: #666; }
-.nav-tabs .nav-link.active { border-bottom: 2px solid #EB5E281A !important; color: #EB5E281A !important; }
-.border-bottom-primary { border-bottom: 3px solid #EB5E281A; }
+.nav-tabs .nav-link.active { border-bottom: 2px solid #EDC98E1A !important; color: #EDC98E1A !important; }
+.border-bottom-primary { border-bottom: 3px solid #EDC98E1A; }
 .rounded-lg { border-radius: 12px; }
 .cursor-pointer { cursor: pointer; }
 .highlight { color: rgba(235, 94, 40, 1); }

@@ -10,7 +10,7 @@ class Testimonial extends Model
 {
     use HasTranslations;
 
-    protected $fillable = ['name', 'title', 'content', 'image', 'review_image', 'rating', 'is_visible'];
+    protected $fillable = ['name', 'title', 'content', 'image', 'review_image', 'review_video', 'rating', 'is_visible'];
 
     public $translatable = ['name', 'title', 'content'];
 
@@ -18,5 +18,6 @@ class Testimonial extends Model
         'is_visible' => 'boolean',
         'image' => AsImageUrl::class,
         'review_image' => AsImageUrl::class,
+        'review_video' => AsImageUrl::class,
     ];
 }

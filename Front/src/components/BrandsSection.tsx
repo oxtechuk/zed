@@ -28,12 +28,38 @@ export default function BrandsSection({
   searchPlaceholder,
   onCategoryChange,
   onSearchChange,
+  simple = false,
 }: IBrandsSectionProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const defaultCategories = useDefaultCategories(t);
   const resolvedCategories = categories ?? defaultCategories;
   const resolvedPlaceholder = searchPlaceholder ?? t("brandsSection.searchPlaceholder");
+
+  if (simple) {
+    return (
+      <section dir={i18n.dir()} className="w-full bg-[#FAFBFC] pb-10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-center gap-10 md:gap-14 border-b border-[#E5E9F0] pb-10">
+            {brands.map((brand) => (
+              <div
+                key={brand.id}
+                onClick={() => navigate(`/cars?brandId=${brand.id}`)}
+                className="cursor-pointer opacity-60 hover:opacity-100 transition-opacity flex items-center justify-center h-[50px] w-[90px]"
+                title={brand.name}
+              >
+                <img
+                  src={brand.logo}
+                  alt={brand.name}
+                  className="max-h-full max-w-full object-contain filter grayscale hover:grayscale-0 transition-all duration-300"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section dir={i18n.dir()} className="w-full bg-[#F0F2F5] py-16">

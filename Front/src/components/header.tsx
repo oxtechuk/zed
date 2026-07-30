@@ -1,7 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useLanguageStore } from "../store/language.store";
 import type { IHeaderProps } from "../interfaces/IHeaderProps";
-import Button from "./button";
 
 function isActivePath(path: string, currentPath: string): boolean {
   if (path === "/") return currentPath === "/";
@@ -19,10 +18,10 @@ export default function Header({
   const { pathname } = useLocation();
 
   return (
-    <header className="w-full bg-[#F3F6F8] border-b border-[#d9e1e8]">
+    <header className="w-full bg-white border-b border-[#E5E9F0] shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div
-          className="h-[70px] flex items-center justify-between gap-8"
+          className="h-[76px] flex items-center justify-between gap-6"
           dir={direction}
         >
           {/* Logo */}
@@ -30,21 +29,24 @@ export default function Header({
             <img
               src={logoSrc}
               alt={logoAlt}
-              className="w-[70px] h-auto object-contain"
+              className="h-[52px] w-auto object-contain"
               loading="lazy"
             />
           </NavLink>
 
           {/* Navigation */}
-          <nav className="hidden md:flex items-center justify-center gap-12 text-[#111827] text-lg font-medium">
+          <nav className="hidden md:flex items-center justify-center gap-7 lg:gap-9 text-[15px]">
             {navItems.map((item) => {
               const isActive = isActivePath(item.path, pathname);
               return (
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  className={`transition ${isActive ? "active-nav-link" : "text-[#111827]"}`}
-                  style={isActive ? { color: "var(--brand-primary-color)" } : undefined}
+                  className={`relative py-1 transition-colors ${
+                    isActive
+                      ? "text-[#0F172A] font-extrabold after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2.5px] after:bg-[#0F172A] after:rounded-full"
+                      : "text-[#64748B] hover:text-[#0F172A] font-bold"
+                  }`}
                 >
                   {item.label}
                 </NavLink>
@@ -52,8 +54,13 @@ export default function Header({
             })}
           </nav>
 
-          {/* CTA Button */}
-          <Button to={ctaPath}>{ctaText}</Button>
+          {/* CTA Button - Golden Amber Pill */}
+          <NavLink
+            to={ctaPath}
+            className="inline-flex h-[44px] items-center justify-center rounded-full bg-[#E5C287] px-7 text-[15px] font-extrabold text-[#0A1628] shadow-sm transition hover:bg-[#D8B478] hover:shadow"
+          >
+            {ctaText}
+          </NavLink>
         </div>
       </div>
     </header>

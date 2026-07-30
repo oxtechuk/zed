@@ -51,19 +51,17 @@ export default function MobileBottomNav() {
                   className={baseItemClass}
                 >
                   <div
-                    className={`transition-all duration-300 ${
-                      isActive
+                    className={`transition-all duration-300 ${isActive
                         ? "text-[var(--brand-primary-color)] scale-110 -translate-y-0.5"
                         : "text-[#9CA3AF] hover:text-slate-600"
-                    }`}
+                      }`}
                   >
                     <Icon size={22} strokeWidth={2} />
                   </div>
 
                   <span
-                    className={`text-[10px] font-bold mt-1 transition-all duration-300 ${
-                      isActive ? "text-[var(--brand-primary-color)]" : "text-[#9CA3AF]"
-                    }`}
+                    className={`text-[10px] font-bold mt-1 transition-all duration-300 ${isActive ? "text-[var(--brand-primary-color)]" : "text-[#9CA3AF]"
+                      }`}
                   >
                     {t(item.labelKey)}
                   </span>
@@ -78,19 +76,17 @@ export default function MobileBottomNav() {
             return (
               <NavLink key={item.to} to={item.to} className={baseItemClass}>
                 <div
-                  className={`transition-all duration-300 ${
-                    isActive
+                  className={`transition-all duration-300 ${isActive
                       ? "text-[var(--brand-primary-color)] scale-110 -translate-y-0.5"
                       : "text-[#9CA3AF] hover:text-slate-600"
-                  }`}
+                    }`}
                 >
                   <Icon size={22} strokeWidth={2} />
                 </div>
 
                 <span
-                  className={`text-[10px] font-bold mt-1 transition-all duration-300 ${
-                    isActive ? "text-[var(--brand-primary-color)]" : "text-[#9CA3AF]"
-                  }`}
+                  className={`text-[10px] font-bold mt-1 transition-all duration-300 ${isActive ? "text-[var(--brand-primary-color)]" : "text-[#9CA3AF]"
+                    }`}
                 >
                   {t(item.labelKey)}
                 </span>
@@ -112,21 +108,19 @@ export default function MobileBottomNav() {
       )}
 
       <div
-        className={`fixed top-0 bottom-0 z-[70] w-[75vw] max-w-[320px] bg-white shadow-2xl transition-transform duration-300 md:hidden ${
-          isRTL ? "right-0" : "left-0"
-        } ${
-          sidebarOpen
+        className={`fixed top-0 bottom-0 z-[70] w-[75vw] max-w-[320px] bg-white shadow-2xl transition-transform duration-300 md:hidden ${isRTL ? "right-0" : "left-0"
+          } ${sidebarOpen
             ? "translate-x-0"
             : isRTL
               ? "translate-x-full"
               : "-translate-x-full"
-        }`}
+          }`}
       >
         <div className="flex h-full flex-col">
           <div className="flex items-center justify-between px-5 pt-5 pb-3">
             <img
               src={getImageUrl(settings?.logo ?? null) || APP_IMAGES.LOGO}
-              alt="Knoz Cars"
+              alt="Zed Capital"
               className="h-20 w-auto object-contain"
               loading="lazy"
             />
@@ -150,11 +144,10 @@ export default function MobileBottomNav() {
                     key={link.to}
                     to={link.to}
                     onClick={() => setSidebarOpen(false)}
-                    className={`flex items-center gap-3 rounded-xl px-4 py-3.5 text-[15px] font-bold leading-none transition ${
-                      isActive
+                    className={`flex items-center gap-3 rounded-xl px-4 py-3.5 text-[15px] font-bold leading-none transition ${isActive
                         ? "bg-[var(--brand-primary-color)]/10 text-[var(--brand-primary-color)]"
                         : "text-[#07111F] hover:bg-[#F0F2F5]"
-                    }`}
+                      }`}
                   >
                     <LinkIcon size={20} strokeWidth={2} />
                     {t(link.labelKey)}

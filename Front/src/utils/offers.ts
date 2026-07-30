@@ -14,6 +14,8 @@ export function offerToCardProps(
     priceLabel: t("offersPage.grid.card.priceLabel"),
     price: offer.special_installment ?? offer.special_price ?? 0,
     priceUnit: t("offersPage.grid.card.priceUnit"),
+    tag: offer.tag ?? undefined,
+    ends_at: offer.ends_at ?? undefined,
     buttonText: t("offersPage.grid.card.buttonText"),
     buttonTo: `/cars?offerId=${offer.id}`,
   };

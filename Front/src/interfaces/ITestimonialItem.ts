@@ -5,4 +5,6 @@ export interface ITestimonialItem {
   text: string;
   avatar: string;
   rating: number;
+  reviewImage?: string;
+  reviewVideo?: string;
 }

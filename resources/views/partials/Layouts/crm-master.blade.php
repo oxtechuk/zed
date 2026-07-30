@@ -29,7 +29,7 @@
 
     <style>
         :root {
-            --crm-red: #299BE0;
+            --crm-red: #16254F;
             --crm-red-dark: #1a7cb5;
             --crm-red-light: rgba(41, 155, 224, 0.08);
             --crm-sidebar-width: 220px;

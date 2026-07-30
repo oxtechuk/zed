@@ -3,10 +3,11 @@ import api from "./http";
 
 export async function getBlogs(
   page = 1,
-  perPage = 6
+  perPage = 6,
+  tag?: string
 ): Promise<BlogApiResponse> {
   const response = await api.get<BlogApiResponse>("store/blog", {
-    params: { page, per_page: perPage },
+    params: { page, per_page: perPage, tag: tag === "all" ? undefined : tag },
   });
   return response.data;
 }

@@ -33,6 +33,8 @@ export function postToCardProps(
     category:
       post.categories.map((c) => c.name).join(", ") ||
       t("blogPage.hero.featuredPost.category"),
+    categorySlug:
+      post.categories.map((c) => c.slug).join(", "),
     date: formatBlogDate(post.published_at, language),
     readTime: formatBlogReadTime(post.reading_time, language),
     title: post.title || t("blogPage.hero.featuredPost.title"),
@@ -44,6 +46,7 @@ export function postToCardProps(
     authorImage:
       getImageUrl(post.employee.avatar) || "/images/blogs/author.png",
     readMoreTo: `/blog/${post.slug}`,
+    tag: post.tag ?? undefined,
   };
 }
 

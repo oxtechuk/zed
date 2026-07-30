@@ -13,4 +13,10 @@ export interface IFinanceSolutionsSectionProps {
   stats: IStatItem[];
   features: string[];
   className?: string;
+  steps?: {
+    number: string;
+    title: string;
+    description: string;
+    icon: string;
+  }[];
 }

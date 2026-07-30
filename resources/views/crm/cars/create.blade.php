@@ -404,7 +404,7 @@
     background: var(--crm-red-light);
     border-color: var(--crm-red);
     color: var(--crm-red);
-    box-shadow: 0 4px 12px #EB5E281A
+    box-shadow: 0 4px 12px #EDC98E1A
 }
 .check-icon {
     font-size: 16px;
@@ -463,7 +463,7 @@ drop.addEventListener('drop', e => {
 // ===== Color Rows =====
 let colorCount = 0;
 
-function addColorRow(name = '', hex = '#299BE0', imgSrc = '') {
+function addColorRow(name = '', hex = '#16254F', imgSrc = '') {
     const idx = colorCount++;
     const noMsg = document.getElementById('no-colors-msg');
     if (noMsg) noMsg.style.display = 'none';

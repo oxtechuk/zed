@@ -17,4 +17,5 @@ export interface IBrandsSectionProps {
   searchPlaceholder?: string;
   onCategoryChange?: (value: string) => void;
   onSearchChange?: (value: string) => void;
+  simple?: boolean;
 }

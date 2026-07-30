@@ -3,10 +3,11 @@ import api from "./http";
 
 export async function getOffers(
   page = 1,
-  perPage = 12
+  perPage = 12,
+  tag?: string
 ): Promise<OffersApiResponse> {
   const response = await api.get<OffersApiResponse>("store/offers", {
-    params: { page, per_page: perPage },
+    params: { page, per_page: perPage, tag },
   });
   return response.data;
 }

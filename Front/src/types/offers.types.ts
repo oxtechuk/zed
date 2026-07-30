@@ -4,6 +4,7 @@ export interface OfferData {
   description: string;
   image: string | null;
   discount_percent: number | null;
+  tag?: string;
   special_price: number | null;
   special_installment: number | null;
   starts_at: string;

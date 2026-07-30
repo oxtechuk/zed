@@ -95,6 +95,22 @@
                     </div>
                 </div>
 
+                {{-- وسم المقالة --}}
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                    <div class="card-header bg-white border-0 pt-4 px-4">
+                        <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-bookmark-star text-info me-2"></i> {{ __('وسم المقالة') }}</h6>
+                    </div>
+                    <div class="card-body p-4 pt-2">
+                        <select name="tag" class="form-select bg-light border-0 shadow-none">
+                            <option value="">{{ __('بدون وسم') }}</option>
+                            <option value="new" {{ old('tag') == 'new' ? 'selected' : '' }}>{{ __('جديد') }}</option>
+                            <option value="popular" {{ old('tag') == 'popular' ? 'selected' : '' }}>{{ __('شائع') }}</option>
+                            <option value="exclusive" {{ old('tag') == 'exclusive' ? 'selected' : '' }}>{{ __('حصري') }}</option>
+                            <option value="limited" {{ old('tag') == 'limited' ? 'selected' : '' }}>{{ __('محدود') }}</option>
+                        </select>
+                    </div>
+                </div>
+
                 {{-- الصورة البارزة --}}
                 <div class="card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
                     <div class="card-header bg-white border-0 pt-4 px-4">

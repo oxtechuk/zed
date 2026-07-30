@@ -67,6 +67,10 @@
                                 <input type="file" name="review_image" class="form-control bg-light border-0 shadow-none" accept="image/*">
                             </div>
                             <div class="mb-3">
+                                <label class="form-label fw-bold small text-muted">{{ __('فيديو التقييم') }}</label>
+                                <input type="file" name="review_video" class="form-control bg-light border-0 shadow-none" accept="video/*">
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label fw-bold small text-muted">{{ __('التقييم (1-5 نجوم)') }}</label>
                                 <select name="rating" class="form-select bg-light border-0 shadow-none">
                                     <option value="5">5 {{ __('نجوم') }}</option>

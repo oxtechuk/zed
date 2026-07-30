@@ -10,4 +10,5 @@ export interface IBlogCardProps {
   authorRole: string;
   authorImage: string;
   readMoreTo: string;
+  tag?: string;
 }

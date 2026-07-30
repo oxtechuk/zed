@@ -87,7 +87,7 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small text-muted">{{ __('اسم الموقع — عربي') }}</label>
-                                        <input type="text" name="site_name[ar]" class="form-control bg-light border-0" value="{{ $settings['site_name']['ar'] ?? '' }}" placeholder="مثال: كنوز كار">
+                                        <input type="text" name="site_name[ar]" class="form-control bg-light border-0" value="{{ $settings['site_name']['ar'] ?? '' }}" placeholder="مثال: zed Capital">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small text-muted">{{ __('اسم الموقع — إنجليزي') }}</label>
@@ -1013,7 +1013,7 @@
                         <h5 class="fw-bold mb-2 text-white">{{ __('حفظ التغييرات') }}</h5>
                         <p class="small text-white opacity-50 mb-4">{{ __('تأكد من مراجعة جميع الأقسام قبل الحفظ.') }}</p>
                         @can('manage-settings')
-                        <button type="submit" class="btn w-100 py-3 fw-bold rounded-3" style="background:#EB5E281A;color:#fff;">
+                        <button type="submit" class="btn w-100 py-3 fw-bold rounded-3" style="background:#EDC98E1A;color:#fff;">
                             <i class="bi bi-check2-circle me-2"></i> {{ __('تحديث الإعدادات') }}
                         </button>
                         @endcan

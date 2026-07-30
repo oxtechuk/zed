@@ -2,13 +2,12 @@ import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import AllCarsHero from "../components/AllCarsHero";
-import AllCarsFilterBar from "../components/AllCarsFilterBar";
-import CarsSidebarFilter from "../components/CarsSidebarFilter";
-import CarsResultsGrid from "../components/CarsResultsGrid";
+import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { APP_IMAGES, getImageUrl } from "../constants/app-images";
-import { getHomePageData, getCarsMeta } from "../services/api";
+import CarsResultsGrid from "../components/CarsResultsGrid";
+import { getCarsMeta, getCarTypes } from "../services/api/cars.service";
 import { getCars } from "../services/api/cars.service";
+import { getHomePageData } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
 import type { CarCardProps } from "../components/CarCard";
 import { formatPrice } from "../utils/format";
@@ -16,9 +15,8 @@ import { useSEO } from "../utils/useSEO";
 import type { FilterValues, CarsQueryParams } from "../types/cars.types";
 import { DEFAULT_FILTER_VALUES } from "../types/cars.types";
 import type { CarItem } from "../types/home.types";
-import ContactCtaSection from "../components/ContactCtaSection";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 9;
 
 const SPEC_KEY_MAP: Record<string, string> = {
   "Fuel Type": "fuel",
@@ -75,12 +73,8 @@ function mapCarToCardProps(car: CarItem): CarCardProps | null {
   }
 }
 
-function unique<T>(arr: T[]): T[] {
-  return arr.filter((v, i, a) => a.indexOf(v) === i);
-}
-
 export default function AllCarsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   useSEO(t("nav.cars"), t("allCarsHero.description"));
   const language = useLanguageStore((s) => s.language);
   const [searchParams] = useSearchParams();
@@ -98,34 +92,31 @@ export default function AllCarsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const { data: carTypes } = useQuery({
+    queryKey: ["car-types"],
+    queryFn: getCarTypes,
+    staleTime: 5 * 60 * 1000,
+  });
+
   const [filters, setFilters] = useState<FilterValues>(DEFAULT_FILTER_VALUES);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchValue, setSearchValue] = useState("");
+  const [_sortAsc, setSortAsc] = useState(true);
+
+  const typeFilters = [
+    { label: t("allCarsFilterBar.all"), value: "all" },
+    ...(carTypes?.map((ct) => ({ label: ct.name, value: String(ct.id) })) ?? []),
+  ];
 
   function buildParams(): CarsQueryParams {
     const params: CarsQueryParams = {};
-
-    if (filters.brandId !== null) {
-      params.brands = [filters.brandId];
-    }
-    if (filters.type !== "all") {
-      params.type = Number(filters.type);
-    }
-    if (filters.year) {
-      params.year = filters.year;
-    }
-    if (filters.priceMin > 0) {
-      params.min_price = filters.priceMin;
-    }
-    if (filters.priceMax < 200000) {
-      params.max_price = filters.priceMax;
-    }
-    if (filters.search) {
-      params.search = filters.search;
-    }
-    if (offerId) {
-      params.offer_id = Number(offerId);
-    }
-
+    if (filters.brandId !== null) params.brands = [filters.brandId];
+    if (filters.type !== "all") params.type = Number(filters.type);
+    if (filters.year) params.year = filters.year;
+    if (filters.priceMin > 0) params.min_price = filters.priceMin;
+    if (filters.priceMax < 200000) params.max_price = filters.priceMax;
+    if (filters.search) params.search = filters.search;
+    if (offerId) params.offer_id = Number(offerId);
     return params;
   }
 
@@ -142,29 +133,18 @@ export default function AllCarsPage() {
         .map(mapCarToCardProps)
         .filter(Boolean) as CarCardProps[];
     }
-
     const fallback = homeData?.featured_cars ?? homeData?.bento_cars ?? [];
     return fallback.map(mapCarToCardProps).filter(Boolean) as CarCardProps[];
   }, [carsResponse, homeData?.featured_cars, homeData?.bento_cars]);
 
-  const sidebarData = useMemo(() => {
-    const transmissions = unique(
-      allCars.map((c) => c.transmission).filter(Boolean),
-    );
-    const fuelTypes = unique(allCars.map((c) => c.fuelType).filter(Boolean));
-    return { transmissions, fuelTypes };
-  }, [allCars]);
-
   const filteredCars = useMemo(() => {
     let result = allCars.slice();
-
     if (filters.transmission !== "all") {
       result = result.filter((c) => c.transmission === filters.transmission);
     }
     if (filters.fuelType !== "all") {
       result = result.filter((c) => c.fuelType === filters.fuelType);
     }
-
     return result;
   }, [allCars, filters]);
 
@@ -175,88 +155,129 @@ export default function AllCarsPage() {
     safePage * PAGE_SIZE,
   );
 
-  const handleFilterChange = (newFilters: FilterValues) => {
-    setFilters(newFilters);
+  const handleTypeFilter = (value: string) => {
+    setFilters((prev) => ({ ...prev, type: value }));
     setCurrentPage(1);
   };
 
+  const handleSearch = (value: string) => {
+    setSearchValue(value);
+    setFilters((prev) => ({ ...prev, search: value }));
+    setCurrentPage(1);
+  };
+
+  // Resolve page title/breadcrumb from API or fallback
+  const pageTitle =
+    carsMeta?.hero_title_line1?.trim() ||
+    carsMeta?.hero_title_line2_highlight?.trim() ||
+    t("nav.cars");
+
+  const breadcrumb =
+    carsMeta?.hero_badge?.trim() || t("allCarsPage.breadcrumb", { defaultValue: "معرض السيارات" });
+
   return (
-    <main>
-      <AllCarsHero
-        offerImage={
-          carsMeta?.hero_slides?.[0]?.image
-            ? getImageUrl(carsMeta.hero_slides[0].image)
-            : APP_IMAGES.ALL_CARS_OFFER_IMAGE
-        }
-        badge={carsMeta?.hero_badge?.trim()}
-        titleLine1={carsMeta?.hero_title_line1?.trim()}
-        titleLine2Prefix={carsMeta?.hero_title_line2_prefix?.trim()}
-        titleLine2Highlight={carsMeta?.hero_title_line2_highlight?.trim()}
-        description={carsMeta?.hero_description?.trim()}
-        stats={carsMeta?.homepage_stats}
-        primaryButtonText={t("allCarsHero.button1")}
-        primaryButtonTo="/offers"
-      />
-
-      <AllCarsFilterBar
-        activeFilter={filters.type}
-        onFilterChange={(v) =>
-          handleFilterChange({ ...filters, type: v, brandId: filters.brandId })
-        }
-        onSearchChange={(v) => handleFilterChange({ ...filters, search: v })}
-      />
-
-      {/* Mobile filter trigger */}
-      <div className="mx-auto max-w-7xl px-4 pb-4 pt-2 sm:px-6 lg:hidden">
-        <CarsSidebarFilter
-          transmissions={sidebarData.transmissions}
-          fuelTypes={sidebarData.fuelTypes}
-          filters={filters}
-          onFilterChange={handleFilterChange}
-        />
-      </div>
-
-      <section className="mx-auto flex max-w-7xl items-start gap-6 px-4 py-6 sm:px-6 lg:px-8">
-        {/* Desktop sidebar */}
-        <div className="hidden shrink-0 lg:block">
-          <CarsSidebarFilter
-            transmissions={sidebarData.transmissions}
-            fuelTypes={sidebarData.fuelTypes}
-            filters={filters}
-            onFilterChange={handleFilterChange}
-          />
-        </div>
-
-        {/* Main content */}
-        <div className="min-w-0 flex-1">
-          {pagedCars.length > 0 ? (
-            <CarsResultsGrid
-              cars={pagedCars}
-              currentPage={safePage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          ) : (
-            <div className="py-20 text-center">
-              <p className="text-lg font-medium text-gray-400">
-                {t("allCarsPage.noCarsMatch")}
-              </p>
-            </div>
-          )}
+    <main dir={i18n.dir()} className="min-h-screen bg-[#F0F2F5]">
+      {/* ── Page Header ── */}
+      <section className="bg-white px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <p className="mb-1 text-sm text-[#9CA3AF]">{breadcrumb}</p>
+          <h1 className="text-3xl font-bold text-[#111827] sm:text-4xl">
+            {pageTitle}
+          </h1>
         </div>
       </section>
 
-      <ContactCtaSection
-        badgeText={t("allCarsPage.contactBadge")}
-        titleWhite={t("allCarsPage.contactTitleWhite")}
-        titleOrange={t("allCarsPage.contactTitleOrange")}
-        description={t("allCarsPage.contactDescription")}
-        phoneText={t("allCarsPage.contactPhone")}
-        phoneHref="tel:+966500000000"
-        whatsappText={t("allCarsPage.contactWhatsapp")}
-        
-        sectionBgColor="var(--brand-CTA-BG-color)"
-      />
+      {/* ── Filter Bar ── */}
+      <section className="sticky top-[35px] z-30 border-b border-[#DDE3EA] bg-white shadow-sm">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          {/* Row 1: search + sort + filter */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            {/* Search */}
+            <div className="relative w-full sm:max-w-[380px]">
+              <input
+                type="text"
+                value={searchValue}
+                placeholder={t("allCarsFilterBar.searchPlaceholder")}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="h-[46px] w-full rounded-full border border-[#D1D5DB] bg-white px-5 pr-12 text-[14px] text-[#111827] outline-none placeholder:text-[#9CA3AF] focus:border-[var(--brand-primary-color)] focus:ring-2 focus:ring-[rgba(41,155,224,0.15)]"
+              />
+              <Search
+                size={18}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9CA3AF]"
+              />
+            </div>
+
+            {/* Sort + Filter buttons */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="flex h-[46px] items-center gap-2 rounded-[10px] border border-[#D1D5DB] bg-white px-4 text-[14px] font-medium text-[#374151] transition hover:border-[var(--brand-primary-color)] hover:text-[var(--brand-primary-color)]"
+                onClick={() => setSortAsc((prev) => !prev)}
+              >
+                <span>{t("allCarsPage.sort", { defaultValue: "ترتيب حسب" })}</span>
+                <ChevronDown size={16} />
+              </button>
+
+              <button
+                type="button"
+                className="flex h-[46px] items-center gap-2 rounded-[10px] border border-[#D1D5DB] bg-white px-4 text-[14px] font-medium text-[#374151] transition hover:border-[var(--brand-primary-color)] hover:text-[var(--brand-primary-color)]"
+              >
+                <SlidersHorizontal size={16} />
+                <span>{t("allCarsPage.filterBtn", { defaultValue: "المصادر" })}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Row 2: type tabs + count */}
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap gap-2">
+              {typeFilters.map((filter) => {
+                const isActive = filter.value === filters.type;
+                return (
+                  <button
+                    key={filter.value}
+                    type="button"
+                    onClick={() => handleTypeFilter(filter.value)}
+                    className={`h-[36px] rounded-[8px] px-5 text-[13px] font-semibold transition ${
+                      isActive
+                        ? "bg-[#111827] text-white"
+                        : "bg-[#F3F4F6] text-[#5B6470] hover:bg-[#111827] hover:text-white"
+                    }`}
+                  >
+                    {filter.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <span className="text-[13px] text-[#6B7280]">
+              {filteredCars.length}{" "}
+              {t("allCarsPage.carsCount", { defaultValue: "سيارة" })}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Cars Grid ── */}
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {pagedCars.length > 0 ? (
+          <CarsResultsGrid
+            cars={pagedCars}
+            currentPage={safePage}
+            totalPages={totalPages}
+            onPageChange={(p) => {
+              setCurrentPage(p);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          />
+        ) : (
+          <div className="py-24 text-center">
+            <p className="text-lg font-medium text-gray-400">
+              {t("allCarsPage.noCarsMatch")}
+            </p>
+          </div>
+        )}
+      </section>
     </main>
   );
 }
