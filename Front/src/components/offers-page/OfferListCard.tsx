@@ -34,9 +34,8 @@ export default function OfferListCard({
       <div className="relative h-[210px] w-full overflow-hidden bg-gray-50">
         {tagLabel && (
           <span
-            className={`absolute top-4 ${
-              isRtl ? "right-4" : "left-4"
-            } z-10 bg-[#FF9E3D] text-[#07111F] text-xs font-black px-3.5 py-1.5 rounded-full shadow-sm`}
+            className={`absolute top-4 ${isRtl ? "right-4" : "left-4"
+              } z-10 bg-[#EDC98E] text-[#07111F] text-xs font-black px-3.5 py-1.5 rounded-full shadow-sm`}
           >
             {tagLabel}
           </span>
@@ -51,7 +50,7 @@ export default function OfferListCard({
 
       {/* Content details */}
       <div className="p-6 flex flex-col flex-grow">
-        <h3 className="text-[18px] md:text-[20px] font-extrabold leading-[1.4] text-[#07111F] hover:text-[#FF9E3D] transition">
+        <h3 className="text-[18px] md:text-[20px] font-extrabold leading-[1.4] text-[#07111F] hover:text-[#EDC98E] transition">
           {title}
         </h3>
 
@@ -89,7 +88,7 @@ export default function OfferListCard({
         {/* Full-width Call to Action Button */}
         <NavLink
           to={buttonTo}
-          className="w-full inline-flex h-[46px] items-center justify-center rounded-[12px] bg-[#0C1A30] text-white font-extrabold text-sm shadow-sm transition duration-200 hover:bg-[#FF9E3D] hover:text-[#07111F] hover:scale-[1.01] mt-5"
+          className="w-full inline-flex h-[46px] items-center justify-center rounded-[12px] bg-[#16254F] text-white font-extrabold text-sm shadow-sm transition duration-200 hover:bg-[#EDC98E] hover:text-[#07111F] hover:scale-[1.01] mt-5"
         >
           {t("offersPage.grid.card.benefit")}
         </NavLink>

@@ -1,60 +1,100 @@
 import { useTranslation } from "react-i18next";
-import { Trash2 } from "lucide-react";
-import { formatPrice } from "../../utils/format";
+import { X } from "lucide-react";
 import { APP_IMAGES, getImageUrl } from "../../constants/app-images";
 import type { ICompareCarCardProps } from "../../interfaces/ICompareCarCardProps";
 
+const SPEC_KEY_MAP: Record<string, string> = {
+  "Fuel Type": "fuel",
+  Transmission: "gearbox",
+  seats: "seats",
+};
+
+function getSpecValue(specs: any, label: string): string {
+  if (Array.isArray(specs)) {
+    const spec = specs.find((s) => "label" in s && s.label === label);
+    const v = spec?.value;
+    return v != null && typeof v === "string" ? v : "";
+  }
+  if (specs && typeof specs === "object") {
+    const key = SPEC_KEY_MAP[label];
+    const v = key ? (specs as Record<string, unknown>)[key] : undefined;
+    return v != null && typeof v === "string" ? v : "";
+  }
+  return "";
+}
+
 export default function CompareCarCard({
   car,
+  label,
   onRemove,
 }: ICompareCarCardProps) {
-  const { t, i18n } = useTranslation();
-  const cashPrice = car.current_price ?? car.cash_price ?? 0;
-  const monthly = car.min_installment ?? 0;
+  const { i18n } = useTranslation();
+
+  const fuelType = getSpecValue(car.specs, "Fuel Type") || car.specs["fuel"] || "بنزين";
+  const transmission = getSpecValue(car.specs, "Transmission") || car.specs["gearbox"] || "أوتوماتيك";
+  const seats = getSpecValue(car.specs, "seats") || car.specs["seats"] || "5";
+  const displaySeats = String(seats).includes("مقاعد") ? seats : `${seats} مقاعد`;
+
+  // Specs array for bottom row inside the card
+  const specList = [
+    transmission,
+    fuelType,
+    displaySeats,
+  ].filter(Boolean);
 
   return (
-    <div dir={i18n.dir()} className="overflow-hidden rounded-2xl border border-[#e5eaf1] bg-white shadow-lg">
-      <div className="flex h-[190px] items-center justify-center bg-[#f6f8fb] p-6">
+    <div
+      dir={i18n.dir()}
+      className="relative overflow-hidden rounded-[24px] border border-gray-200 bg-white shadow-xs p-3 transition-all duration-300 hover:shadow-md"
+    >
+      {/* "الأكثر طلباً" Tag - Top Right */}
+      <div className="absolute top-5 end-5 z-10 rounded-lg bg-[#FFF4E4] border border-[#FFE4D6]/30 px-3 py-1 text-[11px] font-black text-[#D97706]">
+        الأكثر طلباً
+      </div>
+
+      {/* Close/Remove Button - Top Left */}
+      {onRemove && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className="absolute top-5 start-5 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white text-gray-400 shadow-sm border border-gray-100 hover:text-gray-700 transition"
+          aria-label="Remove car"
+        >
+          <X size={15} strokeWidth={2.5} />
+        </button>
+      )}
+
+      {/* Image Block */}
+      <div className="flex h-[180px] items-center justify-center p-6 mt-4 select-none">
         <img
           src={getImageUrl(car.main_image) || APP_IMAGES.CAR_PLACEHOLDER}
           alt={car.name}
-          className="h-full w-full object-contain"
+          className="h-full w-full object-contain pointer-events-none"
           loading="lazy"
         />
       </div>
 
-      <div className="px-[18px] pb-5 pt-[22px]">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <h3 className="m-0 text-base font-extrabold text-[#142b63]">
-            {car.brand?.name} {car.name}
-          </h3>
+      {/* Bottom Half - Dark Navy Spec Details Panel */}
+      <div className="bg-[#0F172A] text-white rounded-[20px] p-5 mt-2 text-start">
+        {label && (
+          <span className="text-[11px] font-black text-[#E5C287] uppercase tracking-wider block mb-1">
+            {label}
+          </span>
+        )}
+        <h3 className="text-[18px] font-black text-white leading-tight truncate mb-4" title={`${car.brand?.name} ${car.name}`}>
+          {car.brand?.name} {car.name}
+        </h3>
 
-          {onRemove && (
-            <button
-              type="button"
-              onClick={onRemove}
-              className="inline-flex h-9 cursor-pointer items-center gap-[6px] rounded-[10px] border border-[#ffb9a5] bg-[#fff5f1] px-[14px] text-[13px] text-[#ff5b2e]"
+        {/* 3 Spec Pills Inline Row */}
+        <div className="flex items-center gap-2">
+          {specList.map((spec, i) => (
+            <span
+              key={i}
+              className="flex-1 bg-white/10 px-2.5 py-2 rounded-xl text-[12px] font-extrabold text-center text-white/90 truncate"
             >
-              <Trash2 size={14} />
-              {t("comparePage.remove")}
-            </button>
-          )}
-        </div>
-
-        <div className="grid grid-cols-2 gap-[14px]">
-          <div className="flex min-h-[78px] flex-col justify-center rounded-[14px] border border-[#ffb9a5] bg-[#fff7f3] p-[14px] text-[#ff5b2e]">
-            <span className="mb-[6px] text-[13px]">{t("comparePage.monthlyInstallment")}</span>
-            <strong className="text-[22px] font-black leading-none">
-              {formatPrice(monthly, "#ff5b2e")}
-            </strong>
-          </div>
-
-          <div className="flex min-h-[78px] flex-col justify-center rounded-[14px] border border-[#bdcdf1] bg-[#f7f9ff] p-[14px] text-[#0068ff]">
-            <span className="mb-[6px] text-[13px]">{t("comparePage.cashPrice")}</span>
-            <strong className="text-[22px] font-black leading-none">
-              {formatPrice(cashPrice, "#0068ff")}
-            </strong>
-          </div>
+              {spec}
+            </span>
+          ))}
         </div>
       </div>
     </div>

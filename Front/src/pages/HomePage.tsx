@@ -103,16 +103,22 @@ function mapFilterPricesToRanges(prices?: FilterPrice[]): IBudgetRange[] | undef
 const getFallbackOffers = (t: (key: string) => string): IOfferCardProps[] => [
   {
     image: APP_IMAGES.OFFER1,
+    title: "عرض اليوم الوطني السعودي",
+    description: "2026",
     buttonText: t("homePage.fallbackOfferButton"),
     buttonTo: "/cars?offerId=1",
   },
   {
     image: APP_IMAGES.OFFER1,
+    title: "تمويل سيارات ميسر وبدون دفعة أولى",
+    description: "2026",
     buttonText: t("homePage.fallbackOfferButton"),
     buttonTo: "/cars?offerId=2",
   },
   {
     image: APP_IMAGES.OFFER1,
+    title: "عرض استيراد السيارات الفاخرة",
+    description: "2026",
     buttonText: t("homePage.fallbackOfferButton"),
     buttonTo: "/cars?offerId=3",
   },
@@ -275,6 +281,7 @@ export default function Home() {
             ? data.active_offers.map((o) => ({
                 image: getImageUrl(o.image) || APP_IMAGES.OFFER1,
                 title: o.title,
+                description: o.description || "2026",
                 buttonText: t("homePage.fallbackOfferButton"),
                 buttonTo: `/cars?offerId=${o.id}`,
               }))

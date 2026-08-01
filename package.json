@@ -10,6 +10,7 @@
         "hot": "mix watch --hot",
         "prod": "npm run production",
         "production": "mix --production",
+        "build": "npm run build --prefix Front",
         "front:install": "npm install --prefix Front",
         "front:dev": "npm run dev --prefix Front",
         "front:build": "npm run build --prefix Front"

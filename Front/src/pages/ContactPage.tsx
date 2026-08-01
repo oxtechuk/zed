@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import ContactUsSection from "../components/contact-us/ContactUsSection";
 import FaqSection from "../components/contact-us/FaqSection";
-import ContactCtaSection from "../components/ContactCtaSection";
 import { submitContactForm, getFaqs } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
 import { useSEO } from "../utils/useSEO";
@@ -66,17 +65,6 @@ export default function ContactPage() {
         faqs={faqs ?? []}
       />
 
-      <ContactCtaSection
-        badgeText={t("allCarsPage.contactBadge")}
-        titleWhite={t("allCarsPage.contactTitleWhite")}
-        titleOrange={t("allCarsPage.contactTitleOrange")}
-        description={t("allCarsPage.contactDescription")}
-        phoneText={t("allCarsPage.contactPhone")}
-        phoneHref="tel:+966500000000"
-        whatsappText={t("allCarsPage.contactWhatsapp")}
-        
-        sectionBgColor="var(--brand-CTA-BG-color)"
-      />
     </>
   );
 }

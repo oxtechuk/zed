@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguageStore } from "../store/language.store";
 import { getImageUrl } from "../constants/app-images";
 import type { IHomeHeroProps } from "../interfaces/IHomeHeroProps";
+import frameHero from "../assets/Framehero.svg";
 
 export default function HomeHero({
   slides = [],
@@ -121,27 +122,49 @@ export default function HomeHero({
 
         {/* ── Promo Cards Row (Triple column banner) ── */}
         {promoCards.length > 0 && (
-          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
             {promoCards.map((card, idx) => {
               const cardImg = getImageUrl(card.image);
               return (
                 <div
                   key={idx}
                   onClick={() => navigate(card.button?.url || "/cars")}
-                  className="relative cursor-pointer overflow-hidden rounded-[20px] shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 bg-[#051023] h-[160px] md:h-[180px] w-full"
+                  className="relative cursor-pointer transition-all duration-300 hover:-translate-y-1.5 w-full aspect-[403/320] max-w-[340px] sm:max-w-[380px] md:max-w-[400px] mx-auto select-none"
                   style={{
-                    backgroundImage: `url(${cardImg})`,
-                    backgroundSize: "cover",
+                    backgroundImage: `url(${frameHero})`,
+                    backgroundSize: "contain",
                     backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
                   }}
                 >
-                  {/* Subtle inner overlay for text legibility */}
-                  <div className="absolute inset-0 bg-black/10 hover:bg-black/20 transition-colors" />
+                  {/* Text Details at the top */}
+                  <div className="absolute top-[32px] left-0 right-0 px-6 text-center text-white">
+                    {card.badge && (
+                      <span className="mb-2 inline-block rounded-full bg-[#FFF4E4] border border-[#FFE4D6]/20 px-3 py-1 text-[11px] font-black text-[#D97706]">
+                        {card.badge}
+                      </span>
+                    )}
+                    <h3 className="text-[17px] md:text-[19px] font-black leading-tight text-white">
+                      {card.title}
+                    </h3>
+                    <p className="mt-1 text-[11px] md:text-[12px] text-white/80 max-w-[260px] mx-auto line-clamp-2">
+                      {card.subtitle}
+                    </p>
+                  </div>
 
-                  {/* If there's an explicit action button or overlay text */}
-                  <div className="absolute bottom-4 right-4 z-10">
+                  {/* Floating Image in the middle */}
+                  <div className="absolute bottom-[60px] left-0 right-0 flex justify-center px-4">
+                    <img
+                      src={cardImg}
+                      alt={card.title}
+                      className="h-[95px] md:h-[105px] w-auto object-contain drop-shadow-md select-none pointer-events-none transition-transform duration-300 hover:scale-105"
+                    />
+                  </div>
+
+                  {/* Action Button centered in the bottom notch */}
+                  <div className="absolute bottom-[22px] left-0 right-0 flex justify-center">
                     {card.button?.text && (
-                      <span className="rounded-full bg-[#0F1E36] px-5 py-1.5 text-[12px] font-bold text-white shadow hover:bg-[#1C2E4D]">
+                      <span className="rounded-xl bg-[#0A1628] px-7 py-2.5 text-[12.5px] font-black text-white hover:bg-[#1E293B] shadow-sm transition-colors whitespace-nowrap active:scale-95">
                         {card.button.text}
                       </span>
                     )}

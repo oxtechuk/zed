@@ -17,4 +17,11 @@ export interface ICarDetailsHeroProps {
   colors: ICarColor[];
   orderTo: string;
   financeTo: string;
+  fuelType?: string;
+  transmission?: string;
+  seats?: string;
+  horsepower?: string;
+  type?: string;
+  year?: string;
+  brandName?: string;
 }

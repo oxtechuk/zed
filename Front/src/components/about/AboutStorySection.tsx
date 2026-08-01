@@ -8,30 +8,32 @@ export default function AboutStorySection({
   cards,
 }: IAboutStorySectionProps) {
   const { i18n } = useTranslation();
-  return (
-    <section dir={i18n.dir()} className="w-full bg-[#F0F2F5] py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="text-[26px] font-extrabold leading-[1.6] text-[#07111F] md:text-[32px]">
-            {title}
-          </h2>
 
-          {paragraphs.length > 0 && (
-            <div className="mt-7 space-y-6">
+  return (
+    <section dir={i18n.dir()} className="w-full bg-white py-20 border-b border-[#E5E7EB]">
+      <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
+        {/* Optional Title Section (Only shown if configured dynamically) */}
+        {title && paragraphs.length > 0 && title !== "قصة الشركة" && (
+          <div className="mx-auto max-w-4xl text-center mb-16">
+            <h2 className="text-[26px] font-extrabold leading-[1.6] text-[#07111F] md:text-[32px]">
+              {title}
+            </h2>
+            <div className="mt-5 space-y-4">
               {paragraphs.map((paragraph, index) => (
                 <p
                   key={index}
-                  className="text-[17px] leading-9 text-[#4B5563] md:text-[19px]"
+                  className="text-[16px] leading-8 text-[#4B5563]"
                 >
                   {paragraph}
                 </p>
               ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
+        {/* 3-Column minimalist grid layout */}
         {cards.length > 0 && (
-          <div className="mx-auto mt-20 grid max-w-5xl grid-cols-1 gap-12 md:grid-cols-2">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-12 sm:grid-cols-2 md:grid-cols-3 md:gap-16 lg:gap-24">
             {cards.map((card) => (
               <AboutInfoCard key={card.title} {...card} />
             ))}

@@ -12,10 +12,8 @@ import { getFinanceSettings } from "../services/api";
 import { getImageUrl, APP_IMAGES } from "../constants/app-images";
 import { formatPrice } from "../utils/format";
 import { useSEO } from "../utils/useSEO";
-import type { CarDetails } from "../types/cars.types";
 import type { CarItem } from "../types/home.types";
 import type { CarCardProps } from "../components/CarCard";
-import type { Tab } from "../components/car-details/CarDetailsSpecs";
 
 function specValue(car: CarItem, key: string, altKey?: string): string {
   if (altKey) {
@@ -63,26 +61,6 @@ function mapRelatedCar(car: CarItem): CarCardProps | null {
   }
 }
 
-function buildTabs(car: CarDetails, t: (key: string) => string): Tab[] {
-  return [
-    {
-      label: t("carDetails.specs.tab.features"),
-      type: "other",
-      items: car.features_list ?? [],
-    },
-    {
-      label: t("carDetails.specs.tab.specifications"),
-      type: "other",
-      items: car.specifications ?? [],
-    },
-    {
-      label: t("carDetails.specs.tab.security"),
-      type: "safety",
-      items: car.safety_features ?? [],
-    },
-  ];
-}
-
 export default function CarDetailsPage() {
   const { t } = useTranslation();
   useSEO(t("nav.cars"), t("carDetails.hero.metaDescription"));
@@ -102,7 +80,6 @@ export default function CarDetailsPage() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const tabs = useMemo(() => (car ? buildTabs(car, t) : []), [car, t]);
 
   const relatedCars = useMemo(
     () =>
@@ -169,8 +146,23 @@ export default function CarDetailsPage() {
         colors={(car.colors ?? []).map((c) => ({ name: c.name, value: c.hex, image: c.image }))}
         orderTo="/contact"
         financeTo="/finance-calculator"
+        fuelType={car.specs?.fuel || car.specs?.fuel_type || undefined}
+        transmission={car.specs?.gearbox || car.specs?.transmission || undefined}
+        seats={car.specs?.seats || undefined}
+        horsepower={car.specs?.hp || car.specs?.power || undefined}
+        type={car.type || undefined}
+        year={car.year || undefined}
+        brandName={car.brand?.name || undefined}
       />
-      <CarDetailsSpecs tabs={tabs} />
+      <CarDetailsSpecs
+        specifications={car.specifications}
+        featuresList={car.features_list}
+        safetyFeatures={car.safety_features}
+        specs={car.specs}
+        availabilityStatus={car.availability_status}
+        type={car.type}
+        year={car.year}
+      />
 
       {relatedCars.length > 0 && (
         <FeaturedCarsSection

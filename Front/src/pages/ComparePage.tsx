@@ -1,24 +1,22 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import BgImageMaskedSection from "../components/BgImageMaskedSection/BgImageMaskedSection";
 import CompareCarCard from "../components/compare/CompareCarCard";
 import CompareTable from "../components/compare/CompareTable";
 import CompareSummary from "../components/compare/CompareSummary";
 import CarSelect from "../components/compare/CarSelect";
 import LoadingSlot from "../components/compare/LoadingSlot";
 import EmptySlot from "../components/compare/EmptySlot";
-import CarBadge from "../components/compare/CarBadge";
-import ContactCtaSection from "../components/ContactCtaSection";
-import { APP_IMAGES } from "../constants/app-images";
 import { useSEO } from "../utils/useSEO";
 import { getCarBySlug, compareCars } from "../services/api/cars.service";
+import { formatPrice } from "../utils/format";
 
 export default function ComparePage() {
   const { t, i18n } = useTranslation();
   useSEO(t("pageTitles.compare"), t("comparePage.compareDescription"));
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const initialSlug = searchParams.get("slug") || "";
 
   const [car1Slug, setCar1Slug] = useState(initialSlug);
@@ -66,15 +64,36 @@ export default function ComparePage() {
   };
 
   return (
-    <div dir={i18n.dir()} className="min-h-screen overflow-x-hidden bg-[#f3f6fa]">
-      <BgImageMaskedSection imageSrc={APP_IMAGES.COMPARE_IMAGE} />
+    <div dir={i18n.dir()} className="min-h-screen overflow-x-hidden bg-[#F3F4F6]">
+      {/* ── Page Header (Dark Navy Banner) ── */}
+      <section className="w-full bg-[#0F172A] py-14 text-white text-center relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[#EDC98E]/5 blur-2xl rounded-full pointer-events-none" />
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <span className="text-[13px] font-extrabold text-[#EDC98E] uppercase tracking-wider block mb-2">
+            مقارنة السيارات
+          </span>
+          <h1 className="text-[30px] font-black text-white leading-tight md:text-[38px]">
+            قارن بين سيارتين
+          </h1>
+          <p className="mt-3 text-[14px] text-gray-400 max-w-xl mx-auto font-extrabold leading-relaxed">
+            اختر سيارتين لمقارنة مواصفاتهما والتكاليف جنباً إلى جنب
+          </p>
+        </div>
+      </section>
 
-      <div className="relative z-20 -mt-[100px] px-6 pb-20">
-        <div className="mx-auto max-w-[1200px]">
-          <div className="grid grid-cols-[minmax(280px,380px)_1fr_minmax(280px,380px)] items-start gap-12 max-lg:grid-cols-1 max-lg:max-w-[460px] max-lg:mx-auto max-lg:gap-7">
-            <div className="max-lg:order-1">
+      {/* ── Compare Cards Selection Grid ── */}
+      <div className="relative z-20 py-12 px-6">
+        <div className="mx-auto max-w-[960px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            
+            {/* Slot 1 */}
+            <div>
               {car1Slug && car1 ? (
-                <CompareCarCard car={car1} onRemove={handleRemoveCar1} />
+                <CompareCarCard
+                  car={car1}
+                  label="السيارة الأولى"
+                  onRemove={handleRemoveCar1}
+                />
               ) : car1Slug && isLoading1 ? (
                 <LoadingSlot />
               ) : showSearch1 ? (
@@ -89,34 +108,14 @@ export default function ComparePage() {
               )}
             </div>
 
-            <div className="relative flex min-h-[320px] flex-col items-center max-lg:order-2 max-lg:min-h-auto">
-              <div className="mt-10 mb-5 flex h-[70px] w-[70px] items-center justify-center rounded-full bg-[#35aee8] text-[26px] font-black text-white shadow-lg max-lg:mt-0">
-                {t("comparePage.vs")}
-              </div>
-
-              {car1Slug && car1 && (
-                <>
-                  <CarBadge
-                    num={1}
-                    name={`${car1.brand?.name} ${car1.name}`}
-                    year={car1.year}
-                  />
-                  <div className="mt-5 h-[120px] w-px bg-[#cfd6df] max-lg:hidden" />
-                </>
-              )}
-
-              {car2Slug && car2 && (
-                <CarBadge
-                  num={2}
-                  name={`${car2.brand?.name} ${car2.name}`}
-                  year={car2.year}
-                />
-              )}
-            </div>
-
-            <div className="max-lg:order-3">
+            {/* Slot 2 */}
+            <div>
               {car2Slug && car2 ? (
-                <CompareCarCard car={car2} onRemove={handleRemoveCar2} />
+                <CompareCarCard
+                  car={car2}
+                  label="السيارة الثانية"
+                  onRemove={handleRemoveCar2}
+                />
               ) : car2Slug && isLoading2 ? (
                 <LoadingSlot />
               ) : showSearch2 ? (
@@ -130,42 +129,103 @@ export default function ComparePage() {
                 <EmptySlot onClick={() => setShowSearch2(true)} />
               )}
             </div>
+
           </div>
         </div>
       </div>
 
-      {car1Slug &&
-        car2Slug &&
-        compareData &&
-        compareData.length > 0 &&
-        car1 &&
-        car2 && (
-          <>
-            <div className="mx-auto max-w-7xl px-6 pb-16">
-              <CompareTable
-                sections={compareData}
-                car1Name={`${car1.brand?.name} ${car1.name}`}
-                car2Name={`${car2.brand?.name} ${car2.name}`}
-              />
-            </div>
-            <CompareSummary
-              sections={compareData}
-              car1Name={`${car1.brand?.name} ${car1.name}`}
-              car2Name={`${car2.brand?.name} ${car2.name}`}
-            />
-          </>
-        )}
+      {/* ── Winner Summary Block ── */}
+      {car1Slug && car2Slug && compareData && compareData.length > 0 && car1 && car2 && (
+        <CompareSummary
+          sections={compareData}
+          car1Name={`${car1.brand?.name} ${car1.name}`}
+          car2Name={`${car2.brand?.name} ${car2.name}`}
+        />
+      )}
 
-      <ContactCtaSection
-        badgeText={t("allCarsPage.contactBadge")}
-        titleWhite={t("allCarsPage.contactTitleWhite")}
-        titleOrange={t("allCarsPage.contactTitleOrange")}
-        description={t("allCarsPage.contactDescription")}
-        phoneText={t("allCarsPage.contactPhone")}
-        phoneHref="tel:+966500000000"
-        whatsappText={t("allCarsPage.contactWhatsapp")}
-        
-      />
+      {/* ── Compare Table ── */}
+      {car1Slug && car2Slug && compareData && compareData.length > 0 && car1 && car2 && (
+        <div className="mx-auto max-w-7xl px-6 pb-8">
+          <CompareTable
+            sections={compareData}
+            car1Name={`${car1.brand?.name} ${car1.name}`}
+            car2Name={`${car2.brand?.name} ${car2.name}`}
+          />
+        </div>
+      )}
+
+      {/* ── Bottom Navy Action/Pricing Cards ── */}
+      {car1Slug && car2Slug && car1 && car2 && (
+        <div className="mx-auto max-w-7xl px-6 pb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Card 1 Action */}
+            <div className="bg-[#0F172A] text-white rounded-[24px] p-6 shadow-md flex flex-col sm:flex-row items-center justify-between gap-6 text-start">
+              <div>
+                <span className="text-[11px] font-black text-[#E5C287] uppercase tracking-wider block mb-1">
+                  السيارة الأولى
+                </span>
+                <h4 className="text-[16px] font-black leading-tight text-white mb-2">
+                  {car1.brand?.name} {car1.name}
+                </h4>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-[13px] text-gray-400 font-extrabold">
+                  <span>السعر: {formatPrice(car1.current_price ?? car1.cash_price ?? 0, "white")}</span>
+                  <span>القسط من: {formatPrice(car1.min_installment ?? 0, "#E5C287")}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => navigate(`/finance-calculator?carId=${car1.id}`)}
+                  className="flex-1 sm:flex-initial h-[42px] px-6 rounded-full bg-[#E5C287] text-[13px] font-black text-[#0A1628] hover:bg-[#D8B478] shadow-xs transition"
+                >
+                  اطلبها الآن
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate(`/cars/${car1.slug}`)}
+                  className="flex-1 sm:flex-initial h-[42px] px-5 rounded-full border border-white/20 text-[13px] font-black text-white hover:bg-white/10 transition"
+                >
+                  تفاصيل السيارة
+                </button>
+              </div>
+            </div>
+
+            {/* Card 2 Action */}
+            <div className="bg-[#0F172A] text-white rounded-[24px] p-6 shadow-md flex flex-col sm:flex-row items-center justify-between gap-6 text-start">
+              <div>
+                <span className="text-[11px] font-black text-[#E5C287] uppercase tracking-wider block mb-1">
+                  السيارة الثانية
+                </span>
+                <h4 className="text-[16px] font-black leading-tight text-white mb-2">
+                  {car2.brand?.name} {car2.name}
+                </h4>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-[13px] text-gray-400 font-extrabold">
+                  <span>السعر: {formatPrice(car2.current_price ?? car2.cash_price ?? 0, "white")}</span>
+                  <span>القسط من: {formatPrice(car2.min_installment ?? 0, "#E5C287")}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => navigate(`/finance-calculator?carId=${car2.id}`)}
+                  className="flex-1 sm:flex-initial h-[42px] px-6 rounded-full bg-[#E5C287] text-[13px] font-black text-[#0A1628] hover:bg-[#D8B478] shadow-xs transition"
+                >
+                  اطلبها الآن
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate(`/cars/${car2.slug}`)}
+                  className="flex-1 sm:flex-initial h-[42px] px-5 rounded-full border border-white/20 text-[13px] font-black text-white hover:bg-white/10 transition"
+                >
+                  تفاصيل السيارة
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }

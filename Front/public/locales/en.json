@@ -285,32 +285,34 @@
   },
   "aboutPage": {
     "hero": {
-      "badge": "Founded in 2026 · Riyadh, Saudi Arabia",
-      "titleWhite": "We Finance",
-      "titleBlue": "Your Dreams",
-      "subtitle": "And make owning your car easier than you imagine",
-      "description": "Knoz is the leading platform in Saudi Arabia for car financing and sales. We connect the best customers with the best financing terms for over 5 years."
+      "badge": "From Zed Capital",
+      "titleWhite": "We build trust every time",
+      "titleBlue": "",
+      "subtitle": "A new definition of financing experience in the Kingdom... true speed, complete transparency, and a result you deserve.",
+      "description": "",
+      "buttonPrimary": "Submit Finance Request",
+      "buttonSecondary": "Contact Us"
     },
     "stats": [
       {
-        "value": "+1,200",
-        "label": "Funded Cars",
-        "description": "Happy Customers"
+        "value": "2017",
+        "label": "Establishment Year",
+        "description": "9 years ago"
       },
       {
-        "value": "+500",
-        "label": "Satisfied Clients",
-        "description": "Individuals & Corporates"
+        "value": "+1200",
+        "label": "Satisfied Customer",
+        "description": "In Saudi Arabia"
       },
       {
-        "value": "+50",
-        "label": "Brands",
-        "description": "Most Famous Global Brands"
+        "value": "+9",
+        "label": "Partner Banks",
+        "description": "Best interest rates"
       },
       {
-        "value": "5",
-        "label": "Years Experience",
-        "description": "In Saudi Market"
+        "value": "99%",
+        "label": "Satisfaction Rate",
+        "description": "Our customers' evaluation"
       }
     ],
     "story": {
@@ -319,10 +321,12 @@
         "We noticed that buying a car - whether new or used - is a process full of complexities and concerns. We decided to change this reality by building an integrated digital platform that puts the customer at the center.",
         "We believe that technology is the key to simplifying the complexities of financing, and providing the transparency that every buyer deserves, transforming the purchase journey from a daunting task into an enjoyable and trusted experience."
       ],
-      "missionTitle": "Our Mission",
-      "missionText": "Empowering individuals in the region to own their own cars by providing a secure, transparent platform backed by innovative financing solutions that match their needs and aspirations.",
-      "visionTitle": "Our Vision",
-      "visionText": "To become the first and trusted destination for digital solutions in the automotive sector, where technology meets trust to shape the future of mobility in the Middle East."
+      "missionTitle": "Mission",
+      "missionText": "Empowering our clients to own their cars with smart installments, full transparency, and premium service.",
+      "visionTitle": "Vision",
+      "visionText": "To become the first reference in luxury car financing within the Kingdom and the Gulf.",
+      "valuesTitle": "Values",
+      "valuesText": "Transparency, Speed, Decency, Commitment, values we practice in every detail of the experience."
     },
     "partners": {
       "eyebrow": "Trusted by Top Brands",
@@ -349,11 +353,29 @@
       "mapTitle": "Map of {{city}}"
     },
     "testimonials": {
-      "badge": "Our customers trust us",
-      "titleBlack": "Our Customers'",
-      "titleBlue": "Opinions",
+      "badge": "What Our",
+      "titleBlack": "Clients Say?",
+      "titleBlue": "",
       "ratingText": "4.9 out of +12,000 reviews",
-      "goToTestimonial": "Go to testimonial {{number}}"
+      "goToTestimonial": "Go to testimonial {{number}}",
+      "stats": [
+        {
+          "value": "0",
+          "label": "Unresolved Complaints"
+        },
+        {
+          "value": "97%",
+          "label": "Recommend Us"
+        },
+        {
+          "value": "+9500",
+          "label": "Cars Sold"
+        },
+        {
+          "value": "4.9/5",
+          "label": "Average Rating"
+        }
+      ]
     }
   },
   "offersPage": {

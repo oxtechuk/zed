@@ -7,11 +7,13 @@ export default function WinnerValue({
 }: IWinnerValueProps) {
   return (
     <div
-      className={`flex h-full items-center justify-center gap-2 font-bold ${isWinner ? "text-[#087A3B]" : "text-[#111827]"}`}
+      className={`flex h-full items-center justify-center gap-2.5 font-extrabold ${
+        isWinner ? "text-[#0F172A]" : "text-gray-700"
+      }`}
     >
       {isWinner && (
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#00C853] text-white">
-          <Check size={15} strokeWidth={3} />
+        <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E5C287] text-[#0A1628] shadow-xs">
+          <Check size={13} strokeWidth={3} />
         </span>
       )}
       <span>{value}</span>

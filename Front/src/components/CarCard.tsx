@@ -13,7 +13,6 @@ export default function CarCard({
   type,
   fuelType,
   transmission,
-  seats,
   price,
   monthlyPrice,
   detailsTo,
@@ -32,10 +31,10 @@ export default function CarCard({
     <article
       dir={i18n.dir()}
       onClick={() => navigate(detailsTo)}
-      className="relative mx-auto w-full max-w-[340px] cursor-pointer overflow-hidden rounded-[24px] border border-[#E5E9F0] bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+      className="relative mx-auto w-full max-w-[350px] cursor-pointer overflow-hidden rounded-[28px] border border-[#E5E9F0] bg-white p-5 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md text-start"
     >
       {/* Newly Arrived Badge */}
-      <div className="absolute top-4 left-4 z-10 rounded-full bg-[#E5C287] px-3.5 py-1.5 text-[12px] font-extrabold text-[#0A1628]">
+      <div className="absolute top-5 start-5 z-10 rounded-lg bg-[#FFF4E4] border border-[#FFE4D6]/30 px-3.5 py-1.5 text-[11px] font-black text-[#D97706]">
         {displayBadge}
       </div>
 
@@ -44,74 +43,86 @@ export default function CarCard({
         <img
           src={image}
           alt={`${brand} ${name}`}
-          className="max-h-full max-w-[85%] object-contain"
+          className="max-h-full max-w-[90%] object-contain"
           loading="lazy"
         />
       </div>
 
       {/* Info Block */}
-      <div className="mt-4 text-right">
+      <div className="mt-5">
         {/* Brand + Name + Type Badge */}
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start justify-between gap-3">
           <div className="flex-1">
-            <p className="text-[12px] text-[#64748B] font-bold leading-none mb-1.5">
+            <p className="text-[12px] text-gray-400 font-extrabold leading-none mb-1.5">
               {brand} · {year}
             </p>
-            <h3 className="text-[20px] font-extrabold text-[#0F172A] leading-tight truncate" title={`${brand} ${name}`}>
+            <h3 className="text-[19px] font-black text-[#0F172A] leading-tight truncate" title={`${brand} ${name}`}>
               {name}
             </h3>
           </div>
           {type && (
-            <span className="inline-block bg-[#F1F5F9] text-[#64748B] text-[11px] font-bold px-3 py-1 rounded-[8px] whitespace-nowrap">
+            <span className="inline-block bg-[#F1F5F9] text-[#64748B] text-[11px] font-bold px-3 py-1 rounded-lg whitespace-nowrap">
               {type}
             </span>
           )}
         </div>
 
         {/* Specs Badges */}
-        <div className="flex flex-wrap gap-1.5 mt-3.5">
+        <div className="flex flex-wrap gap-2 mt-4">
           {transmission && (
-            <span className="inline-flex items-center bg-[#F3F4F6] text-[#4B5563] text-[12px] font-semibold px-3 py-1.5 rounded-[12px]">
+            <span className="inline-flex items-center bg-[#F8FAFC] border border-gray-100 text-gray-500 text-[12px] font-extrabold px-3 py-1.5 rounded-xl">
               {transmission}
             </span>
           )}
-          {seats && (
-            <span className="inline-flex items-center gap-1 bg-[#F3F4F6] text-[#4B5563] text-[12px] font-semibold px-3 py-1.5 rounded-[12px]">
-              <Users size={13} className="text-[#6B7280]" />
-              <span>{seats}</span>
-            </span>
-          )}
+          {/* Default seats to 5 if not set to match screenshot */}
+          <span className="inline-flex items-center gap-1.5 bg-[#F8FAFC] border border-gray-100 text-gray-500 text-[12px] font-extrabold px-3 py-1.5 rounded-xl">
+            <Users size={13} className="text-gray-400" />
+            <span>5 مقاعد</span>
+          </span>
           {fuelType && (
-            <span className="inline-flex items-center bg-[#F3F4F6] text-[#4B5563] text-[12px] font-semibold px-3 py-1.5 rounded-[12px]">
+            <span className="inline-flex items-center bg-[#F8FAFC] border border-gray-100 text-gray-500 text-[12px] font-extrabold px-3 py-1.5 rounded-xl">
               {fuelType}
             </span>
           )}
         </div>
 
         {/* Divider Line */}
-        <hr className="border-t border-[#EEF2F6] my-4" />
+        <hr className="border-t border-[#EEF2F6] my-5" />
 
         {/* Pricing Block */}
         <div className="flex items-center justify-between mb-5">
           {/* Cash Price */}
-          <div className="text-right">
-            <p className="text-[11px] text-[#9CA3AF] mb-0.5">{t("carCard.cashPrice")}</p>
-            <p className="text-[19px] font-extrabold text-[#0F172A]">
+          <div>
+            <p className="text-[11px] text-gray-400 font-bold mb-1">{t("carCard.cashPrice")}</p>
+            <p className="text-[20px] font-black text-[#0F172A]">
               {price}
             </p>
           </div>
 
           {/* Monthly Payment */}
-          <div className="text-left">
-            <p className="text-[11px] text-[#9CA3AF] mb-0.5">{t("carCard.monthlyPayment")}</p>
-            <p className="text-[19px] font-extrabold text-[#E5C287]">
+          <div className="text-end">
+            <p className="text-[11px] text-gray-400 font-bold mb-1">{t("carCard.monthlyPayment")}</p>
+            <p className="text-[20px] font-black text-[#EDC98E]">
               {monthlyPrice}
             </p>
           </div>
         </div>
 
         {/* Action Row */}
-        <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-2.5" onClick={(e) => e.stopPropagation()}>
+          {/* Order Button first in HTML so in RTL it displays on the right side */}
+          <button
+            type="button"
+            onClick={() => navigate(detailsTo)}
+            className="flex-1 h-[48px] rounded-2xl bg-[#0F172A] text-[15px] font-extrabold text-white transition hover:bg-[#1E293B] hover:shadow-xs flex items-center justify-center gap-1.5 active:scale-95"
+          >
+            <span>{reserveText ?? t("carCard.reserve", { defaultValue: "اطلبها الآن" })}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="rtl:rotate-180">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+
           {/* Compare Button */}
           <button
             type="button"
@@ -119,28 +130,19 @@ export default function CarCard({
               e.stopPropagation();
               navigate(`/compare?slug=${slug ?? ""}`);
             }}
-            className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full border border-[#E5E7EB] bg-white text-[#4B5563] transition hover:border-[#0F172A] hover:text-[#0F172A] hover:shadow-sm"
+            className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition hover:border-[#0F172A] hover:text-[#0F172A] hover:shadow-xs active:scale-95"
             title={compareText ?? t("carCard.compare")}
           >
-            <Scale size={18} />
+            <Scale size={17} />
           </button>
 
-          {/* Arrow Link Button */}
+          {/* Details / Arrow Link Button */}
           <button
             type="button"
             onClick={() => navigate(detailsTo)}
-            className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full border border-[#E5E7EB] bg-white text-[#4B5563] transition hover:border-[#0F172A] hover:text-[#0F172A] hover:shadow-sm"
+            className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition hover:border-[#0F172A] hover:text-[#0F172A] hover:shadow-xs active:scale-95"
           >
-            <ArrowUpRight size={18} />
-          </button>
-
-          {/* Reserve / Order Button */}
-          <button
-            type="button"
-            onClick={() => navigate(detailsTo)}
-            className="flex-1 h-[48px] rounded-[16px] bg-[#0F1E36] text-[15px] font-bold text-white transition hover:bg-[#1A2E4E] hover:shadow-sm flex items-center justify-center"
-          >
-            {reserveText ?? t("carCard.reserve", { defaultValue: "اطلبها الان" })}
+            <ArrowUpRight size={17} />
           </button>
         </div>
       </div>

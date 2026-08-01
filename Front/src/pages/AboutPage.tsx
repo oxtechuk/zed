@@ -8,7 +8,6 @@ import LocationsSection from "../components/about/LocationsSection";
 import PartnersSection from "../components/about/PartnersSection";
 import TestimonialsSection from "../components/about/TestimonialsSection";
 import MediaReviewsSection from "../components/about/MediaReviewsSection";
-import ContactCtaSection from "../components/ContactCtaSection";
 import { getAboutPageData } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
 import { APP_IMAGES, getImageUrl } from "../constants/app-images";
@@ -51,14 +50,20 @@ export default function AboutPage() {
       paragraphs,
       cards: [
         {
+          title: story?.vision_title?.trim() || t("aboutPage.story.visionTitle"),
+          description: story?.vision_text?.trim() || t("aboutPage.story.visionText"),
+          variant: "light",
+          icon: "eye",
+        },
+        {
           title: story?.mission_title?.trim() || t("aboutPage.story.missionTitle"),
           description: story?.mission_text?.trim() || t("aboutPage.story.missionText"),
           variant: "dark",
           icon: "target",
         },
         {
-          title: story?.vision_title?.trim() || t("aboutPage.story.visionTitle"),
-          description: story?.vision_text?.trim() || t("aboutPage.story.visionText"),
+          title: story?.values_title?.trim() || t("aboutPage.story.valuesTitle"),
+          description: story?.values_text?.trim() || t("aboutPage.story.valuesText"),
           variant: "light",
           icon: "eye",
         },
@@ -189,17 +194,6 @@ export default function AboutPage() {
         testimonials={testimonials}
       />
 
-      <ContactCtaSection
-        badgeText={t("allCarsPage.contactBadge")}
-        titleWhite={t("allCarsPage.contactTitleWhite")}
-        titleOrange={t("allCarsPage.contactTitleOrange")}
-        description={t("allCarsPage.contactDescription")}
-        phoneText={t("allCarsPage.contactPhone")}
-        phoneHref="tel:+966500000000"
-        whatsappText={t("allCarsPage.contactWhatsapp")}
-        
-        sectionBgColor="var(--brand-CTA-BG-color)"
-      />
     </>
   );
 }

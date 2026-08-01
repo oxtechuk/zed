@@ -400,16 +400,16 @@
 
         {{-- Quick Links --}}
         <div class="quick-links">
-            <a href="{{ route('store.offers.index') }}" class="quick-link">
+            <a href="{{ url('/offers') }}" class="quick-link">
                 <i class="bi bi-tag-fill"></i> {{ __('العروض') }}
             </a>
-            <a href="{{ route('store.blog.index') }}" class="quick-link">
+            <a href="{{ url('/blog') }}" class="quick-link">
                 <i class="bi bi-journal-text"></i> {{ __('المقالات') }}
             </a>
-            <a href="{{ route('store.about') }}" class="quick-link">
+            <a href="{{ url('/about') }}" class="quick-link">
                 <i class="bi bi-info-circle-fill"></i> {{ __('من نحن') }}
             </a>
-            <a href="{{ route('store.calculator') }}" class="quick-link">
+            <a href="{{ url('/finance-calculator') }}" class="quick-link">
                 <i class="bi bi-calculator-fill"></i> {{ __('الحاسبة') }}
             </a>
         </div>

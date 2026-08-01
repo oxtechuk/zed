@@ -5,4 +5,6 @@ export interface IAboutStorySection {
   mission_text: string;
   vision_title: string;
   vision_text: string;
+  values_title?: string;
+  values_text?: string;
 }

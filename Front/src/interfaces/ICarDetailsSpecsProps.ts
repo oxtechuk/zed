@@ -1,3 +1,5 @@
+import type { FeatureItem } from "../types/cars.types";
+
 export interface ISpecItem {
   label: string;
   value: string;
@@ -16,5 +18,11 @@ export interface ITab {
 }
 
 export interface ICarDetailsSpecsProps {
-  tabs: ITab[];
+  specifications: FeatureItem[];
+  featuresList: FeatureItem[];
+  safetyFeatures?: FeatureItem[];
+  specs?: Record<string, string | null>;
+  availabilityStatus?: string;
+  type?: string;
+  year?: string;
 }

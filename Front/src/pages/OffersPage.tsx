@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import ContactCtaSection from "../components/ContactCtaSection";
 import OffersGridSection from "../components/offers-page/OffersGridSection";
 import OffersPageHero from "../components/offers-page/OffersPageHero";
 import { getOffers } from "../services/api";
@@ -62,16 +61,7 @@ export default function OffersPage() {
         onLoadMore={() => fetchNextPage()}
       />
 
-      <ContactCtaSection
-        badgeText={t("allCarsPage.contactBadge")}
-        titleWhite={t("allCarsPage.contactTitleWhite")}
-        titleOrange={t("allCarsPage.contactTitleOrange")}
-        description={t("allCarsPage.contactDescription")}
-        phoneText={t("allCarsPage.contactPhone")}
-        phoneHref="tel:+966500000000"
-        whatsappText={t("allCarsPage.contactWhatsapp")}
-        sectionBgColor="var(--brand-CTA-BG-color)"
-      />
+
     </>
   );
 }

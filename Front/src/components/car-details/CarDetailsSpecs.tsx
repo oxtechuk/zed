@@ -1,99 +1,115 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CircleCheck } from "lucide-react";
-import type { ISpecItem, ITab, ICarDetailsSpecsProps, IFeatureItem } from "../../interfaces/ICarDetailsSpecsProps";
+import { Check } from "lucide-react";
+import type { ICarDetailsSpecsProps } from "../../interfaces/ICarDetailsSpecsProps";
 
-export type { ISpecItem as SpecItem, ITab as Tab };
-
-export default function CarDetailsSpecs({ tabs }: ICarDetailsSpecsProps) {
+export default function CarDetailsSpecs({
+  featuresList,
+  safetyFeatures,
+  specs,
+  availabilityStatus,
+  type,
+  year,
+}: ICarDetailsSpecsProps) {
   const { t, i18n } = useTranslation();
-  const [activeTab, setActiveTab] = useState(0);
 
-  if (!tabs.length) return null;
+  // Combine standard features and safety features for a complete equipments list
+  const allFeatures = [...featuresList, ...(safetyFeatures ?? [])];
 
-  const currentTab = tabs[activeTab];
+  // Define structured specification rows matching the mockup layout
+  const specRows = [
+    {
+      label: t("carDetails.specs.engine", { defaultValue: "المحرك" }),
+      value: specs?.engine || specs?.engine_type || "—",
+    },
+    {
+      label: t("carDetails.specs.hp", { defaultValue: "القوة" }),
+      value: specs?.hp || specs?.power || "—",
+    },
+    {
+      label: t("carDetails.specs.fuel", { defaultValue: "نوع الوقود" }),
+      value: specs?.fuel || specs?.fuel_type || "—",
+    },
+    {
+      label: t("carDetails.specs.seats", { defaultValue: "عدد المقاعد" }),
+      value: specs?.seats ? `${specs.seats} مقاعد` : "—",
+    },
+    {
+      label: t("carDetails.specs.gearbox", { defaultValue: "ناقل الحركة" }),
+      value: specs?.gearbox || specs?.transmission || "—",
+    },
+    {
+      label: t("carDetails.specs.category", { defaultValue: "الفئة" }),
+      value: type || "—",
+    },
+    {
+      label: t("carDetails.specs.year", { defaultValue: "سنة الصنع" }),
+      value: year || "—",
+    },
+    {
+      label: t("carDetails.specs.availability", { defaultValue: "التوفر" }),
+      value: availabilityStatus || "متوفر",
+    },
+  ];
 
   return (
     <section
-      className="mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6 lg:px-8"
       dir={i18n.dir()}
+      className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-t border-gray-200 bg-white"
     >
-      <div className="mb-10 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
-        <h2 className="text-2xl font-extrabold sm:text-3xl">
-          <span className="text-[var(--brand-primary-color)]">{t("carDetails.specs.titleBlue")}</span>
-          <span className="text-[var(--brand-secondary-color)]">{t("carDetails.specs.titleOrange")}</span>
-        </h2>
-
-        <div className="flex gap-1 rounded-2xl border border-gray-100 bg-white p-1.5 shadow-sm">
-          {tabs.map((tab, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setActiveTab(i)}
-              className={`rounded-xl px-5 py-2.5 text-[14px] font-bold transition ${
-                i === activeTab
-                  ? "bg-[#FDECEA] text-[var(--brand-secondary-color)]"
-                  : "bg-transparent text-[#9ca3af]"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
+        
+        {/* 1. Technical Specs Column (Renders on the right in RTL desktop) */}
+        <div className="flex flex-col text-start">
+          <h2 className="text-[20px] font-black text-[#0F172A] mb-8 border-b-2 border-[#EDC98E] pb-3 inline-block max-w-[200px]">
+            {t("carDetails.specs.technicalSpecs", { defaultValue: "المواصفات التقنية" })}
+          </h2>
+          
+          <div className="flex flex-col rounded-2xl bg-white border border-[#E5E9F0] shadow-xs overflow-hidden">
+            {specRows.map((row, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between px-6 py-4 border-b border-[#EEF2F6] last:border-0 hover:bg-[#F8FAFC] transition-colors"
+              >
+                <span className="text-[14px] text-gray-500 font-bold">{row.label}</span>
+                <span
+                  className={`text-[14px] font-black ${
+                    row.label === "التوفر" || row.label === "Availability"
+                      ? "text-green-600 font-extrabold"
+                      : "text-[#0F172A]"
+                  }`}
+                >
+                  {row.value}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {currentTab.type === "specs" &&
-          (currentTab.items as ISpecItem[]).map((item, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between gap-3 rounded-2xl border border-gray-100 bg-white px-5 py-4 shadow-sm"
-            >
-              <span className="text-right text-sm font-bold text-[var(--brand-secondary-color)]">
-                {item.label}
-              </span>
-              <span className="text-left text-sm font-medium text-gray-600">
-                {item.value}
-              </span>
-            </div>
-          ))}
-
-        {currentTab.type === "safety" &&
-          (currentTab.items as (string | IFeatureItem)[]).map((item, i) => {
-            const isFeature = typeof item !== "string";
-            return (
-              <div
-                key={i}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-gray-100 bg-white px-5 py-4 shadow-sm"
-              >
-                <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[var(--brand-secondary-color)] text-base">
-                  {isFeature ? item.icon : <CircleCheck size={18} className="text-white" />}
+        {/* 2. Features & Equipments Column (Renders on the left in RTL desktop) */}
+        <div className="flex flex-col text-start">
+          <h2 className="text-[20px] font-black text-[#0F172A] mb-8 border-b-2 border-[#EDC98E] pb-3 inline-block max-w-[240px]">
+            {t("carDetails.specs.featuresEquip", { defaultValue: "المميزات والتجهيزات" })}
+          </h2>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
+            {allFeatures.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-3 py-1">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#FFF4E4] text-[#D97706]">
+                  <Check size={11} strokeWidth={3.5} />
                 </div>
-                <span className="flex-1 text-right text-sm font-semibold text-[#1f2937]">
-                  {isFeature ? item.name : item}
+                <span className="text-[14px] font-semibold text-[#475569] leading-tight">
+                  {item.name}
                 </span>
               </div>
-            );
-          })}
+            ))}
+            {allFeatures.length === 0 && (
+              <p className="text-[14px] text-gray-400 font-medium italic">
+                لا تتوفر ميزات إضافية مسجلة لهذه السيارة.
+              </p>
+            )}
+          </div>
+        </div>
 
-        {currentTab.type === "other" &&
-          (currentTab.items as (string | IFeatureItem)[]).map((item, i) => {
-            const isFeature = typeof item !== "string";
-            return (
-              <div
-                key={i}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-gray-100 bg-white px-5 py-4 shadow-sm"
-                style={{ borderRight: "3px solid var(--brand-secondary-color)" }}
-              >
-                <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[var(--brand-secondary-color)]">
-                  <CircleCheck size={18} className="text-white" />
-                </div>
-                <span className="flex-1 text-right text-sm font-semibold text-[#1f2937]">
-                  {isFeature ? item.name : item}
-                </span>
-              </div>
-            );
-          })}
       </div>
     </section>
   );

@@ -34,7 +34,7 @@ export default function BlogCard({
         {/* Categories / Date badge row */}
         <div className="mb-3.5 flex flex-wrap items-center gap-4 text-[13px] text-gray-500 font-medium">
           {category && (
-            <span className="bg-[#FFF2EB] text-[#FF9E3D] font-extrabold px-3 py-1.5 rounded-full text-[12px]">
+            <span className="bg-[#FFF2EB] text-[#EDC98E] font-extrabold px-3 py-1.5 rounded-full text-[12px]">
               {category}
             </span>
           )}
@@ -49,7 +49,7 @@ export default function BlogCard({
         </div>
 
         {/* Title */}
-        <h3 className="text-[18px] md:text-[20px] font-extrabold leading-[1.5] text-[#07111F] mb-2 line-clamp-2 hover:text-[#FF9E3D] transition">
+        <h3 className="text-[18px] md:text-[20px] font-extrabold leading-[1.5] text-[#07111F] mb-2 line-clamp-2 hover:text-[#EDC98E] transition">
           <NavLink to={readMoreTo}>{title}</NavLink>
         </h3>
 
@@ -63,7 +63,7 @@ export default function BlogCard({
       <div className="mt-2 text-right">
         <NavLink
           to={readMoreTo}
-          className="inline-flex items-center gap-1.5 text-[15px] font-extrabold text-[#FF9E3D] hover:text-[#07111F] transition"
+          className="inline-flex items-center gap-1.5 text-[15px] font-extrabold text-[#EDC98E] hover:text-[#07111F] transition"
         >
           <span>{t("blogPage.readMore", { defaultValue: "اقرأ المزيد" })}</span>
           {isRTL ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}

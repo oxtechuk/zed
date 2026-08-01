@@ -4,7 +4,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'لوحة التحكم | GR Motors')</title>
+    @php
+        $siteNameSetting = \App\Models\Setting::where('key', 'site_name')->first()?->value;
+        $siteNameText = is_array($siteNameSetting) ? ($siteNameSetting[app()->getLocale()] ?? ($siteNameSetting['ar'] ?? 'زد كابيتال')) : ($siteNameSetting ?? 'زد كابيتال');
+        $siteFavicon = \App\Models\Setting::where('key', 'site_favicon')->first()?->value;
+    @endphp
+    <title>@yield('title', 'لوحة التحكم | ' . $siteNameText)</title>
+    @if($siteFavicon)
+        <link rel="shortcut icon" href="{{ asset('storage/' . $siteFavicon) }}">
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteFavicon) }}">
+    @else
+        <link rel="shortcut icon" href="{{ asset('favicon.svg') }}">
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    @endif
 
     {{-- Preconnect & DNS-Prefetch for Speed --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">

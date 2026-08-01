@@ -40,7 +40,24 @@ class LeadController extends Controller
         $sources = ContactSource::activeOrdered()->get();
         $employees = Employee::where('is_active', true)->orderBy('name')->get();
 
-        return view('crm.leads.index', compact('leads', 'statuses', 'sources', 'employees'));
+        // Calculate dynamic stats
+        $totalLeadsAllCount = Lead::count();
+        $activeLeadsCount = Lead::whereIn('status', ['new', 'contacted', 'interested', 'negotiation'])->count();
+        $newLeadsCount = Lead::where('status', 'new')->count();
+        $activeLeadsRatio = $totalLeadsAllCount > 0 ? round(($activeLeadsCount / $totalLeadsAllCount) * 100) : 0;
+        $newLeadsRatio = $totalLeadsAllCount > 0 ? round(($newLeadsCount / $totalLeadsAllCount) * 100) : 0;
+
+        return view('crm.leads.index', compact(
+            'leads',
+            'statuses',
+            'sources',
+            'employees',
+            'totalLeadsAllCount',
+            'activeLeadsCount',
+            'newLeadsCount',
+            'activeLeadsRatio',
+            'newLeadsRatio'
+        ));
     }
 
     public function create()

@@ -2,13 +2,10 @@ import { useTranslation } from "react-i18next";
 import type { IOffersPageHeroProps } from "../../interfaces/IOffersPageHeroProps";
 
 export default function OffersPageHero({
-  image,
-  badgeText,
   title,
   description,
 }: IOffersPageHeroProps) {
   const { i18n } = useTranslation();
-  const isRtl = i18n.dir() === "rtl";
 
   return (
     <section
@@ -21,10 +18,8 @@ export default function OffersPageHero({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-10">
           {/* Content */}
-          <div className={`w-full lg:w-1/2 flex flex-col justify-center text-center ${isRtl ? 'lg:text-right lg:items-start' : 'lg:text-left lg:items-start'} items-center`}>
-            <span className="inline-flex items-center rounded-full bg-[#FF9E3D]/10 px-4 py-1.5 text-[14px] font-bold text-[#FF9E3D] border border-[#FF9E3D]/20">
-              {badgeText}
-            </span>
+          <div className="w-full flex flex-col justify-center text-center items-center">
+
 
             <h1 className="mt-5 text-[32px] font-extrabold leading-[1.3] text-white md:text-[46px]">
               {title}
@@ -34,24 +29,8 @@ export default function OffersPageHero({
               {description}
             </p>
           </div>
-
-          {/* Image container with gradient fade */}
-          <div className="relative w-full lg:w-1/2 flex justify-center lg:justify-end">
-            <div className="relative h-[240px] w-full max-w-[480px] sm:h-[300px] lg:h-[320px] overflow-hidden">
-              <img
-                src={image}
-                alt={title}
-                className="h-full w-full object-contain"
-                loading="eager"
-              />
-              {/* Fade Overlay in desktop vs mobile */}
-              <div
-                className={`absolute inset-0 bg-gradient-to-t from-[#07111F] via-[#07111F]/10 to-transparent lg:bg-gradient-to-r lg:from-[#07111F] lg:to-transparent`}
-              />
-            </div>
-          </div>
         </div>
-      </div>
-    </section>
+    </div>
+  </section>
   );
 }

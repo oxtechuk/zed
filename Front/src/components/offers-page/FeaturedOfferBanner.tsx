@@ -36,10 +36,10 @@ export default function FeaturedOfferBanner({
   return (
     <div
       dir={i18n.dir()}
-      className="relative w-full rounded-[24px] bg-gradient-to-r from-[#0C1A30] to-[#08111F] text-white overflow-hidden shadow-xl min-h-[340px] flex flex-col lg:flex-row items-center p-6 md:p-12 mb-12"
+      className="relative w-full rounded-[24px] bg-gradient-to-r from-[#16254F] to-[#08111F] text-white overflow-hidden shadow-xl min-h-[340px] flex flex-col lg:flex-row items-center p-6 md:p-12 mb-12"
     >
       {/* Decorative Moon & Calligraphy Image (eid.png) on the Left (or background) */}
-      <div 
+      <div
         className={`absolute top-0 bottom-0 ${isRtl ? 'left-0' : 'right-0'} w-full lg:w-1/2 opacity-20 lg:opacity-30 pointer-events-none z-0`}
         style={{
           backgroundImage: `url(${APP_IMAGES.EID})`,
@@ -51,7 +51,7 @@ export default function FeaturedOfferBanner({
 
       {/* Main Content Area */}
       <div className="relative z-10 w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-start mb-8 lg:mb-0">
-        <span className="inline-block bg-[#FF9E3D] text-[#07111F] text-xs font-extrabold px-4 py-1.5 rounded-full shadow-sm">
+        <span className="inline-block bg-[#EDC98E] text-[#07111F] text-xs font-extrabold px-4 py-1.5 rounded-full shadow-sm">
           {tagLabel}
         </span>
 
@@ -65,7 +65,7 @@ export default function FeaturedOfferBanner({
 
         <NavLink
           to={`/cars?offerId=${id}`}
-          className="mt-8 inline-flex h-[48px] items-center justify-center rounded-full bg-[#FF9E3D] px-8 text-[16px] font-bold text-[#07111F] shadow-lg transition hover:bg-white hover:scale-105"
+          className="mt-8 inline-flex h-[48px] items-center justify-center rounded-full bg-[#EDC98E] px-8 text-[16px] font-bold text-[#07111F] shadow-lg transition hover:bg-white hover:scale-105"
         >
           {t("offersPage.hero.primaryButton")}
         </NavLink>
@@ -75,7 +75,7 @@ export default function FeaturedOfferBanner({
       <div className="relative z-10 w-full lg:w-1/2 flex flex-col items-center lg:items-end">
         {/* Header/Subtext */}
         <div className="flex items-center gap-2 text-gray-300 font-bold mb-2">
-          <Clock size={18} className="text-[#FF9E3D]" />
+          <Clock size={18} className="text-[#EDC98E]" />
           <span className="text-sm md:text-base">{t("offersPage.countdown.requestEnds")}</span>
         </div>
 
@@ -117,7 +117,7 @@ export default function FeaturedOfferBanner({
 
           {/* Seconds */}
           <div className="flex flex-col items-center">
-            <div className="w-[60px] h-[60px] md:w-[72px] md:h-[72px] rounded-full border-2 border-white/20 bg-[#FF9E3D]/10 flex items-center justify-center text-[22px] md:text-[26px] font-black text-[#FF9E3D] shadow-inner">
+            <div className="w-[60px] h-[60px] md:w-[72px] md:h-[72px] rounded-full border-2 border-white/20 bg-[#EDC98E]/10 flex items-center justify-center text-[22px] md:text-[26px] font-black text-[#EDC98E] shadow-inner">
               {seconds}
             </div>
             <span className="mt-2 text-xs md:text-sm font-semibold text-gray-300">

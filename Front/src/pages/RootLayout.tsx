@@ -52,7 +52,7 @@ export default function RootLayout() {
 
       <div className="hidden md:block sticky top-0 z-40">
         <Header
-          logoSrc={getImageUrl(settings?.logo ?? null) || APP_IMAGES.LOGO}
+          logoSrc={getImageUrl(settings?.header_logo ?? settings?.logo ?? null) || APP_IMAGES.LOGO}
           logoAlt="Zed Capital"
           navItems={navItems}
           ctaText={t("nav.requestCar")}
@@ -66,7 +66,7 @@ export default function RootLayout() {
 
       <div className="hidden md:block">
         <Footer
-          logoSrc={getImageUrl(settings?.logo ?? null) || APP_IMAGES.LOGO}
+          logoSrc={getImageUrl(settings?.footer_logo ?? settings?.logo ?? null) || APP_IMAGES.LOGO}
           logoAlt={t("rootLayout.logoAlt")}
           quickLinks={[
             { label: t("rootLayout.quickLinks.0.label"), to: t("rootLayout.quickLinks.0.to") },

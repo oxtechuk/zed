@@ -6,3 +6,5 @@ export { default as FormField } from "./FormField";
 export { default as SelectBox } from "./SelectBox";
 export { default as StepOneForm } from "./StepOneForm";
 export { default as StepTwoCalculator } from "./StepTwoCalculator";
+export { default as StepTwoCarSelector } from "./StepTwoCarSelector";
+export { default as StepFourSuccess } from "./StepFourSuccess";

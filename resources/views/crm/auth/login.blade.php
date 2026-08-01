@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ __('تسجيل دخول المديرين | Konz') }}</title>
+    @php
+        $siteNameSetting = \App\Models\Setting::where('key', 'site_name')->first()?->value;
+        $siteNameText = is_array($siteNameSetting) ? ($siteNameSetting[app()->getLocale()] ?? ($siteNameSetting['ar'] ?? 'زد كابيتال')) : ($siteNameSetting ?? 'زد كابيتال');
+        $siteFavicon = \App\Models\Setting::where('key', 'site_favicon')->first()?->value;
+    @endphp
+    <title>{{ __('تسجيل دخول المديرين | ') . $siteNameText }}</title>
+    @if($siteFavicon)
+        <link rel="shortcut icon" href="{{ asset('storage/' . $siteFavicon) }}">
+        <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteFavicon) }}">
+    @else
+        <link rel="shortcut icon" href="{{ asset('favicon.svg') }}">
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    @endif
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -317,7 +329,14 @@
             
             <div class="form-content-wrapper">
                 <div class="logo-section">
-                    <img src="{{ asset('images/logo_without_bg.png') }}" alt="Konz Logo" style="max-height: 75px; width: auto; filter: drop-shadow(0 4px 10px rgba(41, 155, 224, 0.15));">
+                    @php
+                        $siteLogoSetting = \App\Models\Setting::where('key', 'site_logo')->first()?->value;
+                    @endphp
+                    @if($siteLogoSetting)
+                        <img src="{{ asset('storage/' . $siteLogoSetting) }}" alt="{{ $siteNameText }}" style="max-height: 75px; width: auto; filter: drop-shadow(0 4px 10px rgba(41, 155, 224, 0.15));">
+                    @else
+                        <img src="{{ asset('images/logo_without_bg.png') }}" alt="{{ $siteNameText }}" style="max-height: 75px; width: auto; filter: drop-shadow(0 4px 10px rgba(41, 155, 224, 0.15));">
+                    @endif
                     <div class="logo-badge">
                         <i class="bi bi-shield-check"></i>
                         {{ __('لوحة تحكم المديرين') }}
@@ -369,7 +388,7 @@
             </div>
 
             <div class="footer-text">
-                &copy; {{ date('Y') }} <a href="{{ route('store.home') }}">Konz</a> Dashboard. All rights reserved.
+                &copy; {{ date('Y') }} <a href="{{ route('store.home') }}">{{ $siteNameText }}</a> Dashboard. All rights reserved.
             </div>
 
         </div>

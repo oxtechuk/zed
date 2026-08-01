@@ -125,18 +125,29 @@
                             </div>
                             <div class="card-body p-4">
                                 <div class="row g-4">
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-semibold small text-muted d-block mb-2">{{ __('شعار الموقع (Logo)') }}</label>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold small text-muted d-block mb-2">{{ __('شعار الهيدر (Header Logo)') }}</label>
                                         <div class="upload-preview rounded-3 mb-2">
                                             @if(isset($settings['site_logo']))
-                                                <img src="{{ asset('storage/' . $settings['site_logo']) }}" alt="Logo" class="img-fluid" style="max-height:60px;">
+                                                <img src="{{ asset('storage/' . $settings['site_logo']) }}" alt="Header Logo" class="img-fluid" style="max-height:60px;">
                                             @else
                                                 <i class="bi bi-image fs-2 opacity-25"></i>
                                             @endif
                                         </div>
                                         <input type="file" name="site_logo" class="form-control bg-light border-0" accept="image/*">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold small text-muted d-block mb-2">{{ __('شعار الفوتر (Footer Logo)') }}</label>
+                                        <div class="upload-preview rounded-3 mb-2">
+                                            @if(isset($settings['footer_logo']))
+                                                <img src="{{ asset('storage/' . $settings['footer_logo']) }}" alt="Footer Logo" class="img-fluid" style="max-height:60px;">
+                                            @else
+                                                <i class="bi bi-image fs-2 opacity-25"></i>
+                                            @endif
+                                        </div>
+                                        <input type="file" name="footer_logo" class="form-control bg-light border-0" accept="image/*">
+                                    </div>
+                                    <div class="col-md-3">
                                         <label class="form-label fw-semibold small text-muted d-block mb-2">{{ __('أيقونة (Favicon)') }}</label>
                                         <div class="upload-preview rounded-3 mb-2">
                                             @if(isset($settings['site_favicon']))
@@ -147,7 +158,7 @@
                                         </div>
                                         <input type="file" name="site_favicon" class="form-control bg-light border-0" accept="image/*">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <label class="form-label fw-semibold small text-muted d-block mb-2">{{ __('خلفية الصفحات (Breadcrumb)') }}</label>
                                         <div class="upload-preview rounded-3 mb-2 bg-dark">
                                             @if(isset($settings['breadcrumb_bg']))
@@ -666,9 +677,9 @@
                                     ],
                                     [
                                         'id' => 'story', 'icon' => 'bi-book', 'label' => __('قصة الشركة'),
-                                        'fields' => ['title','content','mission_title','mission_text','vision_title','vision_text'],
-                                        'fieldLabels' => ['title' => __('عنوان القسم'), 'content' => __('النص'), 'mission_title' => __('عنوان الرسالة'), 'mission_text' => __('نص الرسالة'), 'vision_title' => __('عنوان الرؤية'), 'vision_text' => __('نص الرؤية')],
-                                        'textarea' => ['content','mission_text','vision_text'],
+                                        'fields' => ['title','content','mission_title','mission_text','vision_title','vision_text','values_title','values_text'],
+                                        'fieldLabels' => ['title' => __('عنوان القسم'), 'content' => __('النص'), 'mission_title' => __('عنوان الرسالة'), 'mission_text' => __('نص الرسالة'), 'vision_title' => __('عنوان الرؤية'), 'vision_text' => __('نص الرؤية'), 'values_title' => __('عنوان القيم'), 'values_text' => __('نص القيم')],
+                                        'textarea' => ['content','mission_text','vision_text','values_text'],
                                     ],
                                     [
                                         'id' => 'partners', 'icon' => 'bi-briefcase', 'label' => __('قسم الشركاء'),

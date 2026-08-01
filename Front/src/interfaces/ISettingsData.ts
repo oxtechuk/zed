@@ -13,6 +13,8 @@ export interface IContactInfo {
 
 export interface ISettingsData {
   logo: string;
+  header_logo?: string;
+  footer_logo?: string;
   favicon: string;
   site_name: string;
   footer_text: string;

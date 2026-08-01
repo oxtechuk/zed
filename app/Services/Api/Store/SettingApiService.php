@@ -20,7 +20,7 @@ final class SettingApiService
     ];
 
     private const IMAGE_KEYS = [
-        'site_logo', 'site_favicon', 'breadcrumb_bg', 'hero_video',
+        'site_logo', 'footer_logo', 'site_favicon', 'breadcrumb_bg', 'hero_video',
         'hero_ad_1_image', 'hero_ad_2_image', 'page_loader_image',
         'store_img_hero_mask', 'store_img_hero_card_1', 'store_img_hero_card_3',
         'store_img_business_1', 'store_img_offer_banner_left',
@@ -58,7 +58,9 @@ final class SettingApiService
         }
 
         return [
-            'logo' => $this->resolveUrl($settings->get('site_logo')),
+            'logo' => $this->resolveUrl($settings->get('footer_logo') ?: $settings->get('site_logo')),
+            'header_logo' => $this->resolveUrl($settings->get('site_logo')),
+            'footer_logo' => $this->resolveUrl($settings->get('footer_logo')),
             'favicon' => $this->resolveUrl($settings->get('site_favicon')),
             'site_name' => $siteName,
             'footer_text' => $footerText,

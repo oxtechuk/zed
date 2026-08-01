@@ -1,5 +1,5 @@
 @extends('partials.Layouts.crm-master')
-@section('title', __('العملاء') . ' | GR Motors')
+@section('title', __('العملاء') . ' | ' . (\App\Models\Setting::where('key', 'site_name')->first()?->value['ar'] ?? 'زد كابيتال'))
 
 @section('content')
 <div class="container-fluid" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
@@ -27,26 +27,26 @@
     <div class="row g-3 mb-4">
         <div class="col-6 col-xl-4">
             <div class="crm-stat-new">
-                <span class="stat-badge orange">65%</span>
+                <span class="stat-badge orange">{{ $activeLeadsRatio }}%</span>
                 <div class="stat-icon green"><i class="bi bi-person-check"></i></div>
                 <div class="stat-lbl">{{ __('العملاء النشطون') }}</div>
-                <div class="stat-val">76%</div>
+                <div class="stat-val">{{ number_format($activeLeadsCount) }}</div>
             </div>
         </div>
         <div class="col-6 col-xl-4">
             <div class="crm-stat-new">
-                <span class="stat-badge green">+3%</span>
+                <span class="stat-badge green">{{ $newLeadsRatio }}%</span>
                 <div class="stat-icon blue"><i class="bi bi-people"></i></div>
                 <div class="stat-lbl">{{ __('العملاء الجدد') }}</div>
-                <div class="stat-val">{{ number_format($leads->total()) }}</div>
+                <div class="stat-val">{{ number_format($newLeadsCount) }}</div>
             </div>
         </div>
         <div class="col-6 col-xl-4">
             <div class="crm-stat-new">
-                <span class="stat-badge green">+12%</span>
+                <span class="stat-badge green">100%</span>
                 <div class="stat-icon purple"><i class="bi bi-person-lines-fill"></i></div>
-                <div class="stat-lbl">{{ __('عدد العملاء') }}</div>
-                <div class="stat-val">{{ number_format($leads->total()) }}</div>
+                <div class="stat-lbl">{{ __('إجمالي عدد العملاء') }}</div>
+                <div class="stat-val">{{ number_format($totalLeadsAllCount) }}</div>
             </div>
         </div>
     </div>
@@ -127,6 +127,11 @@
                             @php
                                 $dotClass = match($lead->status) {
                                     'new'         => 'confirmed',
+                                    'contacted'   => 'waiting',
+                                    'interested'  => 'planned',
+                                    'negotiation' => 'waiting',
+                                    'converted'   => 'done',
+                                    'lost'        => 'late',
                                     'in_progress' => 'planned',
                                     'waiting'     => 'waiting',
                                     'sold'        => 'done',

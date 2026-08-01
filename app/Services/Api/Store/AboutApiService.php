@@ -38,6 +38,8 @@ final class AboutApiService
                 'mission_text' => $rawSections['story']['mission_text'][$locale] ?? '',
                 'vision_title' => $rawSections['story']['vision_title'][$locale] ?? '',
                 'vision_text' => $rawSections['story']['vision_text'][$locale] ?? '',
+                'values_title' => $rawSections['story']['values_title'][$locale] ?? '',
+                'values_text' => $rawSections['story']['values_text'][$locale] ?? '',
             ],
             'partners' => [
                 'badge' => $rawSections['partners']['badge'][$locale] ?? '',
