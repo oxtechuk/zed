@@ -10,10 +10,10 @@
         "hot": "mix watch --hot",
         "prod": "npm run production",
         "production": "mix --production",
-        "build": "npm run build --prefix Front",
-        "front:install": "npm install --prefix Front",
-        "front:dev": "npm run dev --prefix Front",
-        "front:build": "npm run build --prefix Front"
+        "build": "vite build",
+        "vite": "vite",
+        "vite:build": "vite build",
+        "vite:preview": "vite preview"
     },
     "devDependencies": {
         "@babel/core": "^7.23.9",
@@ -21,7 +21,10 @@
         "@babel/plugin-syntax-dynamic-import": "^7.8.3",
         "@babel/plugin-transform-runtime": "^7.23.9",
         "@babel/preset-env": "^7.23.9",
-        "@tailwindcss/vite": "^4.0.0",
+        "@tailwindcss/vite": "^4.3.1",
+        "@types/react": "^19.2.17",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^6.0.0",
         "@vitejs/plugin-vue": "^6.0.6",
         "@vue/compiler-sfc": "^3.5.32",
         "browser-sync": "^2.29.3",
@@ -35,8 +38,9 @@
         "rtlcss": "^4.1.0",
         "sass": "^1.62.1",
         "sass-loader": "^12.6.0",
-        "tailwindcss": "^4.0.0",
-        "vite": "^8.0.0",
+        "tailwindcss": "^4.3.1",
+        "typescript": "~6.0.2",
+        "vite": "^8.1.0",
         "vue": "^3.5.32",
         "vue-i18n": "^9.14.5",
         "vue-loader": "^17.4.2",
@@ -44,11 +48,22 @@
         "webpack-cli": "^4.10.0"
     },
     "dependencies": {
-        "axios": "^1.15.0",
+        "@tanstack/react-query": "^5.101.1",
+        "axios": "^1.18.1",
         "bootstrap": "^5.3.6",
         "bootstrap-icons": "^1.13.1",
+        "i18next": "^26.3.2",
+        "i18next-http-backend": "^4.0.0",
+        "lucide-react": "^1.21.0",
+        "react": "^19.2.7",
+        "react-dom": "^19.2.7",
+        "react-i18next": "^17.0.8",
+        "react-icons": "^5.6.0",
+        "react-router-dom": "^7.18.0",
+        "react-toastify": "^11.1.0",
         "remixicon": "^4.6.0",
         "vue-router": "^4.6.4",
-        "vue-toastification": "^2.0.0-rc.5"
+        "vue-toastification": "^2.0.0-rc.5",
+        "zustand": "^5.0.14"
     }
 }

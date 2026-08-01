@@ -12,11 +12,11 @@ Route::get('/lang/{lang}', [LanguageController::class, 'switchLang'])->name('lan
 //  React Single Page Application (SPA)
 // =============================================
 Route::get('/', function () {
-    return response()->file(public_path('index.html'));
+    return view('app');
 })->name('store.home');
 
 Route::get('/{any}', function () {
-    return response()->file(public_path('index.html'));
+    return view('app');
 })->where('any', '^(?!crm|manager-login|api|store-api|storage).*$');
 
 // =============================================
