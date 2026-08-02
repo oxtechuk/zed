@@ -14,6 +14,7 @@ class BookingController extends Controller
 {
     public function index(Request $request)
     {
+
         $query = Booking::with(['car.brand', 'employee'])->latest();
 
         // فلترة بالحالة
@@ -25,7 +26,7 @@ class BookingController extends Controller
         if ($request->filled('employee_id')) {
             $query->where('assigned_to', $request->employee_id);
         }
-        if (! auth()->user()->hasRole('admin')) {
+        if (! auth()->user()->hasRole('super-admin')) {
             $query->where('assigned_to', \auth()->id());
         }
         // بحث

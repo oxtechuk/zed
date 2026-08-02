@@ -183,6 +183,16 @@ class CarImportSeeder extends Seeder
             // 7. Sync Pivot Tables
             $car->specifications()->sync($specificationIds);
             $car->features_list()->sync($featureIds);
+
+            // 8. Seed Gallery Images
+            $car->images()->delete();
+            foreach ($this->galleryImages($type) as $sortOrder => $image) {
+                $car->images()->create([
+                    'image_path' => $image['url'],
+                    'type' => $image['type'],
+                    'sort_order' => $sortOrder,
+                ]);
+            }
         }
 
         $this->command->info('Successfully imported '.count($carsData).' cars!');
@@ -196,6 +206,25 @@ class CarImportSeeder extends Seeder
             'fuel type' => 'bi bi-fuel-pump',
             'seats' => 'bi bi-people',
             default => 'bi bi-info-circle',
+        };
+    }
+
+    /**
+     * @return array<int, array{url: string, type: string}>
+     */
+    private function galleryImages(string $type): array
+    {
+        return match ($type) {
+            'suv' => [
+                ['url' => 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=1200&auto=format&fit=crop', 'type' => 'exterior'],
+                ['url' => 'https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?q=80&w=1200&auto=format&fit=crop', 'type' => 'exterior'],
+                ['url' => 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop', 'type' => 'interior'],
+            ],
+            default => [
+                ['url' => 'https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1200&auto=format&fit=crop', 'type' => 'exterior'],
+                ['url' => 'https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=1200&auto=format&fit=crop', 'type' => 'exterior'],
+                ['url' => 'https://images.unsplash.com/photo-1543796583-95c3ce4b7635?q=80&w=1200&auto=format&fit=crop', 'type' => 'interior'],
+            ],
         };
     }
 }

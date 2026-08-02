@@ -267,10 +267,38 @@ class CarSeeder extends Seeder
 
         foreach ($cars as $data) {
 
-            Car::query()->updateOrCreate(
+            $car = Car::query()->updateOrCreate(
                 ['slug->en' => $data['slug']['en']],
                 $data,
             );
+
+            $car->images()->delete();
+            foreach ($this->galleryImages($data['type']) as $sortOrder => $image) {
+                $car->images()->create([
+                    'image_path' => $image['url'],
+                    'type' => $image['type'],
+                    'sort_order' => $sortOrder,
+                ]);
+            }
         }
+    }
+
+    /**
+     * @return array<int, array{url: string, type: string}>
+     */
+    private function galleryImages(string $type): array
+    {
+        return match ($type) {
+            'suv' => [
+                ['url' => 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=1200&auto=format&fit=crop', 'type' => 'exterior'],
+                ['url' => 'https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?q=80&w=1200&auto=format&fit=crop', 'type' => 'exterior'],
+                ['url' => 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop', 'type' => 'interior'],
+            ],
+            default => [
+                ['url' => 'https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1200&auto=format&fit=crop', 'type' => 'exterior'],
+                ['url' => 'https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=1200&auto=format&fit=crop', 'type' => 'exterior'],
+                ['url' => 'https://images.unsplash.com/photo-1543796583-95c3ce4b7635?q=80&w=1200&auto=format&fit=crop', 'type' => 'interior'],
+            ],
+        };
     }
 }

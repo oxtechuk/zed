@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Api\Store;
 
+use App\Models\Booking;
 use App\Models\CalculatorBank;
 use App\Models\CalculatorLead;
 use App\Models\Car;
 use App\Services\TwilioOtpService;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 final class CalculatorApiService
 {
@@ -17,28 +19,53 @@ final class CalculatorApiService
         $carIds = $data['car_ids'] ?? [];
         $primaryCarId = $carIds[0] ?? null;
 
-        return CalculatorLead::create([
-            'name' => $data['name'],
-            'phone' => $data['phone'],
-            'car_id' => $primaryCarId,
-            'details' => [
-                'email' => $data['email'] ?? null,
-                'city' => $data['city'],
-                'salary' => $data['salary'],
-                'monthly_obligations' => $data['monthly_obligations'],
-                'employer_type' => $data['employer_type'] ?? null,
-                'employer_name' => $data['employer_name'] ?? null,
-                'years_of_service' => $data['years_of_service'] ?? null,
-                'has_mortgage_loan' => $data['has_mortgage_loan'] ?? false,
-                'has_personal_loan' => $data['has_personal_loan'] ?? false,
-                'has_traffic_violations' => $data['has_traffic_violations'] ?? false,
-                'has_simah_default' => $data['has_simah_default'] ?? false,
-                'preferred_bank_id' => $data['preferred_bank_id'] ?? null,
-                'car_ids' => $carIds,
-                'preferred_color' => $data['preferred_color'] ?? null,
-                'notes' => $data['notes'] ?? null,
-            ],
-        ]);
+        return DB::transaction(function () use ($data, $carIds, $primaryCarId) {
+            $lead = CalculatorLead::create([
+                'name' => $data['name'],
+                'phone' => $data['phone'],
+                'car_id' => $primaryCarId,
+                'details' => [
+                    'email' => $data['email'] ?? null,
+                    'city' => $data['city'],
+                    'salary' => $data['salary'],
+                    'monthly_obligations' => $data['monthly_obligations'],
+                    'employer_type' => $data['employer_type'] ?? null,
+                    'employer_name' => $data['employer_name'] ?? null,
+                    'years_of_service' => $data['years_of_service'] ?? null,
+                    'has_mortgage_loan' => $data['has_mortgage_loan'] ?? false,
+                    'has_personal_loan' => $data['has_personal_loan'] ?? false,
+                    'has_traffic_violations' => $data['has_traffic_violations'] ?? false,
+                    'has_simah_default' => $data['has_simah_default'] ?? false,
+                    'preferred_bank_id' => $data['preferred_bank_id'] ?? null,
+                    'car_ids' => $carIds,
+                    'preferred_color' => $data['preferred_color'] ?? null,
+                    'notes' => $data['notes'] ?? null,
+                ],
+            ]);
+
+            if ($primaryCarId !== null) {
+                $car = Car::find($primaryCarId);
+
+                Booking::create([
+                    'car_id' => $primaryCarId,
+                    'client_name' => $data['name'],
+                    'client_phone' => $data['phone'],
+                    'client_email' => $data['email'] ?? null,
+                    'down_payment' => 0,
+                    'duration_years' => 0,
+                    'interest_rate' => 0,
+                    'monthly_installment' => 0,
+                    'total_price' => (int) round($car?->current_price ?? $car?->cash_price ?? 0),
+                    'notes' => $data['notes'] ?? null,
+                    'status' => 'new',
+                    'source' => 'calculator',
+                    'booking_type' => 'inquiry',
+                    'location' => $data['city'],
+                ]);
+            }
+
+            return $lead;
+        });
     }
 
     public function sendOtp(string $phone): array
