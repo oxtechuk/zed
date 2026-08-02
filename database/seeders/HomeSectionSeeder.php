@@ -205,22 +205,24 @@ class HomeSectionSeeder extends Seeder
      */
     private function seedFooterLinks(): void
     {
-        if (Setting::where('key', 'footer_quick_links')->exists()) {
-            return;
-        }
+        Setting::updateOrCreate(
+            ['key' => 'footer_quick_links'],
+            ['value' => [
+                ['title' => ['ar' => 'من نحن', 'en' => 'About Us'], 'url' => '/about'],
+                ['title' => ['ar' => 'المدونة', 'en' => 'Blog'], 'url' => '/blog'],
+                ['title' => ['ar' => 'العروض', 'en' => 'Offers'], 'url' => '/offers'],
+                ['title' => ['ar' => 'تواصل معنا', 'en' => 'Contact Us'], 'url' => '/contact'],
+            ]]
+        );
 
-        Setting::create(['key' => 'footer_quick_links', 'value' => [
-            ['title' => ['ar' => 'من نحن', 'en' => 'About Us'], 'url' => '/about'],
-            ['title' => ['ar' => 'المدونة', 'en' => 'Blog'], 'url' => '/blog'],
-            ['title' => ['ar' => 'العروض', 'en' => 'Offers'], 'url' => '/offers'],
-            ['title' => ['ar' => 'تواصل معنا', 'en' => 'Contact Us'], 'url' => '/contact'],
-        ]]);
-
-        Setting::create(['key' => 'footer_service_links', 'value' => [
-            ['title' => ['ar' => 'تمويل السيارات', 'en' => 'Car Financing'], 'url' => '/calculator'],
-            ['title' => ['ar' => 'شراء نقدي', 'en' => 'Cash Purchase'], 'url' => '/cars'],
-            ['title' => ['ar' => 'حجز السيارات', 'en' => 'Car Booking'], 'url' => '/booking'],
-            ['title' => ['ar' => 'طلب مخصص', 'en' => 'Custom Order'], 'url' => '/contact'],
-        ]]);
+        Setting::updateOrCreate(
+            ['key' => 'footer_service_links'],
+            ['value' => [
+                ['title' => ['ar' => 'تمويل السيارات', 'en' => 'Car Financing'], 'url' => '/calculator'],
+                ['title' => ['ar' => 'شراء نقدي', 'en' => 'Cash Purchase'], 'url' => '/cars'],
+                ['title' => ['ar' => 'حجز السيارات', 'en' => 'Car Booking'], 'url' => '/booking'],
+                ['title' => ['ar' => 'طلب مخصص', 'en' => 'Custom Order'], 'url' => '/contact'],
+            ]]
+        );
     }
 }
