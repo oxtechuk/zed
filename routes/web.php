@@ -82,6 +82,9 @@ Route::prefix('crm')->name('crm.')->middleware(['auth:employee', 'guard.employee
         Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index');
         Route::post('tasks', [TaskController::class, 'store'])->name('tasks.store');
         Route::patch('tasks/{task}/toggle', [TaskController::class, 'toggle'])->name('tasks.toggle');
+        Route::patch('tasks/{task}/start', [TaskController::class, 'start'])->name('tasks.start');
+        Route::patch('tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
+        Route::patch('tasks/{task}/postpone', [TaskController::class, 'postpone'])->name('tasks.postpone');
         Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     });
 

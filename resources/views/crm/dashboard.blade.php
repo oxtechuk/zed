@@ -1,125 +1,208 @@
 @extends('partials.Layouts.crm-master')
-@section('title', __('الرئيسية') . ' | GR Motors')
+@section('title', __('شاشة الموظف') . ' | GR Motors')
 
 @section('content')
 <div class="container-fluid" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 
-    {{-- ===== Header Row ===== --}}
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-        <div>
-            <h4 class="mb-0 fw-bold" style="color:var(--crm-text);">
-                👋 {{ __('أهلاً بك') }} {{ auth()->guard('employee')->user()?->name }}
-            </h4>
-        </div>
-        <div class="d-flex gap-2">
-            @can('manage-bookings')
-            <a href="{{ route('crm.bookings.index') }}" class="btn-crm-light">
-                <i class="bi bi-plus-lg"></i> {{ __('إضافة حجز جديد') }}
-            </a>
-            @endcan
-            @can('manage-leads')
-            <a href="{{ route('crm.leads.index') }}" class="btn-crm-primary">
-                <i class="bi bi-person-plus"></i> {{ __('إضافة عميل') }}
-            </a>
-            @endcan
-        </div>
-    </div>
+    @php
+        $rangeLinks = [
+            'today' => __('اليوم'),
+            'week'  => __('هذا الأسبوع'),
+            'month' => __('هذا الشهر'),
+            'year'  => __('هذا العام'),
+            'ytd'   => __('بداية السنة حتى اليوم'),
+        ];
+        $qs = fn (array $override = []) => array_filter(array_merge(request()->except('page'), $override), fn ($v) => $v !== null && $v !== '');
+        $dotClassFor = fn ($status) => match($status) {
+            'new','pending'  => 'planned',
+            'in_progress','contacted' => 'waiting',
+            'sold','done'    => 'done',
+            'rejected'       => 'late',
+            default          => 'confirmed',
+        };
+        $priorityColor = fn ($p) => match($p) {
+            'high' => '#DC2626',
+            'medium' => 'var(--crm-orange)',
+            default => 'var(--crm-green)',
+        };
+    @endphp
 
-    {{-- ===== Stat Cards ===== --}}
-    <div class="row g-3 mb-4">
-        {{-- الطلبات المعلقة --}}
-        <div class="col-6 col-xl-3">
-            <div class="crm-stat-new">
-                <span class="stat-badge orange">{{ __('تنبيه') }}</span>
-                <div class="stat-icon red"><i class="bi bi-clock"></i></div>
-                <div class="stat-lbl">{{ __('الطلبات المعلقة') }}</div>
-                <div class="stat-val">{{ number_format($stats['new']) }}</div>
+    {{-- ===== Employee Header Banner ===== --}}
+    <div class="rounded-4 mb-4 p-4 p-md-4" style="background:linear-gradient(135deg,var(--crm-orange) 0%,var(--crm-orange-dark) 100%);box-shadow:0 8px 20px rgba(249,115,22,0.25);">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <h4 class="mb-1 fw-bold text-white">👋 {{ __('أهلاً بك') }}, {{ auth()->user()?->name }}</h4>
+                <div class="text-white" style="font-size:13px;opacity:0.9;">{{ now()->translatedFormat('l، d F Y') }}</div>
             </div>
-        </div>
-        {{-- الطلبات المكتملة --}}
-        <div class="col-6 col-xl-3">
-            <div class="crm-stat-new">
-                <span class="stat-badge green">65%</span>
-                <div class="stat-icon green"><i class="bi bi-check-circle"></i></div>
-                <div class="stat-lbl">{{ __('الطلبات المكتملة') }}</div>
-                <div class="stat-val">{{ number_format($stats['sold']) }}</div>
-            </div>
-        </div>
-        {{-- طلبات اليوم --}}
-        <div class="col-6 col-xl-3">
-            <div class="crm-stat-new">
-                <span class="stat-badge blue">{{ __('نشط') }}</span>
-                <div class="stat-icon blue"><i class="bi bi-calendar-day"></i></div>
-                <div class="stat-lbl">{{ __('طلبات اليوم') }}</div>
-                <div class="stat-val">{{ number_format($stats['in_progress']) }}</div>
-            </div>
-        </div>
-        {{-- عدد العملاء --}}
-        <div class="col-6 col-xl-3">
-            <div class="crm-stat-new">
-                <span class="stat-badge green">+12%</span>
-                <div class="stat-icon purple"><i class="bi bi-people"></i></div>
-                <div class="stat-lbl">{{ __('عدد العملاء') }}</div>
-                <div class="stat-val">{{ number_format($stats['total']) }}</div>
-            </div>
-        </div>
-    </div>
-
-    {{-- ===== Tracking Status Widget ===== --}}
-    @can('manage-settings')
-    <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden" style="border:1px solid var(--crm-border)!important;">
-        <div class="card-body px-4 py-3">
-            <div class="d-flex align-items-center flex-wrap gap-4">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-graph-up" style="font-size:18px;color:var(--crm-text-muted);"></i>
-                    <span class="fw-bold small text-muted">{{ __('حالة التتبع') }}</span>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-google" style="color:#1877F2;font-size:15px;"></i>
-                        <span class="small fw-bold">{{ __('Google Analytics') }}</span>
-                        @if($trackingGA)
-                            <span class="badge rounded-pill" style="background:#EDFAF4;color:#12B76A;font-size:10px;">
-                                <i class="bi bi-check-circle-fill me-1"></i>{{ $trackingGA }}
-                            </span>
-                        @else
-                            <span class="badge rounded-pill" style="background:#F5F6FA;color:#8E92A4;font-size:10px;">
-                                <i class="bi bi-dash-circle me-1"></i>{{ __('غير مفعل') }}
-                            </span>
-                        @endif
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-facebook" style="color:#1877F2;font-size:15px;"></i>
-                        <span class="small fw-bold">{{ __('Meta Pixel') }}</span>
-                        @if($trackingPixel)
-                            <span class="badge rounded-pill" style="background:#EDFAF4;color:#12B76A;font-size:10px;">
-                                <i class="bi bi-check-circle-fill me-1"></i>{{ $trackingPixel }}
-                            </span>
-                        @else
-                            <span class="badge rounded-pill" style="background:#F5F6FA;color:#8E92A4;font-size:10px;">
-                                <i class="bi bi-dash-circle me-1"></i>{{ __('غير مفعل') }}
-                            </span>
-                        @endif
-                    </div>
-                </div>
-                <a href="{{ route('crm.settings.seo') }}" class="btn btn-sm rounded-3 ms-auto" style="background:var(--crm-red-light);color:var(--crm-red);font-weight:700;font-size:11px;text-decoration:none;">
-                    <i class="bi bi-gear me-1"></i>{{ __('إعدادات التتبع') }}
+            <div class="d-flex gap-2 flex-wrap">
+                @can('manage-bookings')
+                <a href="{{ route('crm.bookings.index') }}" class="btn btn-sm rounded-3 fw-bold" style="background:rgba(255,255,255,0.18);color:#fff;padding:9px 16px;">
+                    <i class="bi bi-plus-lg"></i> {{ __('إضافة حجز جديد') }}
                 </a>
+                @endcan
+                @can('manage-leads')
+                <a href="{{ route('crm.leads.index') }}" class="btn btn-sm rounded-3 fw-bold" style="background:#fff;color:var(--crm-orange-dark);padding:9px 16px;">
+                    <i class="bi bi-person-plus"></i> {{ __('إضافة عميل') }}
+                </a>
+                @endcan
             </div>
         </div>
     </div>
-    @endcan
 
-    {{-- ===== Row 2: Orders Table + Income/Complaints ===== --}}
-    <div class="row g-3 mb-4">
+    {{-- ===== شريط الإحصائيات العلوي ===== --}}
+    <div class="d-flex gap-3 mb-4 pb-1" style="overflow-x:auto;">
+        <div class="crm-stat-new flex-shrink-0" style="min-width:220px;">
+            <div class="stat-icon blue"><i class="bi bi-bag"></i></div>
+            <div class="stat-lbl">{{ __('إجمالي الطلبات') }}</div>
+            <div class="stat-val">{{ number_format($stats['total']) }}</div>
+        </div>
+        <div class="crm-stat-new flex-shrink-0" style="min-width:220px;">
+            <div class="stat-icon orange"><i class="bi bi-hourglass-split"></i></div>
+            <div class="stat-lbl">{{ __('الطلبات المفتوحة') }}</div>
+            <div class="stat-val">{{ number_format($stats['open']) }}</div>
+        </div>
+        <div class="crm-stat-new flex-shrink-0" style="min-width:220px;">
+            <div class="stat-icon red"><i class="bi bi-x-circle"></i></div>
+            <div class="stat-lbl">{{ __('الطلبات المغلقة') }}</div>
+            <div class="stat-val">{{ number_format($stats['closed']) }}</div>
+        </div>
+        <div class="crm-stat-new flex-shrink-0" style="min-width:220px;">
+            <div class="stat-icon green"><i class="bi bi-check-circle"></i></div>
+            <div class="stat-lbl">{{ __('الطلبات المكتملة (تم الاستلام)') }}</div>
+            <div class="stat-val">{{ number_format($stats['completed']) }}</div>
+        </div>
+    </div>
 
-        {{-- نظرة عامة على الطلبات --}}
-        <div class="col-12 col-xl-7">
-            <div class="card border-0 shadow-sm rounded-4 h-100" style="border:1px solid var(--crm-border)!important;">
-                <div class="card-header bg-white border-0 pt-4 px-4 pb-2 d-flex justify-content-between align-items-center" style="border-bottom:1px solid var(--crm-border)!important;">
-                    <h6 class="mb-0 fw-bold">{{ __('نظرة عامة على الطلبات') }}</h6>
+    {{-- ===== البحث والفلترة ===== --}}
+    <div class="card border-0 shadow-sm rounded-4 mb-4" style="border:1px solid var(--crm-border)!important;">
+        <div class="card-body p-4">
+            <form action="{{ route('crm.dashboard') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
+                {{-- فترات سريعة --}}
+                @foreach($rangeLinks as $key => $label)
+                    <a href="{{ route('crm.dashboard', $qs(['range' => $key, 'from' => null, 'to' => null])) }}"
+                       class="crm-filter-tab {{ $range === $key ? 'active' : '' }}">{{ $label }}</a>
+                @endforeach
+                <a href="{{ route('crm.dashboard', $qs(['range' => null, 'from' => null, 'to' => null])) }}"
+                   class="crm-filter-tab {{ $range === 'all' ? 'active' : '' }}">{{ __('الكل') }}</a>
+
+                <span class="mx-1" style="width:1px;height:24px;background:var(--crm-border);display:inline-block;"></span>
+
+                {{-- فترة مخصصة --}}
+                <input type="hidden" name="range" value="custom">
+                <input type="date" name="from" value="{{ request('from') }}" class="form-control form-control-sm" style="width:150px;border-radius:8px;">
+                <span class="text-muted small">{{ __('إلى') }}</span>
+                <input type="date" name="to" value="{{ request('to') }}" class="form-control form-control-sm" style="width:150px;border-radius:8px;">
+                @foreach(request()->except(['from','to','range','page']) as $k => $v)
+                    <input type="hidden" name="{{ $k }}" value="{{ $v }}">
+                @endforeach
+                <button type="submit" class="btn-crm-primary" style="padding:7px 16px;">{{ __('تطبيق') }}</button>
+            </form>
+
+            <hr style="border-color:var(--crm-border);">
+
+            {{-- بحث --}}
+            <form action="{{ route('crm.dashboard') }}" method="GET" class="d-flex gap-2">
+                @foreach(request()->except(['search','page']) as $k => $v)
+                    <input type="hidden" name="{{ $k }}" value="{{ $v }}">
+                @endforeach
+                <div class="position-relative flex-grow-1" style="max-width:480px;">
+                    <i class="bi bi-search position-absolute" style="{{ app()->getLocale()=='ar'?'right':'left' }}:14px;top:50%;transform:translateY(-50%);color:var(--crm-text-muted);"></i>
+                    <input type="text" name="search" value="{{ $search }}" placeholder="{{ __('ابحث برقم الطلب، اسم العميل أو رقم الجوال...') }}"
+                           class="form-control" style="padding-{{ app()->getLocale()=='ar'?'right':'left' }}:38px;border-radius:10px;background:#F8F9FC;border:1px solid var(--crm-border);">
                 </div>
-                <div class="card-body p-0">
+                <button type="submit" class="btn-crm-light">{{ __('بحث') }}</button>
+                @if($search)
+                <a href="{{ route('crm.dashboard', $qs(['search' => null])) }}" class="btn-crm-light">{{ __('مسح') }}</a>
+                @endif
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        {{-- ===== المهام اليومية ===== --}}
+        <div class="col-12 col-xl-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100" style="border:1px solid var(--crm-border)!important;">
+                <div class="card-header bg-white border-0 px-4 pt-4 pb-3 d-flex justify-content-between align-items-center" style="border-bottom:1px solid var(--crm-border)!important;">
+                    <h6 class="fw-bold mb-0">{{ __('المهام اليومية') }}</h6>
+                    <a href="{{ route('crm.tasks.index') }}" class="fw-bold text-decoration-none" style="font-size:12px;color:var(--crm-text-muted);">{{ __('عرض كل المهام') }}</a>
+                </div>
+                <div class="card-body p-3">
+                    <ul class="nav nav-pills gap-2 mb-3 px-1" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active fw-bold" style="font-size:12px;" data-bs-toggle="pill" data-bs-target="#tasks-today" type="button">
+                                {{ __('المستحقة اليوم') }} <span class="badge bg-light text-dark ms-1">{{ $tasksToday->count() }}</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link fw-bold" style="font-size:12px;" data-bs-toggle="pill" data-bs-target="#tasks-overdue" type="button">
+                                {{ __('المتأخرة') }} <span class="badge bg-light text-dark ms-1">{{ $tasksOverdue->count() }}</span>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link fw-bold" style="font-size:12px;" data-bs-toggle="pill" data-bs-target="#tasks-upcoming" type="button">
+                                {{ __('القادمة') }} <span class="badge bg-light text-dark ms-1">{{ $tasksUpcoming->count() }}</span>
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" style="max-height:360px;overflow-y:auto;">
+                        @foreach(['tasks-today' => $tasksToday, 'tasks-overdue' => $tasksOverdue, 'tasks-upcoming' => $tasksUpcoming] as $paneId => $taskList)
+                        <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="{{ $paneId }}">
+                            @forelse($taskList as $task)
+                            <div class="p-3 rounded-3 mb-2" style="background:#F8F9FC;border:1px solid var(--crm-border);border-{{ app()->getLocale()=='ar'?'right':'left' }}:3px solid {{ $priorityColor($task->priority) }};">
+                                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                    <strong style="font-size:13px;">{{ $task->title }}</strong>
+                                    @if($task->due_date)
+                                    <span class="text-nowrap" style="font-size:11px;color:var(--crm-text-muted);">
+                                        <i class="bi bi-calendar3 me-1"></i>{{ $task->due_date->format('d/m/Y') }}
+                                    </span>
+                                    @endif
+                                </div>
+                                <div class="d-flex gap-1 flex-wrap">
+                                    @can('manage-tasks')
+                                    <form action="{{ route('crm.tasks.start', $task) }}" method="POST">
+                                        @csrf @method('PATCH')
+                                        <button class="btn btn-sm rounded-2 fw-bold" style="font-size:11px;background:var(--crm-red-light);color:var(--crm-red);" title="{{ __('تنفيذ') }}">
+                                            <i class="bi bi-play-fill"></i> {{ __('تنفيذ') }}
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('crm.tasks.postpone', $task) }}" method="POST">
+                                        @csrf @method('PATCH')
+                                        <input type="hidden" name="days" value="1">
+                                        <button class="btn btn-sm btn-light rounded-2 fw-bold" style="font-size:11px;" title="{{ __('تأجيل يوم') }}">
+                                            <i class="bi bi-clock-history"></i> {{ __('تأجيل') }}
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('crm.tasks.complete', $task) }}" method="POST">
+                                        @csrf @method('PATCH')
+                                        <button class="btn btn-sm rounded-2 fw-bold text-white" style="font-size:11px;background:var(--crm-green);" title="{{ __('إنهاء') }}">
+                                            <i class="bi bi-check-lg"></i> {{ __('إنهاء') }}
+                                        </button>
+                                    </form>
+                                    @endcan
+                                </div>
+                            </div>
+                            @empty
+                            <div class="text-center text-muted py-4" style="font-size:13px;">{{ __('لا توجد مهام') }}</div>
+                            @endforelse
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ===== الطلبات ===== --}}
+        <div class="col-12 col-xl-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100" style="border:1px solid var(--crm-border)!important;">
+                <div class="card-header bg-white border-0 px-4 pt-4 pb-3 d-flex justify-content-between align-items-center" style="border-bottom:1px solid var(--crm-border)!important;">
+                    <h6 class="fw-bold mb-0">{{ __('الطلبات') }}</h6>
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('crm.dashboard', $qs(['sort' => 'priority'])) }}" class="btn btn-sm rounded-2 fw-bold" style="font-size:11px;{{ $sort==='priority' ? 'background:var(--crm-red);color:#fff;' : 'background:#F8F9FC;color:var(--crm-text-muted);' }}">{{ __('الأولوية') }}</a>
+                        <a href="{{ route('crm.dashboard', $qs(['sort' => 'recent'])) }}" class="btn btn-sm rounded-2 fw-bold" style="font-size:11px;{{ $sort==='recent' ? 'background:var(--crm-red);color:#fff;' : 'background:#F8F9FC;color:var(--crm-text-muted);' }}">{{ __('آخر تحديث') }}</a>
+                    </div>
+                </div>
+                <div class="card-body p-0" style="max-height:440px;overflow-y:auto;">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead style="background:#F8F9FC;">
@@ -127,12 +210,11 @@
                                     <th class="px-4 py-3 text-muted fw-bold" style="font-size:12px;">{{ __('رقم الطلب') }}</th>
                                     <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('العميل') }}</th>
                                     <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('السيارة') }}</th>
-                                    <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('الموعد') }}</th>
                                     <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('الحالة') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($recentBookings as $booking)
+                                @forelse($requests as $booking)
                                 <tr>
                                     <td class="px-4 fw-bold" style="font-size:13px;">
                                         <a href="{{ route('crm.bookings.show', $booking) }}" class="text-decoration-none" style="color:var(--crm-text);">#{{ $booking->id }}</a>
@@ -141,221 +223,86 @@
                                         <div class="fw-bold" style="font-size:13px;color:var(--crm-text);">{{ $booking->client_name }}</div>
                                         <small class="text-muted">{{ $booking->client_phone }}</small>
                                     </td>
-                                    <td>
-                                        <div style="font-size:12px;color:var(--crm-text);">{{ $booking->car->name ?? '—' }}</div>
-                                        <small class="text-muted">{{ $booking->car->brand->name ?? '' }}</small>
-                                    </td>
-                                    <td style="font-size:12px;color:var(--crm-text-muted);">
-                                        {{ $booking->created_at->format('d/m/Y') }}
-                                    </td>
-                                    <td>
-                                        @php
-                                            $dotClass = match($booking->status) {
-                                                'new','pending'  => 'planned',
-                                                'in_progress'    => 'waiting',
-                                                'sold','done'    => 'done',
-                                                'rejected'       => 'late',
-                                                default          => 'confirmed',
-                                            };
-                                        @endphp
-                                        <span class="status-dot {{ $dotClass }}">{{ $booking->status_label }}</span>
-                                    </td>
+                                    <td style="font-size:12px;color:var(--crm-text);">{{ $booking->car->name ?? '—' }}</td>
+                                    <td><span class="status-dot {{ $dotClassFor($booking->status) }}">{{ $booking->status_label }}</span></td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="5" class="text-center text-muted py-5">{{ __('لا توجد طلبات') }}</td></tr>
+                                <tr><td colspan="4" class="text-center text-muted py-5">{{ __('لا توجد طلبات') }}</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
-                    <div class="px-4 py-3" style="border-top:1px solid var(--crm-border);">
-                        <a href="{{ route('crm.bookings.index') }}" class="text-decoration-none fw-bold" style="font-size:13px;color:var(--crm-red);">{{ __('عرض كل الطلبات') }}</a>
-                    </div>
                 </div>
-            </div>
-        </div>
-
-        {{-- إجمالي الدخل + الشكاوي --}}
-        <div class="col-12 col-xl-5">
-            <div class="row g-3 h-100">
-                {{-- إجمالي الدخل --}}
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm rounded-4" style="border:1px solid var(--crm-border)!important;">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <h6 class="fw-bold mb-0">{{ __('إجمالي الدخل') }}</h6>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-light rounded-2" style="font-size:11px;">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-light rounded-2" style="font-size:11px;">
-                                        <i class="bi bi-arrow-up-right"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="fw-black mb-1" style="font-size:24px;color:var(--crm-text);">
-                                {{ number_format($stats['total'] * 2000) }}
-                                <small style="font-size:13px;font-weight:600;color:var(--crm-text-muted);">{{ __('ريال سعودي') }}</small>
-                            </div>
-                            <div style="font-size:12px;color:var(--crm-green);">
-                                ↑ 18% {{ __('مقارنة بالشهر الماضي') }}
-                            </div>
-                            <div id="incomeSparkline" style="margin-top:12px;"></div>
-                        </div>
-                    </div>
-                </div>
-                {{-- الشكاوي --}}
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm rounded-4" style="border:1px solid var(--crm-border)!important;">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="fw-bold mb-0">{{ __('الشكاوي') }}</h6>
-                                <i class="bi bi-arrow-up-right text-muted" style="font-size:14px;"></i>
-                            </div>
-                            <div class="fw-black mb-1" style="font-size:24px;color:var(--crm-text);">
-                                {{ $stats['rejected'] ?? 0 }}
-                                <small style="font-size:13px;font-weight:600;color:var(--crm-text-muted);">{{ __('شكوى') }}</small>
-                            </div>
-                            <div style="font-size:12px;color:var(--crm-red);">
-                                <i class="bi bi-clock me-1"></i>
-                                {{ $stats['new'] ?? 0 }} {{ __('معلقة') }}
-                            </div>
-                            <div style="font-size:12px;color:var(--crm-text-muted);margin-top:4px;">
-                                ↓ 16% {{ __('مقارنة بالشهر الماضي') }}
-                            </div>
-                        </div>
-                    </div>
+                <div class="px-4 py-3" style="border-top:1px solid var(--crm-border);">
+                    <a href="{{ route('crm.bookings.index') }}" class="text-decoration-none fw-bold" style="font-size:13px;color:var(--crm-red);">{{ __('عرض كل الطلبات') }}</a>
                 </div>
             </div>
         </div>
     </div>
 
-    {{-- ===== Row 3: Orders Rate Chart + Notifications ===== --}}
-    <div class="row g-3">
-
-        {{-- معدل الطلبات --}}
-        <div class="col-12 col-xl-7">
-            <div class="card border-0 shadow-sm rounded-4" style="border:1px solid var(--crm-border)!important;">
-                <div class="card-header bg-white border-0 pt-4 px-4 pb-2 d-flex justify-content-between align-items-center" style="border-bottom:1px solid var(--crm-border)!important;">
-                    <h6 class="mb-0 fw-bold">{{ __('معدل الطلبات') }}</h6>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-light rounded-2 fw-bold" style="font-size:12px;">{{ __('يوم') }}</button>
-                        <button class="btn btn-sm btn-light rounded-2 fw-bold" style="font-size:12px;">{{ __('أسبوع') }}</button>
-                        <button class="btn btn-sm rounded-2 fw-bold" style="font-size:12px;background:var(--crm-border);">{{ __('شهر') }}</button>
-                        <button class="btn btn-sm btn-light rounded-2" style="font-size:12px;"><i class="bi bi-calendar3"></i></button>
-                    </div>
-                </div>
-                <div class="card-body p-4">
-                    <div id="weeklyChart"></div>
-                </div>
-            </div>
+    {{-- ===== التنبيهات ===== --}}
+    <div class="card border-0 shadow-sm rounded-4" style="border:1px solid var(--crm-border)!important;">
+        <div class="card-header bg-white border-0 px-4 pt-4 pb-3" style="border-bottom:1px solid var(--crm-border)!important;">
+            <h6 class="fw-bold mb-0">{{ __('التنبيهات') }}</h6>
         </div>
-
-        {{-- الإشعارات --}}
-        <div class="col-12 col-xl-5">
-            <div class="card border-0 shadow-sm rounded-4 h-100" style="border:1px solid var(--crm-border)!important;">
-                <div class="card-header bg-white border-0 pt-4 px-4 pb-2 d-flex justify-content-between align-items-center" style="border-bottom:1px solid var(--crm-border)!important;">
-                    <h6 class="mb-0 fw-bold">{{ __('الإشعارات') }}</h6>
-                    <label class="d-flex align-items-center gap-2" style="font-size:12px;color:var(--crm-text-muted);cursor:pointer;">
-                        <input type="checkbox" checked> {{ __('تحديد الكل كمقروء') }}
-                    </label>
-                </div>
-                <div class="card-body p-3" style="overflow-y:auto;max-height:340px;">
-                    <p class="text-muted fw-bold mb-2" style="font-size:11px;">{{ __('اليوم') }}</p>
-
-                    {{-- إشعار 1 --}}
-                    @foreach($recentBookings->take(2) as $notif)
-                    <div class="p-3 rounded-3 mb-3" style="background:#FFF8EC;border:1px solid #FDEBC8;">
-                        <div class="d-flex align-items-start gap-3">
-                            <div style="width:36px;height:36px;background:#FFF0F0;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="bi bi-bag" style="color:var(--crm-red);font-size:15px;"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <strong style="font-size:13px;">{{ __('طلب قارب على الانتهاء') }}</strong>
-                                    <span style="font-size:11px;color:var(--crm-orange);">● {{ __('منذ') }} 5 {{ __('دقائق') }}</span>
-                                </div>
-                                <p class="mb-2" style="font-size:12px;color:var(--crm-text-muted);">{{ __('طلب') }} #{{ $notif->id }} — {{ $notif->client_name }}</p>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-light rounded-2 fw-bold" style="font-size:12px;">{{ __('تجاهل') }}</button>
-                                    <a href="{{ route('crm.bookings.show', $notif) }}" class="btn btn-sm rounded-2 fw-bold text-white" style="font-size:12px;background:var(--crm-red);">{{ __('عرض التفاصيل') }}</a>
-                                </div>
-                            </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                {{-- مهام مستحقة --}}
+                <div class="col-12 col-lg-4">
+                    <div class="p-3 rounded-3 h-100" style="background:#FFF8EC;border:1px solid #FDEBC8;">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-clock-history" style="color:var(--crm-orange);"></i>
+                            <strong style="font-size:13px;">{{ __('مهام مستحقة') }}</strong>
                         </div>
-                    </div>
-                    @endforeach
-
-                    @if($recentBookings->count() > 2)
-                    <p class="text-muted fw-bold mb-2 mt-3" style="font-size:11px;">{{ __('أمس') }}</p>
-                    <div class="p-3 rounded-3 mb-2" style="background:#FFF0F0;border:1px solid #FFCDD2;">
-                        <div class="d-flex align-items-start gap-3">
-                            <div style="width:36px;height:36px;background:#FFEBEE;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <i class="bi bi-list-task" style="color:var(--crm-red);font-size:15px;"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <strong style="font-size:13px;">{{ __('مهمة متأخرة') }}</strong>
-                                    <span style="font-size:11px;color:var(--crm-red);">● {{ __('منذ') }} 5 {{ __('دقائق') }}</span>
-                                </div>
-                                <p class="mb-2" style="font-size:12px;color:var(--crm-text-muted);">{{ __('مهمة إرسال عرض الأسعار لم يتم تنفيذها') }}</p>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-light rounded-2 fw-bold" style="font-size:12px;">{{ __('تجاهل') }}</button>
-                                    <a href="{{ route('crm.tasks.index') }}" class="btn btn-sm rounded-2 fw-bold text-white" style="font-size:12px;background:var(--crm-red);">{{ __('فتح المهمة') }}</a>
-                                </div>
-                            </div>
+                        @forelse($alerts['tasks'] as $task)
+                        <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px dashed #FDEBC8;">
+                            <span style="font-size:12px;">{{ Str::limit($task->title, 28) }}</span>
+                            <a href="{{ route('crm.tasks.index') }}" class="fw-bold text-decoration-none" style="font-size:11px;color:var(--crm-orange-dark);">{{ __('فتح') }}</a>
                         </div>
+                        @empty
+                        <div class="text-muted text-center py-2" style="font-size:12px;">{{ __('لا توجد تنبيهات') }}</div>
+                        @endforelse
                     </div>
-                    @endif
                 </div>
-                <div class="card-footer bg-white border-0 text-center py-3" style="border-top:1px solid var(--crm-border)!important;">
-                    <a href="#" class="fw-bold text-decoration-none" style="font-size:13px;color:var(--crm-text-muted);">{{ __('عرض الكل') }}</a>
+
+                {{-- طلبات بانتظار المتابعة --}}
+                <div class="col-12 col-lg-4">
+                    <div class="p-3 rounded-3 h-100" style="background:#EFF8FF;border:1px solid #D6E9FF;">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-telephone-outbound" style="color:var(--crm-blue);"></i>
+                            <strong style="font-size:13px;">{{ __('طلبات بانتظار المتابعة') }}</strong>
+                        </div>
+                        @forelse($alerts['follow_ups'] as $booking)
+                        <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px dashed #D6E9FF;">
+                            <span style="font-size:12px;">{{ $booking->client_name }}</span>
+                            <a href="{{ route('crm.bookings.show', $booking) }}" class="fw-bold text-decoration-none" style="font-size:11px;color:var(--crm-blue);">{{ __('عرض') }}</a>
+                        </div>
+                        @empty
+                        <div class="text-muted text-center py-2" style="font-size:12px;">{{ __('لا توجد تنبيهات') }}</div>
+                        @endforelse
+                    </div>
+                </div>
+
+                {{-- طلبات بانتظار اعتماد المشرف --}}
+                <div class="col-12 col-lg-4">
+                    <div class="p-3 rounded-3 h-100" style="background:#FFF0F0;border:1px solid #FFCDD2;">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-patch-check" style="color:var(--crm-red);"></i>
+                            <strong style="font-size:13px;">{{ __('طلبات بانتظار اعتماد المشرف') }}</strong>
+                        </div>
+                        @forelse($alerts['approvals'] as $booking)
+                        <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom:1px dashed #FFCDD2;">
+                            <span style="font-size:12px;">#{{ $booking->id }} — {{ $booking->client_name }}</span>
+                            <a href="{{ route('crm.bookings.show', $booking) }}" class="fw-bold text-decoration-none" style="font-size:11px;color:var(--crm-red);">{{ __('عرض') }}</a>
+                        </div>
+                        @empty
+                        <div class="text-muted text-center py-2" style="font-size:12px;">{{ __('لا توجد تنبيهات') }}</div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
 </div>
-
-@endsection
-
-@section('scripts')
-<script>
-// Chart معدل الطلبات
-const weeklyData = @json($weeklyBookings);
-const dates  = weeklyData.map(d => d.date);
-const counts = weeklyData.map(d => d.count);
-
-new ApexCharts(document.querySelector("#weeklyChart"), {
-    series: [
-        { name: '{{ __("الطلبات") }}', data: counts },
-        { name: '{{ __("المكتملة") }}', data: counts.map(v => Math.max(0, v - Math.floor(Math.random()*3))) }
-    ],
-    chart: { type: 'area', height: 220, toolbar: { show: false }, fontFamily: 'inherit' },
-    colors: ['#16254F', '#12B76A'],
-    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.3, opacityTo: 0.02 } },
-    stroke: { curve: 'smooth', width: 2 },
-    xaxis: { categories: dates, labels: { style: { fontSize: '11px', colors: '#8E92A4' } } },
-    yaxis: { labels: { style: { fontSize: '11px', colors: '#8E92A4' } } },
-    dataLabels: { enabled: false },
-    grid: { borderColor: '#F5F6FA', strokeDashArray: 4 },
-    legend: { show: true, position: 'top', horizontalAlign: '{{ app()->getLocale() == "ar" ? "right" : "left" }}' },
-}).render();
-
-// Sparkline للدخل
-new ApexCharts(document.querySelector("#incomeSparkline"), {
-    series: [{ data: [30,40,35,50,49,60,70,91,125] }],
-    chart: { type: 'line', height: 50, sparkline: { enabled: true } },
-    colors: ['#16254F'],
-    stroke: { curve: 'smooth', width: 2 },
-    tooltip: { enabled: false },
-}).render();
-
-// Badge الطلبات الجديدة
-const newCount = {{ $stats['new'] }};
-if (newCount > 0) {
-    document.querySelectorAll('.new-leads-badge').forEach(el => {
-        el.textContent = newCount;
-        el.style.display = 'inline-block';
-    });
-}
-</script>
 @endsection

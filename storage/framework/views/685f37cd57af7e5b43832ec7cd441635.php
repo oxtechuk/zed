@@ -1,43 +1,43 @@
 <!DOCTYPE html>
-<html lang="{{ App::getLocale() }}" dir="{{ App::getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+<html lang="<?php echo e(App::getLocale()); ?>" dir="<?php echo e(App::getLocale() == 'ar' ? 'rtl' : 'ltr'); ?>">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    @php
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <?php
         $siteNameSetting = \App\Models\Setting::where('key', 'site_name')->first()?->value;
         $siteNameText = is_array($siteNameSetting) ? ($siteNameSetting[app()->getLocale()] ?? ($siteNameSetting['ar'] ?? 'زد كابيتال')) : ($siteNameSetting ?? 'زد كابيتال');
         $siteFavicon = \App\Models\Setting::where('key', 'site_favicon')->first()?->value;
-    @endphp
-    <title>@yield('title', 'لوحة التحكم | ' . $siteNameText)</title>
-    @if($siteFavicon)
-        <link rel="shortcut icon" href="{{ asset('storage/' . $siteFavicon) }}">
-        <link rel="icon" type="image/png" href="{{ asset('storage/' . $siteFavicon) }}">
-    @else
-        <link rel="shortcut icon" href="{{ asset('favicon.svg') }}">
-        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
-    @endif
+    ?>
+    <title><?php echo $__env->yieldContent('title', 'لوحة التحكم | ' . $siteNameText); ?></title>
+    <?php if($siteFavicon): ?>
+        <link rel="shortcut icon" href="<?php echo e(asset('storage/' . $siteFavicon)); ?>">
+        <link rel="icon" type="image/png" href="<?php echo e(asset('storage/' . $siteFavicon)); ?>">
+    <?php else: ?>
+        <link rel="shortcut icon" href="<?php echo e(asset('favicon.svg')); ?>">
+        <link rel="icon" type="image/svg+xml" href="<?php echo e(asset('favicon.svg')); ?>">
+    <?php endif; ?>
 
-    {{-- Preconnect & DNS-Prefetch for Speed --}}
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
-    {{-- Dynamic Bootstrap (Fixed Paths & Localized) --}}
-    @if(App::getLocale() == 'ar')
-        <link href="{{ asset('assets/libs/bootstrap/css/bootstrap.rtl.min.css') }}" rel="stylesheet">
+    
+    <?php if(App::getLocale() == 'ar'): ?>
+        <link href="<?php echo e(asset('assets/libs/bootstrap/css/bootstrap.rtl.min.css')); ?>" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-        {{-- Preload English assets in background --}}
+        
         <link rel="prefetch" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
-    @else
-        <link href="{{ asset('assets/libs/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <?php else: ?>
+        <link href="<?php echo e(asset('assets/libs/bootstrap/css/bootstrap.min.css')); ?>" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-        {{-- Preload Arabic assets in background --}}
+        
         <link rel="prefetch" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap">
-    @endif
+    <?php endif; ?>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    @yield('css')
+    <?php echo $__env->yieldContent('css'); ?>
 
     <style>
         :root {
@@ -65,8 +65,8 @@
             width: 20px !important;
             height: 20px !important;
             background-color: currentColor;
-            -webkit-mask-image: url('{{ asset('assets/images/Saudi_Riyal_Symbol.svg.png') }}') !important;
-            mask-image: url('{{ asset('assets/images/Saudi_Riyal_Symbol.svg.png') }}') !important;
+            -webkit-mask-image: url('<?php echo e(asset('assets/images/Saudi_Riyal_Symbol.svg.png')); ?>') !important;
+            mask-image: url('<?php echo e(asset('assets/images/Saudi_Riyal_Symbol.svg.png')); ?>') !important;
             -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
             -webkit-mask-position: center;
@@ -85,7 +85,7 @@
         * { box-sizing: border-box; }
 
         body.crm-shell {
-            font-family: {{ App::getLocale() == 'ar' ? "'Cairo', sans-serif" : "'Inter', sans-serif" }};
+            font-family: <?php echo e(App::getLocale() == 'ar' ? "'Cairo', sans-serif" : "'Inter', sans-serif"); ?>;
             background: var(--crm-bg);
             margin: 0;
             min-height: 100vh;
@@ -105,17 +105,18 @@
             width: var(--crm-sidebar-width);
             min-height: 100vh;
             background: #FFFFFF;
-            border-{{ App::getLocale() == 'ar' ? 'left' : 'right' }}: 1px solid var(--crm-border);
+            border-<?php echo e(App::getLocale() == 'ar' ? 'left' : 'right'); ?>: 1px solid var(--crm-border);
             display: flex;
             flex-direction: column;
             position: fixed;
-            {{ App::getLocale() == 'ar' ? 'right: 0;' : 'left: 0;' }}
+            <?php echo e(App::getLocale() == 'ar' ? 'right: 0;' : 'left: 0;'); ?>
+
             top: 0;
             bottom: 0;
             z-index: 1000;
             overflow-y: auto;
             scrollbar-width: none;
-            box-shadow: {{ App::getLocale() == 'ar' ? '-2px' : '2px' }} 0 12px rgba(0,0,0,0.04);
+            box-shadow: <?php echo e(App::getLocale() == 'ar' ? '-2px' : '2px'); ?> 0 12px rgba(0,0,0,0.04);
         }
         .crm-sidebar::-webkit-scrollbar { display: none; }
 
@@ -161,13 +162,14 @@
             position: absolute;
             top: 0;
             bottom: 0;
-            {{ App::getLocale() == 'ar' ? 'right: 0;' : 'left: 0;' }}
+            <?php echo e(App::getLocale() == 'ar' ? 'right: 0;' : 'left: 0;'); ?>
+
             width: 4px;
             background: var(--crm-red);
-            border-radius: {{ App::getLocale() == 'ar' ? '4px 0 0 4px' : '0 4px 4px 0' }};
+            border-radius: <?php echo e(App::getLocale() == 'ar' ? '4px 0 0 4px' : '0 4px 4px 0'); ?>;
         }
         .crm-nav-link .nav-badge {
-            margin-{{ App::getLocale() == 'ar' ? 'right' : 'left' }}: auto;
+            margin-<?php echo e(App::getLocale() == 'ar' ? 'right' : 'left'); ?>: auto;
             background: var(--crm-red); color: #fff;
             border-radius: 10px; font-size: 10px; font-weight: 900; padding: 1px 7px;
         }
@@ -179,7 +181,8 @@
 
         /* ===== MAIN AREA ===== */
         .crm-main {
-            {{ App::getLocale() == 'ar' ? 'margin-right: var(--crm-sidebar-width);' : 'margin-left: var(--crm-sidebar-width);' }}
+            <?php echo e(App::getLocale() == 'ar' ? 'margin-right: var(--crm-sidebar-width);' : 'margin-left: var(--crm-sidebar-width);'); ?>
+
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -214,11 +217,11 @@
         }
         .crm-topbar-search input:focus { border-color: var(--crm-red); background: #fff; }
         .crm-topbar-search input::placeholder { color: #bbb; }
-        .crm-topbar-search .search-icon { position: absolute; {{ App::getLocale() == 'ar' ? 'left' : 'right' }}: 14px; top: 50%; transform: translateY(-50%); color: #bbb; font-size: 15px; }
-        .crm-topbar-end { display: flex; align-items: center; gap: 12px; margin-{{ App::getLocale() == 'ar' ? 'right' : 'left' }}: auto; flex-shrink: 0; }
+        .crm-topbar-search .search-icon { position: absolute; <?php echo e(App::getLocale() == 'ar' ? 'left' : 'right'); ?>: 14px; top: 50%; transform: translateY(-50%); color: #bbb; font-size: 15px; }
+        .crm-topbar-end { display: flex; align-items: center; gap: 12px; margin-<?php echo e(App::getLocale() == 'ar' ? 'right' : 'left'); ?>: auto; flex-shrink: 0; }
         .crm-topbar-btn { background: none; border: none; padding: 8px 10px; border-radius: 10px; color: #555; cursor: pointer; position: relative; transition: 0.2s; font-size: 18px; text-decoration: none; display: flex; align-items: center; }
         .crm-topbar-btn:hover { background: #f5f5f5; color: var(--crm-red); }
-        .crm-notif-badge { position: absolute; top: 6px; {{ App::getLocale() == 'ar' ? 'left' : 'right' }}: 6px; width: 8px; height: 8px; background: var(--crm-red); border-radius: 50%; border: 2px solid #fff; }
+        .crm-notif-badge { position: absolute; top: 6px; <?php echo e(App::getLocale() == 'ar' ? 'left' : 'right'); ?>: 6px; width: 8px; height: 8px; background: var(--crm-red); border-radius: 50%; border: 2px solid #fff; }
         .crm-topbar-logo img { max-height: 38px; }
         .crm-user { display: flex; align-items: center; gap: 10px; }
         .crm-user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--crm-red-light); display: flex; align-items: center; justify-content: center; color: var(--crm-red); font-weight: 800; font-size: 14px; overflow: hidden; }
@@ -249,7 +252,7 @@
             justify-content: center;
             position: absolute;
             top: 14px;
-            {{ App::getLocale() == 'ar' ? 'left' : 'right' }}: 14px;
+            <?php echo e(App::getLocale() == 'ar' ? 'left' : 'right'); ?>: 14px;
             background: none;
             border: none;
             width: 32px;
@@ -325,7 +328,7 @@
 
         /* ===== NEW STAT CARD ===== */
         .crm-stat-new { background: #fff; border-radius: var(--crm-radius); padding: 18px 20px; box-shadow: var(--crm-shadow); border: 1px solid var(--crm-border); position: relative; }
-        .crm-stat-new .stat-badge { position: absolute; top: 14px; {{ App::getLocale() == 'ar' ? 'left' : 'right' }}: 14px; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+        .crm-stat-new .stat-badge { position: absolute; top: 14px; <?php echo e(App::getLocale() == 'ar' ? 'left' : 'right'); ?>: 14px; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
         .crm-stat-new .stat-badge.orange { background: #FFF3E0; color: #E65100; }
         .crm-stat-new .stat-badge.green  { background: #E8F5E9; color: #2E7D32; }
         .crm-stat-new .stat-badge.blue   { background: #E3F2FD; color: #1565C0; }
@@ -368,7 +371,7 @@
             outline: none;
             box-shadow: none;
             -webkit-appearance: none;
-            text-align: {{ App::getLocale()=='ar'?'right':'left' }};
+            text-align: <?php echo e(App::getLocale()=='ar'?'right':'left'); ?>;
             width: 100%;
         }
         button.crm-nav-link:focus,
@@ -380,7 +383,7 @@
             color: var(--crm-red);
             border: none;
         }
-        .crm-chevron { font-size: 11px !important; margin-{{ App::getLocale()=='ar'?'right':'left' }}: auto; opacity: 0.5; transition: 0.2s; }
+        .crm-chevron { font-size: 11px !important; margin-<?php echo e(App::getLocale()=='ar'?'right':'left'); ?>: auto; opacity: 0.5; transition: 0.2s; }
         .crm-sub-list { list-style: none; padding: 0; margin: 0; overflow: hidden; max-height: 0; transition: max-height 0.28s ease; }
         .crm-sub-list.open { max-height: 500px; }
         .crm-sub-link {
@@ -403,7 +406,7 @@
             background: var(--crm-red-light);
             color: var(--crm-red);
             font-weight: 700;
-            border-{{ App::getLocale()=='ar'?'right':'left' }}: 3px solid var(--crm-red);
+            border-<?php echo e(App::getLocale()=='ar'?'right':'left'); ?>: 3px solid var(--crm-red);
         }
 
         /* ===== GLOBAL PAGE OVERRIDES (all pages use new style) ===== */
@@ -422,14 +425,14 @@
         .btn-primary:hover { background: var(--crm-red-dark) !important; border-color: var(--crm-red-dark) !important; }
         .btn-outline-primary { color: var(--crm-red) !important; border-color: var(--crm-red) !important; border-radius: 10px !important; font-weight: 700; }
         .btn-outline-primary:hover { background: var(--crm-red) !important; color: #fff !important; }
-        .btn { border-radius: 10px !important; font-family: {{ App::getLocale() == 'ar' ? "'Cairo', sans-serif" : "'Inter', sans-serif" }} !important; }
+        .btn { border-radius: 10px !important; font-family: <?php echo e(App::getLocale() == 'ar' ? "'Cairo', sans-serif" : "'Inter', sans-serif"); ?> !important; }
         /* Forms */
         .form-control, .form-select {
             border: 1px solid var(--crm-border) !important;
             border-radius: 10px !important;
             font-size: 13px;
             padding: 10px 14px;
-            font-family: {{ App::getLocale() == 'ar' ? "'Cairo', sans-serif" : "'Inter', sans-serif" }};
+            font-family: <?php echo e(App::getLocale() == 'ar' ? "'Cairo', sans-serif" : "'Inter', sans-serif"); ?>;
         }
         .form-control:focus, .form-select:focus { border-color: var(--crm-red) !important; box-shadow: 0 0 0 3px rgba(227,6,19,0.08) !important; }
         .form-label { font-size: 13px; font-weight: 700; color: var(--crm-text); margin-bottom: 6px; }
@@ -448,14 +451,14 @@
 
             /* Hide desktop sidebar completely */
             .crm-sidebar {
-                transform: translateX({{ App::getLocale() == 'ar' ? '100%' : '-100%' }});
+                transform: translateX(<?php echo e(App::getLocale() == 'ar' ? '100%' : '-100%'); ?>);
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 z-index: 1200;
                 box-shadow: none;
             }
             .crm-sidebar.mob-open {
                 transform: translateX(0);
-                box-shadow: {{ App::getLocale() == 'ar' ? '-6px' : '6px' }} 0 30px rgba(0,0,0,0.18);
+                box-shadow: <?php echo e(App::getLocale() == 'ar' ? '-6px' : '6px'); ?> 0 30px rgba(0,0,0,0.18);
             }
 
             /* Overlay */
@@ -476,7 +479,7 @@
 
             /* Main takes full width */
             .crm-main {
-                margin-{{ App::getLocale() == 'ar' ? 'right' : 'left' }}: 0 !important;
+                margin-<?php echo e(App::getLocale() == 'ar' ? 'right' : 'left'); ?>: 0 !important;
             }
 
             /* Topbar: show hamburger, hide search */
@@ -494,23 +497,23 @@
 </head>
 <body class="crm-shell">
 
-    {{-- Mobile Overlay --}}
+    
     <div class="crm-mob-overlay" id="crmMobOverlay"></div>
 
-    @include('partials.crm-sidebar')
+    <?php echo $__env->make('partials.crm-sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
     <div class="crm-main">
-        @include('partials.crm-topbar')
+        <?php echo $__env->make('partials.crm-topbar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
         <div class="crm-content">
-            @yield('content')
+            <?php echo $__env->yieldContent('content'); ?>
         </div>
     </div>
 
-    <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}" onerror="document.write('<script src=\'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js\'><\/script>')"></script>
+    <script src="<?php echo e(asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js')); ?>" onerror="document.write('<script src=\'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js\'><\/script>')"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.44.0/dist/apexcharts.min.js"></script>
 
-    @yield('js')
-    @yield('scripts')
+    <?php echo $__env->yieldContent('js'); ?>
+    <?php echo $__env->yieldContent('scripts'); ?>
 
     <script>
     // ===== CRM Mobile Drawer =====
@@ -537,20 +540,23 @@
     })();
     </script>
 
-    {{-- Custom Global Toast Notification --}}
-    @if(session('success') || session('error') || (isset($errors) && $errors->any()))
-    <div id="crm-toast" class="crm-toast show {{ session('success') ? 'success' : 'error' }}">
+    
+    <?php if(session('success') || session('error') || (isset($errors) && $errors->any())): ?>
+    <div id="crm-toast" class="crm-toast show <?php echo e(session('success') ? 'success' : 'error'); ?>">
         <div class="crm-toast-icon">
-            <i class="bi {{ session('success') ? 'bi-check-lg' : 'bi-x-lg' }}"></i>
+            <i class="bi <?php echo e(session('success') ? 'bi-check-lg' : 'bi-x-lg'); ?>"></i>
         </div>
         <div class="crm-toast-content">
-            @if(session('success'))
-                {{ session('success') }}
-            @elseif(session('error'))
-                {{ session('error') }}
-            @elseif(isset($errors) && $errors->any())
-                {{ $errors->first() }}
-            @endif
+            <?php if(session('success')): ?>
+                <?php echo e(session('success')); ?>
+
+            <?php elseif(session('error')): ?>
+                <?php echo e(session('error')); ?>
+
+            <?php elseif(isset($errors) && $errors->any()): ?>
+                <?php echo e($errors->first()); ?>
+
+            <?php endif; ?>
         </div>
         <button class="crm-toast-close" onclick="this.parentElement.remove()">
             <i class="bi bi-x"></i>
@@ -626,7 +632,8 @@
             }
         });
     </script>
-    @endif
+    <?php endif; ?>
 
 </body>
 </html>
+<?php /**PATH D:\Projects\XO\Zad\resources\views/partials/Layouts/crm-master.blade.php ENDPATH**/ ?>
