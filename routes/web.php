@@ -81,6 +81,7 @@ Route::prefix('crm')->name('crm.')->middleware(['auth:employee', 'guard.employee
     Route::middleware('permission:manage-tasks')->group(function () {
         Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index');
         Route::post('tasks', [TaskController::class, 'store'])->name('tasks.store');
+        Route::put('tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
         Route::patch('tasks/{task}/toggle', [TaskController::class, 'toggle'])->name('tasks.toggle');
         Route::patch('tasks/{task}/start', [TaskController::class, 'start'])->name('tasks.start');
         Route::patch('tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
@@ -188,6 +189,7 @@ Route::prefix('crm')->name('crm.')->middleware(['auth:employee', 'guard.employee
         Route::get('bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
         Route::patch('bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.status');
         Route::patch('bookings/{booking}/assign', [BookingController::class, 'assign'])->name('bookings.assign');
+        Route::patch('bookings/{booking}/offer', [BookingController::class, 'updateOffer'])->name('bookings.offer');
         Route::post('bookings/{booking}/note', [BookingController::class, 'addNote'])->name('bookings.note');
         Route::post('bookings/{booking}/documents', [BookingController::class, 'uploadDocument'])->name('bookings.documents.store');
         Route::delete('booking-documents/{document}', [BookingController::class, 'deleteDocument'])->name('bookings.documents.destroy');

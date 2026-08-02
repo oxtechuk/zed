@@ -43,6 +43,7 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high',
             'assigned_to' => 'nullable|exists:employees,id',
             'due_date' => 'nullable|date',
+            'booking_id' => 'nullable|exists:bookings,id',
         ]);
 
         $data['created_by'] = Auth::guard('employee')->id();
@@ -50,6 +51,22 @@ class TaskController extends Controller
         Task::create($data);
 
         return back()->with('success', 'تم إضافة المهمة بنجاح');
+    }
+
+    public function update(Request $request, Task $task)
+    {
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => 'required|in:new,in_progress,done',
+            'priority' => 'required|in:low,medium,high',
+            'assigned_to' => 'nullable|exists:employees,id',
+            'due_date' => 'nullable|date',
+        ]);
+
+        $task->update($data);
+
+        return back()->with('success', 'تم تحديث المهمة بنجاح');
     }
 
     public function toggle(Task $task)

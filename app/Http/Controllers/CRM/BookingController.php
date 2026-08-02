@@ -4,11 +4,16 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\BookingDocument;
 use App\Models\BookingNote;
+use App\Models\CalculatorBank;
 use App\Models\Car;
 use App\Models\Employee;
+use App\Models\Setting;
 use App\Notifications\NewBookingNotification;
+use App\Services\TwilioWhatsAppService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BookingController extends Controller
 {
@@ -85,11 +90,25 @@ class BookingController extends Controller
 
     public function show(Booking $booking)
     {
-        $booking->load(['car.brand', 'employee', 'notes_list.employee', 'documents.employee']);
+        $booking->load(['car.brand', 'employee', 'financingBank', 'notes_list.employee', 'documents.employee', 'tasks.assignedTo']);
         $employees = Employee::where('is_active', true)->get();
         $statuses = Booking::STATUSES;
+        $calculatorBanks = CalculatorBank::activeOrdered()->get();
 
-        return view('crm.bookings.show', compact('booking', 'employees', 'statuses'));
+        return view('crm.bookings.show', compact('booking', 'employees', 'statuses', 'calculatorBanks'));
+    }
+
+    public function updateOffer(Request $request, Booking $booking)
+    {
+        $data = $request->validate([
+            'calculator_bank_id' => 'nullable|exists:calculator_banks,id',
+            'balloon_payment' => 'nullable|numeric|min:0',
+            'offer_notes' => 'nullable|string|max:2000',
+        ]);
+
+        $booking->update($data);
+
+        return back()->with('success', 'تم تحديث تفاصيل العرض بنجاح');
     }
 
     public function updateStatus(Request $request, Booking $booking)
@@ -117,7 +136,7 @@ class BookingController extends Controller
         }
 
         // إرسال رسالة واتساب للعميل إذا كان القالب مفعلاً
-        $settings = \App\Models\Setting::whereIn('key', ['whatsapp_template_status_update'])->pluck('value', 'key');
+        $settings = Setting::whereIn('key', ['whatsapp_template_status_update'])->pluck('value', 'key');
         $template = $settings['whatsapp_template_status_update'] ?? '';
 
         if (! empty($template) && ! empty($booking->client_phone)) {
@@ -126,7 +145,7 @@ class BookingController extends Controller
                 [$booking->client_name, $booking->car?->name ?? 'السيارة', Booking::STATUSES[$request->status]['label']],
                 $template
             );
-            $twilioService = app(\App\Services\TwilioWhatsAppService::class);
+            $twilioService = app(TwilioWhatsAppService::class);
             $twilioService->sendWhatsApp($booking->client_phone, $message);
         }
 
@@ -180,10 +199,10 @@ class BookingController extends Controller
         return back()->with('success', 'تم رفع المستند بنجاح');
     }
 
-    public function deleteDocument(\App\Models\BookingDocument $document)
+    public function deleteDocument(BookingDocument $document)
     {
-        if ($document->file_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($document->file_path)) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($document->file_path);
+        if ($document->file_path && Storage::disk('public')->exists($document->file_path)) {
+            Storage::disk('public')->delete($document->file_path);
         }
         $document->delete();
 

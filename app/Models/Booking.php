@@ -12,7 +12,7 @@ class Booking extends Model
         'car_id', 'assigned_to', 'client_name', 'client_phone', 'client_email',
         'down_payment', 'duration_years', 'interest_rate', 'monthly_installment',
         'total_price', 'notes', 'status', 'source', 'last_contacted_at',
-        'booking_type', 'location',
+        'booking_type', 'location', 'calculator_bank_id', 'balloon_payment', 'offer_notes',
     ];
 
     protected $casts = [
@@ -95,6 +95,16 @@ class Booking extends Model
     public function documents(): HasMany
     {
         return $this->hasMany(BookingDocument::class)->latest();
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class)->latest();
+    }
+
+    public function financingBank(): BelongsTo
+    {
+        return $this->belongsTo(CalculatorBank::class, 'calculator_bank_id');
     }
 
     public function getStatusLabelAttribute(): string
