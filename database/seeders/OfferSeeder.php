@@ -8,6 +8,8 @@ use Illuminate\Database\Seeder;
 
 class OfferSeeder extends Seeder
 {
+    use LocalImagesTrait;
+
     public function run(): void
     {
         // Check if there are cars to link to offers
@@ -34,7 +36,7 @@ class OfferSeeder extends Seeder
             'tag' => 'limited',
             'special_price' => 110000,
             'special_installment' => 1400,
-            'image' => 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop',
+            'image' => $this->offerImage(0),
             'starts_at' => now(),
             'ends_at' => now()->addDays(4)->addHours(23)->addMinutes(40)->addSeconds(3),
             'is_active' => true,
@@ -56,7 +58,7 @@ class OfferSeeder extends Seeder
             'tag' => 'exclusive',
             'special_price' => 135000,
             'special_installment' => 1800,
-            'image' => 'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=1200&auto=format&fit=crop',
+            'image' => $this->offerImage(1),
             'starts_at' => now(),
             'ends_at' => now()->addDays(7)->addHours(12)->addMinutes(30),
             'is_active' => true,
@@ -77,7 +79,7 @@ class OfferSeeder extends Seeder
             'tag' => 'new',
             'special_price' => 90000,
             'special_installment' => 1200,
-            'image' => 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=1200&auto=format&fit=crop',
+            'image' => $this->offerImage(2),
             'starts_at' => now(),
             'ends_at' => now()->addDays(12)->addHours(6),
             'is_active' => true,
@@ -98,7 +100,7 @@ class OfferSeeder extends Seeder
             'tag' => 'popular',
             'special_price' => 115000,
             'special_installment' => 1500,
-            'image' => 'https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1200&auto=format&fit=crop',
+            'image' => $this->offerImage(3),
             'starts_at' => now(),
             'ends_at' => now()->addDays(30),
             'is_active' => true,

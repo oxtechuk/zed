@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\File;
 
 class CarImportSeeder extends Seeder
 {
+    use LocalImagesTrait;
+
     public function run(): void
     {
         $jsonPath = database_path('data/cars.json');
@@ -48,7 +50,7 @@ class CarImportSeeder extends Seeder
             'Seats' => ['ar' => 'عدد المقاعد', 'en' => 'Seats'],
         ];
 
-        foreach ($carsData as $carData) {
+        foreach ($carsData as $index => $carData) {
             // 1. Create or Find Brand
             $brandInfo = $carData['brand'];
             $brand = Brand::updateOrCreate(
@@ -58,6 +60,7 @@ class CarImportSeeder extends Seeder
                         'ar' => $brandInfo['ar'],
                         'en' => $brandInfo['en'],
                     ],
+                    'logo' => $this->brandLogo(),
                     'is_active' => true,
                 ]
             );
@@ -172,7 +175,7 @@ class CarImportSeeder extends Seeder
                         ['name' => 'أسود / Black', 'hex' => '#000000'],
                         ['name' => 'فضي / Silver', 'hex' => '#C0C0C0'],
                     ],
-                    'thumbnail' => $carData['thumbnail'] ?? 'images/car1.png',
+                    'thumbnail' => $this->carThumbnail($index),
                     'is_featured' => true,
                     'is_active' => true,
                     'is_highlighted' => 'none',
@@ -186,7 +189,7 @@ class CarImportSeeder extends Seeder
 
             // 8. Seed Gallery Images
             $car->images()->delete();
-            foreach ($this->galleryImages($type) as $sortOrder => $image) {
+            foreach ($this->carGallery($index) as $sortOrder => $image) {
                 $car->images()->create([
                     'image_path' => $image['url'],
                     'type' => $image['type'],
@@ -206,25 +209,6 @@ class CarImportSeeder extends Seeder
             'fuel type' => 'bi bi-fuel-pump',
             'seats' => 'bi bi-people',
             default => 'bi bi-info-circle',
-        };
-    }
-
-    /**
-     * @return array<int, array{url: string, type: string}>
-     */
-    private function galleryImages(string $type): array
-    {
-        return match ($type) {
-            'suv' => [
-                ['url' => 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=1200&auto=format&fit=crop', 'type' => 'exterior'],
-                ['url' => 'https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?q=80&w=1200&auto=format&fit=crop', 'type' => 'exterior'],
-                ['url' => 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=1200&auto=format&fit=crop', 'type' => 'interior'],
-            ],
-            default => [
-                ['url' => 'https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1200&auto=format&fit=crop', 'type' => 'exterior'],
-                ['url' => 'https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=1200&auto=format&fit=crop', 'type' => 'exterior'],
-                ['url' => 'https://images.unsplash.com/photo-1543796583-95c3ce4b7635?q=80&w=1200&auto=format&fit=crop', 'type' => 'interior'],
-            ],
         };
     }
 }
