@@ -32,8 +32,8 @@ class HomeSectionSeeder extends Seeder
             ['key' => 'promo', 'sort_order' => 2],
             [
                 'key' => 'search', 'sort_order' => 3,
-                'title' => ['ar' => 'ابحث عن سيارتك', 'en' => 'Find your car'],
-                'subtitle' => ['ar' => 'ابحث عن سيارة...', 'en' => 'Search for a car...'], // used as the search input placeholder
+                'title' => ['ar' => 'ابحث عن سيارتك المثالية', 'en' => 'Find your perfect car'],
+                'subtitle' => ['ar' => 'ابحث عن سيارة بالاسم، العلامة التجارية، الموديل، أو المواصفات...', 'en' => 'Search by name, brand, model, or specs...'], // used as the search input placeholder
                 'button_text' => ['ar' => 'بحث', 'en' => 'Search'],
             ],
             [
@@ -43,16 +43,16 @@ class HomeSectionSeeder extends Seeder
             ],
             [
                 'key' => 'featured_cars', 'sort_order' => 5,
-                'badge' => ['ar' => 'مميز', 'en' => 'Featured'],
-                'title' => ['ar' => 'سيارات مميزة', 'en' => 'Featured Cars'],
-                'subtitle' => ['ar' => 'أفضل السيارات المختارة لك', 'en' => 'Hand-picked cars for you'],
+                'badge' => ['ar' => 'وصل حديثاً', 'en' => 'Just arrived'],
+                'title' => ['ar' => 'أحدث السيارات واصلة حديثاً', 'en' => 'Latest cars just arrived'],
+                'subtitle' => ['ar' => 'آخر ما وصل إلى المعرض', 'en' => 'Recently added to the showroom'],
                 'button_text' => ['ar' => 'عرض الكل', 'en' => 'View all'],
                 'button_url' => '/cars',
             ],
             [
                 'key' => 'offers', 'sort_order' => 55,
                 'badge' => ['ar' => 'عرض', 'en' => 'Offer'],
-                'title' => ['ar' => 'العروض الحالية', 'en' => 'Current Offers'],
+                'title' => ['ar' => 'ايضاً من عروضنا', 'en' => 'Also from our offers'],
                 'button_text' => ['ar' => 'عرض كل العروض', 'en' => 'View all offers'],
                 'button_url' => '/offers',
             ],
@@ -82,7 +82,7 @@ class HomeSectionSeeder extends Seeder
             ],
             [
                 'key' => 'finance', 'sort_order' => 9,
-                'title' => ['ar' => 'كيف يعمل التمويل؟', 'en' => 'How financing works'],
+                'title' => ['ar' => 'استلم سيارتك في 4 خطوات', 'en' => 'Receive your car in 4 steps'],
                 'subtitle' => ['ar' => 'أربع خطوات بسيطة تفصلك عن سيارتك القادمة', 'en' => 'Four simple steps to your next car'],
                 'button_text' => ['ar' => 'احسب قسطك الآن', 'en' => 'Calculate your installment'],
                 'button_url' => '/calculator',
@@ -164,19 +164,15 @@ class HomeSectionSeeder extends Seeder
 
     private function seedFinanceSteps(): void
     {
-        if (FinanceStep::query()->exists()) {
-            return;
-        }
-
         $steps = [
-            ['number' => 1, 'title' => ['ar' => 'اختر سيارتك', 'en' => 'Choose your car'], 'description' => ['ar' => 'تصفح مجموعتنا الواسعة من السيارات الفاخرة', 'en' => 'Browse our wide range of luxury cars'], 'icon' => 'car'],
-            ['number' => 2, 'title' => ['ar' => 'احسب قسطك', 'en' => 'Calculate your installment'], 'description' => ['ar' => 'استخدم الحاسبة لمعرفة قسطك الشهري', 'en' => 'Use the calculator to see your monthly payment'], 'icon' => 'calculator'],
-            ['number' => 3, 'title' => ['ar' => 'قدّم طلبك', 'en' => 'Submit your request'], 'description' => ['ar' => 'أكمل بياناتك الشخصية والمالية', 'en' => 'Complete your personal and financial details'], 'icon' => 'file-text'],
-            ['number' => 4, 'title' => ['ar' => 'استلم سيارتك', 'en' => 'Get your car'], 'description' => ['ar' => 'بعد الموافقة، استلم سيارتك خلال أيام', 'en' => 'Once approved, receive your car within days'], 'icon' => 'key'],
+            ['number' => 1, 'title' => ['ar' => 'اختر سيارتك', 'en' => 'Choose your car'], 'description' => ['ar' => 'قمت بإختيار سيارتك من بين مئات السيارات على حسب احتياجك', 'en' => 'You picked your car from hundreds based on your needs'], 'icon' => 'car'],
+            ['number' => 2, 'title' => ['ar' => 'قدّم طلبك', 'en' => 'Submit your request'], 'description' => ['ar' => 'أكمل نموذج التمويل الإلكتروني في دقائق معدودة', 'en' => 'Complete the online financing form in minutes'], 'icon' => 'file-text'],
+            ['number' => 3, 'title' => ['ar' => 'الموافقة السريعة', 'en' => 'Fast approval'], 'description' => ['ar' => 'يتواصل معك فريقنا خلال 24 ساعة لاستكمال الإجراءات', 'en' => 'Our team contacts you within 24 hours to complete the process'], 'icon' => 'calculator'],
+            ['number' => 4, 'title' => ['ar' => 'استلم سيارتك', 'en' => 'Receive your car'], 'description' => ['ar' => 'استلم مفاتيح سيارتك من المعرض أو بالتوصيل لباب بيتك', 'en' => 'Receive your keys at the showroom or delivered to your door'], 'icon' => 'key'],
         ];
 
         foreach ($steps as $index => $step) {
-            FinanceStep::create($step + ['sort_order' => $index + 1]);
+            FinanceStep::query()->updateOrCreate(['number' => $step['number']], $step + ['sort_order' => $index + 1, 'is_active' => true]);
         }
     }
 
@@ -224,5 +220,16 @@ class HomeSectionSeeder extends Seeder
                 ['title' => ['ar' => 'طلب مخصص', 'en' => 'Custom Order'], 'url' => '/contact'],
             ]]
         );
+
+        $contactSettings = [
+            'footer_text' => ['ar' => '© 2026 زاد كابيتال. جميع الحقوق محفوظة.', 'en' => '© 2026 Zad Capital. All rights reserved.'],
+            'contact_phone' => '+966 55 000 0000',
+            'contact_email' => 'info@zadcapital.sa',
+            'contact_address' => ['ar' => 'الرياض، المملكة العربية السعودية', 'en' => 'Riyadh, Saudi Arabia'],
+        ];
+
+        foreach ($contactSettings as $key => $value) {
+            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+        }
     }
 }

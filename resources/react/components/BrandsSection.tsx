@@ -40,12 +40,12 @@ export default function BrandsSection({
     return (
       <section dir={i18n.dir()} className="w-full bg-[#FAFBFC] pb-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center justify-center gap-10 md:gap-14 border-b border-[#E5E9F0] pb-10">
+          <div className="flex flex-nowrap items-center justify-center gap-6 border-b border-[#E7E9EF] pb-10">
             {brands.map((brand) => (
               <div
                 key={brand.id}
                 onClick={() => navigate(`/cars?brandId=${brand.id}`)}
-                className="cursor-pointer opacity-60 hover:opacity-100 transition-opacity flex items-center justify-center h-[50px] w-[90px]"
+                className="cursor-pointer opacity-60 hover:opacity-100 transition-opacity flex items-center justify-center h-[104px] w-[104px]"
                 title={brand.name}
               >
                 <img

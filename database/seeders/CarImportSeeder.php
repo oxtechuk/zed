@@ -176,7 +176,7 @@ class CarImportSeeder extends Seeder
                         ['name' => 'فضي / Silver', 'hex' => '#C0C0C0'],
                     ],
                     'thumbnail' => $this->carThumbnail($index),
-                    'is_featured' => true,
+                    'is_featured' => false,
                     'is_active' => true,
                     'is_highlighted' => 'none',
                     'availability_status' => 'available',

@@ -25,6 +25,24 @@ class CarSeeder extends Seeder
                 'logo' => $this->brandLogo(),
                 'is_active' => true,
             ],
+            [
+                'name' => ['en' => 'Porsche', 'ar' => 'بورشه'],
+                'slug' => 'porsche',
+                'logo' => $this->brandLogo(),
+                'is_active' => true,
+            ],
+            [
+                'name' => ['en' => 'Tesla', 'ar' => 'تسلا'],
+                'slug' => 'tesla',
+                'logo' => $this->brandLogo(),
+                'is_active' => true,
+            ],
+            [
+                'name' => ['en' => 'Mercedes-Benz', 'ar' => 'مرسيدس بنز'],
+                'slug' => 'mercedes-benz',
+                'logo' => $this->brandLogo(),
+                'is_active' => true,
+            ],
         ];
 
         foreach ($brands as $data) {
@@ -33,6 +51,9 @@ class CarSeeder extends Seeder
 
         $toyota = Brand::where('slug', 'toyota')->first();
         $bmw = Brand::where('slug', 'bmw')->first();
+        $porsche = Brand::where('slug', 'porsche')->first();
+        $tesla = Brand::where('slug', 'tesla')->first();
+        $mercedes = Brand::where('slug', 'mercedes-benz')->first();
 
         $cars = [
             [
@@ -59,7 +80,7 @@ class CarSeeder extends Seeder
                 ],
                 'description' => ['en' => 'A reliable and comfortable sedan with advanced safety features.', 'ar' => 'سيارة سيدان موثوقة ومريحة مع ميزات أمان متقدمة.'],
                 'features' => ['en' => 'Sunroof, Leather Seats, Backup Camera', 'ar' => 'سقف بانورامي، مقاعد جلدية، كاميرا خلفية'],
-                'is_featured' => true,
+                'is_featured' => false,
                 'is_active' => true,
                 'is_highlighted' => 'featured',
                 'availability_status' => 'available',
@@ -69,16 +90,17 @@ class CarSeeder extends Seeder
                 'name' => ['en' => 'Toyota RAV4', 'ar' => 'تويوتا راف فور'],
                 'slug' => ['en' => 'toyota-rav4', 'ar' => 'تويوتا-راف-فور'],
                 'model' => 'RAV4',
-                'year' => 2025,
+                'year' => 2024,
                 'type' => 'suv',
-                'cash_price' => 145000,
-                'min_down_payment' => 29000,
-                'min_installment' => 4000,
+                'cash_price' => 450000,
+                'min_down_payment' => 90000,
+                'min_installment' => 8200,
+                'badge_color' => '#ED8EB7',
                 'specs' => [
-                    ['label' => 'Engine', 'value' => '2.5L 4-Cylinder'],
+                    ['label' => 'Engine', 'value' => '2.5L 4-Cylinder Hybrid'],
                     ['label' => 'Horsepower', 'value' => '219 HP'],
-                    ['label' => 'Fuel Type', 'value' => 'Petrol'],
-                    ['label' => 'Transmission', 'value' => 'Automatic'],
+                    ['label' => 'Fuel Type', 'value' => 'هجين'],
+                    ['label' => 'Transmission', 'value' => 'أوتوماتيك'],
                     ['label' => 'Seats', 'value' => '5'],
                 ],
                 'colors' => [
@@ -86,7 +108,7 @@ class CarSeeder extends Seeder
                     ['name' => 'White', 'hex' => '#FFFFFF'],
                     ['name' => 'Gray', 'hex' => '#808080'],
                 ],
-                'description' => ['en' => 'A versatile SUV with spacious interior and all-wheel drive capability.', 'ar' => 'سيارة دفع رباعي متعددة الاستخدامات مع مقصورة داخلية واسعة.'],
+                'description' => ['en' => 'A versatile hybrid crossover with spacious interior and all-wheel drive capability.', 'ar' => 'سيارة كروس أوفر هجينة متعددة الاستخدامات مع مقصورة داخلية واسعة.'],
                 'features' => ['en' => 'AWD, Panoramic Roof, Apple CarPlay', 'ar' => 'دفع رباعي، سقف بانورامي، أبل كاربلاي'],
                 'is_featured' => true,
                 'is_active' => true,
@@ -117,7 +139,7 @@ class CarSeeder extends Seeder
                 ],
                 'description' => ['en' => 'The ultimate luxury off-road SUV with unmatched durability and prestige.', 'ar' => 'سيارة الدفع الرباعي الفاخرة الفائقة مع متانة وهيبة لا تضاهى.'],
                 'features' => ['en' => 'Multi-Terrain Select, Adaptive Cruise Control, Luxury Interior', 'ar' => 'اختيار التضاريس المتعددة، مثبت سرعة تكيفي، مقصورة فاخرة'],
-                'is_featured' => true,
+                'is_featured' => false,
                 'is_active' => true,
                 'is_highlighted' => 'featured',
                 'availability_status' => 'available',
@@ -146,7 +168,7 @@ class CarSeeder extends Seeder
                 ],
                 'description' => ['en' => 'The iconic compact sedan known for exceptional fuel economy and reliability.', 'ar' => 'سيارة السيدان المدمجة الشهيرة المعروفة باقتصادها الاستثنائي في الوقود وموثوقيتها.'],
                 'features' => ['en' => 'LED Headlights, Touchscreen Display, Lane Departure Alert', 'ar' => 'مصابيح LED أمامية، شاشة لمس، تنبيه مغادرة المسار'],
-                'is_featured' => true,
+                'is_featured' => false,
                 'is_active' => true,
                 'is_highlighted' => 'none',
                 'availability_status' => 'available',
@@ -175,7 +197,7 @@ class CarSeeder extends Seeder
                 ],
                 'description' => ['en' => 'A premium luxury SUV combining sporty performance with executive comfort.', 'ar' => 'سيارة دفع رباعي فاخرة تجمع بين الأداء الرياضي والراحة التنفيذية.'],
                 'features' => ['en' => 'Panoramic Roof, Harman Kardon Sound, Head-Up Display', 'ar' => 'سقف بانورامي، نظام هارمان كاردون، عرض على الزجاج الأمامي'],
-                'is_featured' => true,
+                'is_featured' => false,
                 'is_active' => true,
                 'is_highlighted' => 'featured',
                 'availability_status' => 'available',
@@ -204,7 +226,7 @@ class CarSeeder extends Seeder
                 ],
                 'description' => ['en' => 'An executive sedan with cutting-edge technology and hybrid efficiency.', 'ar' => 'سيارة سيدان تنفيذية بتقنية متطورة وكفاءة هجينة.'],
                 'features' => ['en' => 'Laser Headlights, Wireless Charging, Parking Assistant Plus', 'ar' => 'مصابيح ليزر أمامية، شحن لاسلكي، مساعد ركن متطور'],
-                'is_featured' => true,
+                'is_featured' => false,
                 'is_active' => true,
                 'is_highlighted' => 'featured',
                 'availability_status' => 'available',
@@ -233,7 +255,7 @@ class CarSeeder extends Seeder
                 ],
                 'description' => ['en' => 'The flagship BMW sedan offering the pinnacle of luxury and innovation.', 'ar' => 'سيارة بي إم دبليو الرائدة التي تقدم قمة الفخامة والابتكار.'],
                 'features' => ['en' => 'Executive Lounge Seating, Theater Screen, Bowers & Wilkins Sound', 'ar' => 'مقاعد تنفيذية فاخرة، شاشة ترفيه، نظام باورز آند ويلكنز'],
-                'is_featured' => true,
+                'is_featured' => false,
                 'is_active' => true,
                 'is_highlighted' => 'featured',
                 'availability_status' => 'available',
@@ -262,9 +284,129 @@ class CarSeeder extends Seeder
                 ],
                 'description' => ['en' => 'A compact luxury SUV with agile handling and premium craftsmanship.', 'ar' => 'سيارة دفع رباعي فاخرة مدمجة مع معالجة رشيقة وحرفية ممتازة.'],
                 'features' => ['en' => 'Ambient Lighting, Digital Instrument Cluster, Power Tailgate', 'ar' => 'إضاءة محيطة، شاشة عدادات رقمية، باب خلفي كهربائي'],
-                'is_featured' => true,
+                'is_featured' => false,
                 'is_active' => true,
                 'is_highlighted' => 'none',
+                'availability_status' => 'available',
+            ],
+            [
+                'brand_id' => $porsche->id,
+                'name' => ['en' => 'Porsche Cayenne GTS', 'ar' => 'بورشه كايين GTS'],
+                'slug' => ['en' => 'porsche-cayenne-gts', 'ar' => 'بورشه-كايين-gts'],
+                'model' => 'Cayenne GTS',
+                'year' => 2024,
+                'type' => 'suv',
+                'cash_price' => 650000,
+                'min_down_payment' => 130000,
+                'min_installment' => 10600,
+                'badge_color' => '#EDC98E',
+                'specs' => [
+                    ['label' => 'Engine', 'value' => '4.0L V8 Twin-Turbo'],
+                    ['label' => 'Horsepower', 'value' => '453 HP'],
+                    ['label' => 'Fuel Type', 'value' => 'بنزين'],
+                    ['label' => 'Transmission', 'value' => 'أوتوماتيك'],
+                    ['label' => 'Seats', 'value' => '5'],
+                ],
+                'colors' => [
+                    ['name' => 'Black', 'hex' => '#000000'],
+                    ['name' => 'White', 'hex' => '#FFFFFF'],
+                    ['name' => 'Carrara White', 'hex' => '#F2F2F2'],
+                ],
+                'description' => ['en' => 'A high-performance luxury SUV blending sporty dynamics with everyday comfort.', 'ar' => 'سيارة دفع رباعي فاخرة عالية الأداء تجمع بين الديناميكية الرياضية والراحة اليومية.'],
+                'features' => ['en' => 'Sport Chrono Package, Adaptive Air Suspension, Sport Exhaust', 'ar' => 'باقة سبورت كرونو، تعليق هوائي تكيفي، عادم رياضي'],
+                'is_featured' => true,
+                'is_active' => true,
+                'is_highlighted' => 'featured',
+                'availability_status' => 'available',
+            ],
+            [
+                'brand_id' => $tesla->id,
+                'name' => ['en' => 'Tesla Model Y', 'ar' => 'تسلا موديل Y'],
+                'slug' => ['en' => 'tesla-model-y', 'ar' => 'تسلا-موديل-y'],
+                'model' => 'Model Y Long Range',
+                'year' => 2024,
+                'type' => 'suv',
+                'cash_price' => 700000,
+                'min_down_payment' => 140000,
+                'min_installment' => 12000,
+                'badge_color' => '#90ED8E',
+                'specs' => [
+                    ['label' => 'Engine', 'value' => 'Dual Motor Electric'],
+                    ['label' => 'Horsepower', 'value' => '384 HP'],
+                    ['label' => 'Fuel Type', 'value' => 'كهرباء'],
+                    ['label' => 'Transmission', 'value' => 'أوتوماتيك'],
+                    ['label' => 'Seats', 'value' => '5'],
+                ],
+                'colors' => [
+                    ['name' => 'Pearl White', 'hex' => '#F5F5F5'],
+                    ['name' => 'Midnight Silver', 'hex' => '#4A4A4A'],
+                    ['name' => 'Deep Blue', 'hex' => '#1E3A8A'],
+                ],
+                'description' => ['en' => 'An all-electric family SUV with exceptional range and cutting-edge technology.', 'ar' => 'سيارة دفع رباعي عائلية كهربائية بالكامل بمدى استثنائي وتقنية متطورة.'],
+                'features' => ['en' => 'Autopilot, Glass Roof, Over-the-Air Updates', 'ar' => 'أوتوبايلوت، سقف زجاجي، تحديثات عبر الهواء'],
+                'is_featured' => true,
+                'is_active' => true,
+                'is_highlighted' => 'featured',
+                'availability_status' => 'available',
+            ],
+            [
+                'brand_id' => $mercedes->id,
+                'name' => ['en' => 'Mercedes-AMG GT', 'ar' => 'مرسيدس AMG GT'],
+                'slug' => ['en' => 'mercedes-amg-gt', 'ar' => 'مرسيدس-amg-gt'],
+                'model' => 'AMG GT',
+                'year' => 2024,
+                'type' => 'coupe',
+                'cash_price' => 1200000,
+                'min_down_payment' => 240000,
+                'min_installment' => 15000,
+                'badge_color' => '#ED8EB7',
+                'specs' => [
+                    ['label' => 'Engine', 'value' => '4.0L V8 Biturbo'],
+                    ['label' => 'Horsepower', 'value' => '577 HP'],
+                    ['label' => 'Fuel Type', 'value' => 'بنزين'],
+                    ['label' => 'Transmission', 'value' => 'أوتوماتيك'],
+                    ['label' => 'Seats', 'value' => '2'],
+                ],
+                'colors' => [
+                    ['name' => 'Obsidian Black', 'hex' => '#1A1A1A'],
+                    ['name' => 'Polar White', 'hex' => '#F0F0F0'],
+                    ['name' => 'Selenite Grey', 'hex' => '#8C8C8C'],
+                ],
+                'description' => ['en' => 'A thrilling two-seat sports coupe delivering race-bred performance.', 'ar' => 'كوبيه رياضية مثيرة بمقعدين تقدم أداءً مستوحى من سباقات الحلبات.'],
+                'features' => ['en' => 'AMG Performance Exhaust, Race Track Modes, Carbon Interior', 'ar' => 'عادم AMG الرياضي، أوضاع حلبات السباق، مقصورة كربونية'],
+                'is_featured' => true,
+                'is_active' => true,
+                'is_highlighted' => 'featured',
+                'availability_status' => 'available',
+            ],
+            [
+                'brand_id' => $bmw->id,
+                'name' => ['en' => 'BMW X1', 'ar' => 'بي إم دبليو X1'],
+                'slug' => ['en' => 'bmw-x1', 'ar' => 'بي-إم-دبليو-x1'],
+                'model' => 'X1 xDrive20i',
+                'year' => 2024,
+                'type' => 'suv',
+                'cash_price' => 400000,
+                'min_down_payment' => 80000,
+                'min_installment' => 7500,
+                'badge_color' => '#90ED8E',
+                'specs' => [
+                    ['label' => 'Engine', 'value' => '2.0L I4 Turbo'],
+                    ['label' => 'Horsepower', 'value' => '204 HP'],
+                    ['label' => 'Fuel Type', 'value' => 'ديزل'],
+                    ['label' => 'Transmission', 'value' => 'أوتوماتيك'],
+                    ['label' => 'Seats', 'value' => '5'],
+                ],
+                'colors' => [
+                    ['name' => 'Phytonic Blue', 'hex' => '#2C3E50'],
+                    ['name' => 'Alpine White', 'hex' => '#F8F8F8'],
+                    ['name' => 'Black', 'hex' => '#000000'],
+                ],
+                'description' => ['en' => 'A compact luxury SUV with agile handling and premium craftsmanship.', 'ar' => 'سيارة مدمجة فاخرة ذات دفع رباعي مع معالجة رشيقة وحرفية ممتازة.'],
+                'features' => ['en' => 'Ambient Lighting, Digital Instrument Cluster, Power Tailgate', 'ar' => 'إضاءة محيطة، شاشة عدادات رقمية، باب خلفي كهربائي'],
+                'is_featured' => true,
+                'is_active' => true,
+                'is_highlighted' => 'featured',
                 'availability_status' => 'available',
             ],
         ];
@@ -286,5 +428,12 @@ class CarSeeder extends Seeder
                 ]);
             }
         }
+
+        $featuredSlugs = ['toyota-rav4', 'porsche-cayenne-gts', 'tesla-model-y', 'mercedes-amg-gt', 'bmw-x1'];
+
+        Car::query()
+            ->where('is_featured', true)
+            ->whereNotIn('slug->en', $featuredSlugs)
+            ->update(['is_featured' => false]);
     }
 }

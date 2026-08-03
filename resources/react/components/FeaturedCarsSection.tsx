@@ -121,7 +121,7 @@ export default function FeaturedCarsSection({
         {/* Section Header with Navigation Arrows on Left (in RTL) */}
         <div className="mb-8 flex items-end justify-between">
           <div className="text-right">
-            <h2 className="text-[24px] font-extrabold text-[#0F172A] md:text-[32px]">
+            <h2 className="text-[24px] font-black text-[#16254F] md:text-[32px]">
               {titleBlue}
               {titleOrange && (
                 <span className="text-[var(--brand-secondary-color)]">
@@ -143,14 +143,14 @@ export default function FeaturedCarsSection({
               <button
                 type="button"
                 onClick={isRTL ? nextSlide : prevSlide}
-                className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[#E5E9F0] bg-white text-[#4B5563] transition hover:border-[#0F1E36] hover:bg-[#0F1E36] hover:text-white"
+                className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#16254F] text-white transition hover:bg-[#0F1E36]"
               >
                 <ChevronLeft size={20} />
               </button>
               <button
                 type="button"
                 onClick={isRTL ? prevSlide : nextSlide}
-                className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-[#E5E9F0] bg-white text-[#4B5563] transition hover:border-[#0F1E36] hover:bg-[#0F1E36] hover:text-white"
+                className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#16254F] text-white transition hover:bg-[#0F1E36]"
               >
                 <ChevronRight size={20} />
               </button>

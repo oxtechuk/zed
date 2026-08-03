@@ -43,23 +43,25 @@
     },
     "year": "سنة الصنع / الموديل",
     "yearPlaceholder": "اختر السنة",
-    "searchPlaceholder": "اكتب اسم السيارة، الماركة، أو الموديل...",
-    "searchButton": "أظهر النتائج",
-    "resetButton": "إعادة ضبط"
+    "searchPlaceholder": "ابحث عن سيارة بالاسم، العلامة التجارية، الموديل، أو المواصفات...",
+    "searchButton": "بحث",
+    "resetButton": "الفلاتر"
   },
   "carCard": {
     "compare": "أضف للمقارنة",
     "subtitle": "سيارات عائلية مريحة",
-    "cashPrice": "سعر الكاش",
-    "monthlyPayment": "قسط شهري",
+    "cashPrice": "السعر النقدي",
+    "monthlyPayment": "القسط الشهري",
     "estimated": "تقديري",
-    "reserve": "احجزها الآن",
+    "reserve": "اطلبها الآن",
+    "newlyArrived": "وصل حديثاً",
     "model": "موديل"
   },
   "offers": {
     "titleWhite": "أفضل عروض،",
     "titleOrange": "لتسهيل تمويلك",
-    "buttonText": "كل العروض"
+    "buttonText": "كل العروض",
+    "alsoTitle": "ايضاً من عروضنا"
   },
   "featuredCars": {
     "titleBlue": "اخترنا",
@@ -92,10 +94,10 @@
         "to": "/blog"
       }
     ],
-    "phone": "056 9988 998",
-    "email": "Tese@test.com",
+    "phone": "+966 55 000 0000",
+    "email": "info@zadcapital.sa",
     "address": "الرياض، المملكة العربية السعودية",
-    "copyright": "جميع الحقوق محفوظة، Konooz Car 2026 ©"
+    "copyright": "© 2026 زاد كابيتال. جميع الحقوق محفوظة."
   },
   "footer": {
     "followUs": "تابعنا",

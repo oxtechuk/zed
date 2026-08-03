@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Services\Api\Store;
 
 use App\Http\Resources\Store\CarMiniResource;
+use App\Models\Car;
 use App\Models\FinanceStep;
 use App\Models\HeroSlide;
 use App\Models\HomeSection;
+use App\Models\Offer;
 use App\Models\PromoCard;
 use App\Services\Cache\HomeCacheService;
 use Illuminate\Support\Collection;
@@ -37,6 +39,7 @@ final class HomeApiService
             'hero' => $this->sectionMeta($homeSections->get('hero')),
             'featured_cars' => ($data['featuredCars'] ?? collect())->values(),
             'active_offers' => ($data['activeOffers'] ?? collect())->values(),
+            'offer_cars' => $this->offerCars($data['activeOffers'] ?? collect()),
             'brands' => ($data['brands'] ?? collect())->values(),
             'latest_posts' => ($data['latestPosts'] ?? collect())->values(),
             'stats' => $data['stats'] ?? [],
@@ -60,6 +63,16 @@ final class HomeApiService
             'finance_steps' => $this->financeSteps($data['financeSteps'] ?? collect()),
             'budget_ranges' => $this->budgetRanges($data['budgetRanges'] ?? collect()),
         ];
+    }
+
+    /** @return array<int, Car> */
+    private function offerCars(Collection $offers): array
+    {
+        return $offers
+            ->flatMap(fn (Offer $offer) => $offer->cars)
+            ->unique('id')
+            ->values()
+            ->all();
     }
 
     private function heroSlides(Collection $slides): array

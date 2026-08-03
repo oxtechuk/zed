@@ -67,7 +67,7 @@ export default function Footer({
   ];
 
   return (
-    <footer className="w-full bg-[#0D1117] text-white pb-[96px] lg:pb-0">
+    <footer className="w-full bg-[#080E1E] text-white pb-[96px] lg:pb-0">
       <div className="mx-auto max-w-[1440px] px-6 lg:px-[92px]">
         {/* ── Main Grid ── */}
         <div

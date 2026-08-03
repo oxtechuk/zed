@@ -37,7 +37,7 @@ export default function HomeHero({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* ── Main Slideshow Slider ── */}
         {slides.length > 0 && (
-          <div className="relative overflow-hidden rounded-[24px] shadow-sm bg-[#051023] h-[200px] md:h-[400px]">
+          <div className="relative overflow-hidden rounded-2xl shadow-sm bg-[#051023] h-[200px] md:h-[400px]">
             {/* Slides Wrapper */}
             <div
               className="flex h-full transition-transform duration-500 ease-in-out"
@@ -90,14 +90,14 @@ export default function HomeHero({
                 <button
                   type="button"
                   onClick={isRTL ? handleNext : handlePrev}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/30 text-white transition hover:bg-white/40"
                 >
                   <ChevronLeft size={24} />
                 </button>
                 <button
                   type="button"
                   onClick={isRTL ? handlePrev : handleNext}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/30 text-white transition hover:bg-white/40"
                 >
                   <ChevronRight size={24} />
                 </button>
@@ -109,8 +109,8 @@ export default function HomeHero({
                       key={idx}
                       type="button"
                       onClick={() => setCurrentSlide(idx)}
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        idx === currentSlide ? "w-6 bg-[#E5C287]" : "w-2 bg-white/40"
+                      className={`h-[6px] rounded-full transition-all duration-300 ${
+                        idx === currentSlide ? "w-[90px] bg-[#DFC675]" : "w-[32px] bg-[#D9D9D9]"
                       }`}
                     />
                   ))}

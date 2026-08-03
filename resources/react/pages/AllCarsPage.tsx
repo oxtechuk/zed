@@ -64,6 +64,7 @@ function mapCarToCardProps(car: CarItem): CarCardProps | null {
         "var(--brand-secondary-color)",
       ),
       detailsTo: `/cars/${slug}`,
+      badgeColor: car.badge_color ?? undefined,
     };
   } catch {
     return null;

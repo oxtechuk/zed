@@ -28,6 +28,7 @@ final class HomeController extends ApiBaseController
 
         $data['featured_cars'] = CarMiniResource::collection($data['featured_cars'])->resolve();
         $data['active_offers'] = HomeOfferResource::collection($data['active_offers'])->resolve();
+        $data['offer_cars'] = CarMiniResource::collection($data['offer_cars'] ?? [])->resolve();
         $data['highlighted_cars'] = CarMiniResource::collection($data['highlighted_cars'])->resolve();
         $data['brands'] = BrandResource::collection($data['brands'])->resolve();
         $data['filter_brands'] = BrandResource::collection($data['filter_brands'])->resolve();

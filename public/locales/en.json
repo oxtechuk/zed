@@ -43,9 +43,9 @@
     },
     "year": "Year / Model",
     "yearPlaceholder": "Choose year",
-    "searchPlaceholder": "Search by car name, brand, or model...",
-    "searchButton": "Show Results",
-    "resetButton": "Reset"
+    "searchPlaceholder": "Search by car name, brand, model, or specs...",
+    "searchButton": "Search",
+    "resetButton": "Filters"
   },
   "carCard": {
     "compare": "Add to compare",
@@ -53,13 +53,15 @@
     "cashPrice": "Cash price",
     "monthlyPayment": "Monthly payment",
     "estimated": "Estimated",
-    "reserve": "Book now",
+    "reserve": "Order now",
+    "newlyArrived": "Just arrived",
     "model": "Model"
   },
   "offers": {
     "titleWhite": "Best Offers,",
     "titleOrange": "to Ease Your Financing",
-    "buttonText": "All Offers"
+    "buttonText": "All Offers",
+    "alsoTitle": "Also from our offers"
   },
   "featuredCars": {
     "titleBlue": "Handpicked",
@@ -92,10 +94,10 @@
         "to": "/blog"
       }
     ],
-    "phone": "056 9988 998",
-    "email": "Tese@test.com",
+    "phone": "+966 55 000 0000",
+    "email": "info@zadcapital.sa",
     "address": "Riyadh, Saudi Arabia",
-    "copyright": "All rights reserved, Konooz Car 2026 ©"
+    "copyright": "© 2026 Zad Capital. All rights reserved."
   },
   "footer": {
     "followUs": "Follow Us",

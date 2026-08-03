@@ -5,21 +5,18 @@ import { APP_IMAGES, getImageUrl } from "../constants/app-images";
 import HomeHero from "../components/HomeHero";
 import CarFinder from "../components/CarFinder";
 import FeaturedCarsSection from "../components/FeaturedCarsSection";
-import OffersSection from "../components/OffersSection";
-import CarsShowcaseSection from "../components/CarsShowcaseSection";
 import FinanceSolutionsSection from "../components/FinanceSolutionsSection";
-import BudgetCarsSection from "../components/BudgetCarsSection";
 import BrandsSection from "../components/BrandsSection";
+import FeaturedBanner from "../components/FeaturedBanner";
+import BudgetCarsSection from "../components/BudgetCarsSection";
 import { getHomePageData, getCars } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
-import type { CarItem, BrandInfo, FilterPrice } from "../types/home.types";
+import type { CarItem, BrandInfo } from "../types/home.types";
 import type { CarCardProps } from "../components/CarCard";
 import type { CarFinderValues } from "../interfaces/ICarFinderProps";
 import { formatPrice } from "../utils/format";
 import { useSEO } from "../utils/useSEO";
-import type { IOfferCardProps } from "../interfaces/IOfferCardProps";
 import type { IBrandCardProps } from "../interfaces/IBrandCardProps";
-import type { IBudgetRange } from "../interfaces/IBudgetCarsSectionProps";
 
 const SPEC_KEY_MAP: Record<string, string> = {
   "Fuel Type": "fuel",
@@ -71,6 +68,7 @@ function mapCarToCardProps(car: CarItem): CarCardProps | null {
       ),
       detailsTo: `/cars/${slug}`,
       badgeText: car.is_current_year ? String(car.year) : undefined,
+      badgeColor: car.badge_color ?? undefined,
     };
   } catch {
     return null;
@@ -85,63 +83,12 @@ function mapBrandToCardProps(brand: BrandInfo): IBrandCardProps {
   };
 }
 
-function formatPriceValue(price: number): string {
-  return price.toLocaleString();
-}
-
-function mapFilterPricesToRanges(prices?: FilterPrice[]): IBudgetRange[] | undefined {
-  if (!prices?.length) return undefined;
-  return prices.map((p) => {
-    const label = p.max == null
-      ? `${formatPriceValue(p.min)}+`
-      : `${formatPriceValue(p.min)} - ${formatPriceValue(p.max)}`;
-    const value = p.max == null ? `${p.min}-plus` : `${p.min}-${p.max}`;
-    return { label, value };
-  });
-}
-
-const getFallbackOffers = (t: (key: string) => string): IOfferCardProps[] => [
-  {
-    image: APP_IMAGES.OFFER1,
-    title: "عرض اليوم الوطني السعودي",
-    description: "2026",
-    buttonText: t("homePage.fallbackOfferButton"),
-    buttonTo: "/cars?offerId=1",
-  },
-  {
-    image: APP_IMAGES.OFFER1,
-    title: "تمويل سيارات ميسر وبدون دفعة أولى",
-    description: "2026",
-    buttonText: t("homePage.fallbackOfferButton"),
-    buttonTo: "/cars?offerId=2",
-  },
-  {
-    image: APP_IMAGES.OFFER1,
-    title: "عرض استيراد السيارات الفاخرة",
-    description: "2026",
-    buttonText: t("homePage.fallbackOfferButton"),
-    buttonTo: "/cars?offerId=3",
-  },
-];
-
 export default function Home() {
   const { t } = useTranslation();
   useSEO(t("nav.home"), t("hero.description"));
   const language = useLanguageStore((s) => s.language);
   const [filters, setFilters] = useState<CarFinderValues | null>(null);
-  const [activeBudgetRange, setActiveBudgetRange] = useState<string | null>(null);
-
-  function parseRangeValue(value: string): { min_price?: number; max_price?: number } {
-    if (value.endsWith("-plus")) {
-      const min = Number(value.replace("-plus", ""));
-      return { min_price: min };
-    }
-    const parts = value.split("-");
-    if (parts.length === 2) {
-      return { min_price: Number(parts[0]), max_price: Number(parts[1]) };
-    }
-    return {};
-  }
+  const [activeBudgetRange, setActiveBudgetRange] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["home-data", language],
@@ -162,16 +109,6 @@ export default function Home() {
     enabled: !!filters,
   });
 
-  const { data: budgetFilteredData } = useQuery({
-    queryKey: ["budget-cars", activeBudgetRange, language],
-    queryFn: () =>
-      getCars({
-        ...parseRangeValue(activeBudgetRange!),
-        per_page: 12,
-      }),
-    enabled: !!activeBudgetRange,
-  });
-
   const handleCarFinderSearch = (values: CarFinderValues) => {
     setFilters(values);
   };
@@ -186,27 +123,6 @@ export default function Home() {
         .map(mapCarToCardProps)
         .filter(Boolean) as CarCardProps[],
     [data?.featured_cars],
-  );
-  const showcaseCars = useMemo(
-    () =>
-      (data?.highlighted_cars ?? [])
-        .map(mapCarToCardProps)
-        .filter(Boolean) as CarCardProps[],
-    [data?.highlighted_cars],
-  );
-  const budgetCars = useMemo(
-    () =>
-      (data?.bento_cars ?? [])
-        .map(mapCarToCardProps)
-        .filter(Boolean) as CarCardProps[],
-    [data?.bento_cars],
-  );
-  const budgetFilteredCars = useMemo(
-    () =>
-      (budgetFilteredData?.data ?? [])
-        .map(mapCarToCardProps)
-        .filter(Boolean) as CarCardProps[],
-    [budgetFilteredData],
   );
   const brands = useMemo(
     () => (data?.brands ?? []).map(mapBrandToCardProps),
@@ -223,6 +139,40 @@ export default function Home() {
   const filterTypes = data?.filter_types ?? [];
   const filterCategories = data?.filter_categories ?? [];
   const filterYears = data?.filter_years ?? [];
+
+  const offerCarCards = useMemo(
+    () =>
+      (data?.offer_cars ?? [])
+        .map(mapCarToCardProps)
+        .filter(Boolean) as CarCardProps[],
+    [data?.offer_cars],
+  );
+
+  const budgetRangeItems = useMemo(
+    () =>
+      (data?.budget_ranges ?? []).map((range) => ({
+        label: range.label,
+        value: `${range.min}-${range.max ?? "plus"}`,
+      })),
+    [data],
+  );
+
+  const activeRangeValue =
+    budgetRangeItems.find((range) => range.value === activeBudgetRange)?.value ??
+    budgetRangeItems[0]?.value;
+
+  const activeBudgetCars = useMemo(
+    () => {
+      const range = (data?.budget_ranges ?? []).find(
+        (r) => `${r.min}-${r.max ?? "plus"}` === activeRangeValue,
+      );
+
+      return (range?.cars ?? [])
+        .map(mapCarToCardProps)
+        .filter(Boolean) as CarCardProps[];
+    },
+    [data, activeRangeValue],
+  );
 
   if (isLoading) {
     return (
@@ -260,9 +210,9 @@ export default function Home() {
       />
 
       <FeaturedCarsSection
-        titleBlue={data?.page_sections?.featured_cars?.title?.trim() || t("featuredCars.titleOrange")}
-        titleOrange={data?.page_sections?.featured_cars?.badge?.trim() || t("featuredCars.titleBlue")}
-        description={data?.page_sections?.featured_cars?.subtitle?.trim() || t("featuredCars.description")}
+        titleBlue={data?.page_sections?.featured_cars?.title?.trim() || t("featuredCars.titleBlue")}
+        titleOrange={data?.page_sections?.featured_cars?.badge?.trim() || ""}
+        description=""
         buttonText={data?.page_sections?.featured_cars?.button_text?.trim() || t("featuredCars.buttonText")}
         buttonTo="/cars"
         cars={filters ? filteredCarCards : featuredCars}
@@ -270,46 +220,29 @@ export default function Home() {
         emptyMessage={filters ? t("featuredCars.noCars") : undefined}
       />
 
-      <OffersSection
-        backgroundImage={APP_IMAGES.BG_IMAGE}
-        titleWhite={data?.page_sections?.offers?.badge?.trim() || t("offers.titleWhite")}
-        titleOrange={data?.page_sections?.offers?.title?.trim() || t("offers.titleOrange")}
-        buttonText={data?.page_sections?.offers?.button_text?.trim() || t("offers.buttonText")}
-        buttonTo="/offers"
-        offers={
-          data?.active_offers?.length
-            ? data.active_offers.map((o) => ({
-                image: getImageUrl(o.image) || APP_IMAGES.OFFER1,
-                title: o.title,
-                description: o.description || "2026",
-                buttonText: t("homePage.fallbackOfferButton"),
-                buttonTo: `/cars?offerId=${o.id}`,
-              }))
-            : getFallbackOffers(t)
-        }
-      />
+      <FeaturedBanner banner={data?.featured_section} />
 
-      <CarsShowcaseSection
-        titleBlue={data?.page_sections?.highlighted_cars?.badge?.trim() || t("carsShowcase.titleBlue")}
-        titleOrange={data?.page_sections?.highlighted_cars?.title?.trim() || t("carsShowcase.titleOrange")}
-        description={data?.page_sections?.highlighted_cars?.subtitle?.trim() || t("carsShowcase.description")}
-        buttonText={data?.page_sections?.highlighted_cars?.button_text?.trim() || t("carsShowcase.buttonText")}
-        buttonTo="/cars"
-        cars={showcaseCars}
-      />
+      {offerCarCards.length > 0 && (
+        <FeaturedCarsSection
+          titleBlue={data?.page_sections?.offers?.title?.trim() || t("offers.alsoTitle")}
+          titleOrange=""
+          description=""
+          buttonText={data?.page_sections?.offers?.button_text?.trim() || t("offers.buttonText")}
+          buttonTo={data?.page_sections?.offers?.button_url || "/offers"}
+          cars={offerCarCards}
+        />
+      )}
 
       <BudgetCarsSection
-        titleBlue={data?.page_sections?.budget?.badge?.trim() || t("budgetCars.titleBlue")}
-        titleOrange={data?.page_sections?.budget?.title?.trim() || t("budgetCars.titleOrange")}
+        titleBlue={data?.page_sections?.budget?.title?.trim() || t("budgetCars.titleBlue")}
+        titleOrange=""
         description={data?.page_sections?.budget?.description?.trim() || t("budgetCars.description")}
         buttonText={data?.page_sections?.budget?.button_text?.trim() || t("budgetCars.buttonText")}
-        buttonTo="/cars"
-        cars={activeBudgetRange ? budgetFilteredCars : budgetCars}
-        activeRange={activeBudgetRange ?? undefined}
-        onRangeChange={(value) =>
-          setActiveBudgetRange((prev) => (prev === value ? null : value))
-        }
-        ranges={mapFilterPricesToRanges(data?.filter_prices)}
+        buttonTo={data?.page_sections?.budget?.button_url || "/cars"}
+        cars={activeBudgetCars}
+        ranges={budgetRangeItems}
+        activeRange={activeRangeValue}
+        onRangeChange={setActiveBudgetRange}
       />
 
       <FinanceSolutionsSection

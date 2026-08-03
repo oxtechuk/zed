@@ -45,12 +45,8 @@ final class SettingApiService
 
         $locale = app()->getLocale();
 
-        $siteName = $settings->get('site_name', '');
-        if (is_array($siteName)) {
-            $siteName = $siteName[$locale] ?? ($siteName['ar'] ?? '');
-        }
-
-        $footerText = $settings->get('footer_text', '');
+        $siteName = $this->localize($settings->get('site_name', ''), $locale);
+        $footerText = $this->localize($settings->get('footer_text', ''), $locale);
 
         $socialMedia = $settings->get('social_media', []);
         if (is_string($socialMedia)) {
@@ -68,10 +64,19 @@ final class SettingApiService
                 'email' => $settings->get('contact_email', ''),
                 'phone' => $settings->get('contact_phone', ''),
                 'whatsapp' => $settings->get('contact_whatsapp', ''),
-                'address' => $settings->get('contact_address', ''),
+                'address' => $this->localize($settings->get('contact_address', ''), $locale),
             ],
             'social_media' => $socialMedia,
         ];
+    }
+
+    private function localize(mixed $value, string $locale): mixed
+    {
+        if (is_array($value)) {
+            return $value[$locale] ?? ($value['ar'] ?? ($value['en'] ?? ''));
+        }
+
+        return $value;
     }
 
     public function financeSolution(): array

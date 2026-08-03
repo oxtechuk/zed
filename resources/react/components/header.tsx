@@ -44,8 +44,8 @@ export default function Header({
                   to={item.path}
                   className={`relative py-1 transition-colors ${
                     isActive
-                      ? "text-[#0F172A] font-extrabold after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2.5px] after:bg-[#0F172A] after:rounded-full"
-                      : "text-[#64748B] hover:text-[#0F172A] font-bold"
+                      ? "text-[#16254F] font-extrabold after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-[2.5px] after:bg-[#16254F] after:rounded-full"
+                      : "text-[#667085] hover:text-[#16254F] font-bold"
                   }`}
                 >
                   {item.label}
@@ -54,10 +54,10 @@ export default function Header({
             })}
           </nav>
 
-          {/* CTA Button - Golden Amber Pill */}
+          {/* CTA Button - Golden Amber */}
           <NavLink
             to={ctaPath}
-            className="inline-flex h-[44px] items-center justify-center rounded-full bg-[#E5C287] px-7 text-[15px] font-extrabold text-[#0A1628] shadow-sm transition hover:bg-[#D8B478] hover:shadow"
+            className="inline-flex h-[44px] items-center justify-center rounded-2xl bg-[#EDC98E] px-7 text-[15px] font-bold text-[#16254F] shadow-sm transition hover:bg-[#D9B477] hover:shadow"
           >
             {ctaText}
           </NavLink>

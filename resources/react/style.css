@@ -9,11 +9,11 @@
 }
 
 :root {
-  --brand-primary-color: #0F172A;
-  --brand-primary-light-color: #0F172A;
+  --brand-primary-color: #16254F;
+  --brand-primary-light-color: #16254F;
   --brand-secondary-color: #EDC98E;
-  --barand-footer-color: #121317;
-  --brand-CTA-BG-color: #0D1018;
+  --barand-footer-color: #080E1E;
+  --brand-CTA-BG-color: #16254F;
 
   --brand-primary-gradient: linear-gradient(90deg,
       var(--brand-primary-light-color) 0%,
@@ -34,7 +34,7 @@
 
   --contact-cta-border: rgba(0, 98, 241, 0.2);
 
-  --background: #F0F2F5;
+  --background: #FAFAFB;
   --border: #e5e4e7;
 
   --font-main: "The Year of Handicrafts", system-ui, sans-serif;

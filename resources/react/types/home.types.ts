@@ -38,6 +38,7 @@ export interface CarItem {
   slug: string;
   main_image: string | null;
   thumbnail: string | null;
+  badge_color?: string | null;
   images: string[];
   cash_price: number;
   min_installment: number;
@@ -78,19 +79,26 @@ export interface HomeStats {
   brands: number;
 }
 
-export interface FeaturedSectionOffer {
-  id: number;
-  title: string;
-  description: string;
-  image: string | null;
-  installment_starts_from: number;
+export interface FeaturedSectionButton {
+  text: string | null;
+  url: string | null;
 }
 
 export interface FeaturedSection {
-  title: string;
-  description: string;
-  car: CarItem;
-  offer: FeaturedSectionOffer;
+  title: string | null;
+  subtitle: string | null;
+  description: string | null;
+  badge: string | null;
+  button: FeaturedSectionButton | null;
+  image: string | null;
+  background_image: string | null;
+}
+
+export interface BudgetRange {
+  label: string;
+  min: number;
+  max: number | null;
+  cars: CarItem[];
 }
 
 export interface HomepageStat {
@@ -109,6 +117,7 @@ export interface PageSectionContent {
   title?: string;
   subtitle?: string;
   button_text?: string;
+  button_url?: string;
   description?: string;
   features?: string[];
 }
@@ -131,6 +140,7 @@ export interface FinanceSettingsData {
 export interface HomePageData {
   featured_cars: CarItem[];
   active_offers: any[];
+  offer_cars?: CarItem[];
   brands: BrandInfo[];
   latest_posts: any[];
   stats: HomeStats;
@@ -151,6 +161,7 @@ export interface HomePageData {
   promo_cards?: any[];
   finance_steps?: any[];
   featured_section?: FeaturedSection;
+  budget_ranges?: BudgetRange[];
   homepage_stats?: HomepageStat[];
   page_sections?: PageSections;
 }

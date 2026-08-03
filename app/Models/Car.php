@@ -25,7 +25,7 @@ class Car extends Model
     protected $fillable = [
         'brand_id', 'category_id', 'name', 'slug', 'model', 'year', 'type',
         'color', 'colors', 'cash_price', 'min_down_payment', 'min_installment',
-        'description', 'features', 'specs', 'thumbnail', 'is_featured', 'is_active', 'is_highlighted', 'views',
+        'description', 'features', 'specs', 'thumbnail', 'badge_color', 'is_featured', 'is_active', 'is_highlighted', 'views',
         'availability_status',
     ];
 
