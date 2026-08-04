@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Store;
 
+use App\Http\Api\Response\Builder\ApiResponseBuilder;
 use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Resources\Store\PartnerResource;
 use App\Http\Resources\Store\TestimonialResource;
@@ -12,7 +13,7 @@ final class AboutController extends ApiBaseController
     public function __construct(
         private readonly AboutApiService $aboutService,
     ) {
-        parent::__construct(app(\App\Http\Api\Response\Builder\ApiResponseBuilder::class));
+        parent::__construct(app(ApiResponseBuilder::class));
     }
 
     public function __invoke()

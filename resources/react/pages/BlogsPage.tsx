@@ -69,7 +69,7 @@ export default function BlogsPage() {
         <button
           onClick={() => currentPage > 1 && setPage(currentPage - 1)}
           disabled={currentPage === 1}
-          className="w-10 h-10 rounded-full flex items-center justify-center border border-[#E5E9F0] bg-white text-gray-500 hover:bg-[#07111F] hover:text-white disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-gray-500 transition cursor-pointer"
+          className="w-10 h-10 rounded-full flex items-center justify-center border border-[#E7E9EF] bg-white text-gray-500 hover:bg-[#16254F] hover:text-white disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-gray-500 transition cursor-pointer"
         >
           {isRTL ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
         </button>
@@ -93,8 +93,8 @@ export default function BlogsPage() {
               onClick={() => setPage(p as number)}
               className={`w-10 h-10 rounded-full flex items-center justify-center border text-sm font-bold transition cursor-pointer ${
                 isActive
-                  ? "bg-[#07111F] border-[#07111F] text-white"
-                  : "bg-white border-[#E5E9F0] text-gray-700 hover:bg-[#07111F] hover:text-white"
+                  ? "bg-[#16254F] border-[#16254F] text-white"
+                  : "bg-white border-[#E7E9EF] text-gray-700 hover:bg-[#16254F] hover:text-white"
               }`}
             >
               {p}
@@ -106,7 +106,7 @@ export default function BlogsPage() {
         <button
           onClick={() => currentPage < lastPage && setPage(currentPage + 1)}
           disabled={currentPage === lastPage}
-          className="w-10 h-10 rounded-full flex items-center justify-center border border-[#E5E9F0] bg-white text-gray-500 hover:bg-[#07111F] hover:text-white disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-gray-500 transition cursor-pointer"
+          className="w-10 h-10 rounded-full flex items-center justify-center border border-[#E7E9EF] bg-white text-gray-500 hover:bg-[#16254F] hover:text-white disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-gray-500 transition cursor-pointer"
         >
           {isRTL ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
         </button>
@@ -115,7 +115,7 @@ export default function BlogsPage() {
   };
 
   return (
-    <main dir={i18n.dir()} className="min-h-screen bg-[#F0F2F5]">
+    <main dir={i18n.dir()} className="min-h-screen bg-[#FAFAFB]">
       {/* ── Page Header ── */}
       <OffersPageHero
         image={APP_IMAGES.BLOG_PLACEHOLDER}
@@ -125,9 +125,9 @@ export default function BlogsPage() {
       />
 
       {/* ── Filter Category Tabs ── */}
-      <section className="bg-transparent pt-10 pb-2">
+      <section className="pt-10 pb-4">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap gap-2.5 justify-center">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             {categories.map((category) => {
               const isActive = category.value === activeCategory;
               return (
@@ -135,10 +135,10 @@ export default function BlogsPage() {
                   key={category.value}
                   type="button"
                   onClick={() => handleCategoryChange(category.value)}
-                  className={`h-[40px] rounded-full px-6 text-[14px] font-bold border transition cursor-pointer ${
+                  className={`h-[36px] rounded-full px-4 text-[14px] font-bold transition duration-200 cursor-pointer ${
                     isActive
-                      ? "bg-[#07111F] text-white border-[#07111F]"
-                      : "bg-white text-[#5B6470] border-[#E5E9F0] hover:bg-[#07111F] hover:text-white hover:border-[#07111F]"
+                      ? "bg-[#16254F] text-white"
+                      : "border border-[#E7E9EF] bg-white text-[#667085] hover:bg-[#16254F] hover:text-white hover:border-[#16254F]"
                   }`}
                 >
                   {category.label}
@@ -157,7 +157,7 @@ export default function BlogsPage() {
           </div>
         ) : articles.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {articles.map((article) => (
                 <BlogCard key={article.id} {...article} />
               ))}

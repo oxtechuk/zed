@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -14,12 +14,12 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         $user = $request->user()->load(['activeCompany', 'roles', 'permissions']);
-        
+
         $companies = $user->companies;
 
         if ($user->is_super_admin && $companies->isEmpty()) {
             // Super admin has access to all companies if needed
-            $companies = \App\Models\Company::all();
+            $companies = Company::all();
         }
 
         return response()->json([

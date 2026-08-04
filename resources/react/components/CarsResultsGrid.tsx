@@ -56,7 +56,7 @@ export default function CarsResultsGrid({
             type="button"
             onClick={handlePrev}
             disabled={currentPage === 1}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition hover:border-[#0F172A] hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#E7E9EF] bg-white text-gray-500 transition hover:border-[#16254F] hover:text-[#16254F] disabled:cursor-not-allowed disabled:opacity-40"
           >
             <ChevronLeft size={16} />
           </button>
@@ -84,8 +84,8 @@ export default function CarsResultsGrid({
                 onClick={() => onPageChange(page as number)}
                 className={`flex h-10 w-10 items-center justify-center rounded-full border text-[14px] font-extrabold transition ${
                   isActive
-                    ? "border-[#0F172A] bg-[#0F172A] text-white scale-105 shadow-xs"
-                    : "border-gray-200 bg-white text-gray-500 hover:border-[#0F172A] hover:text-[#0F172A]"
+                    ? "border-[#16254F] bg-[#16254F] text-white scale-105 shadow-xs"
+                    : "border-[#E7E9EF] bg-white text-gray-500 hover:border-[#16254F] hover:text-[#16254F]"
                 }`}
               >
                 {page}

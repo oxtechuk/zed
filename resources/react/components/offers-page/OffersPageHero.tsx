@@ -5,32 +5,31 @@ export default function OffersPageHero({
   title,
   description,
 }: IOffersPageHeroProps) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   return (
     <section
       dir={i18n.dir()}
-      className="relative w-full bg-[#07111F] text-white py-16 md:py-24 overflow-hidden"
+      className="relative w-full bg-[#080E1E] text-white py-14 md:py-20 overflow-hidden"
     >
-      {/* Background Radial Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-transparent to-transparent pointer-events-none" />
+      {/* Background Subtle Overlay Glow */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#080E1E] via-[#0D1730] to-[#080E1E] opacity-90 pointer-events-none" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-10">
-          {/* Content */}
-          <div className="w-full flex flex-col justify-center text-center items-center">
+        <div className="flex flex-col items-center justify-center text-center">
+          <span className="block text-[13px] font-extrabold text-[#EDC98E] uppercase tracking-wider mb-2">
+            {t("offersPage.hero.badge", "عروض حصريـة")}
+          </span>
 
+          <h1 className="text-[30px] font-black leading-tight text-white md:text-[38px] max-w-3xl">
+            {title}
+          </h1>
 
-            <h1 className="mt-5 text-[32px] font-extrabold leading-[1.3] text-white md:text-[46px]">
-              {title}
-            </h1>
-
-            <p className="mt-4 max-w-xl text-[16px] md:text-[18px] leading-8 text-gray-300">
-              {description}
-            </p>
-          </div>
+          <p className="mt-3 max-w-2xl text-[15px] md:text-[16px] leading-7 text-white/40">
+            {description}
+          </p>
         </div>
-    </div>
-  </section>
+      </div>
+    </section>
   );
 }

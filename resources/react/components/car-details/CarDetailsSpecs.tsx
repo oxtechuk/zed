@@ -57,25 +57,27 @@ export default function CarDetailsSpecs({
       className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 border-t border-gray-200 bg-white"
     >
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
-        
+
         {/* 1. Technical Specs Column (Renders on the right in RTL desktop) */}
-        <div className="flex flex-col text-start">
-          <h2 className="text-[20px] font-black text-[#0F172A] mb-8 border-b-2 border-[#EDC98E] pb-3 inline-block max-w-[200px]">
-            {t("carDetails.specs.technicalSpecs", { defaultValue: "المواصفات التقنية" })}
-          </h2>
-          
-          <div className="flex flex-col rounded-2xl bg-white border border-[#E5E9F0] shadow-xs overflow-hidden">
+        <div className="flex flex-col rounded-2xl bg-white border border-[#E7E9EF] shadow-xs overflow-hidden text-start">
+          <div className="border-b border-[#E7E9EF] px-6 py-4">
+            <h2 className="text-[18px] font-black text-[#16254F]">
+              {t("carDetails.specs.technicalSpecs", { defaultValue: "المواصفات التقنية" })}
+            </h2>
+          </div>
+
+          <div className="flex flex-col">
             {specRows.map((row, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between px-6 py-4 border-b border-[#EEF2F6] last:border-0 hover:bg-[#F8FAFC] transition-colors"
+                className="flex items-center justify-between px-6 py-4 border-b border-[#E7E9EF] last:border-0 hover:bg-[#F8FAFC] transition-colors"
               >
-                <span className="text-[14px] text-gray-500 font-bold">{row.label}</span>
+                <span className="text-[14px] text-[#667085] font-bold">{row.label}</span>
                 <span
                   className={`text-[14px] font-black ${
                     row.label === "التوفر" || row.label === "Availability"
-                      ? "text-green-600 font-extrabold"
-                      : "text-[#0F172A]"
+                      ? "text-[#009966] font-extrabold"
+                      : "text-[#16254F]"
                   }`}
                 >
                   {row.value}
@@ -86,18 +88,18 @@ export default function CarDetailsSpecs({
         </div>
 
         {/* 2. Features & Equipments Column (Renders on the left in RTL desktop) */}
-        <div className="flex flex-col text-start">
-          <h2 className="text-[20px] font-black text-[#0F172A] mb-8 border-b-2 border-[#EDC98E] pb-3 inline-block max-w-[240px]">
+        <div className="flex flex-col rounded-2xl bg-white border border-[#E7E9EF] shadow-xs p-6 text-start">
+          <h2 className="text-[18px] font-black text-[#16254F]">
             {t("carDetails.specs.featuresEquip", { defaultValue: "المميزات والتجهيزات" })}
           </h2>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6">
+
+          <div className="mt-5 flex flex-col gap-3">
             {allFeatures.map((item, idx) => (
-              <div key={idx} className="flex items-center gap-3 py-1">
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#FFF4E4] text-[#D97706]">
-                  <Check size={11} strokeWidth={3.5} />
+              <div key={idx} className="flex items-center gap-3">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#EDC98E]/15 text-[#EDC98E]">
+                  <Check size={12} strokeWidth={3} />
                 </div>
-                <span className="text-[14px] font-semibold text-[#475569] leading-tight">
+                <span className="text-[14px] font-semibold text-[#16254F] leading-tight">
                   {item.name}
                 </span>
               </div>

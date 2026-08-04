@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -14,14 +14,14 @@ return new class extends Migration
             Schema::table('cars', function (Blueprint $table) {
                 $table->dropUnique('cars_slug_unique');
             });
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Index might not exist or has a different name
         }
 
         // 2. Convert existing string slugs to JSON
         $cars = DB::table('cars')->get();
         foreach ($cars as $car) {
-            if (!str_starts_with($car->slug, '{')) {
+            if (! str_starts_with($car->slug, '{')) {
                 $jsonSlug = json_encode([
                     'en' => $car->slug,
                     'ar' => $car->slug,

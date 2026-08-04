@@ -11,6 +11,7 @@ use App\Services\Api\Store\Helpers\SlugResolver;
 use App\Services\Cache\CarCacheService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
 
@@ -64,7 +65,7 @@ final class CarApiService
         return compact('car', 'relatedCars');
     }
 
-    public function search(string $query): \Illuminate\Database\Eloquent\Collection
+    public function search(string $query): Collection
     {
         return Car::with(['brand', 'category', 'images'])
             ->where('is_active', true)
@@ -80,7 +81,7 @@ final class CarApiService
             ->get();
     }
 
-    public function brands(): \Illuminate\Database\Eloquent\Collection
+    public function brands(): Collection
     {
         return Brand::where('is_active', true)
             ->when(request('search'), function (Builder $q) {

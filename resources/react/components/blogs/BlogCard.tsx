@@ -18,56 +18,56 @@ export default function BlogCard({
   return (
     <article
       dir={i18n.dir()}
-      className="w-full bg-white border border-[#E5E9F0] rounded-[24px] p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md flex flex-col justify-between"
+      className="w-full bg-white border border-[#E7E9EF] rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] flex flex-col justify-between group"
     >
       <div>
         {/* Blog Image */}
-        <div className="overflow-hidden rounded-[16px] mb-4">
+        <div className="overflow-hidden h-[192px] w-full bg-[#F3F4F6]">
           <img
             src={image}
             alt={title}
-            className="h-[220px] w-full object-cover"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
           />
         </div>
 
-        {/* Categories / Date badge row */}
-        <div className="mb-3.5 flex flex-wrap items-center gap-4 text-[13px] text-gray-500 font-medium">
-          {category && (
-            <span className="bg-[#FFF2EB] text-[#EDC98E] font-extrabold px-3 py-1.5 rounded-full text-[12px]">
-              {category}
+        {/* Content details */}
+        <div className="p-6">
+          {/* Meta row: date, read time, category badge */}
+          <div className="flex flex-wrap items-center justify-end gap-3 text-[10px] font-normal text-[#667085]">
+            <span>{date}</span>
+            <span className="flex items-center gap-1">
+              <Clock size={12} className="text-[#667085]" />
+              {readTime}
             </span>
-          )}
-          <span className="flex items-center gap-1.5">
-            <Clock size={14} className="text-gray-400" />
-            {readTime}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Calendar size={14} className="text-gray-400" />
-            {date}
-          </span>
+            {category && (
+              <span className="bg-[#EDC98E]/10 text-[#EDC98E] font-black px-2.5 py-1 rounded-full text-[10px]">
+                {category}
+              </span>
+            )}
+          </div>
+
+          {/* Title */}
+          <h3 className="mt-3 text-[16px] font-black leading-[1.4] text-[#16254F] line-clamp-2">
+            <NavLink to={readMoreTo}>{title}</NavLink>
+          </h3>
+
+          {/* Description */}
+          <p className="mt-2 text-[12px] leading-relaxed text-[#667085] line-clamp-2">
+            {description}
+          </p>
+
+          {/* Read More Link */}
+          <div className="mt-4">
+            <NavLink
+              to={readMoreTo}
+              className="inline-flex items-center gap-1.5 text-[12px] font-black text-[#EDC98E] hover:text-[#16254F] transition"
+            >
+              <span>{t("blogPage.readMore", { defaultValue: "اقرأ المزيد" })}</span>
+              {isRTL ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
+            </NavLink>
+          </div>
         </div>
-
-        {/* Title */}
-        <h3 className="text-[18px] md:text-[20px] font-extrabold leading-[1.5] text-[#07111F] mb-2 line-clamp-2 hover:text-[#EDC98E] transition">
-          <NavLink to={readMoreTo}>{title}</NavLink>
-        </h3>
-
-        {/* Description */}
-        <p className="text-[14px] leading-relaxed text-gray-500 line-clamp-3 mb-4">
-          {description}
-        </p>
-      </div>
-
-      {/* Read More button */}
-      <div className="mt-2 text-right">
-        <NavLink
-          to={readMoreTo}
-          className="inline-flex items-center gap-1.5 text-[15px] font-extrabold text-[#EDC98E] hover:text-[#07111F] transition"
-        >
-          <span>{t("blogPage.readMore", { defaultValue: "اقرأ المزيد" })}</span>
-          {isRTL ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}
-        </NavLink>
       </div>
     </article>
   );

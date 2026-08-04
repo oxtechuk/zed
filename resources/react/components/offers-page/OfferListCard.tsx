@@ -15,12 +15,11 @@ export default function OfferListCard({
   const isRtl = i18n.dir() === "rtl";
   const { days, hours, minutes, isExpired } = useCountdown(ends_at);
 
-  // Map tag to badge name
   const tagNames: Record<string, string> = {
-    popular: t("offersPage.grid.categories.popular"),
-    exclusive: t("offersPage.grid.categories.exclusive"),
-    new: t("offersPage.grid.categories.new"),
-    limited: t("offersPage.grid.categories.limited"),
+    popular: t("offersPage.grid.categories.popular", "الشائعة"),
+    exclusive: t("offersPage.grid.categories.exclusive", "عرض حصري"),
+    new: t("offersPage.grid.categories.new", "جديد"),
+    limited: t("offersPage.grid.categories.limited", "لفترة محدودة"),
   };
 
   const tagLabel = tag ? (tagNames[tag] || tag) : null;
@@ -28,14 +27,15 @@ export default function OfferListCard({
   return (
     <article
       dir={i18n.dir()}
-      className="w-full bg-white rounded-[20px] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100/30 flex flex-col h-full hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition duration-300"
+      className="w-full bg-white rounded-2xl overflow-hidden border border-[#E7E9EF] flex flex-col h-full hover:shadow-[0_12px_32px_rgba(0,0,0,0.09)] transition duration-300 group"
     >
-      {/* Image container with absolute badge */}
-      <div className="relative h-[210px] w-full overflow-hidden bg-gray-50">
+      {/* Image Container with Badge */}
+      <div className="relative h-[220px] w-full overflow-hidden bg-[#F2F4F7]">
         {tagLabel && (
           <span
-            className={`absolute top-4 ${isRtl ? "right-4" : "left-4"
-              } z-10 bg-[#EDC98E] text-[#07111F] text-xs font-black px-3.5 py-1.5 rounded-full shadow-sm`}
+            className={`absolute top-4 ${
+              isRtl ? "right-4" : "left-4"
+            } z-10 bg-[#EDC98E] text-[#16254F] text-xs font-bold px-3.5 py-1.5 rounded-full shadow-sm`}
           >
             {tagLabel}
           </span>
@@ -43,54 +43,55 @@ export default function OfferListCard({
         <img
           src={image}
           alt={title}
-          className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
       </div>
 
-      {/* Content details */}
+      {/* Content Details */}
       <div className="p-6 flex flex-col flex-grow">
-        <h3 className="text-[18px] md:text-[20px] font-extrabold leading-[1.4] text-[#07111F] hover:text-[#EDC98E] transition">
+        <h3 className="text-[16px] font-black leading-[1.4] text-[#16254F] transition">
           {title}
         </h3>
 
-        <p className="mt-2 text-sm leading-6 text-[#6B7280] line-clamp-2 flex-grow">
+        <p className="mt-1 text-[14px] leading-6 text-[#667085] line-clamp-2 flex-grow">
           {description}
         </p>
 
-        {/* Countdown timer blocks (days, hours, minutes) */}
+        {/* Countdown Timer Blocks */}
         {!isExpired ? (
-          <div className="flex items-center gap-3 mt-5" dir={isRtl ? "rtl" : "ltr"}>
+          <div className="flex items-center gap-2 mt-4" dir={isRtl ? "rtl" : "ltr"}>
             {/* Days */}
-            <div className="flex-1 flex flex-col items-center bg-[#F4F6F9] py-2.5 rounded-[12px] border border-gray-100/50 shadow-xs">
-              <span className="text-[#07111F] font-extrabold text-[15px]">{days}</span>
-              <span className="text-[#8A8F99] text-[10px] font-bold mt-0.5">{t("offersPage.countdown.days")}</span>
+            <div className="flex-1 flex flex-col items-center bg-[#FAFAFB] py-2 rounded-xl border border-[#E7E9EF]">
+              <span className="text-[#16254F] font-black text-[14px]">{days}</span>
+              <span className="text-[#667085] text-[9px] mt-0.5">{t("offersPage.countdown.days", "يوم")}</span>
             </div>
 
             {/* Hours */}
-            <div className="flex-1 flex flex-col items-center bg-[#F4F6F9] py-2.5 rounded-[12px] border border-gray-100/50 shadow-xs">
-              <span className="text-[#07111F] font-extrabold text-[15px]">{hours}</span>
-              <span className="text-[#8A8F99] text-[10px] font-bold mt-0.5">{t("offersPage.countdown.hours")}</span>
+            <div className="flex-1 flex flex-col items-center bg-[#FAFAFB] py-2 rounded-xl border border-[#E7E9EF]">
+              <span className="text-[#16254F] font-black text-[14px]">{hours}</span>
+              <span className="text-[#667085] text-[9px] mt-0.5">{t("offersPage.countdown.hours", "ساعة")}</span>
             </div>
 
             {/* Minutes */}
-            <div className="flex-1 flex flex-col items-center bg-[#F4F6F9] py-2.5 rounded-[12px] border border-gray-100/50 shadow-xs">
-              <span className="text-[#07111F] font-extrabold text-[15px]">{minutes}</span>
-              <span className="text-[#8A8F99] text-[10px] font-bold mt-0.5">{t("offersPage.countdown.minutes")}</span>
+            <div className="flex-1 flex flex-col items-center bg-[#FAFAFB] py-2 rounded-xl border border-[#E7E9EF]">
+              <span className="text-[#16254F] font-black text-[14px]">{minutes}</span>
+              <span className="text-[#667085] text-[9px] mt-0.5">{t("offersPage.countdown.minutes", "دقيقة")}</span>
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center bg-[#F4F6F9] py-3.5 rounded-[12px] border border-gray-100/50 mt-5">
-            <span className="text-gray-500 font-bold text-xs">{t("offersPage.grid.card.continuous")}</span>
+          <div className="flex items-center justify-center bg-[#FAFAFB] py-3 rounded-xl border border-[#E7E9EF] mt-4">
+            <span className="text-[#667085] font-semibold text-xs">{t("offersPage.grid.card.continuous", "مستمر حتى نفاذ الكمية")}</span>
           </div>
         )}
 
-        {/* Full-width Call to Action Button */}
+        {/* CTA Button */}
         <NavLink
           to={buttonTo}
-          className="w-full inline-flex h-[46px] items-center justify-center rounded-[12px] bg-[#16254F] text-white font-extrabold text-sm shadow-sm transition duration-200 hover:bg-[#EDC98E] hover:text-[#07111F] hover:scale-[1.01] mt-5"
+          style={{color:"#fff"}}
+          className="w-full inline-flex h-[44px] items-center justify-center rounded-2xl bg-[#16254F] text-white font-bold text-sm transition duration-200 hover:bg-[#EDC98E] hover:text-[#16254F] mt-4"
         >
-          {t("offersPage.grid.card.benefit")}
+          {t("offersPage.grid.card.benefit", "استفد من العرض")}
         </NavLink>
       </div>
     </article>

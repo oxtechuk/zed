@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { Clock } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { APP_IMAGES } from "../../constants/app-images";
 import { useCountdown } from "../../hooks/useCountdown";
 
 interface FeaturedOfferBannerProps {
   id: string | number;
+  image?: string;
   title: string;
   description: string;
   tag?: string;
@@ -14,115 +14,87 @@ interface FeaturedOfferBannerProps {
 
 export default function FeaturedOfferBanner({
   id,
+  image,
   title,
   description,
   tag,
   ends_at,
 }: FeaturedOfferBannerProps) {
   const { t, i18n } = useTranslation();
-  const isRtl = i18n.dir() === "rtl";
   const { days, hours, minutes, seconds } = useCountdown(ends_at);
 
-  // Map tag to name
   const tagNames: Record<string, string> = {
-    popular: t("offersPage.grid.categories.popular"),
-    exclusive: t("offersPage.grid.categories.exclusive"),
-    new: t("offersPage.grid.categories.new"),
-    limited: t("offersPage.grid.categories.limited"),
+    popular: t("offersPage.grid.categories.popular", "الشائعة"),
+    exclusive: t("offersPage.grid.categories.exclusive", "عرض حصري"),
+    new: t("offersPage.grid.categories.new", "جديد"),
+    limited: t("offersPage.grid.categories.limited", "لفترة محدودة"),
   };
 
-  const tagLabel = tag ? (tagNames[tag] || tag) : t("offersPage.grid.categories.limited");
+  const tagLabel = tag ? (tagNames[tag] || tag) : t("offersPage.grid.categories.limited", "لفترة محدودة");
+
+  const countdownParts = [
+    { value: days, label: t("offersPage.countdown.days", "يوم") },
+    { value: hours, label: t("offersPage.countdown.hours", "ساعة") },
+    { value: minutes, label: t("offersPage.countdown.minutes", "دقيقة") },
+    { value: seconds, label: t("offersPage.countdown.seconds", "ثانية") },
+  ];
 
   return (
     <div
       dir={i18n.dir()}
-      className="relative w-full rounded-[24px] bg-gradient-to-r from-[#16254F] to-[#08111F] text-white overflow-hidden shadow-xl min-h-[340px] flex flex-col lg:flex-row items-center p-6 md:p-12 mb-12"
+      className="relative w-full rounded-[24px] text-white overflow-hidden shadow-2xl mb-10"
+      style={{
+        backgroundImage: image
+          ? `linear-gradient(270deg, rgba(22,37,79,0.98) 0%, rgba(22,37,79,0.70) 50%, rgba(0,0,0,0) 100%), url(${image})`
+          : "linear-gradient(90deg, #16254F 0%, #0D1730 60%, #080E1E 100%)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
-      {/* Decorative Moon & Calligraphy Image (eid.png) on the Left (or background) */}
-      <div
-        className={`absolute top-0 bottom-0 ${isRtl ? 'left-0' : 'right-0'} w-full lg:w-1/2 opacity-20 lg:opacity-30 pointer-events-none z-0`}
-        style={{
-          backgroundImage: `url(${APP_IMAGES.EID})`,
-          backgroundSize: 'contain',
-          backgroundPosition: isRtl ? 'left center' : 'right center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      />
+      <div className="relative z-10 flex flex-col items-center gap-8 px-6 py-8 md:flex-row md:items-center md:justify-between md:px-12 md:py-10 text-start">
+        {/* Content: title / description / CTA */}
+        <div className="flex w-full flex-col items-start md:w-auto">
+          {/* Top row: countdown notice + tag pill (stacked, right-aligned) */}
+          <div className="flex flex-col items-start gap-2">
+            <div className="flex items-center gap-1.5 text-white/50 text-xs">
+              <span>{t("offersPage.countdown.requestEnds", "العرض ينتهي قريباً")}</span>
+              <Clock size={12} />
+            </div>
+            <span className="inline-block bg-[#EDC98E] text-[#16254F] text-xs font-black px-3 py-1.5 rounded-full">
+              {tagLabel}
+            </span>
+          </div>
 
-      {/* Main Content Area */}
-      <div className="relative z-10 w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-start mb-8 lg:mb-0">
-        <span className="inline-block bg-[#EDC98E] text-[#07111F] text-xs font-extrabold px-4 py-1.5 rounded-full shadow-sm">
-          {tagLabel}
-        </span>
+          <h2 className="mt-4 text-[26px] md:text-[32px] font-black text-white leading-tight">
+            {title}
+          </h2>
 
-        <h2 className="mt-5 text-[28px] md:text-[38px] font-extrabold text-white leading-tight">
-          {title}
-        </h2>
+          <p className="mt-1 max-w-md text-[15px] md:text-[16px] text-white/60 leading-relaxed">
+            {description}
+          </p>
 
-        <p className="mt-3 text-base md:text-lg text-gray-300 max-w-lg leading-relaxed">
-          {description}
-        </p>
-
-        <NavLink
-          to={`/cars?offerId=${id}`}
-          className="mt-8 inline-flex h-[48px] items-center justify-center rounded-full bg-[#EDC98E] px-8 text-[16px] font-bold text-[#07111F] shadow-lg transition hover:bg-white hover:scale-105"
-        >
-          {t("offersPage.hero.primaryButton")}
-        </NavLink>
-      </div>
-
-      {/* Countdown Timer Area */}
-      <div className="relative z-10 w-full lg:w-1/2 flex flex-col items-center lg:items-end">
-        {/* Header/Subtext */}
-        <div className="flex items-center gap-2 text-gray-300 font-bold mb-2">
-          <Clock size={18} className="text-[#EDC98E]" />
-          <span className="text-sm md:text-base">{t("offersPage.countdown.requestEnds")}</span>
+          <NavLink
+            to={`/cars?offerId=${id}`}
+            className="mt-5 inline-flex h-[48px] items-center justify-center rounded-2xl bg-[#EDC98E] px-7 text-[14px] font-black text-[#16254F] shadow-lg transition duration-200 hover:bg-white hover:scale-[1.02]"
+          >
+            {t("offersPage.hero.primaryButton", "اطلع على العرض")}
+          </NavLink>
         </div>
 
-        <span className="text-xs text-gray-400 mb-6 font-medium">
-          {t("offersPage.countdown.endsIn")}
-        </span>
-
-        {/* 4 circles countdown */}
-        <div className="flex items-center gap-4 md:gap-5" dir="ltr">
-          {/* Days */}
-          <div className="flex flex-col items-center">
-            <div className="w-[60px] h-[60px] md:w-[72px] md:h-[72px] rounded-full border-2 border-white/20 bg-white/5 flex items-center justify-center text-[22px] md:text-[26px] font-black text-white shadow-inner">
-              {days}
-            </div>
-            <span className="mt-2 text-xs md:text-sm font-semibold text-gray-300">
-              {t("offersPage.countdown.days")}
-            </span>
-          </div>
-
-          {/* Hours */}
-          <div className="flex flex-col items-center">
-            <div className="w-[60px] h-[60px] md:w-[72px] md:h-[72px] rounded-full border-2 border-white/20 bg-white/5 flex items-center justify-center text-[22px] md:text-[26px] font-black text-white shadow-inner">
-              {hours}
-            </div>
-            <span className="mt-2 text-xs md:text-sm font-semibold text-gray-300">
-              {t("offersPage.countdown.hours")}
-            </span>
-          </div>
-
-          {/* Minutes */}
-          <div className="flex flex-col items-center">
-            <div className="w-[60px] h-[60px] md:w-[72px] md:h-[72px] rounded-full border-2 border-white/20 bg-white/5 flex items-center justify-center text-[22px] md:text-[26px] font-black text-white shadow-inner">
-              {minutes}
-            </div>
-            <span className="mt-2 text-xs md:text-sm font-semibold text-gray-300">
-              {t("offersPage.countdown.minutes")}
-            </span>
-          </div>
-
-          {/* Seconds */}
-          <div className="flex flex-col items-center">
-            <div className="w-[60px] h-[60px] md:w-[72px] md:h-[72px] rounded-full border-2 border-white/20 bg-[#EDC98E]/10 flex items-center justify-center text-[22px] md:text-[26px] font-black text-[#EDC98E] shadow-inner">
-              {seconds}
-            </div>
-            <span className="mt-2 text-xs md:text-sm font-semibold text-gray-300">
-              {t("offersPage.countdown.seconds")}
-            </span>
+        {/* Countdown Timer */}
+        <div className="flex w-full flex-col items-center md:w-auto md:items-end">
+          <span className="block text-white/40 text-xs font-semibold mb-3">
+            {t("offersPage.countdown.endsIn", "ينتهي العرض خلال")}
+          </span>
+          <div className="flex items-start gap-3" dir="ltr">
+            {countdownParts.map((part) => (
+              <div key={part.label} className="flex flex-col items-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-[24px] font-black text-white">
+                  {part.value}
+                </div>
+                <span className="mt-1 text-[10px] text-white/40">{part.label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

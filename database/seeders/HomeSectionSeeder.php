@@ -12,6 +12,8 @@ use Illuminate\Database\Seeder;
 
 class HomeSectionSeeder extends Seeder
 {
+    use LocalImagesTrait;
+
     /**
      * Run the database seeds.
      */
@@ -64,6 +66,7 @@ class HomeSectionSeeder extends Seeder
                 'description' => ['ar' => 'استفد من عرضنا الحصري على تمويل السيارات الفاخرة.', 'en' => 'Take advantage of our exclusive luxury car financing offer.'],
                 'button_text' => ['ar' => 'اطلع على العرض', 'en' => 'See the offer'],
                 'button_url' => '/offers',
+                'background_image' => $this->localImage('offer.png'),
             ],
             [
                 'key' => 'latest_cars', 'sort_order' => 7,
@@ -97,69 +100,70 @@ class HomeSectionSeeder extends Seeder
 
     private function seedHeroSlides(): void
     {
-        if (HeroSlide::query()->exists()) {
-            return;
+        $slides = [
+            [
+                'title' => ['ar' => 'المنصة الأولى لتمويل السيارات الفاخرة', 'en' => 'The leading luxury car financing platform'],
+                'subtitle' => ['ar' => 'زاد كابيتال', 'en' => 'Zad Capital'],
+                'description' => ['ar' => 'نجمع بين الخبرة المالية والشغف بالسيارات', 'en' => 'Financial expertise meets a passion for cars'],
+                'image_desktop' => $this->localImage('home_hero.png'),
+                'image_mobile' => $this->localImage('home_hero.png'),
+                'button_text' => ['ar' => 'تصفح السيارات', 'en' => 'Browse cars'],
+                'button_url' => '/cars',
+                'badge' => ['ar' => 'الأكثر ثقة', 'en' => 'Most trusted'],
+                'sort_order' => 1,
+            ],
+            [
+                'title' => ['ar' => 'عروض العيد على أحدث الموديلات', 'en' => 'Eid offers on the latest models'],
+                'subtitle' => ['ar' => 'عروض محدودة', 'en' => 'Limited-time offers'],
+                'description' => ['ar' => 'احتفل بالعيد بسيارتك الجديدة بأقساط ميسرة', 'en' => 'Celebrate Eid with your new car and easy installments'],
+                'image_desktop' => $this->localImage('eid.png'),
+                'image_mobile' => $this->localImage('eid.png'),
+                'button_text' => ['ar' => 'احسب قسطك الآن', 'en' => 'Calculate now'],
+                'button_url' => '/calculator',
+                'sort_order' => 2,
+            ],
+        ];
+
+        foreach ($slides as $slide) {
+            HeroSlide::query()->updateOrCreate(['sort_order' => $slide['sort_order']], $slide + ['is_active' => true]);
         }
-
-        HeroSlide::create([
-            'title' => ['ar' => 'المنصة الأولى لتمويل السيارات الفاخرة', 'en' => 'The leading luxury car financing platform'],
-            'subtitle' => ['ar' => 'زاد كابيتال', 'en' => 'Zad Capital'],
-            'description' => ['ar' => 'نجمع بين الخبرة المالية والشغف بالسيارات', 'en' => 'Financial expertise meets a passion for cars'],
-            'image_desktop' => 'https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=1920&auto=format&fit=crop',
-            'image_mobile' => 'https://images.unsplash.com/photo-1502877338535-766e1452684a?q=80&w=800&auto=format&fit=crop',
-            'button_text' => ['ar' => 'تصفح السيارات', 'en' => 'Browse cars'],
-            'button_url' => '/cars',
-            'badge' => ['ar' => 'الأكثر ثقة', 'en' => 'Most trusted'],
-            'sort_order' => 1,
-        ]);
-
-        HeroSlide::create([
-            'title' => ['ar' => 'احصل على تمويلك خلال دقائق', 'en' => 'Get financed in minutes'],
-            'subtitle' => ['ar' => 'حاسبة التمويل', 'en' => 'Financing calculator'],
-            'description' => ['ar' => 'احسب قسطك الشهري بدون التزام', 'en' => 'Estimate your monthly installment, no commitment'],
-            'image_desktop' => 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=1920&auto=format&fit=crop',
-            'image_mobile' => 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?q=80&w=800&auto=format&fit=crop',
-            'button_text' => ['ar' => 'احسب الآن', 'en' => 'Calculate now'],
-            'button_url' => '/calculator',
-            'sort_order' => 2,
-        ]);
     }
 
     private function seedPromoCards(): void
     {
-        if (PromoCard::query()->exists()) {
-            return;
+        $cards = [
+            [
+                'type' => 'large',
+                'title' => ['ar' => 'تمويل السيارات', 'en' => 'Car Financing'],
+                'subtitle' => ['ar' => 'خطط تمويل مرنة تصل حتى 84 شهراً', 'en' => 'Flexible plans up to 84 months'],
+                'image' => $this->localImage('car1.png'),
+                'button_text' => ['ar' => 'ابدأ الآن', 'en' => 'Get started'],
+                'button_url' => '/calculator',
+                'sort_order' => 1,
+            ],
+            [
+                'type' => 'medium',
+                'title' => ['ar' => 'شراء نقدي', 'en' => 'Cash Purchase'],
+                'subtitle' => ['ar' => 'وفر أكثر بالدفع الكامل', 'en' => 'Save more paying in full'],
+                'image' => $this->localImage('g1.png'),
+                'button_text' => ['ar' => 'تصفح', 'en' => 'Browse'],
+                'button_url' => '/cars',
+                'sort_order' => 2,
+            ],
+            [
+                'type' => 'small',
+                'title' => ['ar' => 'عروض العيد', 'en' => 'Eid Offers'],
+                'subtitle' => ['ar' => 'خصومات خاصة بمناسبة العيد', 'en' => 'Special Eid discounts'],
+                'image' => $this->localImage('eid.png'),
+                'button_text' => ['ar' => 'اطلب الآن', 'en' => 'Request now'],
+                'button_url' => '/offers',
+                'sort_order' => 3,
+            ],
+        ];
+
+        foreach ($cards as $card) {
+            PromoCard::query()->updateOrCreate(['sort_order' => $card['sort_order']], $card + ['is_active' => true]);
         }
-
-        PromoCard::create([
-            'type' => 'large',
-            'title' => ['ar' => 'تمويل السيارات', 'en' => 'Car Financing'],
-            'subtitle' => ['ar' => 'خطط تمويل مرنة تصل حتى 84 شهراً', 'en' => 'Flexible plans up to 84 months'],
-            'image' => 'https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1200&auto=format&fit=crop',
-            'button_text' => ['ar' => 'ابدأ الآن', 'en' => 'Get started'],
-            'button_url' => '/calculator',
-            'sort_order' => 1,
-        ]);
-
-        PromoCard::create([
-            'type' => 'medium',
-            'title' => ['ar' => 'شراء نقدي', 'en' => 'Cash Purchase'],
-            'subtitle' => ['ar' => 'وفر أكثر بالدفع الكامل', 'en' => 'Save more paying in full'],
-            'image' => 'https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?q=80&w=1200&auto=format&fit=crop',
-            'button_text' => ['ar' => 'تصفح', 'en' => 'Browse'],
-            'button_url' => '/cars',
-            'sort_order' => 2,
-        ]);
-
-        PromoCard::create([
-            'type' => 'small',
-            'title' => ['ar' => 'طلب مخصص', 'en' => 'Custom Order'],
-            'subtitle' => ['ar' => 'لم تجد سيارتك؟ اطلبها', 'en' => "Can't find your car? Request it"],
-            'image' => 'https://images.unsplash.com/photo-1543796583-95c3ce4b7635?q=80&w=1200&auto=format&fit=crop',
-            'button_text' => ['ar' => 'اطلب الآن', 'en' => 'Request now'],
-            'button_url' => '/contact',
-            'sort_order' => 3,
-        ]);
     }
 
     private function seedFinanceSteps(): void
@@ -178,10 +182,6 @@ class HomeSectionSeeder extends Seeder
 
     private function seedBudgetRanges(): void
     {
-        if (BudgetRange::query()->exists()) {
-            return;
-        }
-
         $ranges = [
             ['label' => ['ar' => 'أقل من 300 ألف', 'en' => 'Under 300k'], 'min' => 0, 'max' => 300000],
             ['label' => ['ar' => '300 - 500 ألف', 'en' => '300k - 500k'], 'min' => 300001, 'max' => 500000],
@@ -190,7 +190,7 @@ class HomeSectionSeeder extends Seeder
         ];
 
         foreach ($ranges as $index => $range) {
-            BudgetRange::create($range + ['sort_order' => $index + 1]);
+            BudgetRange::query()->updateOrCreate(['min' => $range['min']], $range + ['sort_order' => $index + 1]);
         }
     }
 

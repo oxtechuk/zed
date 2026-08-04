@@ -160,7 +160,7 @@ export default function AllCarsPage() {
   return (
     <main dir={i18n.dir()} className="min-h-screen bg-[#F3F4F6]">
       {/* ── Page Header (Dark Navy Banner) ── */}
-      <section className="w-full bg-[#0F172A] py-14 text-white text-center relative overflow-hidden">
+      <section className="w-full bg-[#080E1E] py-10 text-white text-center relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-[#EDC98E]/5 blur-2xl rounded-full pointer-events-none" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <span className="text-[13px] font-extrabold text-[#EDC98E] uppercase tracking-wider block mb-2">
@@ -185,7 +185,7 @@ export default function AllCarsPage() {
                 value={searchValue}
                 placeholder="ابحث عن سيارة..."
                 onChange={(e) => handleSearch(e.target.value)}
-                className="h-[46px] w-full rounded-full border border-gray-200 bg-[#F8FAFC] px-5 pr-12 text-[14px] text-[#0F172A] outline-none placeholder:text-gray-400 focus:border-[#0F172A] focus:bg-white focus:ring-2 focus:ring-[#0F172A]/10 transition-all duration-200"
+                className="h-[46px] w-full rounded-2xl border border-[#E7E9EF] bg-white px-5 pr-12 text-[14px] text-[#16254F] outline-none placeholder:text-gray-400 focus:border-[#16254F] focus:bg-white focus:ring-2 focus:ring-[#16254F]/10 transition-all duration-200"
               />
               <Search
                 size={18}
@@ -200,7 +200,7 @@ export default function AllCarsPage() {
                 <button
                   type="button"
                   onClick={() => setShowSortDropdown(!showSortDropdown)}
-                  className="flex h-[46px] items-center gap-2 rounded-xl border border-gray-200 bg-white px-5 text-[14px] font-extrabold text-[#0F172A] transition hover:border-[#0F172A] active:scale-95"
+                  className="flex h-[46px] items-center gap-2 rounded-2xl border border-[#E7E9EF] bg-white px-5 text-[14px] font-extrabold text-[#16254F] transition hover:border-[#16254F] active:scale-95"
                 >
                   <span>
                     {sortingOptions.find((opt) => opt.value === sortBy)?.label || "ترتيب حسب"}
@@ -214,7 +214,7 @@ export default function AllCarsPage() {
                       className="fixed inset-0 z-40"
                       onClick={() => setShowSortDropdown(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-52 rounded-xl border border-[#E5E9F0] bg-white p-1.5 shadow-lg z-50 text-start">
+                    <div className="absolute right-0 mt-2 w-52 rounded-xl border border-[#E7E9EF] bg-white p-1.5 shadow-lg z-50 text-start">
                       {sortingOptions.map((opt) => (
                         <button
                           key={opt.value}
@@ -222,7 +222,7 @@ export default function AllCarsPage() {
                           onClick={() => handleSortSelect(opt.value)}
                           className={`w-full rounded-lg px-4 py-2.5 text-[13px] font-extrabold transition-colors text-right block ${
                             opt.value === sortBy
-                              ? "bg-[#0F172A] text-white"
+                              ? "bg-[#16254F] text-white"
                               : "text-[#374151] hover:bg-gray-50"
                           }`}
                         >
@@ -237,7 +237,7 @@ export default function AllCarsPage() {
               {/* Filter drawer trigger button */}
               <button
                 type="button"
-                className="flex h-[46px] items-center gap-2 rounded-xl bg-[#0F172A] px-5 text-[14px] font-extrabold text-white transition hover:bg-[#1E293B] active:scale-95"
+                className="flex h-[46px] items-center gap-2 rounded-2xl bg-[#16254F] px-5 text-[14px] font-extrabold text-white transition hover:bg-[#0F1E36] active:scale-95"
               >
                 <SlidersHorizontal size={16} />
                 <span>الفلاتر</span>
@@ -258,8 +258,8 @@ export default function AllCarsPage() {
                     onClick={() => handleTypeFilter(filter.value)}
                     className={`h-[36px] rounded-full px-5 text-[13px] font-extrabold transition-all duration-300 ${
                       isActive
-                        ? "bg-[#0F172A] text-white scale-105 shadow-xs"
-                        : "bg-[#F1F5F9] text-gray-500 hover:bg-[#0F172A] hover:text-white"
+                        ? "bg-[#16254F] text-white scale-105 shadow-xs"
+                        : "border border-[#E7E9EF] bg-white text-[#667085] hover:bg-[#16254F] hover:text-white hover:border-[#16254F]"
                     }`}
                   >
                     {filter.label}

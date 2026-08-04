@@ -69,7 +69,7 @@ export default function CarDetailsHero({
   return (
     <div className="w-full flex flex-col">
       {/* Breadcrumb Bar */}
-      <div className="w-full bg-[#0F172A] py-3.5 text-white text-[13px] border-b border-white/5">
+      <div className="w-full bg-[#080E1E] py-3.5 text-white text-[13px] border-b border-white/5">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-start flex items-center gap-2">
           <a href="/" className="opacity-60 hover:opacity-100 hover:text-[#EDC98E] transition-colors">
             {t("nav.home")}
@@ -95,13 +95,13 @@ export default function CarDetailsHero({
             <div className="lg:col-span-7 flex flex-col order-1">
               
               {/* Inside/Outside toggles */}
-              <div className="mb-5 grid h-[56px] grid-cols-2 rounded-xl bg-white p-1.5 border border-[#E5E9F0] shadow-sm">
+              <div className="mb-5 grid h-[56px] grid-cols-2 rounded-xl bg-white p-1.5 border border-[#E7E9EF] shadow-sm">
                 <button
                   type="button"
                   onClick={() => handleViewChange("inside")}
                   className={`rounded-lg text-[15px] font-bold transition-all duration-300 ${
                     viewType === "inside"
-                      ? "bg-[#EAF1FA] text-[#0F172A]"
+                      ? "bg-[#EAF1FA] text-[#16254F]"
                       : "text-[#5F6672]"
                   }`}
                 >
@@ -112,7 +112,7 @@ export default function CarDetailsHero({
                   onClick={() => handleViewChange("outside")}
                   className={`rounded-lg text-[15px] font-bold transition-all duration-300 ${
                     viewType === "outside"
-                      ? "bg-[#EAF1FA] text-[#0F172A]"
+                      ? "bg-[#EAF1FA] text-[#16254F]"
                       : "text-[#5F6672]"
                   }`}
                 >
@@ -121,7 +121,7 @@ export default function CarDetailsHero({
               </div>
 
               {/* Main Image View */}
-              <div className="relative overflow-hidden rounded-[24px] bg-white border border-[#E5E9F0] shadow-sm flex items-center justify-center p-6 min-h-[340px] md:min-h-[440px]">
+              <div className="relative overflow-hidden rounded-[24px] bg-white border border-[#E7E9EF] shadow-sm flex items-center justify-center p-6 min-h-[340px] md:min-h-[440px]">
                 <img
                   src={currentImage}
                   alt={title}
@@ -135,14 +135,14 @@ export default function CarDetailsHero({
                     <button
                       type="button"
                       onClick={handlePrev}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-[#0F172A] border border-white/30 transition hover:bg-white/40 active:scale-95"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-[#16254F] border border-white/30 transition hover:bg-white/40 active:scale-95"
                     >
                       <ArrowLeft size={18} />
                     </button>
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-[#0F172A] border border-white/30 transition hover:bg-white/40 active:scale-95"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-md text-[#16254F] border border-white/30 transition hover:bg-white/40 active:scale-95"
                     >
                       <ArrowRight size={18} />
                     </button>
@@ -161,7 +161,7 @@ export default function CarDetailsHero({
                       className={`h-16 w-20 overflow-hidden rounded-xl border bg-white p-1 transition-all duration-300 ${
                         activeImage === index
                           ? "border-[#EDC98E] ring-2 ring-[#EDC98E]/20 scale-105"
-                          : "border-[#E5E9F0] hover:border-gray-400"
+                          : "border-[#E7E9EF] hover:border-gray-400"
                       }`}
                     >
                       <img
@@ -177,7 +177,7 @@ export default function CarDetailsHero({
               {/* Category Badge */}
               {type && (
                 <div className="mt-8 flex justify-start">
-                  <span className="inline-block bg-white border border-[#E5E9F0] text-[#64748B] text-[12px] font-bold px-3 py-1.5 rounded-lg">
+                  <span className="inline-block bg-white border border-[#E7E9EF] text-[#64748B] text-[12px] font-bold px-3 py-1.5 rounded-lg">
                     {type}
                   </span>
                 </div>
@@ -189,30 +189,30 @@ export default function CarDetailsHero({
               </p>
 
               {/* Car Title */}
-              <h1 className="mt-2.5 text-start text-[28px] font-black leading-tight text-[#0F172A] md:text-[38px]">
+              <h1 className="mt-2.5 text-start text-[28px] font-black leading-tight text-[#16254F] md:text-[38px]">
                 {title}
               </h1>
 
               {/* Badges Row */}
               <div className="mt-4 flex flex-wrap gap-2.5">
                 {fuelType && (
-                  <span className="inline-flex items-center bg-white border border-[#E5E9F0] text-[#475569] text-[13px] font-extrabold px-3.5 py-2 rounded-xl shadow-xs">
+                  <span className="inline-flex items-center bg-white border border-[#E7E9EF] text-[#475569] text-[13px] font-extrabold px-3.5 py-2 rounded-xl shadow-xs">
                     {fuelType}
                   </span>
                 )}
                 {transmission && (
-                  <span className="inline-flex items-center bg-white border border-[#E5E9F0] text-[#475569] text-[13px] font-extrabold px-3.5 py-2 rounded-xl shadow-xs">
+                  <span className="inline-flex items-center bg-white border border-[#E7E9EF] text-[#475569] text-[13px] font-extrabold px-3.5 py-2 rounded-xl shadow-xs">
                     {transmission}
                   </span>
                 )}
                 {seats && (
-                  <span className="inline-flex items-center gap-1.5 bg-white border border-[#E5E9F0] text-[#475569] text-[13px] font-extrabold px-3.5 py-2 rounded-xl shadow-xs">
+                  <span className="inline-flex items-center gap-1.5 bg-white border border-[#E7E9EF] text-[#475569] text-[13px] font-extrabold px-3.5 py-2 rounded-xl shadow-xs">
                     <Users size={14} className="text-[#94A3B8]" />
                     <span>{seats}</span>
                   </span>
                 )}
                 {horsepower && (
-                  <span className="inline-flex items-center bg-white border border-[#E5E9F0] text-[#475569] text-[13px] font-extrabold px-3.5 py-2 rounded-xl shadow-xs">
+                  <span className="inline-flex items-center bg-white border border-[#E7E9EF] text-[#475569] text-[13px] font-extrabold px-3.5 py-2 rounded-xl shadow-xs">
                     {horsepower}
                   </span>
                 )}
@@ -230,7 +230,7 @@ export default function CarDetailsHero({
             <div className="lg:col-span-5 flex flex-col order-2 lg:sticky lg:top-8">
               
               {/* Main Finance Calculator Card */}
-              <div className="rounded-[24px] bg-[#0F172A] p-7 text-white shadow-xl relative overflow-hidden">
+              <div className="rounded-[24px] bg-[#16254F] p-7 text-white shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-48 h-48 bg-[#EDC98E]/5 blur-[70px] rounded-full pointer-events-none" />
 
                 {/* Cash Price Display */}
@@ -248,16 +248,16 @@ export default function CarDetailsHero({
                   <span className="text-[13px] text-white/50 font-bold block mb-3.5">
                     {t("carDetails.calculator.monthsTerm", { defaultValue: "مدة التمويل بالأشهر" })}
                   </span>
-                  <div className="flex gap-2.5">
-                    {[60, 48, 36, 24, 12].map((month) => (
+                  <div className="flex gap-2">
+                    {[24, 36, 48, 60, 72, 84].map((month) => (
                       <button
                         key={month}
                         type="button"
                         onClick={() => setSelectedMonth(month)}
-                        className={`flex h-10 w-12 items-center justify-center rounded-xl text-[14px] font-extrabold transition-all duration-300 ${
+                        className={`flex h-9 flex-1 items-center justify-center rounded-xl text-[11px] font-black transition-all duration-300 ${
                           selectedMonth === month
-                            ? "bg-[#EDC98E] text-[#0F172A] scale-105 shadow-md"
-                            : "bg-[#1E293B] hover:bg-[#2A3B56] text-white"
+                            ? "bg-[#EDC98E] text-[#16254F] scale-105 shadow-md"
+                            : "bg-white/[0.08] hover:bg-white/[0.14] text-white"
                         }`}
                       >
                         {month}
@@ -267,22 +267,22 @@ export default function CarDetailsHero({
                 </div>
 
                 {/* Dynamic Monthly Installment */}
-                <div className="mt-8 text-start border-t border-white/5 pt-6">
-                  <span className="text-[13px] text-white/50 font-bold block mb-2">
+                <div className="mt-6 rounded-2xl border border-white/[0.08] bg-white/[0.05] p-4 text-center">
+                  <span className="text-[12px] text-white/35 font-normal block">
                     {t("carDetails.calculator.monthlyInstallment", { defaultValue: "القسط الشهري المقدر" })}
                   </span>
-                  <div className="text-[26px] font-black text-[#EDC98E] leading-none tracking-tight">
+                  <div className="mt-1 text-[36px] font-black text-[#EDC98E] leading-none tracking-tight">
                     {formatPrice(calculatedInstallment, "#EDC98E")}
-                    <span className="text-[13px] text-white/50 font-extrabold ms-2">
-                      / شهر - معدل أرباح 4.9%
-                    </span>
                   </div>
+                  <span className="mt-1 text-[12px] text-white/25 font-normal block">
+                    ريال / شهر · بمعدل أرباح 4.5٪
+                  </span>
                 </div>
 
                 {/* Apply buttons */}
                 <a
                   href={`/contact?car=${encodeURIComponent(brandName + " " + title)}&installment=${calculatedInstallment}&term=${selectedMonth}`}
-                  className="mt-6 flex h-[52px] w-full items-center justify-center rounded-xl bg-[#EDC98E] text-[15px] font-extrabold text-[#0F172A] transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_12px_25px_rgba(237,201,142,0.15)] active:scale-95"
+                  className="mt-5 flex h-[48px] w-full items-center justify-center rounded-2xl bg-[#EDC98E] text-[14px] font-black text-[#16254F] transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_12px_25px_rgba(237,201,142,0.15)] active:scale-95"
                 >
                   {t("carDetails.calculator.submit", { defaultValue: "قدم طلب التمويل الآن" })}
                 </a>
@@ -308,26 +308,33 @@ export default function CarDetailsHero({
                 </div>
               </div>
 
-              {/* Compare Card (Cream layout) */}
+              {/* Compare Card */}
               <a
                 href={`/compare?car1=${encodeURIComponent(title)}`}
-                className="mt-4 flex items-center justify-between rounded-[20px] bg-[#FFF4E4] p-5 border border-[#FBEFDF] text-[#92400E] transition-all duration-300 hover:scale-[1.01] hover:shadow-xs group"
+                className="mt-4 flex items-center justify-between rounded-2xl bg-[#F9EEDC] p-4 border border-[#E7E9EF] text-[#16254F] transition-all duration-300 hover:scale-[1.01] hover:shadow-xs group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/60 text-[#92400E]">
-                    <Scale size={18} />
+                  <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#FAFAFB] border border-[#E7E9EF] text-[#667085]">
+                    <Scale size={16} />
                   </div>
-                  <span className="text-[15px] font-extrabold text-[#92400E]">
-                    {t("carDetails.hero.compareWithOther", { defaultValue: "قارن مع سيارة أخرى" })}
-                  </span>
+                  <div className="text-start">
+                    <span className="block text-[14px] font-black text-[#16254F]">
+                      {t("carDetails.hero.compareWithOther", { defaultValue: "قارن مع سيارة أخرى" })}
+                    </span>
+                    <span className="block text-[10px] text-[#16254F]/70">
+                      {t("carDetails.hero.compareSelect", { defaultValue: "اختر سيارة للمقارنة" })}
+                    </span>
+                  </div>
                 </div>
-                <ArrowLeft size={18} className="text-[#92400E] transition-transform duration-300 group-hover:-translate-x-1" />
+                <ArrowLeft size={16} className="text-[#16254F] transition-transform duration-300 group-hover:-translate-x-1" />
               </a>
 
               {/* Disclaimer */}
-              <p className="mt-4 text-start text-[11px] leading-relaxed text-[#94A3B8] font-semibold px-2">
-                * الأرقام تقديرية بمعدل 4.9% سنوياً. التمويل يخضع لشروط الموافقة لبنك العميل. للحصول على عرض نهائي، تواصل مع فريقنا.
-              </p>
+              <div className="mt-4 rounded-2xl border border-[#16254F]/20 bg-[#16254F]/[0.08] p-4">
+                <p className="text-start text-[12px] leading-relaxed text-[#16254F]/70 font-normal">
+                  * الأرقام تقديرية بمعدل 4.5٪ سنوياً. التمويل مشروط بموافقة البنك الممول. للحصول على عرض نهائي، تواصل مع فريقنا.
+                </p>
+              </div>
             </div>
 
           </div>

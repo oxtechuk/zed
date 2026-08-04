@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Store;
 
+use App\Http\Api\Response\Builder\ApiResponseBuilder;
 use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Resources\Store\BrandResource;
 use App\Http\Resources\Store\BrandTypeResource;
@@ -20,7 +21,7 @@ final class CarController extends ApiBaseController
         private readonly CarApiService $carService,
         private readonly CompareApiService $compareService,
     ) {
-        parent::__construct(app(\App\Http\Api\Response\Builder\ApiResponseBuilder::class));
+        parent::__construct(app(ApiResponseBuilder::class));
     }
 
     public function listMeta()

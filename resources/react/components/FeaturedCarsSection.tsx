@@ -5,7 +5,8 @@ import CarCard from "./CarCard";
 import type { IFeaturedCarsSectionProps } from "../interfaces/IFeaturedCarsSectionProps";
 
 function getItemsPerPage(width: number): number {
-  if (width >= 1024) return 3; // 3 columns for desktop since sidebar is removed!
+  if (width >= 1280) return 4;
+  if (width >= 1024) return 3;
   if (width >= 640) return 2;
   return 1;
 }

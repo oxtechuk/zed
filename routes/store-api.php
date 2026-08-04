@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\Store\CalculatorController;
 use App\Http\Controllers\Api\Store\CarCategoryController;
 use App\Http\Controllers\Api\Store\CarController;
 use App\Http\Controllers\Api\Store\CarTypeController;
+use App\Http\Controllers\Api\Store\ContactController;
+use App\Http\Controllers\Api\Store\FaqController;
 use App\Http\Controllers\Api\Store\GalleryController;
 use App\Http\Controllers\Api\Store\HomeController;
 use App\Http\Controllers\Api\Store\NewsletterController;
@@ -44,12 +46,12 @@ Route::prefix('store')->name('store.api.')->group(function () {
     Route::post('/newsletter', [NewsletterController::class, 'store'])->name('newsletter.store');
 
     // FAQs
-    Route::get('/faqs', \App\Http\Controllers\Api\Store\FaqController::class)->name('faqs');
+    Route::get('/faqs', FaqController::class)->name('faqs');
 
     // Home & Static (US4)
     Route::get('/home', [HomeController::class, '__invoke'])->name('home');
     Route::get('/about', [AboutController::class, '__invoke'])->name('about');
-    Route::post('/contact', [\App\Http\Controllers\Api\Store\ContactController::class, 'store'])->name('contact.store');
+    Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
     Route::get('/testimonials', [TestimonialController::class, '__invoke'])->name('testimonials');
     Route::get('/partners', [PartnerController::class, '__invoke'])->name('partners');
 

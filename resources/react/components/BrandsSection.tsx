@@ -62,7 +62,7 @@ export default function BrandsSection({
   }
 
   return (
-    <section dir={i18n.dir()} className="w-full bg-[#F0F2F5] py-16">
+    <section dir={i18n.dir()} className="w-full bg-[#F3F4F6] py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-10 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
@@ -76,7 +76,7 @@ export default function BrandsSection({
               </span>
             </h2>
 
-            <p className="mt-4 max-w-2xl text-[14px] leading-6 text-[#5F8FD7] md:text-[16px] md:leading-7">
+            <p className="mt-4 max-w-2xl text-[14px] leading-6 text-[#667085] md:text-[16px] md:leading-7">
               {description}
             </p>
           </div>
@@ -97,12 +97,12 @@ export default function BrandsSection({
               type="text"
               placeholder={resolvedPlaceholder}
               onChange={(event) => onSearchChange?.(event.target.value)}
-              className="h-[54px] w-full rounded-full border border-[#8DB5EE] bg-transparent px-6 pr-14 text-[15px] text-[#111827] outline-none placeholder:text-[#7A97C7] focus:border-[var(--brand-primary-color)] focus:ring-2 focus:ring-[rgba(41,155,224,0.18)]"
+              className="h-[54px] w-full rounded-full border border-[#E7E9EF] bg-white px-6 pr-14 text-[15px] text-[#16254F] outline-none placeholder:text-[#667085] focus:border-[var(--brand-primary-color)] focus:ring-2 focus:ring-[rgba(22,37,79,0.12)]"
             />
 
             <Search
               size={22}
-              className="absolute right-5 top-1/2 -translate-y-1/2 text-[#5F8FD7]"
+              className="absolute right-5 top-1/2 -translate-y-1/2 text-[#667085]"
             />
           </div>
 

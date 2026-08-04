@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CRM;
 use App\Http\Controllers\Controller;
 use App\Models\Partner;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PartnerController extends Controller
 {
@@ -14,6 +15,7 @@ class PartnerController extends Controller
     public function index()
     {
         $partners = Partner::query()->orderBy('sort_order')->get();
+
         return view('crm.settings.partners.index', compact('partners'));
     }
 
@@ -34,11 +36,11 @@ class PartnerController extends Controller
             'name' => 'nullable|string|max:255',
             'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'link' => 'nullable|url',
-            'sort_order' => 'nullable|integer'
+            'sort_order' => 'nullable|integer',
         ]);
 
         $data = $request->except('logo');
-        
+
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('partners', 'public');
         }
@@ -70,19 +72,19 @@ class PartnerController extends Controller
     public function update(Request $request, string $id)
     {
         $partner = Partner::findOrFail($id);
-        
+
         $request->validate([
             'name' => 'nullable|string|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'link' => 'nullable|url',
-            'sort_order' => 'nullable|integer'
+            'sort_order' => 'nullable|integer',
         ]);
 
         $data = $request->except('logo');
 
         if ($request->hasFile('logo')) {
             if ($partner->logo) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($partner->logo);
+                Storage::disk('public')->delete($partner->logo);
             }
             $data['logo'] = $request->file('logo')->store('partners', 'public');
         }
@@ -98,11 +100,11 @@ class PartnerController extends Controller
     public function destroy(string $id)
     {
         $partner = Partner::findOrFail($id);
-        
+
         if ($partner->logo) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($partner->logo);
+            Storage::disk('public')->delete($partner->logo);
         }
-        
+
         $partner->delete();
 
         return back()->with('success', __('تم حذف الشريك بنجاح'));

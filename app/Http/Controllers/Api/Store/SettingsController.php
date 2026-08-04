@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Store;
 
 use App\Http\Api\Contracts\ApiResponse;
+use App\Http\Api\Response\Builder\ApiResponseBuilder;
 use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Resources\Store\SettingResource;
 use App\Services\Api\Store\SettingApiService;
@@ -13,7 +14,7 @@ final class SettingsController extends ApiBaseController
     public function __construct(
         private readonly SettingApiService $settingService,
     ) {
-        parent::__construct(app(\App\Http\Api\Response\Builder\ApiResponseBuilder::class));
+        parent::__construct(app(ApiResponseBuilder::class));
     }
 
     public function footer(): ApiResponse

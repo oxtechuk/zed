@@ -21,6 +21,7 @@ export default function CarCard({
   type,
   fuelType,
   transmission,
+  seats,
   price,
   monthlyPrice,
   detailsTo,
@@ -36,12 +37,14 @@ export default function CarCard({
   const displayBadge = badgeText || t("carCard.newlyArrived", { defaultValue: "وصل حديثاً" });
   const badgeStyle =
     (badgeColor && BADGE_COLOR_MAP[badgeColor.toUpperCase()]) || DEFAULT_BADGE;
+  const displaySeats =
+    seats && !String(seats).includes("مقاعد") ? `${seats} مقاعد` : seats;
 
   return (
     <article
       dir={i18n.dir()}
       onClick={() => navigate(detailsTo)}
-      className="relative mx-auto w-full max-w-[355px] cursor-pointer overflow-hidden rounded-2xl border border-[#E7E9EF] bg-white shadow-[0px_1px_2px_-1px_rgba(0,0,0,0.10),0px_1px_3px_rgba(0,0,0,0.10)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md text-start"
+      className="relative mx-auto w-full max-w-[355px] cursor-pointer overflow-hidden rounded-2xl border border-[#E7E9EF] bg-white transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md text-start"
     >
       {/* Newly Arrived Badge */}
       <div
@@ -83,18 +86,20 @@ export default function CarCard({
 
         {/* Specs Badges */}
         <div className="mt-4 flex flex-wrap items-center justify-end gap-1.5">
-          {transmission && (
-            <span className="inline-flex items-center rounded-xl bg-[#F3F4F6] px-2.5 py-1 text-[11px] font-semibold text-[#667085]">
-              {transmission}
-            </span>
-          )}
-          <span className="inline-flex items-center gap-1 rounded-xl bg-[#F3F4F6] px-2.5 py-1 text-[11px] font-semibold text-[#667085]">
-            <Users size={12} className="text-[#667085]" />
-            <span>5 مقاعد</span>
-          </span>
           {fuelType && (
             <span className="inline-flex items-center rounded-xl bg-[#F3F4F6] px-2.5 py-1 text-[11px] font-semibold text-[#667085]">
               {fuelType}
+            </span>
+          )}
+          {displaySeats && (
+            <span className="inline-flex items-center gap-1 rounded-xl bg-[#F3F4F6] px-2.5 py-1 text-[11px] font-semibold text-[#667085]">
+              <Users size={12} className="text-[#667085]" />
+              <span>{displaySeats}</span>
+            </span>
+          )}
+          {transmission && (
+            <span className="inline-flex items-center rounded-xl bg-[#F3F4F6] px-2.5 py-1 text-[11px] font-semibold text-[#667085]">
+              {transmission}
             </span>
           )}
         </div>

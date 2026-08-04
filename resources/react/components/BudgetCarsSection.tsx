@@ -106,7 +106,7 @@ export default function BudgetCarsSection({
   return (
     <section
       dir={i18n.dir()}
-      className="w-full bg-[#F0F2F5] py-16"
+      className="w-full bg-[#F3F4F6] py-16"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -123,7 +123,7 @@ export default function BudgetCarsSection({
               </span>
             </h2>
 
-            <p className="mt-4 max-w-2xl text-[14px] leading-6 text-[#5F8FD7] md:text-[16px] md:leading-7">
+            <p className="mt-4 max-w-2xl text-[14px] leading-6 text-[#667085] md:text-[16px] md:leading-7">
               {description}
             </p>
           </div>

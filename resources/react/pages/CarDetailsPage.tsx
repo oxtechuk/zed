@@ -177,34 +177,7 @@ export default function CarDetailsPage() {
         />
       )}
 
-      <FinanceSolutionsSection
-        className="mb-20 mt-10"
-        backgroundImage={APP_IMAGES.BG_IMAGE}
-        titleBlue={financeData?.finance?.badge?.trim() || t("financeSolutions.titleBlue")}
-        titleOrange={financeData?.finance?.title?.trim() || t("financeSolutions.titleOrange")}
-        description={financeData?.finance?.subtitle?.trim() || t("financeSolutions.description")}
-        buttonText={financeData?.finance?.button_text?.trim() || t("financeSolutions.buttonText")}
-        buttonTo="/contact"
-        stats={
-          financeData?.stats?.length
-            ? financeData.stats
-            : [
-                { value: "+500", label: t("financeSolutions.stats.0.label") },
-                { value: "+1000", label: t("financeSolutions.stats.1.label") },
-                { value: "+50", label: t("financeSolutions.stats.2.label") },
-              ]
-        }
-        features={
-          financeData?.finance?.features?.length
-            ? financeData.finance.features
-            : [
-                t("financeSolutions.features.0"),
-                t("financeSolutions.features.1"),
-                t("financeSolutions.features.2"),
-                t("financeSolutions.features.3"),
-              ]
-        }
-      />
+
     </>
   );
 }
