@@ -256,8 +256,8 @@
   "blogPage": {
     "readMore": "اقرأ المزيد",
     "hero": {
-      "badge": "مدونة كنوز",
-      "title": "مدونة <span class=\"highlight\">zed Capital</span>",
+      "badge": "المدونة",
+      "title": "مدونة <span class=\"highlight\">زاد كابيتال</span>",
       "description": "تابع أحدث أخبار السيارات، النصائح، والمقالات الحصرية.",
       "featuredPost": {
         "category": "نصائح التمويل",

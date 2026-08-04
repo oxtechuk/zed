@@ -2,10 +2,11 @@ import { useTranslation } from "react-i18next";
 import type { IOffersPageHeroProps } from "../../interfaces/IOffersPageHeroProps";
 
 export default function OffersPageHero({
+  badgeText,
   title,
   description,
 }: IOffersPageHeroProps) {
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
 
   return (
     <section
@@ -18,12 +19,13 @@ export default function OffersPageHero({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col items-center justify-center text-center">
           <span className="block text-[13px] font-extrabold text-[#EDC98E] uppercase tracking-wider mb-2">
-            {t("offersPage.hero.badge", "عروض حصريـة")}
+            {badgeText}
           </span>
 
-          <h1 className="text-[30px] font-black leading-tight text-white md:text-[38px] max-w-3xl">
-            {title}
-          </h1>
+          <h1
+            className="text-[30px] font-black leading-tight text-white md:text-[38px] max-w-3xl"
+            dangerouslySetInnerHTML={{ __html: title }}
+          />
 
           <p className="mt-3 max-w-2xl text-[15px] md:text-[16px] leading-7 text-white/40">
             {description}
