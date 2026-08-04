@@ -256,8 +256,8 @@
   "blogPage": {
     "readMore": "Read More",
     "hero": {
-      "badge": "Our Blog",
-      "title": "Knoz Motors <span class=\"highlight\">Blog</span>",
+      "badge": "Blog",
+      "title": "Zad Capital <span class=\"highlight\">Blog</span>",
       "description": "Follow the latest car news, tips, and exclusive articles.",
       "featuredPost": {
         "category": "Financing Tips",
