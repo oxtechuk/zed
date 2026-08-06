@@ -461,6 +461,16 @@
     }
   },
   "comparePage": {
+    "badge": "Cars Comparison",
+    "title": "Compare Two Cars",
+    "description": "Choose two cars to compare their specifications and costs side by side",
+    "criterion": "Criterion",
+    "bestInComparison": "Best in Comparison",
+    "comparisonResult": "Comparison Result",
+    "tie": "Tie Between Cars",
+    "tieDescription": "Both cars tied in direct comparison points",
+    "excelledIn": "Excelled in {{score}} out of {{total}} criteria",
+    "carDetails": "Car Details",
     "compareTable": "Comparison Table",
     "compareDescription": "Detailed comparison between two cars of your choice",
     "specLabel": "Specification",

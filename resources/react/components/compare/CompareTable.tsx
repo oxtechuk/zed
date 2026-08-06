@@ -70,7 +70,7 @@ export default function CompareTable({
         {/* Table Header Row */}
         <div className="grid grid-cols-[1.2fr_1.4fr_1.4fr] bg-[#F8FAFC] border-b border-gray-200 text-[13px] font-black text-gray-400 max-md:grid-cols-[1fr_1fr_1fr]">
           <div className="flex min-h-[58px] items-center px-6 text-[#6B7280]">
-            المعيار
+            {t("comparePage.criterion", { defaultValue: "المعيار" })}
           </div>
           <div className="flex min-h-[58px] items-center justify-center gap-2 px-5 text-center border-r border-l border-gray-100 text-[#0F172A]">
             <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#E5C287]" />
