@@ -137,7 +137,8 @@ export default function CarDetailsPage() {
       <CarDetailsHero
         title={car.name}
         description={car.description}
-        images={car.images?.length ? car.images : [car.main_image]}
+        mainImage={car.main_image}
+        images={car.images ?? []}
         exteriorImages={car.exterior_images}
         interiorImages={car.interior_images}
         price={car.current_price}
@@ -155,15 +156,32 @@ export default function CarDetailsPage() {
         year={car.year || undefined}
         brandName={car.brand?.name || undefined}
       />
-      <CarDetailsSpecs
-        specifications={car.specifications}
-        featuresList={car.features_list}
-        safetyFeatures={car.safety_features}
-        specs={car.specs}
-        availabilityStatus={car.availability_status}
-        type={car.type}
-        year={car.year}
-      />
+      {/* Specifications & Features Grid */}
+      <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 ">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+          {/* Specifications Card (aligns with Gallery column width) */}
+          <div className="lg:col-span-8">
+            <CarDetailsSpecs
+              showOnly="specs"
+              specifications={car.specifications}
+              specs={car.specs}
+              type={car.type}
+              year={car.year}
+              availabilityStatus={car.availability_status}
+            />
+          </div>
+
+          {/* Features List (aligns with Sidebar Calculator width) */}
+          <div className="lg:col-span-4">
+            <CarDetailsSpecs
+              showOnly="features"
+              featuresList={car.features_list}
+              safetyFeatures={car.safety_features}
+              specs={car.specs}
+            />
+          </div>
+        </div>
+      </section>
 
       {relatedCars.length > 0 && (
         <FeaturedCarsSection
@@ -173,7 +191,7 @@ export default function CarDetailsPage() {
           buttonText={t("carDetails.relatedCars.buttonText")}
           buttonTo="/cars"
           cars={relatedCars}
-          className="bg-[#F9FAFB]"
+          itemsPerPage={3}
         />
       )}
 

@@ -66,7 +66,7 @@ export default function RootLayout() {
 
       <div className="hidden md:block">
         <Footer
-          logoSrc={getImageUrl(settings?.footer_logo ?? settings?.logo ?? null) || APP_IMAGES.LOGO}
+          logoSrc={APP_IMAGES.Logo_COLORED}
           logoAlt={t("rootLayout.logoAlt")}
           quickLinks={[
             { label: t("rootLayout.quickLinks.0.label"), to: t("rootLayout.quickLinks.0.to") },

@@ -24,6 +24,7 @@ const cleanBase = base.endsWith("/") ? base : `${base}/`;
 
 export const APP_IMAGES = {
   LOGO: `${cleanBase}images/logo_without_bg.png`,
+  Logo_COLORED:`${cleanBase}images/logo-colored.png`,
   HOME_HERO: `${cleanBase}images/home_hero.png`,
   EID: `${cleanBase}images/eid.png`,
   CAR1: `${cleanBase}images/car1.png`,

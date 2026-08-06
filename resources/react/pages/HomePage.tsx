@@ -17,6 +17,7 @@ import type { CarFinderValues } from "../interfaces/ICarFinderProps";
 import { formatPrice } from "../utils/format";
 import { useSEO } from "../utils/useSEO";
 import type { IBrandCardProps } from "../interfaces/IBrandCardProps";
+import BrandsCarousel from "../components/BrandsCarousel";
 
 const SPEC_KEY_MAP: Record<string, string> = {
   "Fuel Type": "fuel",
@@ -88,7 +89,7 @@ export default function Home() {
   useSEO(t("nav.home"), t("hero.description"));
   const language = useLanguageStore((s) => s.language);
   const [filters, setFilters] = useState<CarFinderValues | null>(null);
-  const [activeBudgetRange, setActiveBudgetRange] = useState("");
+  const [activeBudgetRange, setActiveBudgetRange] = useState("all");
 
   const { data, isLoading } = useQuery({
     queryKey: ["home-data", language],
@@ -157,12 +158,24 @@ export default function Home() {
     [data],
   );
 
-  const activeRangeValue =
-    budgetRangeItems.find((range) => range.value === activeBudgetRange)?.value ??
-    budgetRangeItems[0]?.value;
+  const activeRangeValue = activeBudgetRange === "all" ? "all" : (budgetRangeItems.find((range) => range.value === activeBudgetRange)?.value ?? "all");
 
   const activeBudgetCars = useMemo(
     () => {
+      if (activeRangeValue === "all") {
+        const allCars: CarItem[] = [];
+        const seenIds = new Set<number>();
+        (data?.budget_ranges ?? []).forEach((range) => {
+          (range.cars ?? []).forEach((car) => {
+            if (!seenIds.has(car.id)) {
+              seenIds.add(car.id);
+              allCars.push(car);
+            }
+          });
+        });
+        return allCars.map(mapCarToCardProps).filter(Boolean) as CarCardProps[];
+      }
+
       const range = (data?.budget_ranges ?? []).find(
         (r) => `${r.min}-${r.max ?? "plus"}` === activeRangeValue,
       );
@@ -199,16 +212,8 @@ export default function Home() {
         filterTitle={data?.page_sections?.filter?.title?.trim()}
       />
 
-      <BrandsSection
-        titleBlue=""
-        titleOrange=""
-        description=""
-        buttonText=""
-        buttonTo=""
-        brands={brands}
-        simple={true}
-      />
-
+      <BrandsCarousel  brands={brands}/>
+ 
       <FeaturedCarsSection
         titleBlue={data?.page_sections?.featured_cars?.title?.trim() || t("featuredCars.titleBlue")}
         titleOrange={data?.page_sections?.featured_cars?.badge?.trim() || ""}

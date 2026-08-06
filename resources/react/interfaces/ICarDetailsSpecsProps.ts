@@ -25,4 +25,5 @@ export interface ICarDetailsSpecsProps {
   availabilityStatus?: string;
   type?: string;
   year?: string;
+  showOnly?: "specs" | "features";
 }
