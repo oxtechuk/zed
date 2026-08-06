@@ -302,7 +302,9 @@ export default function CarDetailsHero({
                                         )}
                                     </div>
                                     <span className="mt-1 text-[12px] text-white/25 font-normal block">
-                                        ريال / شهر · بمعدل أرباح 4.5٪
+                                        {t("carDetails.calculator.rateDisclaimer", {
+                                            defaultValue: "ريال / شهر · بمعدل أرباح 4.5٪",
+                                        })}
                                     </span>
                                 </div>
 
@@ -325,14 +327,14 @@ export default function CarDetailsHero({
                                         className="flex h-[46px] items-center justify-center gap-2 rounded-xl bg-[#25D366] text-[14px] font-bold text-white transition hover:bg-[#20ba59] hover:scale-[1.01] active:scale-95"
                                     >
                                         <MessageCircle size={16} />
-                                        <span>واتساب</span>
+                                        <span>{t("contact.whatsapp", { defaultValue: "واتساب" })}</span>
                                     </a>
                                     <a
                                         href="tel:+966500000000"
                                         className="flex h-[46px] items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 text-[14px] font-bold text-white transition hover:bg-white/10 hover:scale-[1.01] active:scale-95"
                                     >
                                         <Phone size={16} />
-                                        <span>اتصل</span>
+                                        <span>{t("contact.call", { defaultValue: "اتصل" })}</span>
                                     </a>
                                 </div>
                             </div>
@@ -367,17 +369,25 @@ export default function CarDetailsHero({
                                         </span>
                                     </div>
                                 </div>
-                                <ArrowLeft
-                                    size={16}
-                                    className="text-[#16254F] transition-transform duration-300 group-hover:-translate-x-1"
-                                />
+                                {i18n.dir() === "rtl" ? (
+                                    <ArrowLeft
+                                        size={16}
+                                        className="text-[#16254F] transition-transform duration-300 group-hover:-translate-x-1"
+                                    />
+                                ) : (
+                                    <ArrowRight
+                                        size={16}
+                                        className="text-[#16254F] transition-transform duration-300 group-hover:translate-x-1"
+                                    />
+                                )}
                             </a>
                             {/* Disclaimer */}
                             <div className="mt-4 rounded-2xl border border-[#16254F]/20 bg-[#16254F]/[0.08] p-4">
                                 <p className="text-start text-[12px] leading-relaxed text-[#16254F]/70 font-normal">
-                                    * الأرقام تقديرية بمعدل 4.5٪ سنوياً. التمويل
-                                    مشروط بموافقة البنك الممول. للحصول على عرض
-                                    نهائي، تواصل مع فريقنا.
+                                    {t("carDetails.hero.disclaimer", {
+                                        defaultValue:
+                                            "* الأرقام تقديرية بمعدل 4.5٪ سنوياً. التمويل مشروط بموافقة البنك الممول. للحصول على عرض نهائي، تواصل مع فريقنا.",
+                                    })}
                                 </p>
                             </div>
 

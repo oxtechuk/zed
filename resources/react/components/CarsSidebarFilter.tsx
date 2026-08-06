@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Select from "./Select";
 import { getBrands } from "../services/api/cars.service";
-import { getImageUrl } from "../constants/app-images";
+import { APP_IMAGES, getImageUrl } from "../constants/app-images";
 import { formatPrice } from "../utils/format";
 import type { BrandInfo } from "../types/home.types";
 import type { FilterValues } from "../types/cars.types";
@@ -241,7 +241,7 @@ function SidebarContent({
                   logo={
                     (() => {
                       const raw = brandWithLogo.logo_url || brandWithLogo.logo || brandWithLogo.image || "";
-                      return raw ? getImageUrl(raw) : "/images/brands/volkswagen.png";
+                      return raw ? getImageUrl(raw) : APP_IMAGES.BRAND_PLACEHOLDER;
                     })()
                   }
                   onClick={() => setFilter("brandId", brand.id)}

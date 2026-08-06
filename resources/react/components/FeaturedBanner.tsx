@@ -2,13 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguageStore } from "../store/language.store";
 import { getImageUrl } from "../constants/app-images";
-import type { FeaturedSection } from "../types/home.types";
+import type { IFeaturedBannerProps } from "../interfaces/IFeaturedBannerProps";
 
-interface FeaturedBannerProps {
-    banner?: FeaturedSection | null;
-}
-
-export default function FeaturedBanner({ banner }: FeaturedBannerProps) {
+export default function FeaturedBanner({ banner }: IFeaturedBannerProps) {
     const navigate = useNavigate();
     const direction = useLanguageStore((s) => s.direction);
 

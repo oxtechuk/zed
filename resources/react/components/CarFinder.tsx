@@ -23,6 +23,7 @@ export default function CarFinder({
     filterTitle,
 }: ICarFinderProps) {
     const { t, i18n } = useTranslation();
+    const isRTL = i18n.dir() === "rtl";
     const [brandId, setBrandId] = useState("");
     const [typeId, setTypeId] = useState("");
     const [categoryId, setCategoryId] = useState("");
@@ -74,18 +75,20 @@ export default function CarFinder({
                             onKeyDown={(e) =>
                                 e.key === "Enter" && handleSearch()
                             }
-                            className="h-[52px] w-full rounded-2xl border border-[#DADBDD] bg-white px-5 pr-12 text-[14px] text-[rgba(22,37,79,0.70)] outline-none placeholder:text-[rgba(22,37,79,0.70)] focus:border-[var(--brand-primary-color)] focus:ring-2 focus:ring-[rgba(22,37,79,0.15)]"
+                            className={`h-[52px] w-full rounded-2xl border border-[#DADBDD] bg-white px-5 ${
+                                isRTL ? "pr-12" : "pl-12"
+                            } text-[14px] text-[rgba(22,37,79,0.70)] outline-none placeholder:text-[rgba(22,37,79,0.70)] focus:border-[var(--brand-primary-color)] focus:ring-2 focus:ring-[rgba(22,37,79,0.15)]`}
                         />
                         <Search
                             size={20}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-[rgba(22,37,79,0.70)]"
+                            className={`absolute ${
+                                isRTL ? "right-4" : "left-4"
+                            } top-1/2 -translate-y-1/2 text-[rgba(22,37,79,0.70)]`}
                         />
                     </div>
 
                     {/* Action Buttons */}
                     <div className="flex items-center gap-3 shrink-0">
-                        {/* Filters button (navy) */}
-                        {/* Search button (gold) */}
                         <button
                             type="button"
                             onClick={handleSearch}
@@ -122,13 +125,13 @@ export default function CarFinder({
                     </div>
                 </div>
 
-                {/* Filter Selects Panel (toggled by الفلاتر) */}
+                {/* Filter Selects Panel */}
                 {filtersOpen && (
                     <div className="mt-6 rounded-2xl border border-[#E7E9EF] bg-white p-6 shadow-sm">
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             {/* Brand */}
                             <div>
-                                <label className="mb-2 block text-right text-[12px] font-bold text-[#64748B]">
+                                <label className={`mb-2 block text-[12px] font-bold text-[#64748B] ${isRTL ? "text-right" : "text-left"}`}>
                                     {t("carFinder.brand")}
                                 </label>
                                 <Select
@@ -157,7 +160,7 @@ export default function CarFinder({
 
                             {/* Type */}
                             <div>
-                                <label className="mb-2 block text-right text-[12px] font-bold text-[#64748B]">
+                                <label className={`mb-2 block text-[12px] font-bold text-[#64748B] ${isRTL ? "text-right" : "text-left"}`}>
                                     {t("carFinder.type")}
                                 </label>
                                 <Select
@@ -184,7 +187,7 @@ export default function CarFinder({
 
                             {/* Category */}
                             <div>
-                                <label className="mb-2 block text-right text-[12px] font-bold text-[#64748B]">
+                                <label className={`mb-2 block text-[12px] font-bold text-[#64748B] ${isRTL ? "text-right" : "text-left"}`}>
                                     {t("carFinder.category")}
                                 </label>
                                 <Select
@@ -213,7 +216,7 @@ export default function CarFinder({
 
                             {/* Year */}
                             <div>
-                                <label className="mb-2 block text-right text-[12px] font-bold text-[#64748B]">
+                                <label className={`mb-2 block text-[12px] font-bold text-[#64748B] ${isRTL ? "text-right" : "text-left"}`}>
                                     {t("carFinder.year")}
                                 </label>
                                 <Select

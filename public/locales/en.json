@@ -173,6 +173,8 @@
     "noResults": "No results found"
   },
   "allCarsPage": {
+    "title": "Browse Cars",
+    "badge": "Cars Showroom",
     "noCarsMatch": "No cars match your search",
     "contactBadge": "Our team is ready to help",
     "contactTitleWhite": "Do you have",

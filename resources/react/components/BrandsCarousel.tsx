@@ -1,25 +1,13 @@
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import LazyImg from "./LazyImg";
-
-interface BrandItem {
-  id: string | number;
-  name: string;
-  logo: string;
-  url?: string;
-}
-
-interface BrandsCarouselProps {
-  brands: BrandItem[];
-  speed?: number;
-  showName?: boolean;
-}
+import type { IBrandItem, IBrandsCarouselProps } from "../interfaces/IBrandsCarouselProps";
 
 export default function BrandsCarousel({
   brands,
   speed = 85,
   showName = false,
-}: BrandsCarouselProps) {
+}: IBrandsCarouselProps) {
   const { i18n } = useTranslation();
   const direction = i18n.dir();
   const trackRef = useRef<HTMLDivElement>(null);

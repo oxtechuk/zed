@@ -5,15 +5,16 @@ import { useQuery } from "@tanstack/react-query";
 import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { APP_IMAGES, getImageUrl } from "../constants/app-images";
 import CarsResultsGrid from "../components/CarsResultsGrid";
-import { getCars } from "../services/api/cars.service";
-import type { CarCardProps } from "../components/CarCard";
+import FilterDrawerModal from "../components/FilterDrawerModal";
+import { getCars, getCarsMeta } from "../services/api/cars.service";
+import type { ICarCardProps } from "../interfaces/ICarCardProps";
 import { formatPrice } from "../utils/format";
 import { useSEO } from "../utils/useSEO";
-import type { FilterValues, CarsQueryParams } from "../types/cars.types";
+import type { IFilterValues, ICarsQueryParams } from "../types/cars.types";
 import { DEFAULT_FILTER_VALUES } from "../types/cars.types";
-import type { CarItem } from "../types/home.types";
+import type { ICarItem } from "../types/home.types";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 9;
 
 const SPEC_KEY_MAP: Record<string, string> = {
   "Fuel Type": "fuel",
@@ -21,7 +22,7 @@ const SPEC_KEY_MAP: Record<string, string> = {
   seats: "seats",
 };
 
-function getSpecValue(specs: CarItem["specs"], label: string): string {
+function getSpecValue(specs: ICarItem["specs"], label: string): string {
   if (Array.isArray(specs)) {
     const spec = specs.find((s) => "label" in s && s.label === label);
     const v = spec?.value;
@@ -35,7 +36,7 @@ function getSpecValue(specs: CarItem["specs"], label: string): string {
   return "";
 }
 
-function mapCarToCardProps(car: CarItem): CarCardProps | null {
+function mapCarToCardProps(car: ICarItem): ICarCardProps | null {
   try {
     const slug = car.slug?.trim();
     if (!slug) return null;
@@ -73,45 +74,42 @@ function mapCarToCardProps(car: CarItem): CarCardProps | null {
 
 export default function AllCarsPage() {
   const { t, i18n } = useTranslation();
+  const isRTL = i18n.dir() === "rtl";
   useSEO(t("nav.cars"), t("allCarsHero.description"));
   const [searchParams] = useSearchParams();
   const offerId = searchParams.get("offerId");
 
-  const [filters, setFilters] = useState<FilterValues>(DEFAULT_FILTER_VALUES);
+  const [filters, setFilters] = useState<IFilterValues>(DEFAULT_FILTER_VALUES);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchValue, setSearchValue] = useState("");
   const [sortBy, setSortBy] = useState<string>("");
   const [showSortDropdown, setShowSortDropdown] = useState(false);
-
-  const staticTypeFilters = [
-    { label: "الكل", value: "all" },
-    { label: "كهربائية", value: "electric" },
-    { label: "فاخرة", value: "luxury" },
-    { label: "رياضية", value: "sport" },
-    { label: "سيدان", value: "sedan" },
-    { label: "SUV", value: "suv" },
-  ];
+  const [showFilterModal, setShowFilterModal] = useState(false);
 
   const sortingOptions = [
-    { label: "الأحدث", value: "" },
-    { label: "السعر: من الأقل للأعلى", value: "price_asc" },
-    { label: "السعر: من الأعلى للأقل", value: "price_desc" },
-    { label: "الموديل: الأحدث أولاً", value: "year_desc" },
+    { label: t("allCarsPage.sortLatest", { defaultValue: "الأحدث" }), value: "", sort_by: "", order: "" },
+    { label: t("allCarsPage.sortPriceAsc", { defaultValue: "السعر: من الأقل للأعلى" }), value: "price_asc", sort_by: "price", order: "asc" },
+    { label: t("allCarsPage.sortPriceDesc", { defaultValue: "السعر: من الأعلى للأقل" }), value: "price_desc", sort_by: "price", order: "desc" },
+    { label: t("allCarsPage.sortYearDesc", { defaultValue: "الموديل: الأحدث أولاً" }), value: "year_desc", sort_by: "year", order: "desc" },
   ];
 
-  function buildParams(): CarsQueryParams {
-    const params: CarsQueryParams = {};
+  function buildParams(): ICarsQueryParams {
+    const params: ICarsQueryParams = {};
     if (filters.brandId !== null) params.brands = [filters.brandId];
     if (filters.type !== "all") params.type = filters.type as any;
     if (filters.year) params.year = filters.year;
     if (filters.priceMin > 0) params.min_price = filters.priceMin;
-    if (filters.priceMax < 200000) params.max_price = filters.priceMax;
+    if (filters.priceMax > 0 && filters.priceMax < maxPriceLimit) params.max_price = filters.priceMax;
     if (filters.search) params.search = filters.search;
     if (offerId) params.offer_id = Number(offerId);
 
     // Sorting
     if (sortBy) {
-      params.sort = sortBy as any;
+      const selectedSort = sortingOptions.find((opt) => opt.value === sortBy);
+      if (selectedSort?.sort_by) {
+        params.sort_by = selectedSort.sort_by;
+        params.order = selectedSort.order as "asc" | "desc";
+      }
     }
 
     // Server-side pagination params
@@ -121,23 +119,42 @@ export default function AllCarsPage() {
     return params;
   }
 
+  const { data: metaData } = useQuery({
+    queryKey: ["cars-meta"],
+    queryFn: () => getCarsMeta(),
+    staleTime: 10 * 60 * 1000,
+  });
+
   const { data: carsResponse, isLoading } = useQuery({
     queryKey: ["cars-data", i18n.language, filters, currentPage, offerId, sortBy],
     queryFn: () => getCars(buildParams()),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 2 * 60 * 1000,
     retry: 1,
   });
+
+  const activeFilterCount = [
+    filters.brandId !== null,
+    filters.fuelType !== "all",
+    filters.seats !== "all",
+    filters.priceMax < DEFAULT_FILTER_VALUES.priceMax,
+  ].filter(Boolean).length;
+
+  const totalPages = carsResponse?.meta?.last_page ?? 1;
 
   const allCars = useMemo(() => {
     if (carsResponse?.data) {
       return carsResponse.data
         .map(mapCarToCardProps)
-        .filter(Boolean) as CarCardProps[];
+        .filter(Boolean) as ICarCardProps[];
     }
     return [];
   }, [carsResponse]);
 
-  const totalPages = carsResponse?.meta?.last_page ?? 1;
+  const brands = metaData?.filter_brands ?? [];
+  const fuelOptions = metaData?.filter_fuels ?? [];
+  const maxPriceLimit = metaData?.filter_prices?.length
+    ? Math.max(...metaData.filter_prices.map((p) => p.max ?? p.min))
+    : 2000000;
   const totalCarsCount = carsResponse?.meta?.total ?? 0;
 
   const handleTypeFilter = (value: string) => {
@@ -157,23 +174,28 @@ export default function AllCarsPage() {
     setShowSortDropdown(false);
   };
 
+  const handleApplyFilters = (newFilters: IFilterValues) => {
+    setFilters((prev) => ({ ...newFilters, search: prev.search }));
+    setCurrentPage(1);
+  };
+
   return (
     <main dir={i18n.dir()} className="min-h-screen bg-[#F3F4F6]">
-      {/* ── Page Header (Dark Navy Banner) ── */}
-      <section className="w-full bg-[#080E1E] py-10 text-white text-center relative overflow-hidden">
+      {/* Page Header Banner */}
+      <section className="w-full bg-[#080E1E] py-10 text-white text-start relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-[#EDC98E]/5 blur-2xl rounded-full pointer-events-none" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <span className="text-[13px] font-extrabold text-[#EDC98E] uppercase tracking-wider block mb-2">
-            معرض السيارات
+            {t("allCarsPage.badge", { defaultValue: "معرض السيارات" })}
           </span>
           <h1 className="text-[30px] font-black text-white leading-tight md:text-[38px]">
-            تصفح السيارات
+            {t("allCarsPage.title", { defaultValue: "تصفح السيارات" })}
           </h1>
         </div>
       </section>
 
-      {/* ── Filter & Search Bar ── */}
-      <section className="sticky top-[76px] z-30 border-b border-[#E5E9F0] bg-white shadow-xs py-4">
+      {/* Filter & Search Bar */}
+      <section className="z-30 border-b border-[#E5E9F0] bg-white shadow-xs py-4">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Row 1: Search, Sort, Filter */}
           <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
@@ -183,13 +205,17 @@ export default function AllCarsPage() {
               <input
                 type="text"
                 value={searchValue}
-                placeholder="ابحث عن سيارة..."
+                placeholder={t("allCarsPage.searchPlaceholder", { defaultValue: "ابحث عن سيارة..." })}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="h-[46px] w-full rounded-2xl border border-[#E7E9EF] bg-white px-5 pr-12 text-[14px] text-[#16254F] outline-none placeholder:text-gray-400 focus:border-[#16254F] focus:bg-white focus:ring-2 focus:ring-[#16254F]/10 transition-all duration-200"
+                className={`h-[46px] w-full rounded-2xl border border-[#E7E9EF] bg-white px-5 ${
+                  isRTL ? "pr-12" : "pl-12"
+                } text-[14px] text-[#16254F] outline-none placeholder:text-gray-400 focus:border-[#16254F] focus:bg-white focus:ring-2 focus:ring-[#16254F]/10 transition-all duration-200`}
               />
               <Search
                 size={18}
-                className="absolute right-4.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                className={`absolute ${
+                  isRTL ? "right-4.5" : "left-4.5"
+                } top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none`}
               />
             </div>
 
@@ -203,7 +229,7 @@ export default function AllCarsPage() {
                   className="flex h-[46px] items-center gap-2 rounded-2xl border border-[#E7E9EF] bg-white px-5 text-[14px] font-extrabold text-[#16254F] transition hover:border-[#16254F] active:scale-95"
                 >
                   <span>
-                    {sortingOptions.find((opt) => opt.value === sortBy)?.label || "ترتيب حسب"}
+                    {sortingOptions.find((opt) => opt.value === sortBy)?.label || t("allCarsPage.sortBy", { defaultValue: "ترتيب حسب" })}
                   </span>
                   <ChevronDown size={16} className="text-gray-400" />
                 </button>
@@ -214,13 +240,13 @@ export default function AllCarsPage() {
                       className="fixed inset-0 z-40"
                       onClick={() => setShowSortDropdown(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-52 rounded-xl border border-[#E7E9EF] bg-white p-1.5 shadow-lg z-50 text-start">
+                    <div className={`absolute ${isRTL ? "right-0" : "left-0"} mt-2 w-52 rounded-xl border border-[#E7E9EF] bg-white p-1.5 shadow-lg z-50 text-start`}>
                       {sortingOptions.map((opt) => (
                         <button
                           key={opt.value}
                           type="button"
                           onClick={() => handleSortSelect(opt.value)}
-                          className={`w-full rounded-lg px-4 py-2.5 text-[13px] font-extrabold transition-colors text-right block ${
+                          className={`w-full rounded-lg px-4 py-2.5 text-[13px] font-extrabold transition-colors block text-start ${
                             opt.value === sortBy
                               ? "bg-[#16254F] text-white"
                               : "text-[#374151] hover:bg-gray-50"
@@ -237,51 +263,62 @@ export default function AllCarsPage() {
               {/* Filter drawer trigger button */}
               <button
                 type="button"
-                className="flex h-[46px] items-center gap-2 rounded-2xl bg-[#16254F] px-5 text-[14px] font-extrabold text-white transition hover:bg-[#0F1E36] active:scale-95"
+                onClick={() => setShowFilterModal(true)}
+                className="relative flex h-[46px] items-center gap-2 rounded-2xl bg-[#16254F] px-5 text-[14px] font-extrabold text-white transition hover:bg-[#0F1E36] active:scale-95"
               >
                 <SlidersHorizontal size={16} />
-                <span>الفلاتر</span>
+                <span>{t("carFinder.resetButton", { defaultValue: "الفلاتر" })}</span>
+                {activeFilterCount > 0 && (
+                  <span className={`absolute ${isRTL ? "-right-1.5" : "-left-1.5"} -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#EDC98E] text-[10px] font-black text-[#16254F]`}>
+                    {activeFilterCount}
+                  </span>
+                )}
               </button>
             </div>
 
           </div>
 
-          {/* Row 2: Category capsules tabs + dynamic count */}
-          <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-3 text-start">
-            <div className="flex flex-wrap gap-2">
-              {staticTypeFilters.map((filter) => {
-                const isActive = filter.value === filters.type;
+          {/* Row 2: Category capsules tabs */}
+          <div className="mt-4 pt-4 border-t border-gray-100 text-start">
+            <div className="flex flex-nowrap gap-2 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
+              {[{ id: null, name: t("allCarsFilterBar.all", { defaultValue: "الكل" }), slug: "all" }, ...(metaData?.filter_types ?? [])].map((filter) => {
+                const value = filter.slug === "all" ? "all" : filter.slug;
+                const label = typeof filter.name === "object" ? Object.values(filter.name)[0] : filter.name;
+                const isActive = value === filters.type;
                 return (
                   <button
-                    key={filter.value}
+                    key={filter.slug}
                     type="button"
-                    onClick={() => handleTypeFilter(filter.value)}
-                    className={`h-[36px] rounded-full px-5 text-[13px] font-extrabold transition-all duration-300 ${
+                    onClick={() => handleTypeFilter(value)}
+                    className={`h-[36px] shrink-0 rounded-full px-5 text-[13px] font-extrabold transition-all duration-300 ${
                       isActive
                         ? "bg-[#16254F] text-white scale-105 shadow-xs"
                         : "border border-[#E7E9EF] bg-white text-[#667085] hover:bg-[#16254F] hover:text-white hover:border-[#16254F]"
                     }`}
                   >
-                    {filter.label}
+                    {label}
                   </button>
                 );
               })}
             </div>
-
-            <span className="text-[13px] font-black text-gray-400">
-              {isLoading ? "جاري التحميل..." : `${totalCarsCount} سيارات`}
-            </span>
           </div>
 
         </div>
       </section>
 
-      {/* ── Cars Grid Content ── */}
+      {/* Cars Grid Content */}
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <span className="mb-4 block text-[13px] font-black text-gray-400">
+          {isLoading
+            ? t("allCarsPage.loading", { defaultValue: "جاري التحميل..." })
+            : t("allCarsPage.carsCount", { defaultValue: `${totalCarsCount} سيارات`, count: totalCarsCount })}
+        </span>
         {isLoading ? (
           <div className="py-24 text-center">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite] text-[#0F172A]" />
-            <p className="mt-4 text-sm font-extrabold text-gray-400">جاري تحميل السيارات...</p>
+            <p className="mt-4 text-sm font-extrabold text-gray-400">
+              {t("allCarsPage.loadingCars", { defaultValue: "جاري تحميل السيارات..." })}
+            </p>
           </div>
         ) : allCars.length > 0 ? (
           <CarsResultsGrid
@@ -301,6 +338,16 @@ export default function AllCarsPage() {
           </div>
         )}
       </section>
+
+      <FilterDrawerModal
+        isOpen={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        filters={filters}
+        onApply={handleApplyFilters}
+        brands={brands}
+        fuelOptions={fuelOptions}
+        maxPriceLimit={maxPriceLimit}
+      />
     </main>
   );
 }

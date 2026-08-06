@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import CarCard from "./CarCard";
 import type { ICarsResultsGridProps } from "../interfaces/ICarsResultsGridProps";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -8,6 +9,8 @@ export default function CarsResultsGrid({
   totalPages,
   onPageChange,
 }: ICarsResultsGridProps) {
+  const { i18n } = useTranslation();
+  const isRTL = i18n.dir() === "rtl";
 
   const handlePrev = () => {
     if (currentPage > 1) {
@@ -50,15 +53,15 @@ export default function CarsResultsGrid({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="mt-14 flex items-center justify-center gap-2.5" dir="ltr">
-          {/* Previous Button */}
+        <div className="mt-14 flex items-center justify-center gap-2" dir={i18n.dir()}>
+          {/* Previous */}
           <button
             type="button"
             onClick={handlePrev}
             disabled={currentPage === 1}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#E7E9EF] bg-white text-gray-500 transition hover:border-[#16254F] hover:text-[#16254F] disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#D1D5DB] bg-white text-[#16254F] transition hover:border-[#16254F] disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <ChevronLeft size={16} />
+            {isRTL ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </button>
 
           {/* Page Numbers */}
@@ -70,9 +73,9 @@ export default function CarsResultsGrid({
               return (
                 <span
                   key={`ellipsis-${idx}`}
-                  className="flex h-10 w-10 items-center justify-center text-gray-400 font-bold"
+                  className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#D1D5DB] bg-white text-[13px] font-black text-gray-400"
                 >
-                  ...
+                  ···
                 </span>
               );
             }
@@ -82,10 +85,10 @@ export default function CarsResultsGrid({
                 key={`page-${page}`}
                 type="button"
                 onClick={() => onPageChange(page as number)}
-                className={`flex h-10 w-10 items-center justify-center rounded-full border text-[14px] font-extrabold transition ${
+                className={`flex h-11 w-11 items-center justify-center rounded-2xl border text-[14px] font-black transition ${
                   isActive
-                    ? "border-[#16254F] bg-[#16254F] text-white scale-105 shadow-xs"
-                    : "border-[#E7E9EF] bg-white text-gray-500 hover:border-[#16254F] hover:text-[#16254F]"
+                    ? "border-[#16254F] bg-[#16254F] text-white"
+                    : "border-[#D1D5DB] bg-white text-[#374151] hover:border-[#16254F] hover:text-[#16254F]"
                 }`}
               >
                 {page}
@@ -93,14 +96,14 @@ export default function CarsResultsGrid({
             );
           })}
 
-          {/* Next Button */}
+          {/* Next */}
           <button
             type="button"
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition hover:border-[#0F172A] hover:text-[#0F172A] disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#D1D5DB] bg-white text-[#16254F] transition hover:border-[#16254F] disabled:cursor-not-allowed disabled:opacity-40"
           >
-            <ChevronRight size={16} />
+            {isRTL ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
           </button>
         </div>
       )}

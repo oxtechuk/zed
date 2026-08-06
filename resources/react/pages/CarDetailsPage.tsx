@@ -12,10 +12,10 @@ import { getFinanceSettings } from "../services/api";
 import { getImageUrl, APP_IMAGES } from "../constants/app-images";
 import { formatPrice } from "../utils/format";
 import { useSEO } from "../utils/useSEO";
-import type { CarItem } from "../types/home.types";
-import type { CarCardProps } from "../components/CarCard";
+import type { ICarItem } from "../types/home.types";
+import type { ICarCardProps } from "../interfaces/ICarCardProps";
 
-function specValue(car: CarItem, key: string, altKey?: string): string {
+function specValue(car: ICarItem, key: string, altKey?: string): string {
   if (altKey) {
     const v = (car as any)[altKey];
     if (v != null && typeof v === "string") return v;
@@ -27,7 +27,7 @@ function specValue(car: CarItem, key: string, altKey?: string): string {
   return "";
 }
 
-function mapRelatedCar(car: CarItem): CarCardProps | null {
+function mapRelatedCar(car: ICarItem): ICarCardProps | null {
   try {
     const slug = car.slug?.trim();
     if (!slug) return null;
@@ -86,7 +86,7 @@ export default function CarDetailsPage() {
     () =>
       car?.related_cars
         ?.map(mapRelatedCar)
-        .filter((c): c is CarCardProps => c !== null) ?? [],
+        .filter((c): c is ICarCardProps => c !== null) ?? [],
     [car?.related_cars],
   );
 

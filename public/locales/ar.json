@@ -173,6 +173,8 @@
     "noResults": "لا توجد نتائج"
   },
   "allCarsPage": {
+    "title": "تصفح السيارات",
+    "badge": "معرض السيارات",
     "noCarsMatch": "لا توجد سيارات مطابقة للبحث",
     "contactBadge": "فريقنا جاهز للمساعدة",
     "contactTitleWhite": "هل لديك",

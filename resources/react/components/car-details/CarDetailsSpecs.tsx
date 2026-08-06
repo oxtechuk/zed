@@ -158,7 +158,9 @@ export default function CarDetailsSpecs({
           ))}
           {allFeatures.length === 0 && (
             <p className="text-[14px] text-gray-400 font-medium italic">
-              لا تتوفر ميزات إضافية مسجلة لهذه السيارة.
+              {t("carDetails.specs.noFeatures", {
+                defaultValue: "لا تتوفر ميزات إضافية مسجلة لهذه السيارة.",
+              })}
             </p>
           )}
         </div>
@@ -217,7 +219,9 @@ export default function CarDetailsSpecs({
             ))}
             {allFeatures.length === 0 && (
               <p className="text-[14px] text-gray-400 font-medium italic">
-                لا تتوفر ميزات إضافية مسجلة لهذه السيارة.
+                {t("carDetails.specs.noFeatures", {
+                  defaultValue: "لا تتوفر ميزات إضافية مسجلة لهذه السيارة.",
+                })}
               </p>
             )}
           </div>
