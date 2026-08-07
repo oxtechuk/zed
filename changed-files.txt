@@ -1,0 +1,6 @@
+﻿changed-files.txt
+resources/react/components/blogs/BlogCard.tsx
+"public/images/\330\271\330\263\330\253\331\202r.png"
+storage/app/public/testimonials/8Gxm9RlnmP6jbjBYLWdaCOL6Ug5Z4lcEZIkorazK.png
+storage/framework/views/95b45b53ed95805eb2ac41db36942a04.php
+storage/framework/views/a48a947167c81f7dfecd31d5d1f594a5.php

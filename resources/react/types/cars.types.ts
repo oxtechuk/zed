@@ -1,12 +1,13 @@
-import type { CarItem, BrandInfo, FilterPrice, HomepageStat, FilterCategory } from "./home.types";
+import type { ICarItem, IBrandInfo, IFilterPrice, IHomepageStat, IFilterCategory } from "./home.types";
 
-export interface CarType {
+export interface ICarType {
   id: number;
   name: string;
   slug: string;
 }
+export type CarType = ICarType;
 
-export interface CarsQueryParams {
+export interface ICarsQueryParams {
   page?: number;
   per_page?: number;
   brands?: number[];
@@ -19,10 +20,13 @@ export interface CarsQueryParams {
   q?: string;
   offer_id?: number;
   sort?: "price_asc" | "price_desc" | "year_desc" | "year_asc";
+  sort_by?: string;
+  order?: "asc" | "desc";
 }
+export type CarsQueryParams = ICarsQueryParams;
 
-export interface CarsListResponse {
-  data: CarItem[];
+export interface ICarsListResponse {
+  data: ICarItem[];
   meta: {
     current_page: number;
     last_page: number;
@@ -30,20 +34,23 @@ export interface CarsListResponse {
     total: number;
   };
 }
+export type CarsListResponse = ICarsListResponse;
 
-export interface CarColorWithImage {
+export interface ICarColorWithImage {
   hex: string;
   name: string;
   image: string | null;
 }
+export type CarColorWithImage = ICarColorWithImage;
 
-export interface FeatureItem {
+export interface IFeatureItem {
   id: number;
   name: string;
   icon: string;
 }
+export type FeatureItem = IFeatureItem;
 
-export interface CarDetails {
+export interface ICarDetails {
   id: number;
   name: string;
   slug: string;
@@ -58,7 +65,7 @@ export interface CarDetails {
   year: string;
   is_current_year: boolean;
   type: string;
-  colors: CarColorWithImage[];
+  colors: ICarColorWithImage[];
   specs: Record<string, string | null>;
   description: string;
   features: string;
@@ -69,22 +76,24 @@ export interface CarDetails {
   category: { id: number; name: string; slug: string } | null;
   active_offers: any[];
   offers: any[];
-  specifications: FeatureItem[];
-  features_list: FeatureItem[];
-  safety_features?: FeatureItem[];
-  related_cars: CarItem[];
+  specifications: IFeatureItem[];
+  features_list: IFeatureItem[];
+  safety_features?: IFeatureItem[];
+  related_cars: ICarItem[];
 }
+export type CarDetails = ICarDetails;
 
-export interface CarsSidebarFilterData {
-  brands: BrandInfo[];
+export interface ICarsSidebarFilterData {
+  brands: IBrandInfo[];
   minPrice: number;
   maxPrice: number;
   engines: string[];
   transmissions: string[];
   fuelTypes: string[];
 }
+export type CarsSidebarFilterData = ICarsSidebarFilterData;
 
-export interface FilterValues {
+export interface IFilterValues {
   brandId: number | null;
   type: string;
   categoryId: number | null;
@@ -94,34 +103,39 @@ export interface FilterValues {
   engine: string;
   transmission: string;
   fuelType: string;
+  seats: string;
   search: string;
 }
+export type FilterValues = IFilterValues;
 
-export const DEFAULT_FILTER_VALUES: FilterValues = {
+export const DEFAULT_FILTER_VALUES: IFilterValues = {
   brandId: null,
   type: "all",
   categoryId: null,
   year: "",
   priceMin: 0,
-  priceMax: 200000,
+  priceMax: Infinity,
   engine: "all",
   transmission: "all",
   fuelType: "all",
+  seats: "all",
   search: "",
 };
 
-export interface HeroSlide {
+export interface IHeroSlide {
   link: string;
   image: string;
   button_text: string;
 }
+export type HeroSlide = IHeroSlide;
 
-export interface HeroAd {
+export interface IHeroAd {
   image: string | null;
   link: string;
 }
+export type HeroAd = IHeroAd;
 
-export interface FeaturedOfferCar {
+export interface IFeaturedOfferCar {
   id: number;
   name: string;
   slug: string;
@@ -135,18 +149,20 @@ export interface FeaturedOfferCar {
   specs: Record<string, string | null>;
   is_current_year: boolean;
 }
+export type FeaturedOfferCar = IFeaturedOfferCar;
 
-export interface FeaturedOffer {
+export interface IFeaturedOffer {
   id: number;
   title: string;
   description: string;
   image: string | null;
   installment_starts_from: number;
-  cars: FeaturedOfferCar[];
+  cars: IFeaturedOfferCar[];
 }
+export type FeaturedOffer = IFeaturedOffer;
 
-export interface CarsMetaData {
-  featured_offer: FeaturedOffer | null;
+export interface ICarsMetaData {
+  featured_offer: IFeaturedOffer | null;
   total_cars: number;
   total_brands: number;
   hero_badge?: string;
@@ -154,13 +170,15 @@ export interface CarsMetaData {
   hero_title_line2_prefix?: string;
   hero_title_line2_highlight?: string;
   hero_description?: string;
-  filter_brands: BrandInfo[];
-  filter_types: FilterCategory[];
-  filter_categories: FilterCategory[];
+  filter_brands: IBrandInfo[];
+  filter_types: IFilterCategory[];
+  filter_categories: IFilterCategory[];
   filter_brand_types: any[];
   filter_years: string[];
-  filter_prices: FilterPrice[];
-  homepage_stats: HomepageStat[];
-  hero_slides: HeroSlide[];
-  hero_ads: HeroAd[];
+  filter_prices: IFilterPrice[];
+  filter_fuels: string[];
+  homepage_stats: IHomepageStat[];
+  hero_slides: IHeroSlide[];
+  hero_ads: IHeroAd[];
 }
+export type CarsMetaData = ICarsMetaData;

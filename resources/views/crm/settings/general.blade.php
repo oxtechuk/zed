@@ -95,7 +95,7 @@
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label fw-semibold small text-muted">{{ __('نص التذييل (Footer Text)') }}</label>
-                                        <textarea name="footer_text" class="form-control bg-light border-0" rows="3" placeholder="{{ __('النص الذي يظهر في أسفل جميع الصفحات...') }}">{{ $settings['footer_text'] ?? '' }}</textarea>
+                                        <textarea name="footer_text" class="form-control bg-light border-0" rows="3" placeholder="{{ __('النص الذي يظهر في أسفل جميع الصفحات...') }}">{{ (is_array($settings['footer_text'])? $settings['footer_text'][app()->getLocale()] :$settings['footer_text']) ?? '' }}</textarea>
                                     </div>
                                     <div class="col-12">
                                         <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded-3">
@@ -215,7 +215,7 @@
                                         <label class="form-label fw-semibold small text-muted">{{ __('العنوان') }}</label>
                                         <div class="input-group">
                                             <span class="input-group-text bg-light border-0"><i class="bi bi-geo-alt"></i></span>
-                                            <input type="text" name="contact_address" class="form-control bg-light border-0" value="{{ $settings['contact_address'] ?? '' }}">
+                                            <input type="text" name="contact_address" class="form-control bg-light border-0" value="{{ (is_array($settings['contact_address']) ? $settings['contact_address'][app()->getLocale()] :$settings['contact_address']) ?? '' }}">
                                         </div>
                                     </div>
                                 </div>

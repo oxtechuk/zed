@@ -1,38 +1,43 @@
-export interface ApiResponse<T> {
+export interface IApiResponse<T> {
   success: boolean;
   message: string;
   data: T;
   errors: null;
   meta: null;
 }
+export type ApiResponse<T> = IApiResponse<T>;
 
-export interface FilterCategory {
+export interface IFilterCategory {
   id: number;
   name: string | Record<string, string>;
   slug: string;
   sort_order?: number;
   is_active?: boolean;
 }
+export type FilterCategory = IFilterCategory;
 
-export interface BrandInfo {
+export interface IBrandInfo {
   id: number;
   name: string;
   slug: string;
   logo: string | null;
   cars_count?: number;
 }
+export type BrandInfo = IBrandInfo;
 
-export interface CarColor {
+export interface ICarColor {
   hex: string;
   name: string;
 }
+export type CarColor = ICarColor;
 
-export interface CarSpec {
+export interface ICarSpec {
   label: string;
   value: string;
 }
+export type CarSpec = ICarSpec;
 
-export interface CarItem {
+export interface ICarItem {
   id: number;
   name: string;
   slug: string;
@@ -48,71 +53,80 @@ export interface CarItem {
   transmission?: string;
   fuel_type?: string;
   seats?: string;
-  colors: CarColor[];
-  specs: CarSpec[] | Record<string, string | null>;
+  colors: ICarColor[];
+  specs: ICarSpec[] | Record<string, string | null>;
   description: string;
   features: string;
   is_featured: boolean;
   is_current_year?: boolean;
   availability_status: string;
   views: number;
-  brand: BrandInfo;
+  brand: IBrandInfo;
   active_offers: any[];
 }
+export type CarItem = ICarItem;
 
-export interface OfferItem {
+export interface IOfferItem {
   id: number;
   title: string;
   image: string | null;
   [key: string]: unknown;
 }
+export type OfferItem = IOfferItem;
 
-export interface HeroData {
+export interface IHeroData {
   title1: string | null;
   title2: string | null;
   subtitle: string | null;
   image: string | null;
 }
+export type HeroData = IHeroData;
 
-export interface HomeStats {
+export interface IHomeStats {
   cars: number;
   brands: number;
 }
+export type HomeStats = IHomeStats;
 
-export interface FeaturedSectionButton {
+export interface IFeaturedSectionButton {
   text: string | null;
   url: string | null;
 }
+export type FeaturedSectionButton = IFeaturedSectionButton;
 
-export interface FeaturedSection {
+export interface IFeaturedSection {
   title: string | null;
   subtitle: string | null;
   description: string | null;
   badge: string | null;
-  button: FeaturedSectionButton | null;
+  button: IFeaturedSectionButton | null;
   image: string | null;
   background_image: string | null;
 }
+export type FeaturedSection = IFeaturedSection;
 
-export interface BudgetRange {
+export interface IBudgetRange {
   label: string;
   min: number;
   max: number | null;
-  cars: CarItem[];
+  cars: ICarItem[];
 }
+export type BudgetRange = IBudgetRange;
 
-export interface HomepageStat {
+export interface IHomepageStat {
   label: string;
   value: string;
 }
+export type HomepageStat = IHomepageStat;
 
-export interface FilterPrice {
+export interface IFilterPrice {
   min: number;
   max: number | null;
   count: number;
 }
+export type FilterPrice = IFilterPrice;
 
-export interface PageSectionContent {
+export interface IPageSectionContent {
   badge?: string;
   title?: string;
   subtitle?: string;
@@ -121,47 +135,51 @@ export interface PageSectionContent {
   description?: string;
   features?: string[];
 }
+export type PageSectionContent = IPageSectionContent;
 
-export interface PageSections {
-  filter?: PageSectionContent;
-  featured_cars?: PageSectionContent;
-  offers?: PageSectionContent;
-  highlighted_cars?: PageSectionContent;
-  finance?: PageSectionContent;
-  brands?: PageSectionContent;
-  budget?: PageSectionContent;
+export interface IPageSections {
+  filter?: IPageSectionContent;
+  featured_cars?: IPageSectionContent;
+  offers?: IPageSectionContent;
+  highlighted_cars?: IPageSectionContent;
+  finance?: IPageSectionContent;
+  brands?: IPageSectionContent;
+  budget?: IPageSectionContent;
 }
+export type PageSections = IPageSections;
 
-export interface FinanceSettingsData {
-  finance: PageSectionContent;
-  stats: HomepageStat[];
+export interface IFinanceSettingsData {
+  finance: IPageSectionContent;
+  stats: IHomepageStat[];
 }
+export type FinanceSettingsData = IFinanceSettingsData;
 
-export interface HomePageData {
-  featured_cars: CarItem[];
+export interface IHomePageData {
+  featured_cars: ICarItem[];
   active_offers: any[];
-  offer_cars?: CarItem[];
-  brands: BrandInfo[];
+  offer_cars?: ICarItem[];
+  brands: IBrandInfo[];
   latest_posts: any[];
-  stats: HomeStats;
+  stats: IHomeStats;
   testimonials: any[];
   partners: any[];
-  hero: HeroData;
+  hero: IHeroData;
   featured_design: null;
   social_designs: any[];
-  filter_brands: BrandInfo[];
-  filter_categories: FilterCategory[];
-  filter_types: FilterCategory[];
+  filter_brands: IBrandInfo[];
+  filter_categories: IFilterCategory[];
+  filter_types: IFilterCategory[];
   filter_years: string[];
-  filter_prices?: FilterPrice[];
-  bento_cars: CarItem[];
+  filter_prices?: IFilterPrice[];
+  bento_cars: ICarItem[];
   featured_offers: any[];
-  highlighted_cars: CarItem[];
+  highlighted_cars: ICarItem[];
   hero_slides: any[];
   promo_cards?: any[];
   finance_steps?: any[];
-  featured_section?: FeaturedSection;
-  budget_ranges?: BudgetRange[];
-  homepage_stats?: HomepageStat[];
-  page_sections?: PageSections;
+  featured_section?: IFeaturedSection;
+  budget_ranges?: IBudgetRange[];
+  homepage_stats?: IHomepageStat[];
+  page_sections?: IPageSections;
 }
+export type HomePageData = IHomePageData;

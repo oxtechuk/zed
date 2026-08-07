@@ -71,7 +71,7 @@ export default function StepTwoCalculator({
       await submitCalculatorLead({
         name: personalInfo.fullName,
         phone: personalInfo.phone,
-        email: personalInfo.email || `${personalInfo.fullName.replace(/\s+/g, '')}@knoz.com`,
+        email: personalInfo.email || `${personalInfo.fullName.replace(/\s+/g, '')}@zed.com`,
         city: personalInfo.city,
         purpose: "شراء",
         salary: Number(salary),

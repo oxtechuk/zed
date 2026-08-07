@@ -16,51 +16,48 @@ export default function OffersGridSection({
   const { i18n, t } = useTranslation();
 
   const defaultCategories = [
-    { label: t("offersPage.grid.categories.all"), value: "all" },
-    { label: t("offersPage.grid.categories.popular"), value: "popular" },
-    { label: t("offersPage.grid.categories.exclusive"), value: "exclusive" },
-    { label: t("offersPage.grid.categories.new"), value: "new" },
-    { label: t("offersPage.grid.categories.limited"), value: "limited" },
+    { label: t("offersPage.grid.categories.all", "الكل"), value: "all" },
+    { label: t("offersPage.grid.categories.popular", "الشائعة"), value: "popular" },
+    { label: t("offersPage.grid.categories.exclusive", "عروض حصريـة"), value: "exclusive" },
+    { label: t("offersPage.grid.categories.new", "عروض جديدة"), value: "new" },
+    { label: t("offersPage.grid.categories.limited", "لفترة محدودة"), value: "limited" },
   ];
 
   const resolvedCategories = categories ?? defaultCategories;
 
-  // Determine the featured offer (e.g. Ramadan Offer) to display on the main landing category
-  const showFeatured = activeCategory === "all" && offers.length > 0;
-  const featuredOffer = showFeatured
+  const showFeatured = activeCategory === "all";
+  const featuredOffer = offers.length > 0
     ? (offers.find((o) => o.tag === "limited") || offers[0])
     : null;
 
   return (
-    <section dir={i18n.dir()} className="w-full bg-[#F4F6F9] py-14">
+    <section dir={i18n.dir()} className="w-full bg-[#FAFAFB] py-12 md:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Featured Offer Banner inside grid section container */}
-        {featuredOffer && (
-          <FeaturedOfferBanner {...featuredOffer} />
+        {/* Featured Banner */}
+        {showFeatured && (
+          <FeaturedOfferBanner {...(featuredOffer || {})} />
         )}
 
-        {/* Filters Tabs - centered as in the screenshot */}
-        <div className="mb-10 flex justify-center">
-          <div className="flex flex-wrap items-center gap-3">
-            {resolvedCategories.map((category) => {
-              const isActive = category.value === activeCategory;
+        {/* Categories Tabs Filter */}
+        <div className="mb-10 flex flex-wrap items-center justify-center gap-2">
+          {resolvedCategories.map((category) => {
+            const isActive = category.value === activeCategory;
 
-              return (
-                <button
-                  key={category.value}
-                  type="button"
-                  onClick={() => onCategoryChange?.(category.value)}
-                  className={`h-[38px] rounded-full px-6 text-[14px] font-bold shadow-sm transition-all duration-200 ${
-                    isActive
-                      ? "bg-[#07111F] text-white"
-                      : "bg-white text-[#6B7280] border border-gray-100 hover:bg-[#07111F] hover:text-white"
-                  }`}
-                >
-                  {category.label}
-                </button>
-              );
-            })}
-          </div>
+            return (
+              <button
+                key={category.value}
+                type="button"
+                onClick={() => onCategoryChange?.(category.value)}
+                className={`h-[36px] rounded-full px-4 text-[14px] font-bold transition-all duration-200 ${
+                  isActive
+                    ? "bg-[#16254F] text-white"
+                    : "border border-[#E7E9EF] bg-white text-[#667085] hover:bg-[#16254F] hover:text-white hover:border-[#16254F]"
+                }`}
+              >
+                {category.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Offers Grid */}
@@ -70,15 +67,15 @@ export default function OffersGridSection({
           ))}
         </div>
 
-        {/* Load More */}
+        {/* Load More Button */}
         {hasMore && (
           <div className="mt-14 flex justify-center">
             <button
               type="button"
               onClick={onLoadMore}
-              className="inline-flex h-[44px] items-center justify-center gap-2 rounded-full bg-white px-7 text-[15px] font-bold text-[#07111F] border border-gray-100 shadow-sm transition hover:bg-[#07111F] hover:text-white"
+              className="inline-flex h-[46px] items-center justify-center gap-2 rounded-2xl bg-white px-8 text-[15px] font-bold text-[#16254F] border border-[#E7E9EF] shadow-sm transition duration-200 hover:bg-[#16254F] hover:text-white hover:border-[#16254F]"
             >
-              {loadMoreText || t("offersPage.grid.loadMore")}
+              {loadMoreText || t("offersPage.grid.loadMore", "عرض المزيد من العروض")}
               <ArrowDown size={17} />
             </button>
           </div>

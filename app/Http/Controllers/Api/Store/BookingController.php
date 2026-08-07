@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Store;
 
+use App\Http\Api\Response\Builder\ApiResponseBuilder;
 use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Requests\Api\Store\BookingRequest;
 use App\Models\Car;
@@ -15,7 +16,7 @@ final class BookingController extends ApiBaseController
         private readonly BookingApiService $bookingService,
         private readonly BookingCacheService $bookingCache,
     ) {
-        parent::__construct(app(\App\Http\Api\Response\Builder\ApiResponseBuilder::class));
+        parent::__construct(app(ApiResponseBuilder::class));
     }
 
     /**

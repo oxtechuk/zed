@@ -70,7 +70,7 @@ final class BlogApiService
             ];
         }
 
-        $data = $this->cache->rememberBlogIndex($page);
+        $data = $this->cache->rememberBlogIndex($page, $perPage);
 
         $featuredPosts = $data['featuredPosts'] ?? collect();
         $posts = $data['posts'] ?? collect();

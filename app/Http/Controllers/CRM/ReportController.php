@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\ContactSource;
 use App\Models\Lead;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,7 @@ class ReportController extends Controller
 {
     public function bookings(Request $request)
     {
-        $settings = \App\Models\Setting::all()->pluck('value', 'key');
+        $settings = Setting::all()->pluck('value', 'key');
         $from = $request->input('from', now()->subMonth()->toDateString());
         $to = $request->input('to', now()->toDateString());
 
@@ -27,7 +28,7 @@ class ReportController extends Controller
             'total_down_payment' => (clone $base)->where('status', 'sold')->sum('down_payment'),
             'total_remaining' => (clone $base)->where('status', 'sold')
                 ->selectRaw('SUM(monthly_installment * (duration_years * 12)) as total')->value('total') ?? 0,
-            'total_bookings' => (clone $base)->count()
+            'total_bookings' => (clone $base)->count(),
         ];
 
         // 2. Employee Performance
@@ -110,9 +111,9 @@ class ReportController extends Controller
             $m = now()->copy()->subMonths($i)->startOfMonth();
             $key = $m->format('Y-m');
             $months[$key] = [
-                'label'    => $m->translatedFormat('M Y'),
+                'label' => $m->translatedFormat('M Y'),
                 'bookings' => 0,
-                'leads'    => 0,
+                'leads' => 0,
             ];
         }
 

@@ -6,10 +6,14 @@ use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\Employee;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class BlogPostSeeder extends Seeder
 {
+    use LocalImagesTrait;
+
     /**
      * Run the database seeds.
      */
@@ -68,8 +72,10 @@ class BlogPostSeeder extends Seeder
         }
 
         // 3. Clear existing blog posts to avoid duplicate seeded content
+        Schema::disableForeignKeyConstraints();
+        DB::table('blog_post_category')->truncate();
         BlogPost::truncate();
-        \Illuminate\Support\Facades\DB::table('blog_post_category')->truncate();
+        Schema::enableForeignKeyConstraints();
 
         // 4. Create Blog Posts
         $postsData = [
@@ -86,7 +92,6 @@ class BlogPostSeeder extends Seeder
                     'ar' => "تتسارع وتيرة اعتماد السيارات الكهربائية في المملكة تماشياً مع رؤية 2030.\n\nتعد البنية التحتية لمحطات الشحن السريع في تطور مستمر، وتوفر الدولة حوافز ممتازة لاقتناء المركبات الكهربائية الصديقة للبيئة.\n\nمن المتوقع أن تشهد السنوات القادمة زيادة كبيرة في أعداد السيارات الكهربائية وتنوع الطرازات المتاحة.",
                     'en' => "The pace of electric vehicle adoption in the Kingdom is accelerating in line with Vision 2030.\n\nThe infrastructure for fast-charging stations is constantly developing, and the state provides excellent incentives for purchasing eco-friendly electric vehicles.\n\nOver the coming years, we expect a major increase in the number of electric cars and the variety of available models.",
                 ],
-                'thumbnail' => 'https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=800&auto=format&fit=crop',
                 'tag' => 'limited',
                 'is_featured' => true,
                 'categories' => ['trends', 'news'],
@@ -104,7 +109,6 @@ class BlogPostSeeder extends Seeder
                     'ar' => "يبحث الكثير من المشترين عن تمويل سيارة بدون سداد دفعة أولى لتقليل الأعباء المالية الأولية.\n\nنوضح في هذا المقال الشروط الواجب توفرها، مثل الحد الأدنى للراتب، سجل ائتماني ممتاز، والجهات التمويلية والبنوك التي تقدم هذه المزايا الخاصة في المملكة.\n\nتأكد دائماً من مقارنة معدل النسبة السنوي (APR) قبل اتخاذ قرارك التمويلي.",
                     'en' => "Many buyers look for car financing without paying a down payment to reduce initial financial burdens.\n\nIn this article, we explain the requirements, such as minimum salary, excellent credit score, and financial institutions and banks offering these special advantages in the Kingdom.\n\nAlways make sure to compare the Annual Percentage Rate (APR) before making your financing decision.",
                 ],
-                'thumbnail' => 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop',
                 'tag' => 'exclusive',
                 'is_featured' => false,
                 'categories' => ['finance'],
@@ -122,7 +126,6 @@ class BlogPostSeeder extends Seeder
                     'ar' => "يتعرض محرك السيارة لضغط هائل خلال فصل الصيف في منطقة الخليج بسبب درجات الحرارة المرتفعة.\n\nأهم النصائح تشمل: التحقق من مستوى سائل التبريد (الرديتر)، فحص صلاحية الإطارات وضغط الهواء، وتغيير زيت المحرك ولزوجته المناسبة للصيف في الموعد المحدد.\n\nالصيانة الوقائية تحميك من تعطل المكيف ومشاكل ارتفاع حرارة المحرك.",
                     'en' => "The car engine faces massive pressure during summer in the Gulf region due to high temperatures.\n\nTop tips include: checking coolant levels, inspecting tire condition and air pressure, and changing engine oil at the scheduled interval.\n\nPreventive maintenance protects you from AC failure and engine overheating problems.",
                 ],
-                'thumbnail' => 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?q=80&w=800&auto=format&fit=crop',
                 'tag' => 'popular',
                 'is_featured' => false,
                 'categories' => ['maintenance'],
@@ -140,7 +143,6 @@ class BlogPostSeeder extends Seeder
                     'ar' => "تعتبر السلامة والراحة هما الأولوية القصوى للعائلات عند اختيار سيارتهم الجديدة.\n\nنستعرض في هذا المقال طرازات الدفع الرباعي والـ SUV الأوسع والأنسب للعائلات هذا العام، بما في ذلك ميزات الترفيه والاتصال بالمقاعد الخلفية وحجم صندوق الأمتعة الواسع.\n\nشاهد مقارنتنا المفصلة للأسعار واستهلاك الوقود.",
                     'en' => "Safety and comfort are the top priorities for families when choosing their new car.\n\nIn this article, we review the roomiest SUV models best suited for families this year, including rear-seat entertainment features and luggage capacity.\n\nCheck out our detailed comparison of pricing and fuel consumption.",
                 ],
-                'thumbnail' => 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=800&auto=format&fit=crop',
                 'tag' => 'new',
                 'is_featured' => false,
                 'categories' => ['trends', 'news'],
@@ -158,7 +160,6 @@ class BlogPostSeeder extends Seeder
                     'ar' => "يعد التأمين على السيارة خطوة إلزامية وهامة لحماية استثمارك المالي وممتلكات الآخرين.\n\nنقارن هنا بين التأمين الإلزامي (ضد الغير) والتأمين الشامل الذي يغطي سيارتك حتى في حال ارتكابك للحادث أو الكوارث الطبيعية والسرقة.\n\nإليك كيف تحصل على خصومات عدم وجود مطالبات عند تجديد وثيقتك.",
                     'en' => "Car insurance is a mandatory and important step to protect your financial investment and the property of others.\n\nHere we compare third-party insurance and comprehensive insurance that covers your car even in case of fault, natural disasters, or theft.\n\nLearn how to get no-claims discounts when renewing your policy.",
                 ],
-                'thumbnail' => 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=800&auto=format&fit=crop',
                 'tag' => 'new',
                 'is_featured' => false,
                 'categories' => ['finance'],
@@ -176,21 +177,20 @@ class BlogPostSeeder extends Seeder
                     'ar' => "مع تطور التكنولوجيا، أصبحت السيارات الحديثة مليئة بالميزات الذكية وأنظمة الأمان المعقدة.\n\nأهم الأنظمة التي نوصي بها تشمل: الكبح التلقائي في حالات الطوارئ، التنبيه عند الخروج من المسار، كاميرات الرؤية المحيطية 360 درجة، ودعم Apple CarPlay و Android Auto.\n\nتأكد من اختيار الميزات التي تناسب استخدامك اليومي وتساهم في رفع قيمة إعادة البيع.",
                     'en' => "With technology evolution, modern cars are packed with smart features and complex safety systems.\n\nTop systems we recommend include: Automatic Emergency Braking, Lane Departure Warning, 360-degree cameras, and support for Apple CarPlay & Android Auto.\n\nMake sure to choose features that fit your daily use and contribute to a better resale value.",
                 ],
-                'thumbnail' => 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop',
                 'tag' => 'exclusive',
                 'is_featured' => false,
                 'categories' => ['maintenance', 'trends'],
             ],
         ];
 
-        foreach ($postsData as $pData) {
+        foreach ($postsData as $index => $pData) {
             $post = BlogPost::create([
                 'employee_id' => $employee->id,
                 'title' => $pData['title'],
-                'slug' => Str::slug($pData['title']['en']) . '-' . rand(100, 999),
+                'slug' => Str::slug($pData['title']['en']).'-'.rand(100, 999),
                 'excerpt' => $pData['excerpt'],
                 'content' => $pData['content'],
-                'thumbnail' => $pData['thumbnail'],
+                'thumbnail' => $this->carThumbnail($index),
                 'tag' => $pData['tag'],
                 'is_featured' => $pData['is_featured'],
                 'is_published' => true,

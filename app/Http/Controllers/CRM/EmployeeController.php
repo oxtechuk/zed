@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class EmployeeController extends Controller
 {
     public function index()
     {
         $employees = Employee::withCount('bookings')->latest()->paginate(20);
-        $roles = \Spatie\Permission\Models\Role::where('guard_name', 'employee')->get();
+        $roles = Role::where('guard_name', 'employee')->get();
 
         return view('crm.employees.index', compact('employees', 'roles'));
     }

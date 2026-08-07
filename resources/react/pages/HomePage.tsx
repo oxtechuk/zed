@@ -11,12 +11,13 @@ import FeaturedBanner from "../components/FeaturedBanner";
 import BudgetCarsSection from "../components/BudgetCarsSection";
 import { getHomePageData, getCars } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
-import type { CarItem, BrandInfo } from "../types/home.types";
-import type { CarCardProps } from "../components/CarCard";
+import type { ICarItem, IBrandInfo } from "../types/home.types";
+import type { ICarCardProps } from "../interfaces/ICarCardProps";
 import type { CarFinderValues } from "../interfaces/ICarFinderProps";
 import { formatPrice } from "../utils/format";
 import { useSEO } from "../utils/useSEO";
 import type { IBrandCardProps } from "../interfaces/IBrandCardProps";
+import BrandsCarousel from "../components/BrandsCarousel";
 
 const SPEC_KEY_MAP: Record<string, string> = {
   "Fuel Type": "fuel",
@@ -24,7 +25,7 @@ const SPEC_KEY_MAP: Record<string, string> = {
   seats: "seats",
 };
 
-function getSpecValue(specs: CarItem["specs"], label: string): string {
+function getSpecValue(specs: ICarItem["specs"], label: string): string {
   if (Array.isArray(specs)) {
     const spec = specs.find((s) => "label" in s && s.label === label);
     const v = spec?.value;
@@ -38,7 +39,7 @@ function getSpecValue(specs: CarItem["specs"], label: string): string {
   return "";
 }
 
-function mapCarToCardProps(car: CarItem): CarCardProps | null {
+function mapCarToCardProps(car: ICarItem): ICarCardProps | null {
   try {
     const slug = car.slug?.trim();
     if (!slug) return null;
@@ -75,7 +76,7 @@ function mapCarToCardProps(car: CarItem): CarCardProps | null {
   }
 }
 
-function mapBrandToCardProps(brand: BrandInfo): IBrandCardProps {
+function mapBrandToCardProps(brand: IBrandInfo): IBrandCardProps {
   return {
     id: brand.id,
     name: brand.name,
@@ -88,7 +89,7 @@ export default function Home() {
   useSEO(t("nav.home"), t("hero.description"));
   const language = useLanguageStore((s) => s.language);
   const [filters, setFilters] = useState<CarFinderValues | null>(null);
-  const [activeBudgetRange, setActiveBudgetRange] = useState("");
+  const [activeBudgetRange, setActiveBudgetRange] = useState("all");
 
   const { data, isLoading } = useQuery({
     queryKey: ["home-data", language],
@@ -121,7 +122,7 @@ export default function Home() {
     () =>
       (data?.featured_cars ?? [])
         .map(mapCarToCardProps)
-        .filter(Boolean) as CarCardProps[],
+        .filter(Boolean) as ICarCardProps[],
     [data?.featured_cars],
   );
   const brands = useMemo(
@@ -132,7 +133,7 @@ export default function Home() {
     () =>
       (filteredData?.data ?? [])
         .map(mapCarToCardProps)
-        .filter(Boolean) as CarCardProps[],
+        .filter(Boolean) as ICarCardProps[],
     [filteredData],
   );
   const filterBrands = data?.filter_brands ?? [];
@@ -144,7 +145,7 @@ export default function Home() {
     () =>
       (data?.offer_cars ?? [])
         .map(mapCarToCardProps)
-        .filter(Boolean) as CarCardProps[],
+        .filter(Boolean) as ICarCardProps[],
     [data?.offer_cars],
   );
 
@@ -157,19 +158,31 @@ export default function Home() {
     [data],
   );
 
-  const activeRangeValue =
-    budgetRangeItems.find((range) => range.value === activeBudgetRange)?.value ??
-    budgetRangeItems[0]?.value;
+  const activeRangeValue = activeBudgetRange === "all" ? "all" : (budgetRangeItems.find((range) => range.value === activeBudgetRange)?.value ?? "all");
 
   const activeBudgetCars = useMemo(
     () => {
+      if (activeRangeValue === "all") {
+        const allCars: ICarItem[] = [];
+        const seenIds = new Set<number>();
+        (data?.budget_ranges ?? []).forEach((range) => {
+          (range.cars ?? []).forEach((car) => {
+            if (!seenIds.has(car.id)) {
+              seenIds.add(car.id);
+              allCars.push(car);
+            }
+          });
+        });
+        return allCars.map(mapCarToCardProps).filter(Boolean) as ICarCardProps[];
+      }
+
       const range = (data?.budget_ranges ?? []).find(
         (r) => `${r.min}-${r.max ?? "plus"}` === activeRangeValue,
       );
 
       return (range?.cars ?? [])
         .map(mapCarToCardProps)
-        .filter(Boolean) as CarCardProps[];
+        .filter(Boolean) as ICarCardProps[];
     },
     [data, activeRangeValue],
   );
@@ -199,16 +212,8 @@ export default function Home() {
         filterTitle={data?.page_sections?.filter?.title?.trim()}
       />
 
-      <BrandsSection
-        titleBlue=""
-        titleOrange=""
-        description=""
-        buttonText=""
-        buttonTo=""
-        brands={brands}
-        simple={true}
-      />
-
+      <BrandsCarousel  brands={brands}/>
+ 
       <FeaturedCarsSection
         titleBlue={data?.page_sections?.featured_cars?.title?.trim() || t("featuredCars.titleBlue")}
         titleOrange={data?.page_sections?.featured_cars?.badge?.trim() || ""}

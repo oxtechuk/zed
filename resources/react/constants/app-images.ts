@@ -24,6 +24,7 @@ const cleanBase = base.endsWith("/") ? base : `${base}/`;
 
 export const APP_IMAGES = {
   LOGO: `${cleanBase}images/logo_without_bg.png`,
+  Logo_COLORED:`${cleanBase}images/logo-colored.png`,
   HOME_HERO: `${cleanBase}images/home_hero.png`,
   EID: `${cleanBase}images/eid.png`,
   CAR1: `${cleanBase}images/car1.png`,
@@ -35,6 +36,7 @@ export const APP_IMAGES = {
   GEARBOX_ICON: `${cleanBase}images/car icons/tabler_manual-gearbox.svg`,
   SEAT_ICON: `${cleanBase}images/car icons/seat.svg`,
   BG_IMAGE: `${cleanBase}images/offers-section-bg.png`,
+  OFFERS_SECTION_BG: `${cleanBase}images/offers-section-bg.png`,
   ALL_CARS_OFFER_IMAGE: `${cleanBase}images/all-cars-offer-page.png`,
   COMPARE_IMAGE: `${cleanBase}images/compre-image.png`,
   OFFER1: `${cleanBase}images/offer1.png`,

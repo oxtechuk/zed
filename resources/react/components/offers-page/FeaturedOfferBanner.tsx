@@ -1,128 +1,130 @@
 import { useTranslation } from "react-i18next";
 import { Clock } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { APP_IMAGES } from "../../constants/app-images";
 import { useCountdown } from "../../hooks/useCountdown";
+import { APP_IMAGES, getImageUrl } from "../../constants/app-images";
+import type { IFeaturedOfferBannerProps } from "../../interfaces/IFeaturedOfferBannerProps";
 
-interface FeaturedOfferBannerProps {
-  id: string | number;
-  title: string;
-  description: string;
-  tag?: string;
-  ends_at?: string;
-}
+export default function FeaturedOfferBanner(props: Partial<IFeaturedOfferBannerProps> = {}) {
+  const {
+    id = 1,
+    image,
+    background_image,
+    title,
+    description,
+    tag,
+    badge,
+    ends_at,
+    button_text,
+    button_url,
+  } = props;
 
-export default function FeaturedOfferBanner({
-  id,
-  title,
-  description,
-  tag,
-  ends_at,
-}: FeaturedOfferBannerProps) {
   const { t, i18n } = useTranslation();
-  const isRtl = i18n.dir() === "rtl";
   const { days, hours, minutes, seconds } = useCountdown(ends_at);
 
-  // Map tag to name
   const tagNames: Record<string, string> = {
-    popular: t("offersPage.grid.categories.popular"),
-    exclusive: t("offersPage.grid.categories.exclusive"),
-    new: t("offersPage.grid.categories.new"),
-    limited: t("offersPage.grid.categories.limited"),
+    popular: t("offersPage.grid.categories.popular", { defaultValue: "الشائعة" }),
+    exclusive: t("offersPage.grid.categories.exclusive", { defaultValue: "عرض حصري" }),
+    new: t("offersPage.grid.categories.new", { defaultValue: "جديد" }),
+    limited: t("offersPage.grid.categories.limited", { defaultValue: "محدود" }),
   };
 
-  const tagLabel = tag ? (tagNames[tag] || tag) : t("offersPage.grid.categories.limited");
+  const activeTag = tag || badge;
+  const tagLabel = activeTag
+    ? tagNames[activeTag] || activeTag
+    : t("offersPage.grid.categories.limited", { defaultValue: "محدود" });
+
+  const displayTitle = title || t("offersPage.featured.title", { defaultValue: "عرض رمضان الاستثنائي" });
+  const displayDesc = description || t("offersPage.featured.description", { defaultValue: "تمويل بدون أرباح لأول 6 أشهر" });
+
+  const countdownParts = [
+    {
+      value: String(days ?? 4).padStart(2, "0"),
+      label: t("offersPage.countdown.days", { defaultValue: "يوم" }),
+    },
+    {
+      value: String(hours ?? 23).padStart(2, "0"),
+      label: t("offersPage.countdown.hours", { defaultValue: "ساعة" }),
+    },
+    {
+      value: String(minutes ?? 40).padStart(2, "0"),
+      label: t("offersPage.countdown.minutes", { defaultValue: "دقيقة" }),
+    },
+    {
+      value: String(seconds ?? 3).padStart(2, "0"),
+      label: t("offersPage.countdown.seconds", { defaultValue: "ثانية" }),
+    },
+  ];
+
+  const rawImage = image || background_image;
+  const bgImageUrl = rawImage ? getImageUrl(rawImage) : APP_IMAGES.OFFERS_SECTION_BG;
 
   return (
     <div
       dir={i18n.dir()}
-      className="relative w-full rounded-[24px] bg-gradient-to-r from-[#16254F] to-[#08111F] text-white overflow-hidden shadow-xl min-h-[340px] flex flex-col lg:flex-row items-center p-6 md:p-12 mb-12"
+      className="relative w-full rounded-[24px] sm:rounded-[32px] text-white overflow-hidden shadow-2xl mb-10 select-none bg-[#0B1736] min-h-[240px] sm:min-h-[270px] flex items-center"
+      style={{
+        backgroundImage: `url("${bgImageUrl}")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
-      {/* Decorative Moon & Calligraphy Image (eid.png) on the Left (or background) */}
-      <div
-        className={`absolute top-0 bottom-0 ${isRtl ? 'left-0' : 'right-0'} w-full lg:w-1/2 opacity-20 lg:opacity-30 pointer-events-none z-0`}
-        style={{
-          backgroundImage: `url(${APP_IMAGES.EID})`,
-          backgroundSize: 'contain',
-          backgroundPosition: isRtl ? 'left center' : 'right center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      />
+      {/* Dark Navy Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0B1736]/90 via-[#0B1736]/65 to-[#0B1736]/30 pointer-events-none" />
 
-      {/* Main Content Area */}
-      <div className="relative z-10 w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-start mb-8 lg:mb-0">
-        <span className="inline-block bg-[#EDC98E] text-[#07111F] text-xs font-extrabold px-4 py-1.5 rounded-full shadow-sm">
-          {tagLabel}
-        </span>
+      {/* Main Inner Flex Container */}
+      <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-full px-6 py-8 sm:px-10 sm:py-10 gap-8 text-start">
+        {/* Left Side (RTL) / Main Content */}
+        <div className="flex flex-col items-start max-w-xl">
+          {/* Tag Pill */}
+          <span className="inline-block bg-[#F3C77C] text-[#0B1736] text-[12px] sm:text-[13px] font-black px-4 py-1 rounded-full mb-3 shadow-xs">
+            {tagLabel}
+          </span>
 
-        <h2 className="mt-5 text-[28px] md:text-[38px] font-extrabold text-white leading-tight">
-          {title}
-        </h2>
+          {/* Title */}
+          <h2 className="text-[26px] sm:text-[32px] md:text-[36px] font-black text-white leading-tight mb-2">
+            {displayTitle}
+          </h2>
 
-        <p className="mt-3 text-base md:text-lg text-gray-300 max-w-lg leading-relaxed">
-          {description}
-        </p>
+          {/* Description */}
+          <p className="text-[14px] sm:text-[16px] font-semibold text-white/80 leading-relaxed mb-6">
+            {displayDesc}
+          </p>
 
-        <NavLink
-          to={`/cars?offerId=${id}`}
-          className="mt-8 inline-flex h-[48px] items-center justify-center rounded-full bg-[#EDC98E] px-8 text-[16px] font-bold text-[#07111F] shadow-lg transition hover:bg-white hover:scale-105"
-        >
-          {t("offersPage.hero.primaryButton")}
-        </NavLink>
-      </div>
-
-      {/* Countdown Timer Area */}
-      <div className="relative z-10 w-full lg:w-1/2 flex flex-col items-center lg:items-end">
-        {/* Header/Subtext */}
-        <div className="flex items-center gap-2 text-gray-300 font-bold mb-2">
-          <Clock size={18} className="text-[#EDC98E]" />
-          <span className="text-sm md:text-base">{t("offersPage.countdown.requestEnds")}</span>
+          {/* CTA Button */}
+          <NavLink
+            to={button_url || `/cars?offerId=${id}`}
+            className="h-[48px] sm:h-[52px] px-8 rounded-2xl sm:rounded-[18px] bg-[#F3C77C] hover:bg-[#E2B66B] text-[14px] sm:text-[15px] font-black text-[#0B1736] transition-all duration-200 active:scale-95 shadow-md inline-flex items-center justify-center"
+          >
+            {button_text || t("offersPage.hero.primaryButton", { defaultValue: "اطلع على العرض" })}
+          </NavLink>
         </div>
 
-        <span className="text-xs text-gray-400 mb-6 font-medium">
-          {t("offersPage.countdown.endsIn")}
-        </span>
-
-        {/* 4 circles countdown */}
-        <div className="flex items-center gap-4 md:gap-5" dir="ltr">
-          {/* Days */}
-          <div className="flex flex-col items-center">
-            <div className="w-[60px] h-[60px] md:w-[72px] md:h-[72px] rounded-full border-2 border-white/20 bg-white/5 flex items-center justify-center text-[22px] md:text-[26px] font-black text-white shadow-inner">
-              {days}
-            </div>
-            <span className="mt-2 text-xs md:text-sm font-semibold text-gray-300">
-              {t("offersPage.countdown.days")}
-            </span>
+        {/* Right Side (RTL) / Countdown Section */}
+        <div className="flex flex-col items-start md:items-start shrink-0">
+          {/* Notice Header */}
+          <div className="flex items-center gap-1.5 text-white/70 text-[12px] sm:text-[13px] font-bold mb-1">
+            <Clock size={14} className="text-[#F3C77C]" />
+            <span>{t("offersPage.countdown.requestEnds", { defaultValue: "العرض ينتهي قريباً" })}</span>
           </div>
 
-          {/* Hours */}
-          <div className="flex flex-col items-center">
-            <div className="w-[60px] h-[60px] md:w-[72px] md:h-[72px] rounded-full border-2 border-white/20 bg-white/5 flex items-center justify-center text-[22px] md:text-[26px] font-black text-white shadow-inner">
-              {hours}
-            </div>
-            <span className="mt-2 text-xs md:text-sm font-semibold text-gray-300">
-              {t("offersPage.countdown.hours")}
-            </span>
-          </div>
+          {/* Sublabel */}
+          <span className="block text-white/40 text-[11px] sm:text-[12px] font-semibold mb-3">
+            {t("offersPage.countdown.endsIn", { defaultValue: "ينتهي العرض خلال" })}
+          </span>
 
-          {/* Minutes */}
-          <div className="flex flex-col items-center">
-            <div className="w-[60px] h-[60px] md:w-[72px] md:h-[72px] rounded-full border-2 border-white/20 bg-white/5 flex items-center justify-center text-[22px] md:text-[26px] font-black text-white shadow-inner">
-              {minutes}
-            </div>
-            <span className="mt-2 text-xs md:text-sm font-semibold text-gray-300">
-              {t("offersPage.countdown.minutes")}
-            </span>
-          </div>
-
-          {/* Seconds */}
-          <div className="flex flex-col items-center">
-            <div className="w-[60px] h-[60px] md:w-[72px] md:h-[72px] rounded-full border-2 border-white/20 bg-[#EDC98E]/10 flex items-center justify-center text-[22px] md:text-[26px] font-black text-[#EDC98E] shadow-inner">
-              {seconds}
-            </div>
-            <span className="mt-2 text-xs md:text-sm font-semibold text-gray-300">
-              {t("offersPage.countdown.seconds")}
-            </span>
+          {/* 4 Timer Boxes */}
+          <div className="flex items-center gap-2.5 sm:gap-3" dir="ltr">
+            {countdownParts.map((part) => (
+              <div key={part.label} className="flex flex-col items-center">
+                <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md text-[20px] sm:text-[24px] font-black text-white shadow-xs">
+                  {part.value}
+                </div>
+                <span className="mt-1.5 text-[10px] sm:text-[11px] font-extrabold text-white/60">
+                  {part.label}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

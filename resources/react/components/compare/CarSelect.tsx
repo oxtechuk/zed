@@ -100,7 +100,9 @@ export default function CarSelect({
             <div className="relative border-b border-gray-100">
               <Search
                 size={15}
-                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-gray-400 ${
+                  dir === "rtl" ? "right-3" : "left-3"
+                }`}
               />
               <input
                 ref={inputRef}
@@ -108,7 +110,9 @@ export default function CarSelect({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("comparePage.searchCar")}
-                className="w-full bg-transparent px-4 py-2.5 pr-9 text-sm text-[#111827] outline-none placeholder:text-gray-400"
+                className={`w-full bg-transparent py-2.5 text-sm text-[#111827] outline-none placeholder:text-gray-400 ${
+                  dir === "rtl" ? "pr-9 pl-4 text-right" : "pl-9 pr-4 text-left"
+                }`}
                 dir={dir}
               />
             </div>

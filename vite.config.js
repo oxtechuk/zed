@@ -21,7 +21,11 @@ export default defineConfig({
             host: 'localhost',
         },
         watch: {
-            ignored: ['**/storage/framework/views/**'],
+            ignored: [
+                '**/storage/framework/views/**',
+                '**/resources/reference/**',
+                '**/resources/refrence/**',
+            ],
         },
     },
     build: {

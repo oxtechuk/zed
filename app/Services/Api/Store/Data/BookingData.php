@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Api\Store\Data;
 
+use App\Services\Api\Store\Helpers\InstallmentCalculator;
+
 final class BookingData
 {
     public function __construct(
@@ -32,7 +34,7 @@ final class BookingData
         $principal = max(0, $cashPrice - (float) $validated['down_payment']);
         $totalMonths = (int) $validated['duration_years'] * 12;
 
-        $calculator = new \App\Services\Api\Store\Helpers\InstallmentCalculator;
+        $calculator = new InstallmentCalculator;
         $monthly = $calculator->calculate($principal, $totalMonths, $interestRate);
 
         return new self(

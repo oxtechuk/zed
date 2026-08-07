@@ -1,12 +1,16 @@
 <?php
 
 use App\Http\Api\Exceptions\Handlers\GlobalExceptionHandler;
+use App\Http\Middleware\ApiLocalizationMiddleware;
+use App\Http\Middleware\LocalizationMiddleware;
+use App\Http\Middleware\SetEmployeeGuard;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Spatie\Permission\Middleware\PermissionMiddleware;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -25,16 +29,16 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
-            \App\Http\Middleware\LocalizationMiddleware::class,
+            LocalizationMiddleware::class,
         ]);
 
         $middleware->api(prepend: [
-            \App\Http\Middleware\ApiLocalizationMiddleware::class,
+            ApiLocalizationMiddleware::class,
         ]);
 
         $middleware->alias([
-            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-            'guard.employee' => \App\Http\Middleware\SetEmployeeGuard::class,
+            'permission' => PermissionMiddleware::class,
+            'guard.employee' => SetEmployeeGuard::class,
         ]);
 
         $middleware->redirectTo(
@@ -44,7 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(function (\Throwable $e, Request $request) {
+        $exceptions->render(function (Throwable $e, Request $request) {
             return app(GlobalExceptionHandler::class)->render($e, $request);
         });
 

@@ -8,6 +8,7 @@ import { APP_IMAGES } from "../constants/app-images";
 import { getSettings } from "../services/api";
 import { useSettingsStore } from "../store/settings.store";
 import { getImageUrl } from "../constants/app-images";
+import TopBar from "../components/top-bar";
 import Header from "../components/header";
 import Footer from "../components/Footer";
 import MobileBottomNav from "../components/MobileBottomNav";
@@ -16,8 +17,13 @@ import WhatsAppWidget from "../components/WhatsAppWidget";
 
 export default function RootLayout() {
   const { t } = useTranslation();
-  const { language } = useLanguageStore();
+  const { language, setLanguage } = useLanguageStore();
   const { loaded, settings, setSettings, setLoading } = useSettingsStore();
+
+  const handleLanguageToggle = () => {
+    const nextLang = language === "ar" ? "en" : "ar";
+    setLanguage(nextLang);
+  };
 
   useEffect(() => {
     if (loaded) return;
@@ -51,6 +57,12 @@ export default function RootLayout() {
       />
 
       <div className="hidden md:block sticky top-0 z-40">
+        <TopBar
+          phone={settings?.contact?.phone || t("topbar.phone", { defaultValue: "920000000" })}
+          email={settings?.contact?.email || t("topbar.email", { defaultValue: "info@zedcapital.sa" })}
+          location={t("topbar.location", { defaultValue: "الرياض، المملكة العربية السعودية" })}
+          onLanguageToggle={handleLanguageToggle}
+        />
         <Header
           logoSrc={getImageUrl(settings?.header_logo ?? settings?.logo ?? null) || APP_IMAGES.LOGO}
           logoAlt="Zed Capital"
@@ -66,7 +78,7 @@ export default function RootLayout() {
 
       <div className="hidden md:block">
         <Footer
-          logoSrc={getImageUrl(settings?.footer_logo ?? settings?.logo ?? null) || APP_IMAGES.LOGO}
+          logoSrc={APP_IMAGES.Logo_COLORED}
           logoAlt={t("rootLayout.logoAlt")}
           quickLinks={[
             { label: t("rootLayout.quickLinks.0.label"), to: t("rootLayout.quickLinks.0.to") },

@@ -6,12 +6,13 @@ use App\Models\Employee;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        app()->make(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $superAdminRole = Role::firstOrCreate(['name' => 'super-admin', 'guard_name' => 'employee']);
         $superAdminRole->syncPermissions(Permission::where('guard_name', 'employee')->get());

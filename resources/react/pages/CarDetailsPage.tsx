@@ -12,10 +12,10 @@ import { getFinanceSettings } from "../services/api";
 import { getImageUrl, APP_IMAGES } from "../constants/app-images";
 import { formatPrice } from "../utils/format";
 import { useSEO } from "../utils/useSEO";
-import type { CarItem } from "../types/home.types";
-import type { CarCardProps } from "../components/CarCard";
+import type { ICarItem } from "../types/home.types";
+import type { ICarCardProps } from "../interfaces/ICarCardProps";
 
-function specValue(car: CarItem, key: string, altKey?: string): string {
+function specValue(car: ICarItem, key: string, altKey?: string): string {
   if (altKey) {
     const v = (car as any)[altKey];
     if (v != null && typeof v === "string") return v;
@@ -27,7 +27,7 @@ function specValue(car: CarItem, key: string, altKey?: string): string {
   return "";
 }
 
-function mapRelatedCar(car: CarItem): CarCardProps | null {
+function mapRelatedCar(car: ICarItem): ICarCardProps | null {
   try {
     const slug = car.slug?.trim();
     if (!slug) return null;
@@ -86,7 +86,7 @@ export default function CarDetailsPage() {
     () =>
       car?.related_cars
         ?.map(mapRelatedCar)
-        .filter((c): c is CarCardProps => c !== null) ?? [],
+        .filter((c): c is ICarCardProps => c !== null) ?? [],
     [car?.related_cars],
   );
 
@@ -137,7 +137,8 @@ export default function CarDetailsPage() {
       <CarDetailsHero
         title={car.name}
         description={car.description}
-        images={car.images?.length ? car.images : [car.main_image]}
+        mainImage={car.main_image}
+        images={car.images ?? []}
         exteriorImages={car.exterior_images}
         interiorImages={car.interior_images}
         price={car.current_price}
@@ -155,15 +156,32 @@ export default function CarDetailsPage() {
         year={car.year || undefined}
         brandName={car.brand?.name || undefined}
       />
-      <CarDetailsSpecs
-        specifications={car.specifications}
-        featuresList={car.features_list}
-        safetyFeatures={car.safety_features}
-        specs={car.specs}
-        availabilityStatus={car.availability_status}
-        type={car.type}
-        year={car.year}
-      />
+      {/* Specifications & Features Grid */}
+      <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 ">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+          {/* Specifications Card (aligns with Gallery column width) */}
+          <div className="lg:col-span-8">
+            <CarDetailsSpecs
+              showOnly="specs"
+              specifications={car.specifications}
+              specs={car.specs}
+              type={car.type}
+              year={car.year}
+              availabilityStatus={car.availability_status}
+            />
+          </div>
+
+          {/* Features List (aligns with Sidebar Calculator width) */}
+          <div className="lg:col-span-4">
+            <CarDetailsSpecs
+              showOnly="features"
+              featuresList={car.features_list}
+              safetyFeatures={car.safety_features}
+              specs={car.specs}
+            />
+          </div>
+        </div>
+      </section>
 
       {relatedCars.length > 0 && (
         <FeaturedCarsSection
@@ -173,38 +191,11 @@ export default function CarDetailsPage() {
           buttonText={t("carDetails.relatedCars.buttonText")}
           buttonTo="/cars"
           cars={relatedCars}
-          className="bg-[#F9FAFB]"
+          itemsPerPage={3}
         />
       )}
 
-      <FinanceSolutionsSection
-        className="mb-20 mt-10"
-        backgroundImage={APP_IMAGES.BG_IMAGE}
-        titleBlue={financeData?.finance?.badge?.trim() || t("financeSolutions.titleBlue")}
-        titleOrange={financeData?.finance?.title?.trim() || t("financeSolutions.titleOrange")}
-        description={financeData?.finance?.subtitle?.trim() || t("financeSolutions.description")}
-        buttonText={financeData?.finance?.button_text?.trim() || t("financeSolutions.buttonText")}
-        buttonTo="/contact"
-        stats={
-          financeData?.stats?.length
-            ? financeData.stats
-            : [
-                { value: "+500", label: t("financeSolutions.stats.0.label") },
-                { value: "+1000", label: t("financeSolutions.stats.1.label") },
-                { value: "+50", label: t("financeSolutions.stats.2.label") },
-              ]
-        }
-        features={
-          financeData?.finance?.features?.length
-            ? financeData.finance.features
-            : [
-                t("financeSolutions.features.0"),
-                t("financeSolutions.features.1"),
-                t("financeSolutions.features.2"),
-                t("financeSolutions.features.3"),
-              ]
-        }
-      />
+
     </>
   );
 }

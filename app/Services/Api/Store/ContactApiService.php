@@ -6,6 +6,7 @@ namespace App\Services\Api\Store;
 
 use App\Models\ContactSource;
 use App\Models\Lead;
+use App\Services\BookingAssignmentService;
 
 final class ContactApiService
 {
@@ -28,7 +29,7 @@ final class ContactApiService
             'started_at' => now(),
         ]);
 
-        app(\App\Services\BookingAssignmentService::class)->autoAssignLead($lead);
+        app(BookingAssignmentService::class)->autoAssignLead($lead);
 
         return $lead;
     }

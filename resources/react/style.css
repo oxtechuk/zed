@@ -1,9 +1,17 @@
 @import "tailwindcss";
 
+@utility no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+  }
+}
+
 @font-face {
-  font-family: "The Year of Handicrafts";
-  src: url("/fonts/TheYearofHandicrafts-Regular.otf") format("opentype");
-  font-weight: 400;
+  font-family: "Cairo";
+  src: url("./assets/Cairo-VariableFont_slnt,wght.ttf") format("truetype");
+  font-weight: 100 1000;
   font-style: normal;
   font-display: swap;
 }
@@ -37,7 +45,7 @@
   --background: #FAFAFB;
   --border: #e5e4e7;
 
-  --font-main: "The Year of Handicrafts", system-ui, sans-serif;
+  --font-main: "Cairo", system-ui, sans-serif;
 }
 
 * {
@@ -62,7 +70,10 @@ h2,
 h3,
 h4,
 h5,
-h6,
+h6 {
+  font-family: var(--font-main);
+}
+
 p,
 button,
 input,
@@ -74,6 +85,10 @@ a {
 
 p {
   margin: 0;
+}
+
+.highlight {
+  color: var(--brand-secondary-color);
 }
 
 a {

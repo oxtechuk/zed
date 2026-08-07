@@ -6,7 +6,7 @@ export default function CompareSummary({
   car1Name,
   car2Name,
 }: ICompareSummaryProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // Calculate scores
   const car1Score = sections.reduce(
@@ -30,25 +30,29 @@ export default function CompareSummary({
         {hasWinner ? (
           <>
             <span className="text-[12px] font-black text-[#D97706] uppercase tracking-wider block mb-1">
-              الأفضل في المقارنة
+              {t("comparePage.bestInComparison", { defaultValue: "الأفضل في المقارنة" })}
             </span>
             <h2 className="text-[24px] font-black text-[#0F172A] leading-tight mb-2">
               {winnerName}
             </h2>
             <p className="text-[13px] font-extrabold text-gray-500">
-              تفوقت في {winnerScore} من {totalCriteria} معيار
+              {t("comparePage.excelledIn", {
+                score: winnerScore,
+                total: totalCriteria,
+                defaultValue: `تفوقت في ${winnerScore} من ${totalCriteria} معيار`,
+              })}
             </p>
           </>
         ) : (
           <>
             <span className="text-[12px] font-black text-[#D97706] uppercase tracking-wider block mb-1">
-              نتيجة المقارنة
+              {t("comparePage.comparisonResult", { defaultValue: "نتيجة المقارنة" })}
             </span>
             <h2 className="text-[24px] font-black text-[#0F172A] leading-tight mb-2">
-              تعادل السيارتين
+              {t("comparePage.tie", { defaultValue: "تعادل السيارتين" })}
             </h2>
             <p className="text-[13px] font-extrabold text-gray-500">
-              تساوت السيارتان في نقاط المقارنة المباشرة
+              {t("comparePage.tieDescription", { defaultValue: "تساوت السيارتان في نقاط المقارنة المباشرة" })}
             </p>
           </>
         )}

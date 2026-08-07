@@ -10,6 +10,7 @@ export interface ICarDetailsHeroProps {
   images: string[];
   exteriorImages?: string[];
   interiorImages?: string[];
+  mainImage?: string;
   price: number;
   oldPrice?: number;
   monthlyInstallment: number;
@@ -24,4 +25,8 @@ export interface ICarDetailsHeroProps {
   type?: string;
   year?: string;
   brandName?: string;
+  featuresList?: any[];
+  safetyFeatures?: any[];
+  specs?: any;
+  availabilityStatus?: string;
 }

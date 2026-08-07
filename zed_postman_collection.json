@@ -1,0 +1,2008 @@
+{
+  "info": {
+    "name": "Zed API Collection",
+    "description": "Comprehensive API collection for the Zed backend application, covering both Public Storefront APIs and Internal ERP APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Store API",
+      "description": "Public-facing customer APIs for the storefront website (e.g., catalog, bookings, calculator, blog, settings).",
+      "item": [
+        {
+          "name": "Car Catalog",
+          "item": [
+            {
+              "name": "List Cars",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/cars?brand_id=&category_id=&type_id=&search=&min_price=&max_price=&sort_by=&order=",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "cars"
+                  ],
+                  "query": [
+                    {
+                      "key": "brand_id",
+                      "value": "",
+                      "description": "Filter by brand ID (optional)"
+                    },
+                    {
+                      "key": "category_id",
+                      "value": "",
+                      "description": "Filter by car category ID (optional)"
+                    },
+                    {
+                      "key": "type_id",
+                      "value": "",
+                      "description": "Filter by car type ID (optional)"
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "description": "Search query for car name or model (optional)"
+                    },
+                    {
+                      "key": "min_price",
+                      "value": "",
+                      "description": "Minimum price (optional)"
+                    },
+                    {
+                      "key": "max_price",
+                      "value": "",
+                      "description": "Maximum price (optional)"
+                    },
+                    {
+                      "key": "sort_by",
+                      "value": "",
+                      "description": "Field to sort by (optional)"
+                    },
+                    {
+                      "key": "order",
+                      "value": "",
+                      "description": "Sort order: asc or desc (optional)"
+                    }
+                  ]
+                },
+                "description": "Retrieve a list of cars with optional filters."
+              }
+            },
+            {
+              "name": "Get Cars Meta",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/cars/meta",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "cars",
+                    "meta"
+                  ]
+                },
+                "description": "Retrieve metadata about the cars catalog (available filter options)."
+              }
+            },
+            {
+              "name": "Search Cars",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/cars/search?q=Camry",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "cars",
+                    "search"
+                  ],
+                  "query": [
+                    {
+                      "key": "q",
+                      "value": "Camry",
+                      "description": "Search keyword"
+                    }
+                  ]
+                },
+                "description": "Search cars by query keyword."
+              }
+            },
+            {
+              "name": "Compare Cars",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/cars/compare?car_ids[]=1&car_ids[]=2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "cars",
+                    "compare"
+                  ],
+                  "query": [
+                    {
+                      "key": "car_ids[]",
+                      "value": "1"
+                    },
+                    {
+                      "key": "car_ids[]",
+                      "value": "2"
+                    }
+                  ]
+                },
+                "description": "Compare multiple cars side by side."
+              }
+            },
+            {
+              "name": "Get Car Details",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/cars/:slug",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "cars",
+                    ":slug"
+                  ],
+                  "variable": [
+                    {
+                      "key": "slug",
+                      "value": "toyota-camry-2025",
+                      "description": "The unique URL slug of the car"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information about a specific car by its slug."
+              }
+            },
+            {
+              "name": "List Brands",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/brands",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "brands"
+                  ]
+                },
+                "description": "Retrieve all car brands."
+              }
+            },
+            {
+              "name": "List Car Categories",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/car-categories",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "car-categories"
+                  ]
+                },
+                "description": "Retrieve all car categories."
+              }
+            },
+            {
+              "name": "List Car Types",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/car-types",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "car-types"
+                  ]
+                },
+                "description": "Retrieve all car types."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Booking & Calculator",
+          "item": [
+            {
+              "name": "Get Booking Meta",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/booking/meta",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "booking",
+                    "meta"
+                  ]
+                },
+                "description": "Retrieve booking page layout metadata (hero, steps, sections)."
+              }
+            },
+            {
+              "name": "Submit Booking",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"car_id\": 1,\n  \"client_name\": \"John Doe\",\n  \"client_phone\": \"+966500000000\",\n  \"client_email\": \"john@example.com\",\n  \"down_payment\": 20000,\n  \"duration_years\": 5,\n  \"interest_rate\": 2.5,\n  \"notes\": \"Interested in purchase\",\n  \"booking_type\": \"purchase\",\n  \"location\": \"Riyadh\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/store/booking",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "booking"
+                  ]
+                },
+                "description": "Submit a new booking request."
+              }
+            },
+            {
+              "name": "Get Calculator Banks",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/calculator/banks",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "calculator",
+                    "banks"
+                  ]
+                },
+                "description": "Retrieve banks configured for the financial calculator."
+              }
+            },
+            {
+              "name": "Calculate Installments",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"car_id\": 1,\n  \"down_payment_percentage\": 10,\n  \"period_months\": 36,\n  \"bank_id\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/store/calculator/calculate",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "calculator",
+                    "calculate"
+                  ]
+                },
+                "description": "Calculate finance monthly installment."
+              }
+            },
+            {
+              "name": "Save Calculator Lead",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Jane Doe\",\n  \"phone\": \"+966511111111\",\n  \"email\": \"jane@example.com\",\n  \"city\": \"Jeddah\",\n  \"salary\": 12000,\n  \"monthly_obligations\": 2000,\n  \"employer_type\": \"company\",\n  \"employer_name\": \"Tech Corp\",\n  \"years_of_service\": 3,\n  \"has_mortgage_loan\": false,\n  \"has_personal_loan\": true,\n  \"has_traffic_violations\": false,\n  \"has_simah_default\": false,\n  \"preferred_bank_id\": 1,\n  \"car_ids\": [1],\n  \"preferred_color\": \"Black\",\n  \"notes\": \"Call me later\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/store/calculator/lead",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "calculator",
+                    "lead"
+                  ]
+                },
+                "description": "Save finance calculator lead details."
+              }
+            },
+            {
+              "name": "Send OTP",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Jane Doe\",\n  \"phone\": \"+966511111111\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/store/calculator/otp/send",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "calculator",
+                    "otp",
+                    "send"
+                  ]
+                },
+                "description": "Send verification OTP code to customer phone."
+              }
+            },
+            {
+              "name": "Verify OTP",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"+966511111111\",\n  \"code\": \"123456\",\n  \"name\": \"Jane Doe\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/store/calculator/otp/verify",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "calculator",
+                    "otp",
+                    "verify"
+                  ]
+                },
+                "description": "Verify OTP code and automatically create verified lead."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Content & Engagement",
+          "item": [
+            {
+              "name": "List Blog Posts",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/blog?category=&search=",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "blog"
+                  ],
+                  "query": [
+                    {
+                      "key": "category",
+                      "value": "",
+                      "description": "Category slug to filter by (optional)"
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "description": "Search keyword (optional)"
+                    }
+                  ]
+                },
+                "description": "Retrieve blog posts with optional filters."
+              }
+            },
+            {
+              "name": "Get Blog Categories",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/blog/categories",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "blog",
+                    "categories"
+                  ]
+                },
+                "description": "Retrieve all blog categories."
+              }
+            },
+            {
+              "name": "Get Blog Post Details",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/blog/:slug",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "blog",
+                    ":slug"
+                  ],
+                  "variable": [
+                    {
+                      "key": "slug",
+                      "value": "how-to-choose-a-car",
+                      "description": "The unique blog post slug"
+                    }
+                  ]
+                },
+                "description": "Retrieve detailed information of a blog post."
+              }
+            },
+            {
+              "name": "List Offers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/offers",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "offers"
+                  ]
+                },
+                "description": "Retrieve active promotion offers."
+              }
+            },
+            {
+              "name": "Newsletter Subscribe",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"user@example.com\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/store/newsletter",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "newsletter"
+                  ]
+                },
+                "description": "Subscribe an email to the newsletter."
+              }
+            }
+          ]
+        },
+        {
+          "name": "FAQs",
+          "item": [
+            {
+              "name": "Get FAQs",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/faqs",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "faqs"
+                  ]
+                },
+                "description": "Get a list of frequently asked questions."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Home & Static Pages",
+          "item": [
+            {
+              "name": "Get Home Content",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/home",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "home"
+                  ]
+                },
+                "description": "Retrieve landing/home page content."
+              }
+            },
+            {
+              "name": "Get About Content",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/about",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "about"
+                  ]
+                },
+                "description": "Retrieve about page content."
+              }
+            },
+            {
+              "name": "Submit Contact Form",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Doe\",\n  \"phone\": \"+966500000000\",\n  \"email\": \"john@example.com\",\n  \"subject\": \"general_inquiry\",\n  \"country\": \"Saudi Arabia\",\n  \"message\": \"Hello, I am interested in your services.\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/store/contact",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "contact"
+                  ]
+                },
+                "description": "Submit contact/inquiry form."
+              }
+            },
+            {
+              "name": "Get Testimonials",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/testimonials",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "testimonials"
+                  ]
+                },
+                "description": "Retrieve customer testimonials."
+              }
+            },
+            {
+              "name": "Get Partners",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/partners",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "partners"
+                  ]
+                },
+                "description": "Retrieve corporate partners/brands logo details."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Settings & Gallery",
+          "item": [
+            {
+              "name": "Get Settings",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/settings",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "settings"
+                  ]
+                },
+                "description": "Retrieve general store settings."
+              }
+            },
+            {
+              "name": "Get Footer Settings",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/settings/footer",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "settings",
+                    "footer"
+                  ]
+                },
+                "description": "Retrieve footer/layout specific configurations."
+              }
+            },
+            {
+              "name": "Get Finance Solution Settings",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/settings/finance-solution",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "settings",
+                    "finance-solution"
+                  ]
+                },
+                "description": "Retrieve configurations relating to finance solutions."
+              }
+            },
+            {
+              "name": "Get Gallery",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/store/gallery",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "store",
+                    "gallery"
+                  ]
+                },
+                "description": "Retrieve images gallery."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ERP API",
+      "description": "Internal Enterprise Resource Planning (ERP) Core APIs. Authenticated requests inherit bearer token from the collection folder level auth.",
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{token}}",
+            "type": "string"
+          }
+        ]
+      },
+      "item": [
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "Login",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@zed.com\",\n  \"password\": \"password\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "login"
+                  ]
+                },
+                "description": "Log into ERP session."
+              }
+            },
+            {
+              "name": "Logout",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/logout",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "logout"
+                  ]
+                },
+                "description": "Log out of active session."
+              }
+            },
+            {
+              "name": "Get Authenticated User (Me)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "me"
+                  ]
+                },
+                "description": "Retrieve current authenticated user profiles, companies, roles, and permissions."
+              }
+            },
+            {
+              "name": "Switch Company",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"company_id\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/switch-company",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "switch-company"
+                  ]
+                },
+                "description": "Switch active company for authenticated user."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Companies",
+          "item": [
+            {
+              "name": "List Companies",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/companies",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "companies"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Create Company",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"New Company\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/companies",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "companies"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Company",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/companies/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "companies",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update Company",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated Company Name\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/companies/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "companies",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Delete Company",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/companies/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "companies",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Branches",
+          "item": [
+            {
+              "name": "List Branches",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/branches",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "branches"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Create Branch",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Main Branch\",\n  \"company_id\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/branches",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "branches"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Branch",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/branches/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "branches",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update Branch",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated Branch Name\",\n  \"company_id\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/branches/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "branches",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Delete Branch",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/branches/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "branches",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Depts (Departments)",
+          "item": [
+            {
+              "name": "List Depts",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/depts",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "depts"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Create Dept",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"HR Department\",\n  \"branch_id\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/depts",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "depts"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Dept",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/depts/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "depts",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update Dept",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated HR Department\",\n  \"branch_id\": 1\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/depts/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "depts",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Delete Dept",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/depts/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "depts",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Contacts",
+          "item": [
+            {
+              "name": "List Contacts",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/contacts",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "contacts"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Create Contact",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+966500000000\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/contacts",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "contacts"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Contact",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/contacts/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "contacts",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update Contact",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe Updated\",\n  \"email\": \"john.updated@example.com\",\n  \"phone\": \"+966500000000\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/contacts/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "contacts",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Delete Contact",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/contacts/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "contacts",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Tasks",
+          "item": [
+            {
+              "name": "List Tasks",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/tasks",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "tasks"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Create Task",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Process vehicle registration\",\n  \"description\": \"Finish all pending papers\",\n  \"due_date\": \"2026-08-31\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/tasks",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "tasks"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Task",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/tasks/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "tasks",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update Task",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Process vehicle registration - Priority\",\n  \"description\": \"Finish all papers ASAP\",\n  \"due_date\": \"2026-08-25\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/tasks/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "tasks",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Delete Task",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/tasks/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "tasks",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modules Management",
+          "item": [
+            {
+              "name": "List Modules",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/modules",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "modules"
+                  ]
+                },
+                "description": "List all system-registered modules and active states."
+              }
+            },
+            {
+              "name": "Enable Module",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/modules/:alias/enable",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "modules",
+                    ":alias",
+                    "enable"
+                  ],
+                  "variable": [
+                    {
+                      "key": "alias",
+                      "value": "crm"
+                    }
+                  ]
+                },
+                "description": "Enable a specific module by alias."
+              }
+            },
+            {
+              "name": "Disable Module",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/modules/:alias/disable",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "modules",
+                    ":alias",
+                    "disable"
+                  ],
+                  "variable": [
+                    {
+                      "key": "alias",
+                      "value": "crm"
+                    }
+                  ]
+                },
+                "description": "Disable a specific module by alias."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Example Endpoint",
+          "item": [
+            {
+              "name": "Get Example Data",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/erp/example",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "example"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Post Example Data",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key\": \"value\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/erp/example",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "erp",
+                    "example"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://zed.test",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "your_bearer_token_here",
+      "type": "string"
+    }
+  ]
+}

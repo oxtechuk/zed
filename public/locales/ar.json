@@ -51,7 +51,7 @@
     "compare": "أضف للمقارنة",
     "subtitle": "سيارات عائلية مريحة",
     "cashPrice": "السعر النقدي",
-    "monthlyPayment": "القسط الشهري",
+    "monthlyPayment": "القسط من",
     "estimated": "تقديري",
     "reserve": "اطلبها الآن",
     "newlyArrived": "وصل حديثاً",
@@ -173,6 +173,8 @@
     "noResults": "لا توجد نتائج"
   },
   "allCarsPage": {
+    "title": "تصفح السيارات",
+    "badge": "معرض السيارات",
     "noCarsMatch": "لا توجد سيارات مطابقة للبحث",
     "contactBadge": "فريقنا جاهز للمساعدة",
     "contactTitleWhite": "هل لديك",
@@ -256,8 +258,8 @@
   "blogPage": {
     "readMore": "اقرأ المزيد",
     "hero": {
-      "badge": "مدونة كنوز",
-      "title": "مدونة <span class=\"highlight\">zed Capital</span>",
+      "badge": "المدونة",
+      "title": "مدونة <span class=\"highlight\">زاد كابيتال</span>",
       "description": "تابع أحدث أخبار السيارات، النصائح، والمقالات الحصرية.",
       "featuredPost": {
         "category": "نصائح التمويل",
@@ -381,11 +383,15 @@
     }
   },
   "offersPage": {
+    "featured": {
+      "title": "عرض رمضان الاستثنائي",
+      "description": "تمويل بدون أرباح لأول 6 أشهر"
+    },
     "hero": {
       "badge": "عروض حصرية",
       "title": "العروض والتخفيضات",
       "description": "عروض محدودة بشروط تمويل استثنائية",
-      "primaryButton": "اكتشف العرض",
+      "primaryButton": "اطلع على العرض",
       "secondaryButton": "حاسبة التمويل"
     },
     "grid": {
@@ -452,13 +458,23 @@
       "error": "حدث خطأ ما. حاول مرة أخرى"
     },
     "relatedCars": {
-      "titleBlue": "سيارات مشابهة ",
-      "titleOrange": "لإختيارك",
+      "titleBlue": "سيارات مشابهة لإختيارك",
+      "titleOrange": "",
       "description": "قارن واكتشف مجموعة مختارة من السيارات المشابهة في الفئة والمواصفات",
       "buttonText": "تصفح كافة السيارات"
     }
   },
   "comparePage": {
+    "badge": "مقارنة السيارات",
+    "title": "قارن بين سيارتين",
+    "description": "اختر سيارتين لمقارنة مواصفاتهما والتكاليف جنباً إلى جنب",
+    "criterion": "المعيار",
+    "bestInComparison": "الأفضل في المقارنة",
+    "comparisonResult": "نتيجة المقارنة",
+    "tie": "تعادل السيارتين",
+    "tieDescription": "تساوت السيارتان في نقاط المقارنة المباشرة",
+    "excelledIn": "تفوقت في {{score}} من {{total}} معيار",
+    "carDetails": "تفاصيل السيارة",
     "compareTable": "جدول المقارنة",
     "compareDescription": "مقارنة تفصيلية بين سيارتين من اختيارك",
     "specLabel": "المواصفة",
@@ -749,5 +765,17 @@
     "brands": "الماركات",
     "financeCalculator": "حاسبة التمويل",
     "notFound": "الصفحة غير موجودة"
+  },
+  "blogPage": {
+    "hero": {
+      "badge": "المدونة",
+      "title": "نصائح ومقالات",
+      "description": "فريقنا المتخصص جاهز للرد على جميع استفساراتك"
+    },
+    "categories": {
+      "all": "الكل"
+    },
+    "noArticles": "لا توجد مقالات متوفرة حالياً.",
+    "readMore": "اقرأ المزيد"
   }
 }

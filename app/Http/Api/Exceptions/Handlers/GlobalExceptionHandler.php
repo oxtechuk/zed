@@ -11,6 +11,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException as LaravelValidationException;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -21,7 +22,7 @@ final class GlobalExceptionHandler
         private readonly ApiResponseBuilder $builder,
     ) {}
 
-    public function render(\Throwable $e, Request $request): ?\Symfony\Component\HttpFoundation\Response
+    public function render(\Throwable $e, Request $request): ?Response
     {
         if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('erp/*')) {
             return null;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Store;
 
+use App\Http\Api\Response\Builder\ApiResponseBuilder;
 use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Requests\Api\Store\CalculatorCalculateRequest;
 use App\Http\Requests\Api\Store\CalculatorLeadRequest;
@@ -16,7 +17,7 @@ final class CalculatorController extends ApiBaseController
     public function __construct(
         private readonly CalculatorApiService $calculatorService,
     ) {
-        parent::__construct(app(\App\Http\Api\Response\Builder\ApiResponseBuilder::class));
+        parent::__construct(app(ApiResponseBuilder::class));
     }
 
     public function banks()
@@ -32,9 +33,9 @@ final class CalculatorController extends ApiBaseController
     {
         $result = $this->calculatorService->calculate(
             carId: (int) $request->input('car_id'),
-            downPaymentPct: (float) $request->input('down_payment_percentage',10),
-            periodMonths: (int) $request->input('period_months',12),
-            bankId: (int) $request->input('bank_id',CalculatorBank::query()->first()->id),
+            downPaymentPct: (float) $request->input('down_payment_percentage', 10),
+            periodMonths: (int) $request->input('period_months', 12),
+            bankId: (int) $request->input('bank_id', CalculatorBank::query()->first()->id),
         );
 
         return $this->respondSuccess($result);
