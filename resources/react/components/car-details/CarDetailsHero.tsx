@@ -108,7 +108,7 @@ export default function CarDetailsHero({
                         {/* 1. Gallery Side (Renders first on mobile, right on desktop) */}
                         <div className="lg:col-span-8 flex flex-col order-1">
                             {/* Main Gallery Container */}
-                            <div className="relative overflow-hidden rounded-[24px] bg-white border border-[#E7E9EF] shadow-sm flex items-center justify-center min-h-[380px] md:min-h-[480px] w-full">
+                            <div className="order-2 lg:order-1 mt-8 lg:mt-0 relative overflow-hidden rounded-[24px] bg-white border border-[#E7E9EF] shadow-sm flex items-center justify-center min-h-[380px] md:min-h-[480px] w-full">
                                 {/* Main Image */}
                                 <img
                                     src={currentImage}
@@ -171,7 +171,7 @@ export default function CarDetailsHero({
                             </div>
 
                             {/* Car Info Card */}
-                            <div className="mt-8 bg-white border border-[#E7E9EF] rounded-[24px] p-6 md:p-8 shadow-xs flex flex-col gap-5">
+                            <div className="order-1 lg:order-2 mt-0 lg:mt-8 bg-white border border-[#E7E9EF] rounded-[24px] p-6 md:p-8 shadow-xs flex flex-col gap-5">
                                 {/* Top Row: Brand & Year (right in RTL) and Category Badge (left in RTL) */}
                                 <div className="flex items-center justify-between gap-4">
                                     {/* Brand and Model Year */}
