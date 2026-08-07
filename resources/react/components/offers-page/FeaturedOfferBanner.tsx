@@ -2,97 +2,127 @@ import { useTranslation } from "react-i18next";
 import { Clock } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useCountdown } from "../../hooks/useCountdown";
+import { APP_IMAGES, getImageUrl } from "../../constants/app-images";
+import type { IFeaturedOfferBannerProps } from "../../interfaces/IFeaturedOfferBannerProps";
 
-interface FeaturedOfferBannerProps {
-  id: string | number;
-  image?: string;
-  title: string;
-  description: string;
-  tag?: string;
-  ends_at?: string;
-}
+export default function FeaturedOfferBanner(props: Partial<IFeaturedOfferBannerProps> = {}) {
+  const {
+    id = 1,
+    image,
+    background_image,
+    title,
+    description,
+    tag,
+    badge,
+    ends_at,
+    button_text,
+    button_url,
+  } = props;
 
-export default function FeaturedOfferBanner({
-  id,
-  image,
-  title,
-  description,
-  tag,
-  ends_at,
-}: FeaturedOfferBannerProps) {
   const { t, i18n } = useTranslation();
   const { days, hours, minutes, seconds } = useCountdown(ends_at);
 
   const tagNames: Record<string, string> = {
-    popular: t("offersPage.grid.categories.popular", "الشائعة"),
-    exclusive: t("offersPage.grid.categories.exclusive", "عرض حصري"),
-    new: t("offersPage.grid.categories.new", "جديد"),
-    limited: t("offersPage.grid.categories.limited", "لفترة محدودة"),
+    popular: t("offersPage.grid.categories.popular", { defaultValue: "الشائعة" }),
+    exclusive: t("offersPage.grid.categories.exclusive", { defaultValue: "عرض حصري" }),
+    new: t("offersPage.grid.categories.new", { defaultValue: "جديد" }),
+    limited: t("offersPage.grid.categories.limited", { defaultValue: "محدود" }),
   };
 
-  const tagLabel = tag ? (tagNames[tag] || tag) : t("offersPage.grid.categories.limited", "لفترة محدودة");
+  const activeTag = tag || badge;
+  const tagLabel = activeTag
+    ? tagNames[activeTag] || activeTag
+    : t("offersPage.grid.categories.limited", { defaultValue: "محدود" });
+
+  const displayTitle = title || t("offersPage.featured.title", { defaultValue: "عرض رمضان الاستثنائي" });
+  const displayDesc = description || t("offersPage.featured.description", { defaultValue: "تمويل بدون أرباح لأول 6 أشهر" });
 
   const countdownParts = [
-    { value: days, label: t("offersPage.countdown.days", "يوم") },
-    { value: hours, label: t("offersPage.countdown.hours", "ساعة") },
-    { value: minutes, label: t("offersPage.countdown.minutes", "دقيقة") },
-    { value: seconds, label: t("offersPage.countdown.seconds", "ثانية") },
+    {
+      value: String(days ?? 4).padStart(2, "0"),
+      label: t("offersPage.countdown.days", { defaultValue: "يوم" }),
+    },
+    {
+      value: String(hours ?? 23).padStart(2, "0"),
+      label: t("offersPage.countdown.hours", { defaultValue: "ساعة" }),
+    },
+    {
+      value: String(minutes ?? 40).padStart(2, "0"),
+      label: t("offersPage.countdown.minutes", { defaultValue: "دقيقة" }),
+    },
+    {
+      value: String(seconds ?? 3).padStart(2, "0"),
+      label: t("offersPage.countdown.seconds", { defaultValue: "ثانية" }),
+    },
   ];
+
+  const rawImage = image || background_image;
+  const bgImageUrl = rawImage ? getImageUrl(rawImage) : APP_IMAGES.OFFERS_SECTION_BG;
 
   return (
     <div
       dir={i18n.dir()}
-      className="relative w-full rounded-[24px] text-white overflow-hidden shadow-2xl mb-10"
+      className="relative w-full rounded-[24px] sm:rounded-[32px] text-white overflow-hidden shadow-2xl mb-10 select-none bg-[#0B1736] min-h-[240px] sm:min-h-[270px] flex items-center"
       style={{
-        backgroundImage: image
-          ? `linear-gradient(270deg, rgba(22,37,79,0.98) 0%, rgba(22,37,79,0.70) 50%, rgba(0,0,0,0) 100%), url(${image})`
-          : "linear-gradient(90deg, #16254F 0%, #0D1730 60%, #080E1E 100%)",
+        backgroundImage: `url("${bgImageUrl}")`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div className="relative z-10 flex flex-col items-center gap-8 px-6 py-8 md:flex-row md:items-center md:justify-between md:px-12 md:py-10 text-start">
-        {/* Content: title / description / CTA */}
-        <div className="flex w-full flex-col items-start md:w-auto">
-          {/* Top row: countdown notice + tag pill (stacked, right-aligned) */}
-          <div className="flex flex-col items-start gap-2">
-            <div className="flex items-center gap-1.5 text-white/50 text-xs">
-              <span>{t("offersPage.countdown.requestEnds", "العرض ينتهي قريباً")}</span>
-              <Clock size={12} />
-            </div>
-            <span className="inline-block bg-[#EDC98E] text-[#16254F] text-xs font-black px-3 py-1.5 rounded-full">
-              {tagLabel}
-            </span>
-          </div>
+      {/* Dark Navy Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0B1736]/90 via-[#0B1736]/65 to-[#0B1736]/30 pointer-events-none" />
 
-          <h2 className="mt-4 text-[26px] md:text-[32px] font-black text-white leading-tight">
-            {title}
+      {/* Main Inner Flex Container */}
+      <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-full px-6 py-8 sm:px-10 sm:py-10 gap-8 text-start">
+        {/* Left Side (RTL) / Main Content */}
+        <div className="flex flex-col items-start max-w-xl">
+          {/* Tag Pill */}
+          <span className="inline-block bg-[#F3C77C] text-[#0B1736] text-[12px] sm:text-[13px] font-black px-4 py-1 rounded-full mb-3 shadow-xs">
+            {tagLabel}
+          </span>
+
+          {/* Title */}
+          <h2 className="text-[26px] sm:text-[32px] md:text-[36px] font-black text-white leading-tight mb-2">
+            {displayTitle}
           </h2>
 
-          <p className="mt-1 max-w-md text-[15px] md:text-[16px] text-white/60 leading-relaxed">
-            {description}
+          {/* Description */}
+          <p className="text-[14px] sm:text-[16px] font-semibold text-white/80 leading-relaxed mb-6">
+            {displayDesc}
           </p>
 
+          {/* CTA Button */}
           <NavLink
-            to={`/cars?offerId=${id}`}
-            className="mt-5 inline-flex h-[48px] items-center justify-center rounded-2xl bg-[#EDC98E] px-7 text-[14px] font-black text-[#16254F] shadow-lg transition duration-200 hover:bg-white hover:scale-[1.02]"
+            to={button_url || `/cars?offerId=${id}`}
+            className="h-[48px] sm:h-[52px] px-8 rounded-2xl sm:rounded-[18px] bg-[#F3C77C] hover:bg-[#E2B66B] text-[14px] sm:text-[15px] font-black text-[#0B1736] transition-all duration-200 active:scale-95 shadow-md inline-flex items-center justify-center"
           >
-            {t("offersPage.hero.primaryButton", "اطلع على العرض")}
+            {button_text || t("offersPage.hero.primaryButton", { defaultValue: "اطلع على العرض" })}
           </NavLink>
         </div>
 
-        {/* Countdown Timer */}
-        <div className="flex w-full flex-col items-center md:w-auto md:items-end">
-          <span className="block text-white/40 text-xs font-semibold mb-3">
-            {t("offersPage.countdown.endsIn", "ينتهي العرض خلال")}
+        {/* Right Side (RTL) / Countdown Section */}
+        <div className="flex flex-col items-start md:items-start shrink-0">
+          {/* Notice Header */}
+          <div className="flex items-center gap-1.5 text-white/70 text-[12px] sm:text-[13px] font-bold mb-1">
+            <Clock size={14} className="text-[#F3C77C]" />
+            <span>{t("offersPage.countdown.requestEnds", { defaultValue: "العرض ينتهي قريباً" })}</span>
+          </div>
+
+          {/* Sublabel */}
+          <span className="block text-white/40 text-[11px] sm:text-[12px] font-semibold mb-3">
+            {t("offersPage.countdown.endsIn", { defaultValue: "ينتهي العرض خلال" })}
           </span>
-          <div className="flex items-start gap-3" dir="ltr">
+
+          {/* 4 Timer Boxes */}
+          <div className="flex items-center gap-2.5 sm:gap-3" dir="ltr">
             {countdownParts.map((part) => (
               <div key={part.label} className="flex flex-col items-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-[24px] font-black text-white">
+                <div className="flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md text-[20px] sm:text-[24px] font-black text-white shadow-xs">
                   {part.value}
                 </div>
-                <span className="mt-1 text-[10px] text-white/40">{part.label}</span>
+                <span className="mt-1.5 text-[10px] sm:text-[11px] font-extrabold text-white/60">
+                  {part.label}
+                </span>
               </div>
             ))}
           </div>

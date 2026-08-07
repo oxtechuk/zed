@@ -9,6 +9,8 @@ import { APP_IMAGES, getImageUrl } from "../constants/app-images";
 import { offerToCardProps } from "../utils/offers";
 import { useSEO } from "../utils/useSEO";
 
+const PAGE_SIZE = 6;
+
 export default function OffersPage() {
   const { t } = useTranslation();
   useSEO(t("nav.offers"), t("offersPage.hero.description"));
@@ -22,7 +24,7 @@ export default function OffersPage() {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ["offers", language, activeCategory],
-    queryFn: ({ pageParam }) => getOffers(pageParam as number, 12, activeCategory),
+    queryFn: ({ pageParam }) => getOffers(pageParam as number, PAGE_SIZE, activeCategory),
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.meta.current_page < lastPage.meta.last_page

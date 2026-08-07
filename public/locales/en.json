@@ -383,6 +383,10 @@
     }
   },
   "offersPage": {
+    "featured": {
+      "title": "Ramadan Exceptional Offer",
+      "description": "0% Profit Finance for the First 6 Months"
+    },
     "hero": {
       "badge": "Exclusive Offers",
       "title": "Offers & Discounts",

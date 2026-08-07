@@ -25,8 +25,8 @@ export default function OffersGridSection({
 
   const resolvedCategories = categories ?? defaultCategories;
 
-  const showFeatured = activeCategory === "all" && offers.length > 0;
-  const featuredOffer = showFeatured
+  const showFeatured = activeCategory === "all";
+  const featuredOffer = offers.length > 0
     ? (offers.find((o) => o.tag === "limited") || offers[0])
     : null;
 
@@ -34,8 +34,8 @@ export default function OffersGridSection({
     <section dir={i18n.dir()} className="w-full bg-[#FAFAFB] py-12 md:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Featured Banner */}
-        {featuredOffer && (
-          <FeaturedOfferBanner {...featuredOffer} />
+        {showFeatured && (
+          <FeaturedOfferBanner {...(featuredOffer || {})} />
         )}
 
         {/* Categories Tabs Filter */}
