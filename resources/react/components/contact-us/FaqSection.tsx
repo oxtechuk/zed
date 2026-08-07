@@ -18,10 +18,10 @@ export default function FaqSection({
 
   return (
     <section dir={i18n.dir()} className="w-full bg-white py-16">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* Header Block */}
-        <div className="text-center mb-10">
+        <div className="text-start mb-10">
           <span className="text-[13px] font-extrabold text-[#EDC98E] uppercase tracking-wider">
             {eyebrow || t("contactPage.faq.eyebrow", { defaultValue: "أسئلة شائعة" })}
           </span>

@@ -15,99 +15,96 @@ import type { ITestimonialItem } from "../interfaces/ITestimonialItem";
 import type { IAboutData } from "../interfaces/IAboutData";
 
 export default function ContactPage() {
-  const { t } = useTranslation();
-  useSEO(t("nav.contact"), t("contactPage.contactUs.description"));
-  const language = useLanguageStore((s) => s.language);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formKey, setFormKey] = useState(0);
+    const { t } = useTranslation();
+    useSEO(t("nav.contact"), t("contactPage.contactUs.description"));
+    const language = useLanguageStore((s) => s.language);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formKey, setFormKey] = useState(0);
 
-  const { data: faqs } = useQuery<IFaqItem[]>({
-    queryKey: ["faqs", language],
-    queryFn: getFaqs,
-  });
+    const { data: faqs } = useQuery<IFaqItem[]>({
+        queryKey: ["faqs", language],
+        queryFn: getFaqs,
+    });
 
-  const { data: aboutData } = useQuery<IAboutData>({
-    queryKey: ["about", language],
-    queryFn: getAboutPageData,
-  });
+    const { data: aboutData } = useQuery<IAboutData>({
+        queryKey: ["about", language],
+        queryFn: getAboutPageData,
+    });
 
-  const testimonials: ITestimonialItem[] = useMemo(() => {
-    const apiTestimonials = aboutData?.testimonials ?? [];
-    if (!apiTestimonials.length) return [];
-    return apiTestimonials.map((t) => ({
-      id: t.id,
-      name: t.name,
-      job: t.title,
-      text: t.content,
-      avatar: getImageUrl(t.image) || APP_IMAGES.AVATAR_PLACEHOLDER,
-      rating: t.rating,
-      reviewImage: getImageUrl(t.review_image) || undefined,
-      reviewVideo: getImageUrl(t.review_video) || undefined,
-      type: t.type || "text",
-    }));
-  }, [aboutData]);
+    const testimonials: ITestimonialItem[] = useMemo(() => {
+        const apiTestimonials = aboutData?.testimonials ?? [];
+        if (!apiTestimonials.length) return [];
+        return apiTestimonials.map((t) => ({
+            id: t.id,
+            name: t.name,
+            job: t.title,
+            text: t.content,
+            avatar: getImageUrl(t.image) || APP_IMAGES.AVATAR_PLACEHOLDER,
+            rating: t.rating,
+            reviewImage: getImageUrl(t.review_image) || undefined,
+            reviewVideo: getImageUrl(t.review_video) || undefined,
+            type: t.type || "text",
+        }));
+    }, [aboutData]);
 
-  const mediaTestimonials = useMemo(() => {
-    return testimonials.filter((t) => t.type === "video");
-  }, [testimonials]);
+    const mediaTestimonials = useMemo(() => {
+        return testimonials.filter((t) => t.type === "video");
+    }, [testimonials]);
 
-  const textTestimonials = useMemo(() => {
-    return testimonials.filter((t) => t.type === "text");
-  }, [testimonials]);
+    const textTestimonials = useMemo(() => {
+        return testimonials.filter((t) => t.type === "text");
+    }, [testimonials]);
 
-  const handleSubmit = useCallback(
-    async (values: { fullName: string; phone: string; email: string; subject: string; country: string; message: string }) => {
-      setIsSubmitting(true);
-      try {
-        await submitContactForm({
-          name: values.fullName,
-          phone: values.phone,
-          email: values.email,
-          subject: values.subject,
-          country: values.country,
-          message: values.message,
-        });
-        toast.success(t("contactPage.contactUs.successToast"));
-        setFormKey((k) => k + 1);
-      } catch {
-        toast.error(t("contactPage.contactUs.errorToast"));
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [t],
-  );
+    const handleSubmit = useCallback(
+        async (values: {
+            fullName: string;
+            phone: string;
+            email: string;
+            subject: string;
+            country: string;
+            message: string;
+        }) => {
+            setIsSubmitting(true);
+            try {
+                await submitContactForm({
+                    name: values.fullName,
+                    phone: values.phone,
+                    email: values.email,
+                    subject: values.subject,
+                    country: values.country,
+                    message: values.message,
+                });
+                toast.success(t("contactPage.contactUs.successToast"));
+                setFormKey((k) => k + 1);
+            } catch {
+                toast.error(t("contactPage.contactUs.errorToast"));
+            } finally {
+                setIsSubmitting(false);
+            }
+        },
+        [t],
+    );
 
-  return (
-    <>
-      <ContactUsSection
-        key={formKey}
-        eyebrow={t("contactPage.contactUs.eyebrow")}
-        title={t("contactPage.contactUs.title")}
-        description={t("contactPage.contactUs.description")}
-        isSubmitting={isSubmitting}
-        onSubmit={handleSubmit}
-      />
+    return (
+        <>
+            <ContactUsSection
+                key={formKey}
+                eyebrow={t("contactPage.contactUs.eyebrow")}
+                title={t("contactPage.contactUs.title")}
+                description={t("contactPage.contactUs.description")}
+                isSubmitting={isSubmitting}
+                onSubmit={handleSubmit}
+            />
 
-      <MediaReviewsSection testimonials={mediaTestimonials} />
-
-      <TestimonialsSection
-        badge={aboutData?.page_sections?.testimonials?.badge || t("aboutPage.testimonials.badge")}
-        titleBlack={aboutData?.page_sections?.testimonials?.title || t("aboutPage.testimonials.titleBlack")}
-        titleBlue={t("aboutPage.testimonials.titleBlue")}
-        ratingText={aboutData?.page_sections?.testimonials?.rating_text || undefined}
-        testimonials={textTestimonials}
-      />
-
-      <FaqSection
-        eyebrow={t("contactPage.faq.eyebrow")}
-        titleBlack={t("contactPage.faq.titleBlack")}
-        titleOrange={t("contactPage.faq.titleOrange")}
-        description={t("contactPage.faq.description")}
-        buttonText={t("contactPage.faq.buttonText")}
-        buttonHref="/contact"
-        faqs={faqs ?? []}
-      />
-    </>
-  );
+            <FaqSection
+                eyebrow={t("contactPage.faq.eyebrow")}
+                titleBlack={t("contactPage.faq.titleBlack")}
+                titleOrange={t("contactPage.faq.titleOrange")}
+                description={t("contactPage.faq.description")}
+                buttonText={t("contactPage.faq.buttonText")}
+                buttonHref="/contact"
+                faqs={faqs ?? []}
+            />
+        </>
+    );
 }

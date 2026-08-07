@@ -6,12 +6,12 @@ import type { IContactUsSectionProps } from "../../interfaces/IContactUsSectionP
 import { useSettingsStore } from "../../store/settings.store";
 
 const subjects = [
-  "استفسار عام",
-  "طلب تمويل",
-  "حجز سيارة",
-  "استيراد سيارة",
-  "شكوى",
-  "أخرى"
+  { value: "general_inquiry", label: "استفسار عام" },
+  { value: "financing_request", label: "طلب تمويل" },
+  { value: "car_booking", label: "حجز سيارة" },
+  { value: "car_import", label: "استيراد سيارة" },
+  { value: "complaint", label: "شكوى" },
+  { value: "other", label: "أخرى" },
 ];
 
 export default function ContactUsSection({
@@ -35,16 +35,26 @@ export default function ContactUsSection({
         }
       ];
 
-  const whatsappNumber = settings?.contact?.whatsapp
-    ? settings.contact.whatsapp.replace(/\D/g, "")
-    : "966500000000";
-  
+  const contact = settings?.contact;
+
+  const whatsappRaw = contact?.whatsapp || contact?.phone || "966500000000";
+  const whatsappNumber = whatsappRaw.replace(/\D/g, "");
+  const whatsappDisplay = contact?.whatsapp || contact?.phone || "رد فوري";
+
+  const phoneDisplay = contact?.phone || "+966 55 000 0000";
+  const phoneHref = contact?.phone ? `tel:${contact.phone.replace(/[^\d+]/g, "")}` : "tel:+966500000000";
+
+  const emailDisplay = contact?.email || "info@zadcapital.sa";
+  const emailHref = contact?.email ? `mailto:${contact.email}` : "mailto:info@zadcapital.sa";
+
+  const addressDisplay = contact?.address || "الرياض، المملكة العربية السعودية";
+
   const [values, setValues] = useState<IContactFormValues>({
     fullName: "",
     email: "",
     phone: "",
     country: "saudi-arabia",
-    subject: "استفسار عام",
+    subject: "general_inquiry",
     message: "",
   });
 
@@ -71,10 +81,11 @@ export default function ContactUsSection({
   return (
     <div className="w-full flex flex-col" dir={i18n.dir()}>
       
-      {/* 1. Hero Header Banner */}
-      <section className="w-full bg-[#0F172A] pt-16 pb-24 text-white text-center relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#EDC98E]/5 blur-[90px] rounded-full pointer-events-none" />
-        
+      {/* 1. Hero Header Banner (Top Section) */}
+      <section
+        className="w-full pt-16 pb-24 text-white text-start relative overflow-hidden bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/contact-us-hero.png')" }}
+      >
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <span className="text-[14px] font-extrabold text-[#EDC98E] uppercase tracking-wider">
             {eyebrow}
@@ -91,7 +102,7 @@ export default function ContactUsSection({
             
             {/* WhatsApp Card */}
             <a
-              href="https://wa.me/966500000000"
+              href={`https://wa.me/${whatsappNumber}`}
               target="_blank"
               rel="noreferrer"
               className="rounded-2xl bg-[#064E3B]/80 border border-[#047857]/40 p-5 flex items-center gap-4 transition hover:scale-[1.02]"
@@ -101,13 +112,13 @@ export default function ContactUsSection({
               </div>
               <div>
                 <span className="text-[12px] text-emerald-400 font-bold block">واتساب</span>
-                <strong className="text-[15px] font-black text-white block mt-0.5">رد فوري</strong>
+                <strong className="text-[15px] font-black text-white block mt-0.5" dir="ltr">{whatsappDisplay}</strong>
               </div>
             </a>
 
             {/* Phone Card */}
             <a
-              href="tel:+966500000000"
+              href={phoneHref}
               className="rounded-2xl bg-[#1E293B]/90 border border-white/5 p-5 flex items-center gap-4 transition hover:scale-[1.02]"
             >
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/5 text-[#EDC98E]">
@@ -115,13 +126,13 @@ export default function ContactUsSection({
               </div>
               <div>
                 <span className="text-[12px] text-white/50 font-bold block">اتصل الآن</span>
-                <strong className="text-[15px] font-black text-white block mt-0.5">+966 55 000 0000</strong>
+                <strong className="text-[15px] font-black text-white block mt-0.5" dir="ltr">{phoneDisplay}</strong>
               </div>
             </a>
 
             {/* Email Card */}
             <a
-              href="mailto:info@zadcapital.sa"
+              href={emailHref}
               className="rounded-2xl bg-[#1E293B]/90 border border-white/5 p-5 flex items-center gap-4 transition hover:scale-[1.02]"
             >
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/5 text-white">
@@ -129,7 +140,7 @@ export default function ContactUsSection({
               </div>
               <div>
                 <span className="text-[12px] text-white/50 font-bold block">البريد الإلكتروني</span>
-                <strong className="text-[15px] font-black text-white block mt-0.5">info@zadcapital.sa</strong>
+                <strong className="text-[15px] font-black text-white block mt-0.5">{emailDisplay}</strong>
               </div>
             </a>
 
@@ -140,7 +151,7 @@ export default function ContactUsSection({
               </div>
               <div>
                 <span className="text-[12px] text-white/50 font-bold block">الموقع</span>
-                <strong className="text-[15px] font-black text-white block mt-0.5">الرياض، السعودية</strong>
+                <strong className="text-[15px] font-black text-white block mt-0.5">{addressDisplay}</strong>
               </div>
             </div>
 
@@ -148,13 +159,13 @@ export default function ContactUsSection({
         </div>
       </section>
 
-      {/* 2. Main Layout Section */}
+      {/* 2. Main Layout Section (Bottom Section) */}
       <section className="w-full bg-[#F3F4F6] pb-16 pt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
             
-            {/* Form Column (Right on desktop) */}
-            <div className="lg:col-span-8 order-1 lg:order-2">
+            {/* Form Column ("أرسل لنا رسالة" - First column) */}
+            <div className="lg:col-span-8">
               <form
                 onSubmit={handleSubmit}
                 className="rounded-3xl border border-[#E5E9F0] bg-white shadow-sm overflow-hidden text-start"
@@ -226,19 +237,19 @@ export default function ContactUsSection({
                     </label>
                     <div className="flex flex-wrap gap-2">
                       {subjects.map((subj) => {
-                        const isSelected = values.subject === subj;
+                        const isSelected = values.subject === subj.value;
                         return (
                           <button
-                            key={subj}
+                            key={subj.value}
                             type="button"
-                            onClick={() => updateField("subject", subj)}
+                            onClick={() => updateField("subject", subj.value)}
                             className={`px-4 py-2 text-[13px] font-bold rounded-xl transition-all duration-300 border ${
                               isSelected
                                 ? "bg-[#0F172A] border-[#0F172A] text-white scale-105"
                                 : "bg-[#F8FAFC] border-[#E2E8F0] text-gray-500 hover:border-gray-400"
                             }`}
                           >
-                            {subj}
+                            {subj.label}
                           </button>
                         );
                       })}
@@ -278,7 +289,7 @@ export default function ContactUsSection({
                       </span>
                     </button>
                     <a
-                      href={`https://wa.me/${whatsappNumber}?text=استفسار من نموذج الاتصال بشأن موضوع: ${encodeURIComponent(values.subject)}`}
+                      href={`https://wa.me/${whatsappNumber}?text=استفسار من نموذج الاتصال بشأن موضوع: ${encodeURIComponent(subjects.find((s) => s.value === values.subject)?.label || values.subject)}`}
                       target="_blank"
                       rel="noreferrer"
                       className="h-[50px] px-6 bg-[#25D366] text-white text-[15px] font-extrabold rounded-xl flex items-center justify-center gap-2 transition hover:bg-[#20ba59] hover:scale-[1.01] active:scale-95 shadow-sm"
@@ -291,8 +302,8 @@ export default function ContactUsSection({
               </form>
             </div>
 
-            {/* Sidebar Column (Left on desktop) */}
-            <div className="lg:col-span-4 order-2 lg:order-1 flex flex-col gap-6 text-start">
+            {/* Sidebar Column (Maps & Working Hours - Second column) */}
+            <div className="lg:col-span-4 flex flex-col gap-6 text-start">
               {branches.map((branch, index) => (
                 <div key={index} className="flex flex-col gap-6 w-full">
                   {/* Map Card */}
