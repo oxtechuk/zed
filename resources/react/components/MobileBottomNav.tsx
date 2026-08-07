@@ -28,7 +28,7 @@ export default function MobileBottomNav() {
         dir={direction}
         className="fixed bottom-0 left-0 right-0 z-50 block md:hidden"
       >
-        <div className="relative mx-4 mb-4 flex h-[68px] items-center justify-around rounded-[24px] bg-white/95 backdrop-blur-md px-2 shadow-[0_10px_35px_rgba(0,0,0,0.08)] border border-slate-100/80">
+        <div className="relative mx-4 mb-4 flex h-[72px] items-center justify-around rounded-[24px] bg-[#0F172A]/90 backdrop-blur-lg px-2 shadow-[0_20px_50px_rgba(15,23,42,0.3)] border border-white/10">
           {mobileNavItems.map((item) => {
             const Icon = item.icon;
 
@@ -52,22 +52,22 @@ export default function MobileBottomNav() {
                 >
                   <div
                     className={`transition-all duration-300 ${isActive
-                        ? "text-[var(--brand-primary-color)] scale-110 -translate-y-0.5"
-                        : "text-[#9CA3AF] hover:text-slate-600"
+                        ? "text-[#EDC98E] scale-110 -translate-y-1"
+                        : "text-slate-400 hover:text-white"
                       }`}
                   >
                     <Icon size={22} strokeWidth={2} />
                   </div>
 
                   <span
-                    className={`text-[10px] font-bold mt-1 transition-all duration-300 ${isActive ? "text-[var(--brand-primary-color)]" : "text-[#9CA3AF]"
+                    className={`text-[10px] font-bold mt-1 transition-all duration-300 ${isActive ? "text-[#EDC98E]" : "text-slate-400"
                       }`}
                   >
                     {t(item.labelKey)}
                   </span>
 
                   {isActive && (
-                    <span className="absolute bottom-1.5 w-1.5 h-1.5 rounded-full bg-[var(--brand-primary-color)] shadow-[0_0_8px_var(--brand-primary-color)] animate-pulse" />
+                    <span className="absolute bottom-1 w-1 h-1 rounded-full bg-[#EDC98E] shadow-[0_0_8px_#EDC98E] animate-pulse" />
                   )}
                 </button>
               );
@@ -77,22 +77,22 @@ export default function MobileBottomNav() {
               <NavLink key={item.to} to={item.to} className={baseItemClass}>
                 <div
                   className={`transition-all duration-300 ${isActive
-                      ? "text-[var(--brand-primary-color)] scale-110 -translate-y-0.5"
-                      : "text-[#9CA3AF] hover:text-slate-600"
+                      ? "text-[#EDC98E] scale-110 -translate-y-1"
+                      : "text-slate-400 hover:text-white"
                     }`}
                 >
                   <Icon size={22} strokeWidth={2} />
                 </div>
 
                 <span
-                  className={`text-[10px] font-bold mt-1 transition-all duration-300 ${isActive ? "text-[var(--brand-primary-color)]" : "text-[#9CA3AF]"
+                  className={`text-[10px] font-bold mt-1 transition-all duration-300 ${isActive ? "text-[#EDC98E]" : "text-slate-400"
                     }`}
                 >
                   {t(item.labelKey)}
                 </span>
 
                 {isActive && (
-                  <span className="absolute bottom-1.5 w-1.5 h-1.5 rounded-full bg-[var(--brand-primary-color)] shadow-[0_0_8px_var(--brand-primary-color)] animate-pulse" />
+                  <span className="absolute bottom-1 w-1 h-1 rounded-full bg-[#EDC98E] shadow-[0_0_8px_#EDC98E] animate-pulse" />
                 )}
               </NavLink>
             );

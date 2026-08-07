@@ -210,6 +210,66 @@
                             </div>
                             @endif
 
+                            @if($booking->calculatorLead && !empty($booking->calculatorLead->details))
+                                @php
+                                    $leadDetails = $booking->calculatorLead->details;
+                                @endphp
+                                <div class="p-3 mb-3 rounded-4" style="background:#F0FDF4; border:1px solid #BBF7D0;">
+                                    <div class="fw-bold text-success mb-2" style="font-size:13.5px;">
+                                        <i class="bi bi-wallet2 me-1"></i> {{ __('تفاصيل الملاءة المالية والائتمانية (حاسبة التمويل)') }}
+                                    </div>
+                                    
+                                    <div class="row g-2 text-start" style="font-family:'Cairo', sans-serif;">
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong>{{ __('الراتب الشهري') }}:</strong> {{ number_format($leadDetails['salary'] ?? 0) }} {{ __('ريال') }}
+                                        </div>
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong>{{ __('الالتزامات الشهريّة') }}:</strong> {{ number_format($leadDetails['monthly_obligations'] ?? 0) }} {{ __('ريال') }}
+                                        </div>
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong>{{ __('جهة العمل') }}:</strong> 
+                                            @php
+                                                $empTypes = [
+                                                    'government' => 'حكومي',
+                                                    'semi-government' => 'شبه حكومي',
+                                                    'private' => 'قطاع خاص',
+                                                    'retired' => 'متقاعد',
+                                                ];
+                                                $empKey = $leadDetails['employer_type'] ?? '';
+                                                $empVal = $empTypes[$empKey] ?? $empKey ?: '—';
+                                            @endphp
+                                            {{ $empVal }}
+                                        </div>
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong>{{ __('مدة الخدمة') }}:</strong> {{ $leadDetails['years_of_service'] ?? '—' }} {{ __('سنة') }}
+                                        </div>
+                                        
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong>{{ __('تمويل شخصي') }}:</strong> {{ ($leadDetails['has_personal_loan'] ?? false) ? __('نعم') : __('لا') }}
+                                        </div>
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong>{{ __('تمويل عقاري') }}:</strong> {{ ($leadDetails['has_mortgage_loan'] ?? false) ? __('نعم') : __('لا') }}
+                                        </div>
+                                        
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong>{{ __('تعثر في سمة') }}:</strong> 
+                                            <span class="{{ ($leadDetails['has_simah_default'] ?? false) ? 'text-danger fw-bold' : '' }}">
+                                                {{ ($leadDetails['has_simah_default'] ?? false) ? __('نعم') : __('لا') }}
+                                            </span>
+                                        </div>
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong>{{ __('مخالفات مرورية') }}:</strong> {{ ($leadDetails['has_traffic_violations'] ?? false) ? __('نعم') : __('لا') }}
+                                        </div>
+
+                                        @if(!empty($leadDetails['preferred_color']))
+                                        <div class="col-12 text-success mt-2 pt-2 border-top" style="font-size:12px;border-top-style:dashed!important;">
+                                            <strong>{{ __('اللون المفضل للعميل') }}:</strong> {{ $leadDetails['preferred_color'] }}
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+
                             <div class="d-flex justify-content-between py-2 align-items-center">
                                 <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('الموظف المسؤول') }}</span>
                                 <span style="font-size:13px;font-weight:700;color:var(--crm-text);">{{ $booking->employee->name ?? __('غير معين') }}</span>
