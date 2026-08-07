@@ -135,6 +135,7 @@ export default function CarDetailsPage() {
         })}
       </script>
       <CarDetailsHero
+        id={car.id}
         title={car.name}
         description={car.description}
         mainImage={car.main_image}

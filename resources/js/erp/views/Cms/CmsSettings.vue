@@ -271,5 +271,5 @@ onMounted(fetchSettings);
 .border-bottom-primary { border-bottom: 3px solid #EDC98E1A; }
 .rounded-lg { border-radius: 12px; }
 .cursor-pointer { cursor: pointer; }
-.highlight { color: rgba(235, 94, 40, 1); }
+.highlight { color: #14234d; }
 </style>

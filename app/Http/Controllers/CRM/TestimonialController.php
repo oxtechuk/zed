@@ -11,9 +11,10 @@ class TestimonialController extends Controller
 {
     public function index()
     {
-        $testimonials = Testimonial::all();
+        $textTestimonials = Testimonial::where('type', 'text')->latest()->get();
+        $videoTestimonials = Testimonial::where('type', 'video')->latest()->get();
 
-        return view('crm.settings.testimonials.index', compact('testimonials'));
+        return view('crm.settings.testimonials.index', compact('textTestimonials', 'videoTestimonials'));
     }
 
     /**
@@ -34,6 +35,7 @@ class TestimonialController extends Controller
             'title' => 'nullable|array',
             'content' => 'required|array',
             'rating' => 'required|integer|min:1|max:5',
+            'type' => 'required|string|in:text,video',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'review_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'review_video' => 'nullable|file|mimes:mp4,mov,ogg,qt,webm|max:20480',
@@ -89,6 +91,7 @@ class TestimonialController extends Controller
             'title' => 'nullable|array',
             'content' => 'required|array',
             'rating' => 'required|integer|min:1|max:5',
+            'type' => 'required|string|in:text,video',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'review_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'review_video' => 'nullable|file|mimes:mp4,mov,ogg,qt,webm|max:20480',

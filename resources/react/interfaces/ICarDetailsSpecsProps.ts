@@ -18,8 +18,8 @@ export interface ITab {
 }
 
 export interface ICarDetailsSpecsProps {
-  specifications: FeatureItem[];
-  featuresList: FeatureItem[];
+  specifications?: FeatureItem[];
+  featuresList?: FeatureItem[];
   safetyFeatures?: FeatureItem[];
   specs?: Record<string, string | null>;
   availabilityStatus?: string;

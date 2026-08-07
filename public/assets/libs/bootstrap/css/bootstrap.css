@@ -94,7 +94,7 @@
   --bs-tertiary-bg: #f8f9fa;
   --bs-tertiary-bg-rgb: 248, 249, 250;
   --bs-heading-color: inherit;
-  --bs-link-color: rgba(235, 94, 40, 1);
+  --bs-link-color: #14234d;
   --bs-link-color-rgb: 13, 110, 253;
   --bs-link-decoration: underline;
   --bs-link-hover-color: #0a58ca;
@@ -2773,8 +2773,8 @@ textarea.form-control-lg {
 }
 
 .form-check-input:checked {
-  background-color: rgba(235, 94, 40, 1);
-  border-color: rgba(235, 94, 40, 1);
+  background-color: #14234d;
+  border-color: #14234d;
 }
 
 .form-check-input:checked[type=checkbox] {
@@ -2786,8 +2786,8 @@ textarea.form-control-lg {
 }
 
 .form-check-input[type=checkbox]:indeterminate {
-  background-color: rgba(235, 94, 40, 1);
-  border-color: rgba(235, 94, 40, 1);
+  background-color: #14234d;
+  border-color: #14234d;
   --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e");
 }
 
@@ -2896,7 +2896,7 @@ textarea.form-control-lg {
   margin-top: -0.25rem;
   -webkit-appearance: none;
   appearance: none;
-  background-color: rgba(235, 94, 40, 1);
+  background-color: #14234d;
   border: 0;
   border-radius: 1rem;
   -webkit-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -2929,7 +2929,7 @@ textarea.form-control-lg {
   height: 1rem;
   -moz-appearance: none;
   appearance: none;
-  background-color: rgba(235, 94, 40, 1);
+  background-color: #14234d;
   border: 0;
   border-radius: 1rem;
   -moz-transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -3492,7 +3492,7 @@ fieldset:disabled .btn {
 .btn-primary {
   --bs-btn-color: #fff;
   --bs-btn-bg: #EDC98E1A;
-  --bs-btn-border-color: rgba(235, 94, 40, 1);
+  --bs-btn-border-color: #14234d;
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: #0b5ed7;
   --bs-btn-hover-border-color: #0a58ca;
@@ -3503,7 +3503,7 @@ fieldset:disabled .btn {
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: #EDC98E1A;
-  --bs-btn-disabled-border-color: rgba(235, 94, 40, 1);
+  --bs-btn-disabled-border-color: #14234d;
 }
 
 .btn-secondary {
@@ -3626,19 +3626,19 @@ fieldset:disabled .btn {
 }
 
 .btn-outline-primary {
-  --bs-btn-color: rgba(235, 94, 40, 1);
-  --bs-btn-border-color: rgba(235, 94, 40, 1);
+  --bs-btn-color: #14234d;
+  --bs-btn-border-color: #14234d;
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: #EDC98E1A;
-  --bs-btn-hover-border-color: rgba(235, 94, 40, 1);
+  --bs-btn-hover-border-color: #14234d;
   --bs-btn-focus-shadow-rgb: 13, 110, 253;
   --bs-btn-active-color: #fff;
   --bs-btn-active-bg: #EDC98E1A;
-  --bs-btn-active-border-color: rgba(235, 94, 40, 1);
+  --bs-btn-active-border-color: #14234d;
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: rgba(235, 94, 40, 1);
+  --bs-btn-disabled-color: #14234d;
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: rgba(235, 94, 40, 1);
+  --bs-btn-disabled-border-color: #14234d;
   --bs-gradient: none;
 }
 
@@ -5378,7 +5378,7 @@ fieldset:disabled .btn {
   --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
   --bs-pagination-active-color: #fff;
   --bs-pagination-active-bg: #EDC98E1A;
-  --bs-pagination-active-border-color: rgba(235, 94, 40, 1);
+  --bs-pagination-active-border-color: #14234d;
   --bs-pagination-disabled-color: var(--bs-secondary-color);
   --bs-pagination-disabled-bg: var(--bs-secondary-bg);
   --bs-pagination-disabled-border-color: var(--bs-border-color);
@@ -5670,7 +5670,7 @@ fieldset:disabled .btn {
   --bs-list-group-disabled-bg: var(--bs-body-bg);
   --bs-list-group-active-color: #fff;
   --bs-list-group-active-bg: #EDC98E1A;
-  --bs-list-group-active-border-color: rgba(235, 94, 40, 1);
+  --bs-list-group-active-border-color: #14234d;
   display: flex;
   flex-direction: column;
   padding-left: 0;

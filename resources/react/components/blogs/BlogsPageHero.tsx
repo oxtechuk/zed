@@ -32,20 +32,20 @@ export default function BlogsPageHero({
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           {categories.map((category) => {
-            const isActive = category.value === activeCategory;
+            const isActive = category.slug === activeCategory;
 
             return (
               <button
-                key={category.value}
+                key={category.slug}
                 type="button"
-                onClick={() => onCategoryChange?.(category.value)}
+                onClick={() => onCategoryChange?.(category.slug)}
                 className={`h-[40px] rounded-full px-6 text-[14px] font-bold transition ${
                   isActive
                     ? "bg-[var(--brand-secondary-color)] text-white"
                     : "bg-white text-[#6B7280] hover:bg-[var(--brand-secondary-color)] hover:text-white"
                 }`}
               >
-                {category.label}
+                {category.name}
               </button>
             );
           })}

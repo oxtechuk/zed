@@ -13,10 +13,35 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $status = $request->get('status');
-        $taskQuery = Task::query()->when(! \auth()->user()->hasRole('admin'), function ($q) {
+        $view = $request->get('view');
+        $from = $request->get('from');
+        $to = $request->get('to');
+
+        if ($from || $to) {
+            $view = $view ?: 'all';
+        } else {
+            $view = $view ?: 'today';
+        }
+
+        $baseQuery = Task::query()->when(! \auth()->user()->hasRole('admin'), function ($q) {
             $q->where('assigned_to', \auth()->id());
         });
-        $tasks = $taskQuery->with(['assignedTo', 'createdBy'])
+
+        $taskQuery = clone $baseQuery;
+
+        if ($view === 'today') {
+            $taskQuery->whereDate('due_date', today());
+        }
+
+        if ($from) {
+            $taskQuery->whereDate('due_date', '>=', $from);
+        }
+
+        if ($to) {
+            $taskQuery->whereDate('due_date', '<=', $to);
+        }
+
+        $tasks = (clone $taskQuery)->with(['assignedTo', 'createdBy'])
             ->when($status, fn ($q) => $q->where('status', $status))
             ->orderByRaw("FIELD(priority, 'high', 'medium', 'low')")
             ->latest()
@@ -25,13 +50,13 @@ class TaskController extends Controller
         $employees = Employee::where('is_active', true)->get();
 
         $counts = [
-            'new' => $taskQuery->where('status', 'new')->count(),
-            'in_progress' => $taskQuery->where('status', 'in_progress')->count(),
-            'done' => $taskQuery->where('status', 'done')->count(),
-            'total' => $taskQuery->count(),
+            'new' => (clone $taskQuery)->where('status', 'new')->count(),
+            'in_progress' => (clone $taskQuery)->where('status', 'in_progress')->count(),
+            'done' => (clone $taskQuery)->where('status', 'done')->count(),
+            'total' => (clone $taskQuery)->count(),
         ];
 
-        return view('crm.tasks.index', compact('tasks', 'employees', 'counts', 'status'));
+        return view('crm.tasks.index', compact('tasks', 'employees', 'counts', 'status', 'view', 'from', 'to'));
     }
 
     public function store(Request $request)

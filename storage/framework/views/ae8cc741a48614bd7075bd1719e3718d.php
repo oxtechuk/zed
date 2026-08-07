@@ -1,4 +1,4 @@
-<?php $__env->startSection('title', __('تعديل سيارة') . ' | GR Motors'); ?>
+<?php $__env->startSection('title', __('تعديل سيارة') . ' | Zad Capital'); ?>
 
 <?php $__env->startSection('content'); ?>
 <div class="container-fluid" dir="<?php echo e(app()->getLocale() == 'ar' ? 'rtl' : 'ltr'); ?>">

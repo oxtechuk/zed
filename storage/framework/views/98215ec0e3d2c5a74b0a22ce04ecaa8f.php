@@ -1,4 +1,4 @@
-<?php $__env->startSection('title', __('شاشة الموظف') . ' | GR Motors'); ?>
+<?php $__env->startSection('title', __('شاشة الموظف') . ' | Zad Capital'); ?>
 
 <?php $__env->startSection('content'); ?>
 <div class="container-fluid" dir="<?php echo e(app()->getLocale() == 'ar' ? 'rtl' : 'ltr'); ?>">
@@ -27,7 +27,7 @@
     ?>
 
     
-    <div class="rounded-4 mb-4 p-4 p-md-4" style="background:linear-gradient(135deg,var(--crm-orange) 0%,var(--crm-orange-dark) 100%);box-shadow:0 8px 20px rgba(249,115,22,0.25);">
+    <div class="rounded-4 mb-4 p-4 p-md-4" style="background:#14234d;box-shadow:0 8px 20px rgba(249,115,22,0.25);">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div>
                 <h4 class="mb-1 fw-bold text-white">👋 <?php echo e(__('أهلاً بك')); ?>, <?php echo e(auth()->user()?->name); ?></h4>

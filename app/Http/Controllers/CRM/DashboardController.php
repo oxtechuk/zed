@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $sort = $request->get('sort', 'priority') === 'recent' ? 'recent' : 'priority';
 
         $baseBookings = Booking::with('car.brand')
-            ->when(! $isAdmin, fn (Builder $q) => $q->where('assigned_to', $employee->id))
+            ->where('assigned_to', $employee->id)
             ->when($from, fn (Builder $q) => $q->whereBetween('created_at', [$from, $to]))
             ->when($search !== '', function (Builder $q) use ($search) {
                 $q->where(function (Builder $q) use ($search) {
@@ -47,7 +47,7 @@ class DashboardController extends Controller
         }
         $requests = $requestsQuery->limit(12)->get();
 
-        $baseTasks = Task::query()->when(! $isAdmin, fn (Builder $q) => $q->where('assigned_to', $employee->id));
+        $baseTasks = Task::query()->where('assigned_to', $employee->id);
         $today = now()->toDateString();
 
         $tasksToday = (clone $baseTasks)->whereDate('due_date', $today)

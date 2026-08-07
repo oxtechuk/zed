@@ -7,4 +7,5 @@ export interface ITestimonialItem {
   rating: number;
   reviewImage?: string;
   reviewVideo?: string;
+  type?: string;
 }

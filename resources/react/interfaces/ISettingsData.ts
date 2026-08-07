@@ -1,3 +1,5 @@
+import type { IAboutBranch } from "./IAboutBranch";
+
 export interface ISocialMediaItem {
   icon: string;
   link: string;
@@ -21,4 +23,5 @@ export interface ISettingsData {
   footer_description?: string;
   contact: IContactInfo; 
   social_media: ISocialMediaItem[];
+  about_branches?: IAboutBranch[];
 }
