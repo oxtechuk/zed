@@ -49,6 +49,87 @@
         </div>
     </div>
 
+    @if($booking->status === 'waiting_supervisor_approval' && $booking->proposed_status)
+    <div class="card border-0 shadow-sm rounded-4 mb-3" style="border: 2px solid var(--crm-orange) !important;">
+        <div class="card-body p-4">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="rounded-circle p-2 bg-warning bg-opacity-25 text-warning d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                    <i class="bi bi-shield-lock fs-4"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold mb-1" style="color: var(--crm-text);">
+                        {{ __('بانتظار اعتماد إغلاق الطلب من المشرف') }}
+                    </h6>
+                    <p class="text-muted small mb-0">
+                        {{ __('يقوم الموظف المسؤول بطلب إغلاق هذا الطلب إلى') }} 
+                        <strong class="text-danger">"{{ \App\Models\Booking::STATUSES[$booking->proposed_status]['label'] ?? $booking->proposed_status }}"</strong>.
+                    </p>
+                </div>
+            </div>
+
+            @if(auth('employee')->user()->isAdmin())
+            <div class="d-flex flex-wrap gap-2">
+                {{-- Approve form --}}
+                <form action="{{ route('crm.bookings.approve', $booking) }}" method="POST" class="m-0">
+                    @csrf @method('PATCH')
+                    <button type="submit" class="btn btn-success py-2.5 px-4 fw-bold rounded-3 shadow-xs">
+                        <i class="bi bi-check2-circle me-1"></i> {{ __('اعتماد الإغلاق') }}
+                    </button>
+                </form>
+
+                {{-- Reject button (opens modal) --}}
+                <button type="button" class="btn btn-danger py-2.5 px-4 fw-bold rounded-3 shadow-xs" data-bs-toggle="modal" data-bs-target="#rejectStatusModal">
+                    <i class="bi bi-reply-all me-1"></i> {{ __('رفض وإعادة الطلب لمرحلة أخرى') }}
+                </button>
+            </div>
+            @else
+            <div class="alert alert-light border m-0 text-secondary" style="font-size: 13px; font-weight: 700;">
+                <i class="bi bi-info-circle me-1"></i>
+                {{ __('فقط المشرف يملك الصلاحية لاعتماد هذا الإغلاق أو إعادة توجيه الطلب.') }}
+            </div>
+            @endif
+        </div>
+    </div>
+
+    @if(auth('employee')->user()->isAdmin())
+    <!-- Reject / Return to stage Modal -->
+    <div class="modal fade" id="rejectStatusModal" tabindex="-1" aria-labelledby="rejectStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="rejectStatusModalLabel">{{ __('رفض الإغلاق وإعادة الطلب') }}</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('crm.bookings.reject', $booking) }}" method="POST">
+                    @csrf @method('PATCH')
+                    <div class="modal-body py-3">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">{{ __('المرحلة البديلة (إعادة إلى)') }} <span class="text-danger">*</span></label>
+                            <select name="status" class="form-select bg-light border-0 shadow-none" required style="border-radius:10px; font-size:14px; padding:10px 14px;">
+                                <option value="">{{ __('اختر المرحلة النشطة...') }}</option>
+                                @foreach(\App\Models\Booking::STATUSES as $key => $s)
+                                    @if($s['group'] === 'active' && ($s['is_close'] ?? false) === false)
+                                        <option value="{{ $key }}">{{ $s['label'] }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">{{ __('سبب رفض الإغلاق / الملاحظة') }} <span class="text-danger">*</span></label>
+                            <textarea name="note" class="form-control bg-light border-0 shadow-none" rows="4" required style="border-radius:10px; font-size:14px;" placeholder="{{ __('اكتب هنا سبب إرجاع الطلب أو التوجيهات...') }}"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light py-2 px-3 fw-bold rounded-3" data-bs-dismiss="modal">{{ __('إلغاء') }}</button>
+                        <button type="submit" class="btn btn-danger py-2 px-3 fw-bold rounded-3">{{ __('إعادة الطلب') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+    @endif
+
     {{-- ===== Tabs ===== --}}
     <ul class="nav nav-tabs mb-3" style="border-bottom:1px solid var(--crm-border);" role="tablist">
         <li class="nav-item">
@@ -114,6 +195,21 @@
                                 <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('حالة الطلب الحالية') }}</span>
                                 <span class="status-dot {{ $dotClass }}">{{ $booking->status_label }}</span>
                             </div>
+                            
+                            @if($booking->status === 'pending')
+                            <div class="p-3 mb-3 rounded-3" style="background:#FFF9E6; border:1px solid #FFE58F;">
+                                <div class="fw-bold text-warning-dark mb-1" style="font-size:13px;">
+                                    <i class="bi bi-clock-history me-1"></i> {{ __('تفاصيل قيد الانتظار') }}
+                                </div>
+                                <div class="mb-1" style="font-size:12px;color:#5c3e00;">
+                                    <strong>{{ __('سبب الانتظار') }}:</strong> {{ $booking->pending_reason }}
+                                </div>
+                                <div style="font-size:12px;color:#5c3e00;">
+                                    <strong>{{ __('موعد المتابعة') }}:</strong> {{ $booking->follow_up_at?->format('d/m/Y H:i') }} ({{ $booking->follow_up_at?->diffForHumans() }})
+                                </div>
+                            </div>
+                            @endif
+
                             <div class="d-flex justify-content-between py-2 align-items-center">
                                 <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('الموظف المسؤول') }}</span>
                                 <span style="font-size:13px;font-weight:700;color:var(--crm-text);">{{ $booking->employee->name ?? __('غير معين') }}</span>
@@ -140,14 +236,25 @@
                             {{-- تغيير الحالة --}}
                             <div class="mt-3 p-3 rounded-3" style="background:#F8F9FC;border:1px solid var(--crm-border);">
                                 <label style="font-size:12px;font-weight:700;margin-bottom:8px;display:block;">{{ __('تغيير حالة الطلب') }}</label>
-                                <form action="{{ route('crm.bookings.status', $booking) }}" method="POST" class="d-flex align-items-center gap-2 w-100">
+                                <form action="{{ route('crm.bookings.status', $booking) }}" method="POST" class="d-flex align-items-center gap-2 w-100" id="bookingStatusForm">
                                     @csrf @method('PATCH')
-                                    <select name="status" class="form-select form-select-sm border-0 shadow-none" style="background:#fff;border-radius:8px;font-size:13px;font-weight:700;">
-                                        @foreach($statuses as $key => $s)
-                                        <option value="{{ $key }}" {{ $booking->status === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
-                                        @endforeach
+                                    <select name="status" id="bookingStatusSelect" class="form-select form-select-sm border-0 shadow-none" style="background:#fff;border-radius:8px;font-size:13px;font-weight:700;" {{ ($booking->status === 'waiting_supervisor_approval' && ! auth('employee')->user()->isAdmin()) ? 'disabled' : '' }}>
+                                        <optgroup label="{{ __('الحالات الأساسية (Active)') }}">
+                                            @foreach($statuses as $key => $s)
+                                                @if($s['group'] === 'active')
+                                                <option value="{{ $key }}" {{ $booking->status === $key ? 'selected' : '' }} data-group="{{ $s['group'] }}" data-close="{{ ($s['is_close'] ?? false) ? '1' : '0' }}">{{ $s['label'] }}</option>
+                                                @endif
+                                            @endforeach
+                                        </optgroup>
+                                        <optgroup label="{{ __('الحالات الخاسرة (Closed - Lost)') }}">
+                                            @foreach($statuses as $key => $s)
+                                                @if($s['group'] === 'lost')
+                                                <option value="{{ $key }}" {{ $booking->status === $key ? 'selected' : '' }} data-group="{{ $s['group'] }}" data-close="{{ ($s['is_close'] ?? false) ? '1' : '0' }}">{{ $s['label'] }}</option>
+                                                @endif
+                                            @endforeach
+                                        </optgroup>
                                     </select>
-                                    <button type="submit" class="btn btn-sm fw-bold rounded-2 text-white flex-shrink-0" style="background:var(--crm-orange);font-size:12px;white-space:nowrap;">
+                                    <button type="submit" class="btn btn-sm fw-bold rounded-2 text-white flex-shrink-0" style="background:var(--crm-orange);font-size:12px;white-space:nowrap;" {{ ($booking->status === 'waiting_supervisor_approval' && ! auth('employee')->user()->isAdmin()) ? 'disabled' : '' }}>
                                         {{ __('حفظ') }}
                                     </button>
                                 </form>
@@ -670,6 +777,73 @@
             </div>
         </div>
     </div>
+    <!-- Pending Details Modal -->
+    <div class="modal fade" id="pendingStatusModal" tabindex="-1" aria-labelledby="pendingStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="pendingStatusModalLabel">{{ __('تفاصيل قيد الانتظار') }}</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('crm.bookings.status', $booking) }}" method="POST">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="status" value="pending">
+                    <div class="modal-body py-3">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">{{ __('سبب الانتظار') }} <span class="text-danger">*</span></label>
+                            <input type="text" name="pending_reason" class="form-control bg-light border-0 shadow-none" required style="border-radius:10px; font-size:14px; padding:10px 14px;" placeholder="{{ __('مثال: العميل خارج المملكة، انتظار الراتب...') }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">{{ __('موعد وتاريخ إعادة المتابعة') }} <span class="text-danger">*</span></label>
+                            <input type="datetime-local" name="follow_up_at" class="form-control bg-light border-0 shadow-none" required style="border-radius:10px; font-size:14px; padding:10px 14px;">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">{{ __('ملاحظة تفصيلية') }} <span class="text-danger">*</span></label>
+                            <textarea name="note" class="form-control bg-light border-0 shadow-none" rows="3" required style="border-radius:10px; font-size:14px;" placeholder="{{ __('اكتب هنا تفاصيل إضافية للمتابعة...') }}"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light py-2 px-3 fw-bold rounded-3" data-bs-dismiss="modal">{{ __('إلغاء') }}</button>
+                        <button type="submit" class="btn btn-primary py-2 px-3 fw-bold rounded-3">{{ __('حفظ وتعديل') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request Close Approval Modal -->
+    <div class="modal fade" id="requestCloseModal" tabindex="-1" aria-labelledby="requestCloseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="requestCloseModalLabel">{{ __('طلب إغلاق الطلب') }}</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('crm.bookings.status', $booking) }}" method="POST">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="status" id="requestCloseTargetStatus">
+                    <div class="modal-body py-3">
+                        <div class="alert alert-warning border-0 rounded-3 text-warning-dark" style="font-size: 13px;">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                            {{ __('سيتم إرسال هذا الطلب إلى المشرف للاعتماد. لا يمكنك إغلاق الطلب مباشرة.') }}
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold small text-muted">{{ __('المرحلة المطلوبة') }}</label>
+                            <input type="text" id="requestCloseTargetLabel" class="form-control bg-light border-0 shadow-none fw-bold" readonly style="border-radius:10px; font-size:14px;">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">{{ __('ملاحظة أو تبرير الإغلاق للمشرف') }} <span class="text-danger">*</span></label>
+                            <textarea name="note" class="form-control bg-light border-0 shadow-none" rows="3" required style="border-radius:10px; font-size:14px;" placeholder="{{ __('اكتب هنا تبرير الإغلاق أو الملاحظات...') }}"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light py-2 px-3 fw-bold rounded-3" data-bs-dismiss="modal">{{ __('إلغاء') }}</button>
+                        <button type="submit" class="btn btn-primary py-2 px-3 fw-bold rounded-3">{{ __('إرسال الطلب') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     @endcan
 
 </div>
@@ -690,6 +864,31 @@ document.getElementById('editTaskModal')?.addEventListener('show.bs.modal', func
     document.getElementById('editTaskStatus').value = btn.getAttribute('data-task-status') || 'new';
     document.getElementById('editTaskDue').value = btn.getAttribute('data-task-due') || '';
     document.getElementById('editTaskAssigned').value = btn.getAttribute('data-task-assigned') || '';
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const statusForm = document.getElementById('bookingStatusForm');
+    const statusSelect = document.getElementById('bookingStatusSelect');
+    if (statusForm && statusSelect) {
+        statusForm.addEventListener('submit', function(e) {
+            const selectedOpt = statusSelect.options[statusSelect.selectedIndex];
+            const targetStatus = statusSelect.value;
+            const isClose = selectedOpt.getAttribute('data-close') === '1';
+            const isAdmin = {{ auth('employee')->user()->isAdmin() ? 'true' : 'false' }};
+
+            if (targetStatus === 'pending') {
+                e.preventDefault();
+                const modal = new bootstrap.Modal(document.getElementById('pendingStatusModal'));
+                modal.show();
+            } else if (isClose && !isAdmin) {
+                e.preventDefault();
+                document.getElementById('requestCloseTargetStatus').value = targetStatus;
+                document.getElementById('requestCloseTargetLabel').value = selectedOpt.text;
+                const modal = new bootstrap.Modal(document.getElementById('requestCloseModal'));
+                modal.show();
+            }
+        });
+    }
 });
 </script>
 @endsection

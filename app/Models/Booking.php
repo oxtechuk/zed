@@ -13,26 +13,152 @@ class Booking extends Model
         'down_payment', 'duration_years', 'interest_rate', 'monthly_installment',
         'total_price', 'notes', 'status', 'source', 'last_contacted_at',
         'booking_type', 'location', 'calculator_bank_id', 'balloon_payment', 'offer_notes',
+        'pending_reason', 'follow_up_at', 'proposed_status',
     ];
 
     protected $casts = [
         'last_contacted_at' => 'datetime',
+        'follow_up_at' => 'datetime',
     ];
 
-    const BOOKING_TYPES = ['test_drive', 'purchase', 'inquiry'];
+    public const BOOKING_TYPES = ['test_drive', 'purchase', 'inquiry'];
 
-    const BOOKING_TYPES_LABELS = [
+    public const BOOKING_TYPES_LABELS = [
         'test_drive' => 'تجربة قيادة',
         'purchase' => 'شراء',
         'inquiry' => 'استفسار',
     ];
 
-    const STATUSES = [
-        'new' => ['label' => 'جديد',          'color' => 'primary'],
-        'contacted' => ['label' => 'تم التواصل',     'color' => 'info'],
-        'interested' => ['label' => 'مهتم',           'color' => 'warning'],
-        'rejected' => ['label' => 'مرفوض',          'color' => 'danger'],
-        'sold' => ['label' => 'تم البيع ✓',     'color' => 'success'],
+    public const STATUS_GROUPS = [
+        'active' => [
+            'label' => 'الحالات الأساسية (Active)',
+            'color' => '#1877F2',
+        ],
+        'lost' => [
+            'label' => 'الحالات الخاسرة (Closed - Lost)',
+            'color' => '#ED5E5E',
+        ],
+    ];
+
+    public const STATUSES = [
+        // Active Group
+        'new' => [
+            'label' => 'جديد',
+            'color' => 'primary',
+            'group' => 'active',
+        ],
+        'contacted_no_answer' => [
+            'label' => 'تم الاتصال ولم يتم الرد',
+            'color' => 'info',
+            'group' => 'active',
+        ],
+        'recontact_client' => [
+            'label' => 'إعادة التواصل مع العميل',
+            'color' => 'info',
+            'group' => 'active',
+        ],
+        'waiting_documents' => [
+            'label' => 'انتظار إرسال المستندات',
+            'color' => 'warning',
+            'group' => 'active',
+        ],
+        'bank_review' => [
+            'label' => 'تحت الدراسة البنكية',
+            'color' => 'warning',
+            'group' => 'active',
+        ],
+        'approved' => [
+            'label' => 'تمت الموافقة',
+            'color' => 'success',
+            'group' => 'active',
+        ],
+        'authorized' => [
+            'label' => 'التعميد تم',
+            'color' => 'success',
+            'group' => 'active',
+        ],
+        'received' => [
+            'label' => 'تم الاستلام',
+            'color' => 'success',
+            'group' => 'active',
+            'is_close' => true,
+            'is_won' => true,
+        ],
+        'pending' => [
+            'label' => 'قيد الانتظار',
+            'color' => 'secondary',
+            'group' => 'active',
+        ],
+        'waiting_supervisor_approval' => [
+            'label' => 'بانتظار اعتماد المشرف',
+            'color' => 'secondary',
+            'group' => 'active',
+        ],
+
+        // Lost Group
+        'lost_no_answer' => [
+            'label' => 'لم يتم الرد',
+            'color' => 'danger',
+            'group' => 'lost',
+            'is_close' => true,
+            'is_lost' => true,
+        ],
+        'lost_no_response' => [
+            'label' => 'عدم الاستجابة بعد التواصل',
+            'color' => 'danger',
+            'group' => 'lost',
+            'is_close' => true,
+            'is_lost' => true,
+        ],
+        'lost_wrong_info' => [
+            'label' => 'خطأ في بيانات التواصل',
+            'color' => 'danger',
+            'group' => 'lost',
+            'is_close' => true,
+            'is_lost' => true,
+        ],
+        'lost_offer_not_suitable' => [
+            'label' => 'العرض لا يناسب العميل',
+            'color' => 'danger',
+            'group' => 'lost',
+            'is_close' => true,
+            'is_lost' => true,
+        ],
+        'lost_client_cancelled' => [
+            'label' => 'إلغاء بناءً على رغبة العميل',
+            'color' => 'danger',
+            'group' => 'lost',
+            'is_close' => true,
+            'is_lost' => true,
+        ],
+        'lost_cancelled_after_approval' => [
+            'label' => 'كنسل بعد الموافقة',
+            'color' => 'danger',
+            'group' => 'lost',
+            'is_close' => true,
+            'is_lost' => true,
+        ],
+        'lost_rejected_high_liabilities' => [
+            'label' => 'مرفوض - الالتزامات مرتفعة',
+            'color' => 'danger',
+            'group' => 'lost',
+            'is_close' => true,
+            'is_lost' => true,
+        ],
+        'lost_rejected_simah' => [
+            'label' => 'مرفوض - تعثر في سمة',
+            'color' => 'danger',
+            'group' => 'lost',
+            'is_close' => true,
+            'is_lost' => true,
+        ],
+        'lost_rejected_finance_terms' => [
+            'label' => 'مرفوض - عدم انطباق شروط التمويل',
+            'color' => 'danger',
+            'group' => 'lost',
+            'is_close' => true,
+            'is_lost' => true,
+        ],
     ];
 
     protected static function booted(): void
@@ -117,6 +243,11 @@ class Booking extends Model
         return self::STATUSES[$this->status]['color'] ?? 'secondary';
     }
 
+    public function getProposedStatusLabelAttribute(): ?string
+    {
+        return self::STATUSES[$this->proposed_status]['label'] ?? null;
+    }
+
     public function scopeNew($query)
     {
         return $query->where('status', 'new');
@@ -124,11 +255,11 @@ class Booking extends Model
 
     public function scopeInProgress($query)
     {
-        return $query->whereIn('status', ['contacted', 'interested']);
+        return $query->whereNotIn('status', ['received', 'lost_no_answer', 'lost_no_response', 'lost_wrong_info', 'lost_offer_not_suitable', 'lost_client_cancelled', 'lost_cancelled_after_approval', 'lost_rejected_high_liabilities', 'lost_rejected_simah', 'lost_rejected_finance_terms']);
     }
 
     public function scopeCompleted($query)
     {
-        return $query->where('status', 'sold');
+        return $query->where('status', 'received');
     }
 }
