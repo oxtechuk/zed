@@ -47,8 +47,8 @@
                 <div class="d-flex flex-wrap gap-2 align-items-center">
                     {{-- Date --}}
                     <div style="position:relative;">
-                        <input type="date" name="date" value="{{ request('date', now()->format('Y-m-d')) }}"
-                               style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 36px 8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;">
+                        <input type="date" name="date" value="{{ request('date', now()->format('Y-m-d')) }}" lang="en"
+                               style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 36px 8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif; width: 170px; min-width: 170px;">
                         <i class="bi bi-calendar3" style="position:absolute;{{ app()->getLocale()=='ar'?'left':'right' }}:10px;top:50%;transform:translateY(-50%);color:var(--crm-text-muted);pointer-events:none;"></i>
                     </div>
                     {{-- مصرف الخدمة --}}
@@ -156,18 +156,29 @@
                             <form action="{{ route('crm.bookings.status', $b) }}" method="POST" class="m-0">
                                 @csrf @method('PATCH')
                                 @php
-                                    $dotClass = match($b->status) {
-                                        'new','pending'  => 'planned',
-                                        'in_progress'    => 'waiting',
-                                        'sold','done'    => 'done',
-                                        'rejected'       => 'late',
-                                        default          => 'confirmed',
+                                    $dotClass = match(true) {
+                                        $b->status === 'new' => 'planned',
+                                        in_array($b->status, ['pending', 'waiting_supervisor_approval']) => 'waiting',
+                                        $b->status === 'received' => 'done',
+                                        str_starts_with($b->status, 'lost_') => 'late',
+                                        default => 'confirmed',
                                     };
                                 @endphp
-                                <select name="status" class="form-select form-select-sm border-0 shadow-none status-dot {{ $dotClass }}" style="font-size:12px;font-weight:700;padding-top:4px;padding-bottom:4px;width:auto;display:inline-block;" onchange="this.form.submit()">
-                                    @foreach($statuses as $key => $s)
-                                    <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
-                                    @endforeach
+                                <select name="status" class="form-select form-select-sm border-0 shadow-none status-dot {{ $dotClass }}" style="font-size:12px;font-weight:700;padding-top:4px;padding-bottom:4px;width:auto;display:inline-block;" onchange="this.form.submit()" {{ ($b->status === 'waiting_supervisor_approval' && ! auth('employee')->user()->isAdmin()) ? 'disabled' : '' }}>
+                                    <optgroup label="{{ __('الحالات الأساسية (Active)') }}">
+                                        @foreach($statuses as $key => $s)
+                                            @if($s['group'] === 'active')
+                                            <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                                            @endif
+                                        @endforeach
+                                    </optgroup>
+                                    <optgroup label="{{ __('الحالات الخاسرة (Closed - Lost)') }}">
+                                        @foreach($statuses as $key => $s)
+                                            @if($s['group'] === 'lost')
+                                            <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                                            @endif
+                                        @endforeach
+                                    </optgroup>
                                 </select>
                             </form>
                         </td>
@@ -207,12 +218,12 @@
         <div class="d-md-none p-3">
             @forelse($bookings as $b)
             @php
-                $dotClassM = match($b->status) {
-                    'new','pending'  => 'planned',
-                    'in_progress'    => 'waiting',
-                    'sold','done'    => 'done',
-                    'rejected'       => 'late',
-                    default          => 'confirmed',
+                $dotClassM = match(true) {
+                    $b->status === 'new' => 'planned',
+                    in_array($b->status, ['pending', 'waiting_supervisor_approval']) => 'waiting',
+                    $b->status === 'received' => 'done',
+                    str_starts_with($b->status, 'lost_') => 'late',
+                    default => 'confirmed',
                 };
             @endphp
             <div class="mb-3 p-3 rounded-3" style="border:1px solid var(--crm-border);background:#fff;">
@@ -224,10 +235,21 @@
                     </div>
                     <form action="{{ route('crm.bookings.status', $b) }}" method="POST">
                         @csrf @method('PATCH')
-                        <select name="status" class="form-select form-select-sm border-0 shadow-none status-dot {{ $dotClassM }}" style="font-size:11px;font-weight:700;padding:3px 8px;width:auto;" onchange="this.form.submit()">
-                            @foreach($statuses as $key => $s)
-                            <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
-                            @endforeach
+                        <select name="status" class="form-select form-select-sm border-0 shadow-none status-dot {{ $dotClassM }}" style="font-size:11px;font-weight:700;padding:3px 8px;width:auto;" onchange="this.form.submit()" {{ ($b->status === 'waiting_supervisor_approval' && ! auth('employee')->user()->isAdmin()) ? 'disabled' : '' }}>
+                            <optgroup label="{{ __('الحالات الأساسية (Active)') }}">
+                                @foreach($statuses as $key => $s)
+                                    @if($s['group'] === 'active')
+                                    <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                                    @endif
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="{{ __('الحالات الخاسرة (Closed - Lost)') }}">
+                                @foreach($statuses as $key => $s)
+                                    @if($s['group'] === 'lost')
+                                    <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                                    @endif
+                                @endforeach
+                            </optgroup>
                         </select>
                     </form>
                 </div>

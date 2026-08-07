@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\Request;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -48,6 +49,45 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->render(function (PostTooLargeException $e, Request $request) {
+            $locale = 'ar';
+
+            if ($request->expectsJson() || $request->is('api/*') || $request->is('erp/*')) {
+                $locale = $request->header('Accept-Language', 'ar');
+                if (! in_array($locale, ['ar', 'en'], true)) {
+                    $locale = 'ar';
+                }
+            } else {
+                if (! $request->hasSession()) {
+                    $session = app('session.store');
+                    $session->setId($request->cookies->get($session->getName()));
+                    $session->start();
+                    $request->setLaravelSession($session);
+                }
+                $locale = $request->session()->get('applocale', 'ar');
+            }
+
+            app()->setLocale($locale);
+
+            $message = $locale === 'ar'
+                ? 'حجم الملف المرفوع كبير جداً. يرجى رفع ملف بحجم أصغر.'
+                : 'The uploaded file is too large. Please upload a smaller file.';
+
+            if ($request->expectsJson() || $request->is('api/*') || $request->is('erp/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'status' => 413,
+                ], 413);
+            }
+
+            $request->session()->flash('error', $message);
+            $request->session()->save();
+
+            return redirect()->back()
+                ->withInput();
+        });
+
         $exceptions->render(function (Throwable $e, Request $request) {
             return app(GlobalExceptionHandler::class)->render($e, $request);
         });

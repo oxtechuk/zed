@@ -67,7 +67,10 @@
                                 <input type="file" name="review_image" class="form-control bg-light border-0 shadow-none" accept="image/*">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-bold small text-muted">{{ __('فيديو التقييم') }}</label>
+                                <label class="form-label fw-bold small text-muted">
+                                    {{ __('فيديو التقييم') }} 
+                                    <span class="text-danger small">({{ __('الحد الأقصى 20 ميجابايت') }})</span>
+                                </label>
                                 <input type="file" name="review_video" class="form-control bg-light border-0 shadow-none" accept="video/*">
                             </div>
                             <div class="mb-3">

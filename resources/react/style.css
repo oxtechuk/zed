@@ -133,18 +133,16 @@ select {
 }
 .blog-content-html ul {
   list-style-type: none;
-  padding-right: 0px;
+  padding: 0;
   margin-bottom: 1.5rem;
 }
 .blog-content-html ul li {
   position: relative;
-  padding-right: 2rem;
   margin-bottom: 0.75rem;
 }
 .blog-content-html ul li::before {
   content: "✓";
   position: absolute;
-  right: 0;
   top: 0.25rem;
   display: flex;
   align-items: center;
@@ -157,10 +155,33 @@ select {
   font-size: 10px;
   font-weight: 900;
 }
+[dir="rtl"] .blog-content-html ul li {
+  padding-right: 2rem;
+  padding-left: 0;
+}
+[dir="rtl"] .blog-content-html ul li::before {
+  right: 0;
+  left: auto;
+}
+[dir="ltr"] .blog-content-html ul li {
+  padding-left: 2rem;
+  padding-right: 0;
+}
+[dir="ltr"] .blog-content-html ul li::before {
+  left: 0;
+  right: auto;
+}
 .blog-content-html ol {
   list-style-type: decimal;
-  padding-right: 1.5rem;
   margin-bottom: 1.5rem;
+}
+[dir="rtl"] .blog-content-html ol {
+  padding-right: 1.5rem;
+  padding-left: 0;
+}
+[dir="ltr"] .blog-content-html ol {
+  padding-left: 1.5rem;
+  padding-right: 0;
 }
 .blog-content-html ol li {
   margin-bottom: 0.5rem;

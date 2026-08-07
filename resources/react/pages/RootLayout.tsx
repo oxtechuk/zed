@@ -68,7 +68,7 @@ export default function RootLayout() {
           logoAlt="Zed Capital"
           navItems={navItems}
           ctaText={t("nav.requestCar")}
-          ctaPath="/contact"
+          ctaPath="/request-car"
         />
       </div>
 
