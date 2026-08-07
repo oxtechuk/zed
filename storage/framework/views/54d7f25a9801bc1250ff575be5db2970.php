@@ -41,7 +41,7 @@
 
     <style>
         :root {
-            --crm-red: #0D9488;
+            --crm-red: #14234d;
             --crm-red-dark: #0B7A70;
             --crm-red-light: rgba(13, 148, 136, 0.08);
             --crm-sidebar-width: 220px;

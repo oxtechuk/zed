@@ -14,6 +14,7 @@ const BADGE_COLOR_MAP: Record<string, { bg: string; text: string }> = {
 const DEFAULT_BADGE = { bg: "#EDC98E", text: "#16254F" };
 
 export default function CarCard({
+    id,
     image,
     brand,
     name,
@@ -146,7 +147,7 @@ export default function CarCard({
                     {/* Order Button */}
                     <button
                         type="button"
-                        onClick={() => navigate(detailsTo)}
+                        onClick={() => navigate(`/request-car?car_id=${id}`)}
                         className="h-10 flex-1 rounded-2xl bg-[#16254F] text-[14px] font-bold text-white transition hover:bg-[#0F1E36] active:scale-95 flex items-center justify-center gap-1.5"
                     >
                         <span>

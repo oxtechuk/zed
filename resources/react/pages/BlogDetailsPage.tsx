@@ -86,7 +86,7 @@ export default function BlogDetailsPage() {
         image={getImageUrl(blog.thumbnail) || "/images/blog.png"}
       />
 
-      <BlogArticleContent sections={sections} />
+      <BlogArticleContent sections={sections} content={blog.content} />
 
       {relatedArticles.length > 0 && (
         <RelatedArticlesSection

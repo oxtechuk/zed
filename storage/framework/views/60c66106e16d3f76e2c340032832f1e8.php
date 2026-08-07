@@ -1,9 +1,9 @@
-<?php $__env->startSection('title', __('الصفحة غير موجودة') . ' — GR Motors'); ?>
+<?php $__env->startSection('title', __('الصفحة غير موجودة') . ' — Zad Capital'); ?>
 
 <?php $__env->startSection('css'); ?>
 <style>
     /* ============================================================
-       404 PAGE — GR MOTORS BRAND
+       404 PAGE — Zad Capital BRAND
     ============================================================ */
 
     /* Dark bg for the content area only */

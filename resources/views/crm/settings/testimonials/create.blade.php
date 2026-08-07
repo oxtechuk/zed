@@ -71,6 +71,13 @@
                                 <input type="file" name="review_video" class="form-control bg-light border-0 shadow-none" accept="video/*">
                             </div>
                             <div class="mb-3">
+                                <label class="form-label fw-bold small text-muted">{{ __('نوع التوصية') }} <span class="text-danger">*</span></label>
+                                <select name="type" class="form-select bg-light border-0 shadow-none" required>
+                                    <option value="text">{{ __('آراء عملاء كتابة') }}</option>
+                                    <option value="video">{{ __('آراء عملاء فيديوهات ريلز') }}</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label fw-bold small text-muted">{{ __('التقييم (1-5 نجوم)') }}</label>
                                 <select name="rating" class="form-select bg-light border-0 shadow-none">
                                     <option value="5">5 {{ __('نجوم') }}</option>

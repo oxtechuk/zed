@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Send, Phone, Mail, MapPin, MessageCircle, Clock } from "lucide-react";
 import type { IContactFormValues } from "../../interfaces/IContactFormValues";
 import type { IContactUsSectionProps } from "../../interfaces/IContactUsSectionProps";
+import { useSettingsStore } from "../../store/settings.store";
 
 const subjects = [
   "استفسار عام",
@@ -21,6 +22,22 @@ export default function ContactUsSection({
   onSubmit,
 }: IContactUsSectionProps) {
   const { i18n, t } = useTranslation();
+  const settings = useSettingsStore((s) => s.settings);
+
+  const branches = settings?.about_branches && settings.about_branches.length > 0
+    ? settings.about_branches
+    : [
+        {
+          name: "طريق الملك فهد، العليا",
+          address: "الرياض، المملكة العربية السعودية",
+          map_link: "https://maps.google.com/?q=العليا+الرياض",
+          working_hours: "الأحد - الخميس: 9:00 ص - 9:00 م\nالجمعة: 4:00 م - 9:00 م\nالسبت: 10:00 ص - 8:00 م"
+        }
+      ];
+
+  const whatsappNumber = settings?.contact?.whatsapp
+    ? settings.contact.whatsapp.replace(/\D/g, "")
+    : "966500000000";
   
   const [values, setValues] = useState<IContactFormValues>({
     fullName: "",
@@ -261,7 +278,7 @@ export default function ContactUsSection({
                       </span>
                     </button>
                     <a
-                      href={`https://wa.me/966500000000?text=استفسار من نموذج الاتصال بشأن موضوع: ${encodeURIComponent(values.subject)}`}
+                      href={`https://wa.me/${whatsappNumber}?text=استفسار من نموذج الاتصال بشأن موضوع: ${encodeURIComponent(values.subject)}`}
                       target="_blank"
                       rel="noreferrer"
                       className="h-[50px] px-6 bg-[#25D366] text-white text-[15px] font-extrabold rounded-xl flex items-center justify-center gap-2 transition hover:bg-[#20ba59] hover:scale-[1.01] active:scale-95 shadow-sm"
@@ -276,60 +293,72 @@ export default function ContactUsSection({
 
             {/* Sidebar Column (Left on desktop) */}
             <div className="lg:col-span-4 order-2 lg:order-1 flex flex-col gap-6 text-start">
-              
-              {/* Map Card */}
-              <div className="rounded-3xl border border-[#E5E9F0] bg-white p-6 shadow-sm flex flex-col items-center text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#EAF1FA] text-[#034EA2] mb-4">
-                  <MapPin size={22} />
-                </div>
-                <strong className="text-[17px] font-black text-[#0F172A]">طريق الملك فهد، العليا</strong>
-                <span className="text-[13px] text-gray-400 font-bold mt-1">الرياض، المملكة العربية السعودية</span>
-                
-                <a
-                  href="https://maps.google.com/?q=العليا+الرياض"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-5 w-full h-11 border border-[#E5E9F0] text-[#0F172A] text-[13px] font-bold rounded-xl flex items-center justify-center gap-1.5 transition hover:bg-[#F8FAFC] active:scale-95"
-                >
-                  <span>افتح في خرائط جوجل</span>
-                  <ArrowRightIcon />
-                </a>
-              </div>
-
-              {/* Working Hours Card */}
-              <div className="rounded-3xl bg-[#0F172A] p-6 text-white shadow-md flex flex-col relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-[#EDC98E]/5 blur-2xl rounded-full" />
-                
-                <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-4">
-                  <Clock size={20} className="text-[#EDC98E]" />
-                  <strong className="text-[16px] font-black text-[#EDC98E]">ساعات العمل</strong>
-                </div>
-
-                <div className="flex flex-col gap-3.5">
-                  <div className="flex items-center justify-between text-[13px] font-semibold text-white/80">
-                    <span>الأحد - الخميس</span>
-                    <strong className="text-white">9:00 ص - 9:00 م</strong>
+              {branches.map((branch, index) => (
+                <div key={index} className="flex flex-col gap-6 w-full">
+                  {/* Map Card */}
+                  <div className="rounded-3xl border border-[#E5E9F0] bg-white p-6 shadow-sm flex flex-col items-center text-center">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#EAF1FA] text-[#034EA2] mb-4">
+                      <MapPin size={22} />
+                    </div>
+                    <strong className="text-[17px] font-black text-[#0F172A]">{branch.name}</strong>
+                    <span className="text-[13px] text-gray-400 font-bold mt-1">{branch.address}</span>
+                    
+                    {branch.map_link && (
+                      <a
+                        href={branch.map_link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-5 w-full h-11 border border-[#E5E9F0] text-[#0F172A] text-[13px] font-bold rounded-xl flex items-center justify-center gap-1.5 transition hover:bg-[#F8FAFC] active:scale-95"
+                      >
+                        <span>افتح في خرائط جوجل</span>
+                        <ArrowRightIcon />
+                      </a>
+                    )}
                   </div>
-                  <div className="flex items-center justify-between text-[13px] font-semibold text-white/80">
-                    <span>الجمعة</span>
-                    <strong className="text-white">4:00 م - 9:00 م</strong>
-                  </div>
-                  <div className="flex items-center justify-between text-[13px] font-semibold text-white/80">
-                    <span>السبت</span>
-                    <strong className="text-white">10:00 ص - 8:00 م</strong>
-                  </div>
-                </div>
 
-                {/* Footer status */}
-                <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-start gap-2.5">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  <span className="text-[12px] text-emerald-400 font-bold">واتساب متاح 24/7</span>
-                </div>
-              </div>
+                  {/* Working Hours Card */}
+                  {branch.working_hours && (
+                    <div className="rounded-3xl bg-[#0F172A] p-6 text-white shadow-md flex flex-col relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-[#EDC98E]/5 blur-2xl rounded-full" />
+                      
+                      <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-4">
+                        <Clock size={20} className="text-[#EDC98E]" />
+                        <strong className="text-[16px] font-black text-[#EDC98E]">ساعات العمل</strong>
+                      </div>
 
+                      <div className="flex flex-col gap-3.5">
+                        {branch.working_hours.split("\n").map((line, lIdx) => {
+                          const parts = line.split(":");
+                          if (parts.length >= 2) {
+                            const day = parts[0].trim();
+                            const hours = parts.slice(1).join(":").trim();
+                            return (
+                              <div key={lIdx} className="flex items-center justify-between text-[13px] font-semibold text-white/80">
+                                <span>{day}</span>
+                                <strong className="text-white">{hours}</strong>
+                              </div>
+                            );
+                          }
+                          return (
+                            <div key={lIdx} className="text-[13px] font-semibold text-white/80">
+                              {line}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Footer status */}
+                      <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-start gap-2.5">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span className="text-[12px] text-emerald-400 font-bold">واتساب متاح 24/7</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
 
           </div>

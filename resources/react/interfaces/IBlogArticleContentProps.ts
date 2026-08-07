@@ -7,4 +7,5 @@ export interface IBlogArticleSection {
 
 export interface IBlogArticleContentProps {
   sections: IBlogArticleSection[];
+  content?: string;
 }

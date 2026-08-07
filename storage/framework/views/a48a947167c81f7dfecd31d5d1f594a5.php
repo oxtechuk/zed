@@ -70,6 +70,13 @@
                                 <input type="file" name="review_video" class="form-control bg-light border-0 shadow-none" accept="video/*">
                             </div>
                             <div class="mb-3">
+                                <label class="form-label fw-bold small text-muted"><?php echo e(__('نوع التوصية')); ?> <span class="text-danger">*</span></label>
+                                <select name="type" class="form-select bg-light border-0 shadow-none" required>
+                                    <option value="text"><?php echo e(__('آراء عملاء كتابة')); ?></option>
+                                    <option value="video"><?php echo e(__('آراء عملاء فيديوهات ريلز')); ?></option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label fw-bold small text-muted"><?php echo e(__('التقييم (1-5 نجوم)')); ?></label>
                                 <select name="rating" class="form-select bg-light border-0 shadow-none">
                                     <option value="5">5 <?php echo e(__('نجوم')); ?></option>

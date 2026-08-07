@@ -1,5 +1,5 @@
 @extends('partials.Layouts.crm-master')
-@section('title', __('شاشة الموظف') . ' | GR Motors')
+@section('title', __('شاشة الموظف') . ' | Zad Capital')
 
 @section('content')
 <div class="container-fluid" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
@@ -28,7 +28,7 @@
     @endphp
 
     {{-- ===== Employee Header Banner ===== --}}
-    <div class="rounded-4 mb-4 p-4 p-md-4" style="background:linear-gradient(135deg,var(--crm-orange) 0%,var(--crm-orange-dark) 100%);box-shadow:0 8px 20px rgba(249,115,22,0.25);">
+    <div class="rounded-4 mb-4 p-4 p-md-4" style="background:linear-gradient(135deg,#14234d 0%,#091842 100%);box-shadow:0 8px 20px rgba(249,115,22,0.25);">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div>
                 <h4 class="mb-1 fw-bold text-white">👋 {{ __('أهلاً بك') }}, {{ auth()->user()?->name }}</h4>

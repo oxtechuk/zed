@@ -19,7 +19,7 @@ export default function BrandsCarousel({
     return null;
   }
 
-  function renderBrand(brand: BrandItem, key: string | number) {
+  function renderBrand(brand: IBrandItem, key: string | number) {
     const card = (
       <div
         className={[

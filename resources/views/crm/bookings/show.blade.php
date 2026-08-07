@@ -1,5 +1,5 @@
 @extends('partials.Layouts.crm-master')
-@section('title', __('تفاصيل الطلب') . ' #' . $booking->id . ' | GR Motors')
+@section('title', __('تفاصيل الطلب') . ' #' . $booking->id . ' | Zad Capital')
 
 @section('content')
 <div class="container-fluid" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
@@ -27,7 +27,7 @@
     </nav>
 
     {{-- ===== Header Banner ===== --}}
-    <div class="rounded-4 mb-3 p-4" style="background:linear-gradient(135deg,var(--crm-orange) 0%,var(--crm-orange-dark) 100%);box-shadow:0 8px 20px rgba(249,115,22,0.25);">
+    <div class="rounded-4 mb-3 p-4" style="background:#14234d;box-shadow:0 8px 20px rgba(249,115,22,0.25);">
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
             <h5 class="fw-bold mb-0 text-white">{{ __('عرض بيانات الطلب') }} <span style="opacity:0.85;">#{{ $booking->id }}</span></h5>
             <div class="d-flex gap-2 flex-wrap">
@@ -677,7 +677,7 @@
 
 @section('scripts')
 <script>
-window.onbeforeprint = () => document.title = 'طلب #{{ $booking->id }} — GR Motors';
+window.onbeforeprint = () => document.title = 'طلب #{{ $booking->id }} — Zad Capital';
 
 document.getElementById('editTaskModal')?.addEventListener('show.bs.modal', function (event) {
     const btn = event.relatedTarget;

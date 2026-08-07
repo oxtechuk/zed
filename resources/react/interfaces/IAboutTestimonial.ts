@@ -7,4 +7,5 @@ export interface IAboutTestimonial {
   review_image: string | null;
   review_video: string | null;
   rating: number;
+  type?: string;
 }

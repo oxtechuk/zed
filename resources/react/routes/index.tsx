@@ -12,6 +12,7 @@ import BlogsPage from "../pages/BlogsPage";
 import BlogDetailsPage from "../pages/BlogDetailsPage";
 import ContactPage from "../pages/ContactPage";
 import FinanceCalculatorPage from "../pages/FinanceCalculatorPage";
+import CarRequestPage from "../pages/CarRequestPage";
 import BrandsPage from "../pages/BrandsPage";
 
 export const router = createBrowserRouter([
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
       {
         path: "/finance-calculator",
         element: <FinanceCalculatorPage />,
+      },
+      {
+        path: "/request-car",
+        element: <CarRequestPage />,
       },
       {
         path: "/brands",

@@ -5,6 +5,7 @@ export interface ICarColor {
 }
 
 export interface ICarDetailsHeroProps {
+  id?: number;
   title: string;
   description: string;
   images: string[];

@@ -110,11 +110,16 @@ export default function AboutPage() {
       rating: t.rating,
       reviewImage: getImageUrl(t.review_image) || undefined,
       reviewVideo: getImageUrl(t.review_video) || undefined,
+      type: t.type || "text",
     }));
   }, [aboutData]);
 
   const mediaTestimonials = useMemo(() => {
-    return testimonials.filter((t) => t.reviewImage || t.reviewVideo);
+    return testimonials.filter((t) => t.type === "video");
+  }, [testimonials]);
+
+  const textTestimonials = useMemo(() => {
+    return testimonials.filter((t) => t.type === "text");
   }, [testimonials]);
 
   return (
@@ -191,7 +196,7 @@ export default function AboutPage() {
           t("aboutPage.testimonials.titleBlue")
         }
         ratingText={sections?.testimonials?.rating_text?.trim() || undefined}
-        testimonials={testimonials}
+        testimonials={textTestimonials}
       />
 
     </>

@@ -53,6 +53,11 @@ final class SettingApiService
             $socialMedia = json_decode($socialMedia, true) ?: [];
         }
 
+        $aboutBranches = $settings->get('about_branches', []);
+        if (is_string($aboutBranches)) {
+            $aboutBranches = json_decode($aboutBranches, true) ?: [];
+        }
+
         return [
             'logo' => $this->resolveUrl($settings->get('footer_logo') ?: $settings->get('site_logo')),
             'header_logo' => $this->resolveUrl($settings->get('site_logo')),
@@ -67,6 +72,7 @@ final class SettingApiService
                 'address' => $this->localize($settings->get('contact_address', ''), $locale),
             ],
             'social_media' => $socialMedia,
+            'about_branches' => $aboutBranches,
         ];
     }
 

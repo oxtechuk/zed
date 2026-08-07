@@ -1067,7 +1067,7 @@
         cursor: pointer;
     }
     .settings-nav-btn:hover  { background: #f1f5f9; color: #111; }
-    .settings-nav-btn.active { background: #fff0f0; color: rgba(235, 94, 40, 1); font-weight: 600; }
+    .settings-nav-btn.active { background: #fff0f0; color: #14234d; font-weight: 600; }
     .settings-nav-btn i { font-size: 15px; flex-shrink: 0; }
 
     .settings-pane { display: block; }

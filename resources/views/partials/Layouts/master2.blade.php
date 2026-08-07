@@ -2,10 +2,10 @@
 <html lang="en">
 
 <meta charset="utf-8" />
-<title>@yield('title', ' | GR Motors CRM')</title>
+<title>@yield('title', ' | Zad Capital CRM')</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta content="GR Motors CRM" name="description" />
-<meta content="GR Motors" name="author" />
+<meta content="Zad Capital CRM" name="description" />
+<meta content="Zad Capital" name="author" />
 
 <!-- layout setup -->
 <script type="module" src="{{ asset('assets/js/layout-setup.js') }}"></script>

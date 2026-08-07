@@ -16,6 +16,7 @@ import type {
 } from "../../interfaces/ICarDetailsHeroProps";
 
 export default function CarDetailsHero({
+    id,
     title,
     description,
     images,
@@ -308,15 +309,15 @@ export default function CarDetailsHero({
                                     </span>
                                 </div>
 
-                                {/* Apply buttons */}
-                                <a
-                                    href={`/contact?car=${encodeURIComponent(brandName + " " + title)}&installment=${calculatedInstallment}&term=${selectedMonth}`}
-                                    className="mt-5 flex h-[48px] w-full items-center justify-center rounded-2xl bg-[#EDC98E] text-[14px] font-black text-[#16254F] transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_12px_25px_rgba(237,201,142,0.15)] active:scale-95"
-                                >
-                                    {t("carDetails.calculator.submit", {
-                                        defaultValue: "قدم طلب التمويل الآن",
-                                    })}
-                                </a>
+                                 {/* Apply buttons */}
+                                 <a
+                                     href={`/request-car?car_id=${id}&term=${selectedMonth}&color=${encodeURIComponent(selectedColor?.name || "")}`}
+                                     className="mt-5 flex h-[48px] w-full items-center justify-center rounded-2xl bg-[#EDC98E] text-[14px] font-black text-[#16254F] transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_12px_25px_rgba(237,201,142,0.15)] active:scale-95 text-decoration-none"
+                                 >
+                                     {t("carDetails.calculator.submit", {
+                                         defaultValue: "قدم طلب التمويل الآن",
+                                     })}
+                                 </a>
 
                                 {/* Social Actions Row */}
                                 <div className="mt-3.5 grid grid-cols-2 gap-3">

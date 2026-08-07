@@ -1,5 +1,5 @@
 @extends('partials.Layouts.crm-master')
-@section('title', __('المهام') . ' | GR Motors CRM')
+@section('title', __('المهام') . ' | Zad Capital CRM')
 
 @section('content')
 <div class="container-fluid" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
@@ -43,12 +43,63 @@
     </div>
 </div>
 
-{{-- Filter Tabs --}}
-<div class="d-flex gap-2 mb-4 flex-wrap">
-    <a href="{{ route('crm.tasks.index') }}" class="btn-crm-{{ !$status ? 'primary' : 'light' }}">{{ __('الكل') }}</a>
-    <a href="{{ route('crm.tasks.index') }}?status=new" class="btn-crm-{{ $status == 'new' ? 'primary' : 'light' }}">{{ __('جديدة') }}</a>
-    <a href="{{ route('crm.tasks.index') }}?status=in_progress" class="btn-crm-{{ $status == 'in_progress' ? 'primary' : 'light' }}">{{ __('قيد التنفيذ') }}</a>
-    <a href="{{ route('crm.tasks.index') }}?status=done" class="btn-crm-{{ $status == 'done' ? 'primary' : 'light' }}">{{ __('مكتملة') }}</a>
+{{-- Filter Card --}}
+<div class="card border-0 shadow-sm rounded-4 mb-4" style="border:1px solid var(--crm-border)!important;">
+    <div class="card-body p-3">
+        @php
+            $qs = fn (array $override = []) => array_filter(array_merge(request()->except('page'), $override), fn ($v) => $v !== null && $v !== '');
+        @endphp
+        
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            {{-- Views & Status Tabs --}}
+            <div class="d-flex flex-wrap gap-3 align-items-center">
+                {{-- View Tabs (Today vs All) --}}
+                <div class="btn-group rounded-3 overflow-hidden p-1 bg-light" style="border: 1px solid var(--crm-border);">
+                    <a href="{{ route('crm.tasks.index', $qs(['view' => 'today', 'from' => null, 'to' => null])) }}" 
+                       class="btn-crm-{{ $view === 'today' ? 'primary' : 'light' }} btn-sm fw-bold px-3 py-2 text-decoration-none"
+                       style="border-radius: 6px;">
+                        <i class="bi bi-calendar-event me-1"></i> {{ __('مهام اليوم') }}
+                    </a>
+                    <a href="{{ route('crm.tasks.index', $qs(['view' => 'all'])) }}" 
+                       class="btn-crm-{{ $view === 'all' ? 'primary' : 'light' }} btn-sm fw-bold px-3 py-2 text-decoration-none"
+                       style="border-radius: 6px;">
+                        <i class="bi bi-collection me-1"></i> {{ __('كل المهام') }}
+                    </a>
+                </div>
+
+                <span class="mx-1 d-none d-md-inline" style="width:1px;height:24px;background:var(--crm-border);display:inline-block;"></span>
+
+                {{-- Status Filters --}}
+                <div class="d-flex gap-1 align-items-center">
+                    <a href="{{ route('crm.tasks.index', $qs(['status' => null])) }}" class="btn-crm-{{ !$status ? 'primary' : 'light' }} btn-sm px-3 py-2 fw-bold text-decoration-none" style="border-radius: 8px;">{{ __('الكل') }}</a>
+                    <a href="{{ route('crm.tasks.index', $qs(['status' => 'new'])) }}" class="btn-crm-{{ $status == 'new' ? 'primary' : 'light' }} btn-sm px-3 py-2 fw-bold text-decoration-none" style="border-radius: 8px;">{{ __('جديدة') }}</a>
+                    <a href="{{ route('crm.tasks.index', $qs(['status' => 'in_progress'])) }}" class="btn-crm-{{ $status == 'in_progress' ? 'primary' : 'light' }} btn-sm px-3 py-2 fw-bold text-decoration-none" style="border-radius: 8px;">{{ __('قيد التنفيذ') }}</a>
+                    <a href="{{ route('crm.tasks.index', $qs(['status' => 'done'])) }}" class="btn-crm-{{ $status == 'done' ? 'primary' : 'light' }} btn-sm px-3 py-2 fw-bold text-decoration-none" style="border-radius: 8px;">{{ __('مكتملة') }}</a>
+                </div>
+            </div>
+
+            {{-- Date Range Filter Form --}}
+            <form action="{{ route('crm.tasks.index') }}" method="GET" class="d-flex align-items-center gap-2 flex-wrap">
+                <input type="hidden" name="view" value="all">
+                @if($status)
+                    <input type="hidden" name="status" value="{{ $status }}">
+                @endif
+                <div class="d-flex align-items-center gap-2">
+                    <input type="date" name="from" value="{{ $from }}" class="form-control form-control-sm border shadow-xs bg-light" style="width:140px;border-radius:8px;" placeholder="{{ __('من تاريخ') }}" title="{{ __('من تاريخ') }}">
+                    <span class="text-muted small fw-bold">{{ __('إلى') }}</span>
+                    <input type="date" name="to" value="{{ $to }}" class="form-control form-control-sm border shadow-xs bg-light" style="width:140px;border-radius:8px;" placeholder="{{ __('إلى تاريخ') }}" title="{{ __('إلى تاريخ') }}">
+                </div>
+                <button type="submit" class="btn-crm-primary btn-sm px-3 py-2 fw-bold" style="border-radius:8px;">
+                    <i class="bi bi-funnel"></i> {{ __('فلترة') }}
+                </button>
+                @if($from || $to)
+                    <a href="{{ route('crm.tasks.index', $qs(['from' => null, 'to' => null, 'view' => $view === 'all' ? 'all' : null])) }}" class="btn btn-sm btn-outline-secondary px-3 py-2 fw-bold text-decoration-none" style="border-radius:8px;">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                @endif
+            </form>
+        </div>
+    </div>
 </div>
 
 {{-- Tasks Grid --}}

@@ -1,13 +1,18 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import ContactUsSection from "../components/contact-us/ContactUsSection";
 import FaqSection from "../components/contact-us/FaqSection";
-import { submitContactForm, getFaqs } from "../services/api";
+import MediaReviewsSection from "../components/about/MediaReviewsSection";
+import TestimonialsSection from "../components/about/TestimonialsSection";
+import { submitContactForm, getFaqs, getAboutPageData } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
+import { getImageUrl, APP_IMAGES } from "../constants/app-images";
 import { useSEO } from "../utils/useSEO";
 import type { IFaqItem } from "../interfaces/IFaqItem";
+import type { ITestimonialItem } from "../interfaces/ITestimonialItem";
+import type { IAboutData } from "../interfaces/IAboutData";
 
 export default function ContactPage() {
   const { t } = useTranslation();
@@ -20,6 +25,35 @@ export default function ContactPage() {
     queryKey: ["faqs", language],
     queryFn: getFaqs,
   });
+
+  const { data: aboutData } = useQuery<IAboutData>({
+    queryKey: ["about", language],
+    queryFn: getAboutPageData,
+  });
+
+  const testimonials: ITestimonialItem[] = useMemo(() => {
+    const apiTestimonials = aboutData?.testimonials ?? [];
+    if (!apiTestimonials.length) return [];
+    return apiTestimonials.map((t) => ({
+      id: t.id,
+      name: t.name,
+      job: t.title,
+      text: t.content,
+      avatar: getImageUrl(t.image) || APP_IMAGES.AVATAR_PLACEHOLDER,
+      rating: t.rating,
+      reviewImage: getImageUrl(t.review_image) || undefined,
+      reviewVideo: getImageUrl(t.review_video) || undefined,
+      type: t.type || "text",
+    }));
+  }, [aboutData]);
+
+  const mediaTestimonials = useMemo(() => {
+    return testimonials.filter((t) => t.type === "video");
+  }, [testimonials]);
+
+  const textTestimonials = useMemo(() => {
+    return testimonials.filter((t) => t.type === "text");
+  }, [testimonials]);
 
   const handleSubmit = useCallback(
     async (values: { fullName: string; phone: string; email: string; subject: string; country: string; message: string }) => {
@@ -55,6 +89,16 @@ export default function ContactPage() {
         onSubmit={handleSubmit}
       />
 
+      <MediaReviewsSection testimonials={mediaTestimonials} />
+
+      <TestimonialsSection
+        badge={aboutData?.page_sections?.testimonials?.badge || t("aboutPage.testimonials.badge")}
+        titleBlack={aboutData?.page_sections?.testimonials?.title || t("aboutPage.testimonials.titleBlack")}
+        titleBlue={t("aboutPage.testimonials.titleBlue")}
+        ratingText={aboutData?.page_sections?.testimonials?.rating_text || undefined}
+        testimonials={textTestimonials}
+      />
+
       <FaqSection
         eyebrow={t("contactPage.faq.eyebrow")}
         titleBlack={t("contactPage.faq.titleBlack")}
@@ -64,7 +108,6 @@ export default function ContactPage() {
         buttonHref="/contact"
         faqs={faqs ?? []}
       />
-
     </>
   );
 }
