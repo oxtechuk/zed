@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Cache;
 
 class BlogCacheService extends BaseCacheService
 {
-    public function rememberBlogIndex(int $page): array
+    public function rememberBlogIndex(int $page, int $perPage = 9): array
     {
         $version = $this->getBlogVersion();
 
-        return $this->remember("blog.index.v{$version}.page.{$page}", function () use ($page) {
+        return $this->remember("blog.index.v{$version}.page.{$page}.per_page.{$perPage}", function () use ($page, $perPage) {
             $featuredPosts = BlogPost::published()
                 ->with('categories', 'employee')
                 ->where('is_featured', true)
@@ -28,7 +28,7 @@ class BlogCacheService extends BaseCacheService
                 ->with('categories', 'employee')
                 ->whereNotIn('id', $featuredIds)
                 ->latest('published_at')
-                ->paginate(9);
+                ->paginate($perPage);
 
             return compact('featuredPosts', 'posts');
         });

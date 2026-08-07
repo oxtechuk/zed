@@ -75,7 +75,7 @@ export default function OfferListCard({
             {/* Content Details */}
             <div className="p-5 sm:p-6 flex flex-col flex-grow text-start">
                 {/* Title */}
-                <h3 className="text-[20px] sm:text-[22px] font-black text-[#16254F] leading-tight mb-1 text-start">
+                <h3 className="text-[20px] sm:text-[22px] font-black text-[#0B1736] leading-tight mb-1 text-start">
                     {title ??
                         t("offersPage.featured.title", {
                             defaultValue: "عرض رمضان الاستثنائي",
@@ -110,7 +110,7 @@ export default function OfferListCard({
                 {/* Bottom Action Button */}
                 <NavLink
                     to={linkTarget}
-                    className="w-full h-[48px] sm:h-[52px] rounded-2xl sm:rounded-[18px] bg-[#16254F] hover:bg-[#12224A] text-white! font-black text-[14px] sm:text-[15px] transition-all duration-200 active:scale-98 flex items-center justify-center shadow-md cursor-pointer"
+                    className="w-full h-[48px] sm:h-[52px] rounded-2xl sm:rounded-[18px] bg-[#0B1736] hover:bg-[#12224A] text-white! font-black text-[14px] sm:text-[15px] transition-all duration-200 active:scale-98 flex items-center justify-center shadow-md cursor-pointer"
                 >
                     {t("offersPage.grid.card.benefit", {
                         defaultValue: "استفد من العرض",

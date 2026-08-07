@@ -1,74 +1,93 @@
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, ArrowRight, Clock, Calendar } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { APP_IMAGES, getImageUrl } from "../../constants/app-images";
 import type { IBlogCardProps } from "../../interfaces/IBlogCardProps";
 
 export default function BlogCard({
-  image,
-  category,
-  date,
-  readTime,
-  title,
-  description,
-  readMoreTo,
-}: IBlogCardProps) {
-  const { t, i18n } = useTranslation();
-  const isRTL = i18n.dir() === "rtl";
+    image,
+    category,
+    date,
+    readTime,
+    title,
+    description,
+    readMoreTo,
+}: Partial<IBlogCardProps>) {
+    const { t, i18n } = useTranslation();
+    const isRTL = i18n.dir() === "rtl";
 
-  return (
-    <article
-      dir={i18n.dir()}
-      className="w-full bg-white border border-[#E7E9EF] rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] flex flex-col justify-between group"
-    >
-      <div>
-        {/* Blog Image */}
-        <div className="overflow-hidden h-[192px] w-full bg-[#F3F4F6]">
-          <img
-            src={image}
-            alt={title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            loading="lazy"
-          />
-        </div>
+    const cardImage = getImageUrl(image ?? null) || APP_IMAGES.BLOG_PLACEHOLDER;
+    const linkTarget = readMoreTo || "#";
 
-        {/* Content details */}
-        <div className="p-6">
-          {/* Meta row: date, read time, category badge */}
-          <div className="flex flex-wrap items-center justify-end gap-3 text-[10px] font-normal text-[#667085]">
-            <span>{date}</span>
-            <span className="flex items-center gap-1">
-              <Clock size={12} className="text-[#667085]" />
-              {readTime}
-            </span>
-            {category && (
-              <span className="bg-[#EDC98E]/10 text-[#EDC98E] font-black px-2.5 py-1 rounded-full text-[10px]">
-                {category}
-              </span>
-            )}
-          </div>
+    return (
+        <article
+            dir={i18n.dir()}
+            className="w-full bg-white rounded-[24px] sm:rounded-[28px] overflow-hidden border border-gray-200 flex flex-col h-full shadow-xs hover:shadow-xl transition-all duration-300 group select-none"
+        >
+            {/* Blog Image */}
+            <div className="overflow-hidden h-[210px] sm:h-[230px] w-full bg-[#0B1736]">
+                <img
+                    src={cardImage}
+                    alt={title ?? "Blog Post"}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                />
+            </div>
 
-          {/* Title */}
-          <h3 className="mt-3 text-[16px] font-black leading-[1.4] text-[#16254F] line-clamp-2">
-            <NavLink to={readMoreTo}>{title}</NavLink>
-          </h3>
+            {/* Content Details */}
+            <div className="p-6 sm:p-7 flex flex-col flex-grow text-start">
+                {/* Meta row: category badge, read time, date */}
+                <div className="flex flex-wrap items-center justify-start gap-3 mb-3 text-[13px] sm:text-[14px] text-gray-500 font-medium">
+                    {category && (
+                        <span className="bg-[#FFF8EE] text-[#F3C77C] font-black px-4 py-1 rounded-full text-[12px] sm:text-[13px]">
+                            {category}
+                        </span>
+                    )}
 
-          {/* Description */}
-          <p className="mt-2 text-[12px] leading-relaxed text-[#667085] line-clamp-2">
-            {description}
-          </p>
+                    {readTime && (
+                        <span className="flex items-center gap-1.5">
+                            <Clock size={15} className="text-gray-400" />
+                            {readTime}
+                        </span>
+                    )}
 
-          {/* Read More Link */}
-          <div className="mt-4">
-            <NavLink
-              to={readMoreTo}
-              className="inline-flex items-center gap-1.5 text-[12px] font-black text-[#EDC98E] hover:text-[#16254F] transition"
-            >
-              <span>{t("blogPage.readMore", { defaultValue: "اقرأ المزيد" })}</span>
-              {isRTL ? <ArrowLeft size={14} /> : <ArrowRight size={14} />}
-            </NavLink>
-          </div>
-        </div>
-      </div>
-    </article>
-  );
+                    {date && <span>{date}</span>}
+                </div>
+
+                {/* Title */}
+                <h3 className="text-[20px] sm:text-[22px] font-bold leading-tight text-[#16254F] mb-2 line-clamp-2 text-start">
+                    <NavLink
+                        to={linkTarget}
+                        className="hover:text-[#F3C77C] transition-colors"
+                    >
+                        {title}
+                    </NavLink>
+                </h3>
+
+                {/* Description */}
+                <p className="text-[14px] sm:text-[15px] font-bold leading-relaxed text-gray-500 line-clamp-2 mb-5 text-start flex-grow">
+                    {description}
+                </p>
+
+                {/* Read More Link */}
+                <div className="mt-auto text-[#EDC98E] text-end">
+                    <NavLink
+                        to={linkTarget}
+                        className="inline-flex items-center gap-2 text-[15px] sm:text-[16px] font-black text-[#EDC98E] hover:text-[#E2B66B] transition-colors"
+                    >
+                        {isRTL ? (
+                            <ArrowLeft size={16} />
+                        ) : (
+                            <ArrowRight size={16} />
+                        )}
+                        <span>
+                            {t("blogPage.readMore", {
+                                defaultValue: "اقرأ المزيد",
+                            })}
+                        </span>
+                    </NavLink>
+                </div>
+            </div>
+        </article>
+    );
 }

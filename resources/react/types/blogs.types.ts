@@ -1,69 +1,44 @@
-export interface BlogEmployee {
-  name: string;
-  role: string;
-  avatar: string | null;
-}
+import type { IBlogApiResponse } from "../interfaces/IBlogApiResponse";
+import type { IBlogCategory } from "../interfaces/IBlogCategory";
+import type { IBlogEmployee } from "../interfaces/IBlogEmployee";
+import type { IBlogHero } from "../interfaces/IBlogHero";
+import type { IBlogMeta } from "../interfaces/IBlogMeta";
+import type { IBlogPost } from "../interfaces/IBlogPost";
 
-export interface BlogCategory {
-  id: number;
-  name: string;
-  slug: string;
-  icon: string | null;
-  sort_order: number;
-  posts_count?: number;
-}
+export type {
+  IBlogCategory,
+  IBlogEmployee,
+  IBlogPost,
+  IBlogHero,
+  IBlogMeta,
+  IBlogApiResponse,
+};
 
-export interface BlogPost {
-  id: number;
-  title: string;
-  slug: string;
-  thumbnail: string | null;
-  excerpt: string;
-  published_at: string;
-  employee: BlogEmployee;
-  categories: BlogCategory[];
-  reading_time: number;
-  tag?: string | null;
-}
+// Legacy type aliases starting without I for backward compatibility
+export type BlogEmployee = IBlogEmployee;
+export type BlogCategory = IBlogCategory;
+export type BlogPost = IBlogPost;
+export type BlogHero = IBlogHero;
+export type BlogMeta = IBlogMeta;
+export type BlogApiResponse = IBlogApiResponse;
 
-export interface BlogDetails extends BlogPost {
+export interface IBlogDetails extends IBlogPost {
   content: string;
   meta_title: string | null;
   meta_description: string | null;
   meta_keywords: string | null;
   is_featured: boolean;
-  related_posts: BlogPost[];
+  related_posts: IBlogPost[];
 }
 
-export interface BlogHero {
-  title: string;
-  subtitle: string;
-  image: string | null;
-  badge?: string;
-}
+export type BlogDetails = IBlogDetails;
 
-export interface BlogMeta {
-  current_page: number;
-  per_page: number;
-  total: number;
-  last_page: number;
-  hero: BlogHero;
-  featured_posts: BlogPost[];
-  categories: BlogCategory[];
-}
-
-export interface BlogApiResponse {
+export interface IBlogDetailsApiResponse {
   success: boolean;
   message: string;
-  data: BlogPost[];
-  errors: null;
-  meta: BlogMeta;
-}
-
-export interface BlogDetailsApiResponse {
-  success: boolean;
-  message: string;
-  data: BlogDetails;
+  data: IBlogDetails;
   errors: null;
   meta: null;
 }
+
+export type BlogDetailsApiResponse = IBlogDetailsApiResponse;
