@@ -1,15 +1,9 @@
-import { Check } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import type { IStepperProps } from "../../interfaces/IStepperProps";
+import type { IStepCircleProps } from "../../interfaces/IStepCircleProps";
 
-type Step = 1 | 2 | 3 | 4;
-
-interface StepCircleProps {
-  number: number;
-  label: string;
-  active: boolean;
-  done: boolean;
-}
-
-function StepCircle({ number, label, active, done }: StepCircleProps) {
+function StepCircle({ number, label, active, done }: IStepCircleProps) {
   return (
     <div className="flex items-center gap-2">
       <span
@@ -34,34 +28,49 @@ function StepCircle({ number, label, active, done }: StepCircleProps) {
   );
 }
 
-export default function Stepper({ activeStep }: { activeStep: Step }) {
+export default function Stepper({ activeStep }: IStepperProps) {
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === "rtl";
+
   return (
-    <div className="mx-auto flex max-w-xl items-center justify-center gap-4 px-4 overflow-x-auto pb-2" dir="rtl">
+    <div className="mx-auto flex max-w-xl items-center justify-center gap-4 px-4 overflow-x-auto pb-2">
       <StepCircle
         number={1}
-        label="بياناتك"
+        label={t("financeCalculator.stepper.step1", "بياناتك")}
         active={activeStep === 1}
         done={activeStep > 1}
       />
       <span
-        className={`h-px w-[40px] sm:w-[60px] shrink-0 transition-colors duration-300 ${
-          activeStep > 1 ? "bg-emerald-500" : "bg-[#D5DBE3]"
+        className={`shrink-0 text-[16px] font-black transition-colors duration-300 ${
+          activeStep > 1 ? "text-emerald-500" : "text-[#D5DBE3]"
         }`}
-      />
+      >
+        {isRtl ? (
+          <ChevronLeft size={18} strokeWidth={2.5} />
+        ) : (
+          <ChevronRight size={18} strokeWidth={2.5} />
+        )}
+      </span>
       <StepCircle
         number={2}
-        label="تفاصيل السيارة"
+        label={t("financeCalculator.stepper.step2", "تفاصيل السيارة")}
         active={activeStep === 2}
         done={activeStep > 2}
       />
       <span
-        className={`h-px w-[40px] sm:w-[60px] shrink-0 transition-colors duration-300 ${
-          activeStep > 2 ? "bg-emerald-500" : "bg-[#D5DBE3]"
+        className={`shrink-0 text-[16px] font-black transition-colors duration-300 ${
+          activeStep > 2 ? "text-emerald-500" : "text-[#D5DBE3]"
         }`}
-      />
+      >
+        {isRtl ? (
+          <ChevronLeft size={18} strokeWidth={2.5} />
+        ) : (
+          <ChevronRight size={18} strokeWidth={2.5} />
+        )}
+      </span>
       <StepCircle
         number={3}
-        label="تفاصيل التمويل"
+        label={t("financeCalculator.stepper.step3", "تفاصيل التمويل")}
         active={activeStep === 3}
         done={activeStep > 3}
       />

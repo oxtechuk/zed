@@ -8,7 +8,7 @@ export default function BlogCategoryFilter({
   return (
     <section className="pt-10 pb-4">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="flex flex-wrap items-start justify-start gap-2">
           {categories.map((category) => {
             const isActive = category.value === activeCategory;
             return (

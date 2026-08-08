@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import ContactInfoCard from "./ContactInfoCard";
+import LazyImg from "../LazyImg";
 import { APP_IMAGES } from "../../constants/app-images";
 import type { IContactHeroSectionProps } from "../../interfaces/IContactHeroSectionProps";
 import type { IContactInfoCardProps } from "../../interfaces/IContactInfoCardProps";
@@ -43,10 +44,14 @@ export default function ContactHeroSection({
   ];
 
   return (
-    <section
-      className="w-full pt-16 pb-24 text-white text-start relative overflow-hidden bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url('${APP_IMAGES.CONTACT_US_HERO}')` }}
-    >
+    <section className="w-full pt-16 pb-24 text-white text-start relative overflow-hidden bg-[#1E293B]">
+      <LazyImg
+        src={APP_IMAGES.CONTACT_US_HERO}
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <span className="text-[14px] font-extrabold text-[#EDC98E] uppercase tracking-wider">
           {eyebrow}

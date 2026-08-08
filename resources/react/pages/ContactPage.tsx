@@ -4,10 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import ContactUsSection from "../components/contact-us/ContactUsSection";
 import FaqSection from "../components/contact-us/FaqSection";
+import ContactPageSkeleton from "../components/skeletons/ContactPageSkeleton";
+import { APP_IMAGES } from "../constants/app-images";
 import { getFaqs, submitContactForm } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
 import { contactFormValuesToRequest } from "../utils/contact";
 import { useSEO } from "../utils/useSEO";
+import { usePageImagesReady } from "../hooks/usePageImagesReady";
 import type { IContactFormValues } from "../interfaces/IContactFormValues";
 import type { IFaqItem } from "../interfaces/IFaqItem";
 
@@ -18,10 +21,12 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formKey, setFormKey] = useState(0);
 
-  const { data: faqs } = useQuery<IFaqItem[]>({
+  const { data: faqs, isLoading } = useQuery<IFaqItem[]>({
     queryKey: ["faqs", language],
     queryFn: getFaqs,
   });
+
+  const imagesReady = usePageImagesReady(isLoading, [APP_IMAGES.CONTACT_US_HERO]);
 
   const handleSubmit = useCallback(
     async (values: IContactFormValues) => {
@@ -38,6 +43,10 @@ export default function ContactPage() {
     },
     [t],
   );
+
+  if (isLoading || !imagesReady) {
+    return <ContactPageSkeleton />;
+  }
 
   return (
     <>

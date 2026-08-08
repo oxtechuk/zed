@@ -1,12 +1,31 @@
-import { type ImgHTMLAttributes, useRef, useState, useEffect } from "react";
+import {
+  type ImgHTMLAttributes,
+  type SyntheticEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 const PLACEHOLDER =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
-export default function LazyImg(props: ImgHTMLAttributes<HTMLImageElement>) {
-  const { src, className, style, onLoad, ...rest } = props;
+type LazyImgStatus = "pending" | "revealed";
+
+export interface ILazyImgProps extends ImgHTMLAttributes<HTMLImageElement> {
+  skeletonClassName?: string;
+}
+
+export default function LazyImg({
+  src,
+  className,
+  style,
+  onLoad,
+  onError,
+  skeletonClassName = "",
+  ...rest
+}: ILazyImgProps) {
   const imgRef = useRef<HTMLImageElement>(null);
-  const [loaded, setLoaded] = useState(false);
+  const [status, setStatus] = useState<LazyImgStatus>("pending");
 
   useEffect(() => {
     const el = imgRef.current;
@@ -15,32 +34,40 @@ export default function LazyImg(props: ImgHTMLAttributes<HTMLImageElement>) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          const img = el;
-          img.src = src as string;
-          observer.unobserve(img);
+          el.src = src as string;
+          observer.unobserve(el);
         }
       },
-      { rootMargin: "200px" }
+      { rootMargin: "200px" },
     );
 
     observer.observe(el);
     return () => observer.disconnect();
   }, [src]);
 
+  const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
+    setStatus("revealed");
+    onLoad?.(event);
+  };
+
+  const handleError = (event: SyntheticEvent<HTMLImageElement>) => {
+    setStatus("revealed");
+    onError?.(event);
+  };
+
+  const showSkeleton = status !== "revealed";
+
   return (
     <img
       {...rest}
       ref={imgRef}
       src={PLACEHOLDER}
-      onLoad={(e) => {
-        setLoaded(true);
-        onLoad?.(e);
-      }}
-      className={className}
+      onLoad={handleLoad}
+      onError={handleError}
+      className={`${className ?? ""} ${showSkeleton ? `lazy-img-skeleton ${skeletonClassName}` : ""}`}
       style={{
         ...style,
-        clipPath: loaded ? "inset(0 0 0 0)" : "inset(0 0 100% 0)",
-        transition: "clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+        ...(showSkeleton ? { width: "100%", height: "100%" } : {}),
       }}
     />
   );

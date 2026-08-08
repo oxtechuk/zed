@@ -257,6 +257,10 @@
   },
   "blogPage": {
     "readMore": "Read More",
+    "categories": {
+      "all": "All"
+    },
+    "noArticles": "No articles available at the moment.",
     "hero": {
       "badge": "Blog",
       "title": "Zad Capital <span class=\"highlight\">Blog</span>",
@@ -277,7 +281,15 @@
       "loading": "Loading..."
     },
     "details": {
+      "heroBadge": "Blog",
+      "postAlt": "Blog Post",
       "metaDescription": "Read our latest articles about cars, financing tips, and industry insights.",
+      "readTime": {
+        "lessThanMinute": "Less than a minute",
+        "oneMinute": "1 min read",
+        "twoMinutes": "2 min read",
+        "minutes": "{{count}} min read"
+      },
       "page": {
         "loading": "Loading...",
         "error": "Something went wrong. Please try again."
@@ -616,12 +628,168 @@
         {
           "question": "How do I apply for a car finance through Zed Car?",
           "answer": "Yes, we provide multiple financing solutions based on your credit status and suitable monthly budget."
-        },
-        {
-          "question": "How do I apply for a car finance through Zed Car?",
-          "answer": "After finance approval, the booking and delivery procedures are coordinated according to the available city."
         }
       ]
+    },
+    "comparePage": {
+      "badge": "Cars Comparison",
+      "title": "Compare Two Cars",
+      "description": "Choose two cars to compare their specifications and costs side by side",
+      "criterion": "Criterion",
+      "bestInComparison": "Best in Comparison",
+      "comparisonResult": "Comparison Result",
+      "tie": "Tie Between Cars",
+      "tieDescription": "Both cars tied in direct comparison points",
+      "excelledIn": "Excelled in {{score}} out of {{total}} criteria",
+      "carDetails": "Car Details",
+      "compareTable": "Comparison Table",
+      "compareDescription": "Detailed comparison between two cars of your choice",
+      "specLabel": "Specification",
+      "summaryTitle": "Comparison Summary",
+      "carOne": "Car 1",
+      "carTwo": "Car 2",
+      "points": "points",
+      "selectCar": "Select a car",
+      "searchCar": "Search for a car...",
+      "noResults": "No results",
+      "cancel": "Cancel",
+      "loading": "Loading...",
+      "addCar": "Add a car to compare",
+      "remove": "Remove",
+      "monthlyInstallment": "Monthly Installment",
+      "cashPrice": "Cash Price",
+      "sar": "SAR",
+      "vs": "VS",
+      "all": "All",
+      "sections": {
+        "titles": {
+          "prices": "Prices",
+          "performance": "Performance",
+          "design": "Design",
+          "featuresAndSafety": "Features & Safety",
+          "technicalSpecs": "Technical Specs"
+        },
+        "labels": {
+          "price": "Price",
+          "estimatedInstallment": "Estimated Installment",
+          "power": "Power",
+          "topSpeed": "Top Speed",
+          "acceleration": "Acceleration",
+          "type": "Type",
+          "seats": "Seats",
+          "transmission": "Transmission"
+        }
+      }
+    },
+    "contactPage": {
+      "contactUs": {
+        "eyebrow": "Contact Us",
+        "title": "Send us your message",
+        "description": "Fill the form below and one of our specialists will contact you as soon as possible.",
+        "fullNameLabel": "Full Name",
+        "fullNamePlaceholder": "Mohammed Al-Omari",
+        "phoneLabel": "Phone Number",
+        "phonePlaceholder": "+966 5X XXX XXXX",
+        "emailLabel": "Email",
+        "emailPlaceholder": "name@example.com",
+        "countryLabel": "Country",
+        "subjectLabel": "Subject",
+        "subjectPlaceholder": "Write your subject",
+        "messageLabel": "Your Message",
+        "messagePlaceholder": "Write your inquiry here... the more details you provide, the more accurate and faster our response.",
+        "submitText": "Send Message",
+        "submittingText": "Sending...",
+        "privacyNotice": "Your information is protected and will not be shared with any third party.",
+        "charCount": "char",
+        "countries": [
+          {
+            "label": "Saudi Arabia",
+            "value": "saudi-arabia"
+          },
+          {
+            "label": "UAE",
+            "value": "uae"
+          },
+          {
+            "label": "Kuwait",
+            "value": "kuwait"
+          },
+          {
+            "label": "Qatar",
+            "value": "qatar"
+          }
+        ],
+        "successToast": "Your message has been sent successfully. We will contact you soon.",
+        "errorToast": "An error occurred while sending. Please try again.",
+        "labels": {
+          "whatsapp": "WhatsApp",
+          "callNow": "Call Now",
+          "email": "Email",
+          "location": "Location",
+          "formTag": "Contact Form",
+          "formTitle": "Send us a message",
+          "formSubtitle": "We will respond within business hours",
+          "openInMaps": "Open in Google Maps",
+          "workingHours": "Working Hours",
+          "whatsappAvailable": "WhatsApp available 24/7",
+          "whatsappFallback": "Instant reply"
+        },
+        "subjects": {
+          "general_inquiry": "General Inquiry",
+          "financing_request": "Financing Request",
+          "car_booking": "Car Booking",
+          "car_import": "Car Import",
+          "complaint": "Complaint",
+          "other": "Other"
+        },
+        "whatsappMessage": "Inquiry from the contact form regarding: {{subject}}",
+        "fallbackBranches": [
+          {
+            "name": "King Fahd Road, Olaya",
+            "address": "Riyadh, Saudi Arabia",
+            "mapLink": "https://maps.google.com/?q=Olaya+Riyadh",
+            "workingHours": [
+              {
+                "day": "Sunday - Thursday",
+                "hours": "9:00 AM - 9:00 PM"
+              },
+              {
+                "day": "Friday",
+                "hours": "4:00 PM - 9:00 PM"
+              },
+              {
+                "day": "Saturday",
+                "hours": "10:00 AM - 8:00 PM"
+              }
+            ]
+          }
+        ]
+      },
+      "faq": {
+        "eyebrow": "FAQ",
+        "titleBlack": "Have a question?",
+        "titleOrange": "We have the answer",
+        "description": "If you didn't find an answer to your question, feel free to contact our team directly.",
+        "buttonText": "Ask us now",
+        "items": [
+          {
+            "question": "How do I apply for a car finance through Zed Car?",
+            "answer": "Applying for finance is easy and fast. Start by filling out the finance application form on the website or contact us via WhatsApp. The application usually requires a national ID, salary statement, and bank statement for the last 3 months. The application is reviewed within 24-48 business hours."
+          },
+          {
+            "question": "How do I apply for a car finance through Zed Car?",
+            "answer": "You can choose the suitable car and send the finance application directly, and our team will contact you to complete the required information."
+          },
+          {
+            "question": "How do I apply for a car finance through Zed Car?",
+            "answer": "Yes, we provide multiple financing solutions based on your credit status and suitable monthly budget."
+          },
+          {
+            "question": "How do I apply for a car finance through Zed Car?",
+            "answer": "After finance approval, the booking and delivery procedures are coordinated according to the available city."
+          }
+        ]
+      }
     },
     "financeCalculator": {
       "currency": "SAR",
@@ -643,38 +811,65 @@
           "description": "Flexible plans that perfectly fit your financial situation"
         }
       ],
+      "pageBanner": {
+        "badge": "Finance Calculator",
+        "title": "Calculate Your Monthly Installment"
+      },
+      "stepper": {
+        "step1": "Your Info",
+        "step2": "Car Details",
+        "step3": "Finance Details"
+      },
+      "car": {
+        "featured": "Featured"
+      },
+      "common": {
+        "back": "Back",
+        "next": "Next",
+        "continue": "Continue"
+      },
       "cities": {
         "riyadh": "Riyadh",
         "jeddah": "Jeddah",
         "dammam": "Dammam"
       },
       "validation": {
-        "selectCar": "Please select a car",
-        "fillRequired": "Please fill all required fields"
+        "selectCar": "Please select a car to continue",
+        "fillRequired": "Please fill in all required fields",
+        "acceptTerms": "You must accept the terms and privacy policy to continue"
       },
       "step1": {
         "stepperLabel": "Your Info",
         "fullName": "Full Name",
-        "fullNamePlaceholder": "Mohammed Al-Omari",
+        "fullNamePlaceholder": "Mohammed Abdullah...",
         "phone": "Phone Number",
-        "phonePlaceholder": "+966 5X XXX XXXX",
+        "phonePlaceholder": "05xxxxxxxx",
         "email": "Email",
         "emailPlaceholder": "name@example.com",
         "city": "City",
         "salary": "Salary",
         "salaryPlaceholder": "Enter salary",
         "obligations": "Monthly Obligations",
-        "obligationsPlaceholder": "Enter monthly obligations",
+        "obligationsPlaceholder": "0",
         "carLabel": "Car to Finance",
         "searchPlaceholder": "Search for a car...",
         "noResults": "No results found",
         "changeButton": "Change",
         "selectCar": "Select a Car",
         "messageLabel": "Your Message",
-        "messagePlaceholder": "Write your inquiry here... The more details you provide, the more accurate our response will be.",
+        "messagePlaceholder": "Write your inquiry here...",
         "privacyNotice": "Your information is protected and will not be shared with any third party",
         "submitButton": "View Finance Calculator",
-        "charCount": "characters"
+        "charCount": "characters",
+        "badge": "Step 1",
+        "title": "Personal Information",
+        "selectCity": "Select your city",
+        "agreeText": "I agree to ",
+        "privacyPolicy": "Privacy Policy",
+        "and": " and ",
+        "termsOfUse": "Terms of Use",
+        "communicationConsent": ", and consent to being contacted by the Zad Capital team.",
+        "continue": "Continue"
       },
       "step2": {
         "stepperLabel": "Finance Calculator",
@@ -688,6 +883,7 @@
         "financeAmount": "Finance Amount",
         "totalFinance": "Total Installment",
         "totalProfit": "Total Profit",
+        "financingPeriod": "Financing Period",
         "approvalTime": "Expected Approval Time",
         "approvalValue": "48 Hours",
         "disclaimer": "These results are estimates and may vary depending on the financing entity's approval and final terms.",
@@ -706,119 +902,176 @@
         "successToast": "Finance request sent successfully",
         "errorToast": "An error occurred, please try again",
         "banksError": "Failed to load banks"
-      }
-    }
-  },
-  "financeCalculator": {
-    "currency": "SAR",
-    "badge": "Instant Finance Calculator",
-    "titleWhite": "Calculate Your",
-    "titleOrange": "Installment in Seconds",
-    "description": "Enter your data once and get instant financing results from multiple accredited financing entities in the Kingdom.",
-    "infoBoxes": [
-      {
-        "title": "Calculate your monthly payment instantly",
-        "description": "Accurate results updated with every change"
       },
-      {
-        "title": "Compare multiple accredited financing entities",
-        "description": "Compare financing options"
+      "step2Car": {
+        "title": "Select Car",
+        "subtitle": "Choose the car you want to finance",
+        "searchPlaceholder": "Type car name, brand, or model...",
+        "noResults": "No matching cars found",
+        "selectCarPrompt": "Select the car you want to finance...",
+        "requestedColor": "Requested Color",
+        "carPrice": "Car Price",
+        "next": "Next"
       },
-      {
-        "title": "Best plan for your budget",
-        "description": "Flexible plans that perfectly fit your financial situation"
+      "step3": {
+        "back": "Back",
+        "badge": "Step 2",
+        "title": "Financing Details",
+        "carDetails": "Car Details",
+        "salary": "Monthly Salary",
+        "downPayment": "Down Payment",
+        "termTitle": "Financing Term:",
+        "month": "{{term}} Months",
+        "summaryTitle": "Calculation Result",
+        "monthlyPayment": "Monthly Payment",
+        "financeAmount": "Finance Amount",
+        "totalFinance": "Total Payments",
+        "totalProfit": "Total Profit",
+        "whatsapp": "Contact via WhatsApp",
+        "submitLead": "Apply for Finance Now",
+        "submitting": "Submitting request...",
+        "disclaimer": "* Numbers are estimates based on an annual profit rate of 4.5%. Please contact us for a final approved offer.",
+        "errorToast": "An error occurred while submitting the request, please try again later",
+        "whatsappMessage": "Hello, I would like to inquire about financing a car ({{carName}}) with an estimated monthly installment of {{monthlyPayment}} SAR.",
+        "leadNotes": "Requested color: {{color}} | Salary: {{salary}} | Down payment: {{downPayment}}"
+      },
+      "success": {
+        "badge": "Submitted",
+        "title": "Your application is under review!",
+        "description": "Finance request for {{carName}} has been received.",
+        "contactInfo": "One of our specialists will contact you at {{phone}} during business hours.",
+        "whatsapp": "Follow your request via WhatsApp",
+        "backToCars": "Back to Browsing Cars",
+        "whatsappMessage": "I would like to follow up on the finance request submitted for {{carName}}"
+      },
+      "colors": {
+        "white": "White",
+        "black": "Black",
+        "silver": "Silver",
+        "gray": "Gray",
+        "navy": "Navy",
+        "red": "Red",
+        "blue": "Blue",
+        "gold": "Gold",
+        "darkGreen": "Dark Green"
       }
-    ],
-    "cities": {
-      "riyadh": "Riyadh",
-      "jeddah": "Jeddah",
-      "dammam": "Dammam"
     },
-    "validation": {
-      "selectCar": "Please select a car",
-      "fillRequired": "Please fill all required fields"
+    "mobileNav": {
+      "home": "Home",
+      "newCars": "New Cars",
+      "finance": "Request Finance",
+      "offers": "Offers",
+      "more": "More",
+      "blog": "Blog"
     },
-    "step1": {
-      "stepperLabel": "Your Info",
-      "fullName": "Full Name",
-      "fullNamePlaceholder": "Mohammed Al-Omari",
-      "phone": "Phone Number",
-      "phonePlaceholder": "+966 5X XXX XXXX",
-      "email": "Email",
-      "emailPlaceholder": "name@example.com",
-      "city": "City",
-      "salary": "Salary",
-      "salaryPlaceholder": "Enter salary",
-      "obligations": "Monthly Obligations",
-      "obligationsPlaceholder": "Enter monthly obligations",
-      "carLabel": "Car to Finance",
-      "searchPlaceholder": "Search for a car...",
-      "noResults": "No results found",
-      "changeButton": "Change",
-      "selectCar": "Select a Car",
-      "messageLabel": "Your Message",
-      "messagePlaceholder": "Write your inquiry here... The more details you provide, the more accurate our response will be.",
-      "privacyNotice": "Your information is protected and will not be shared with any third party",
-      "submitButton": "View Finance Calculator",
-      "charCount": "characters"
+    "pageTitles": {
+      "compare": "Compare Cars",
+      "brands": "Brands",
+      "financeCalculator": "Finance Calculator",
+      "notFound": "Page Not Found"
     },
-    "step2": {
-      "stepperLabel": "Finance Calculator",
-      "changeData": "Change Data",
-      "welcome": "Welcome",
-      "title": "Car Finance Calculator",
-      "carPrice": "Car Price",
-      "monthlyPayment": "Monthly Payment",
-      "summaryTitle": "Finance Summary",
-      "downPayment": "Down Payment",
-      "financeAmount": "Finance Amount",
-      "totalFinance": "Total Installment",
-      "totalProfit": "Total Profit",
-      "financingPeriod": "Financing Period",
-      "approvalTime": "Expected Approval Time",
-      "approvalValue": "48 Hours",
-      "disclaimer": "These results are estimates and may vary depending on the financing entity's approval and final terms.",
-      "submitLead": "Apply for Finance Now",
-      "submitting": "Submitting...",
-      "talkToAdvisor": "Talk to a Finance Advisor",
-      "selectedCar": "Selected Car",
-      "changeCar": "Change Car",
-      "downPaymentTitle": "Down Payment",
-      "downPaymentPercent": "Down Payment Percentage",
-      "termTitle": "Finance Period",
-      "month": "Month",
-      "bankTitle": "Financing Entity",
-      "bankMeta": "24h Approval · Free Fees",
-      "annualRate": "Annual Profit Rate",
-      "successToast": "Finance request sent successfully",
-      "errorToast": "An error occurred, please try again",
-      "banksError": "Failed to load banks"
+    "carRequest": {
+      "header": {
+        "badge": "Car Request",
+        "title": "Submit Your Request Now",
+        "subtitle": "Apply now to get your car"
+      },
+      "form": {
+        "title": "Personal Information",
+        "subtitle": "Please enter your personal information accurately to complete your request",
+        "fullName": "Full Name",
+        "fullNamePlaceholder": "John Doe...",
+        "phone": "Mobile Number",
+        "phonePlaceholder": "05xxxxxxxx",
+        "city": "City",
+        "selectCity": "Select your city",
+        "employerType": "Employer Type",
+        "selectEmployerType": "Select employer sector",
+        "serviceDuration": "Years of Service",
+        "salary": "Net Monthly Salary",
+        "salaryPlaceholder": "e.g. 8500",
+        "obligations": "Monthly Obligations",
+        "obligationsPlaceholder": "Enter your total monthly obligations or loan installments...",
+        "hasPersonalLoan": "Personal Loan",
+        "hasMortgageLoan": "Mortgage Loan",
+        "hasSimahDefault": "Do you have SIMAH default?",
+        "hasTrafficViolations": "Do you have traffic violations?",
+        "yes": "Yes",
+        "no": "No",
+        "submitting": "Submitting your request...",
+        "submit": "Submit Car Request"
+      },
+      "summary": {
+        "selectCar": "Select Car",
+        "loadingCars": "Loading cars...",
+        "selectCarPlaceholder": "Select a car...",
+        "modelYear": "Model {{year}}",
+        "fuelDefault": "Gasoline",
+        "transmissionDefault": "Automatic",
+        "preferredColor": "Preferred Color",
+        "financeTerm": "Finance Duration:",
+        "months": "{{term}} Months",
+        "carPrice": "Car Price",
+        "estimatedInstallment": "Estimated Installment",
+        "disclaimer": "* Numbers are estimates based on a 4.5% interest rate. Final financing is subject to credit evaluation."
+      },
+      "toasts": {
+        "selectCarFirst": "Please select a car first",
+        "fillRequired": "Please fill in all required fields",
+        "submitSuccess": "Your request has been submitted successfully! One of our advisors will contact you soon.",
+        "submitError": "An error occurred while submitting the request. Please try again later."
+      },
+      "cities": {
+        "riyadh": "Riyadh",
+        "jeddah": "Jeddah",
+        "dammam": "Dammam",
+        "makkah": "Makkah",
+        "madinah": "Madinah",
+        "khobar": "Khobar",
+        "jubail": "Jubail",
+        "hofuf": "Hofuf",
+        "taif": "Taif",
+        "tabuk": "Tabuk",
+        "buraidah": "Buraidah",
+        "khamis_mushait": "Khamis Mushait",
+        "hail": "Hail",
+        "najran": "Najran",
+        "abha": "Abha",
+        "jizan": "Jizan"
+      },
+      "employerTypes": {
+        "government": "Government Sector",
+        "military": "Military Sector",
+        "company": "Private Sector (Company)",
+        "institution": "Private Sector (Institution)",
+        "retired": "Retired"
+      },
+      "serviceDurations": {
+        "under1Year": "Less than 1 year",
+        "1Year": "1 year",
+        "2Years": "2 years",
+        "3YearsPlus": "3+ years"
+      },
+      "colors": {
+        "navy": "Navy",
+        "gray": "Gray",
+        "silver": "Silver",
+        "black": "Black",
+        "white": "White",
+        "darkGreen": "Dark Green",
+        "gold": "Gold",
+        "blue": "Blue",
+        "red": "Red"
+      },
+      "success": {
+        "badge": "Submitted",
+        "title": "Your request is under review!",
+        "description": "We received your financing request for {{carLabel}}",
+        "contact": "One of our specialists will contact you at {{phone}} during working hours.",
+        "whatsapp": "Follow up on WhatsApp",
+        "backToCars": "Back to Browse Cars"
+      },
+      "whatsappMsg": "Hello, I submitted a custom car request ({{carLabel}}) and would like to follow up.",
+      "notesTemplate": "Direct Car Request | Duration: {{term}} months | Estimated Installment: {{installment}} SAR"
     }
-  },
-  "mobileNav": {
-    "home": "Home",
-    "newCars": "New Cars",
-    "finance": "Request Finance",
-    "offers": "Offers",
-    "more": "More",
-    "blog": "Blog"
-  },
-  "pageTitles": {
-    "compare": "Compare Cars",
-    "brands": "Brands",
-    "financeCalculator": "Finance Calculator",
-    "notFound": "Page Not Found"
-  },
-  "blogPage": {
-    "hero": {
-      "badge": "Blog",
-      "title": "Tips & Articles",
-      "description": "Our specialized team is ready to answer all your questions"
-    },
-    "categories": {
-      "all": "All"
-    },
-    "noArticles": "No articles available at the moment.",
-    "readMore": "Read More"
-  }
-}
+}}

@@ -1,12 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { INPUT_CLASSES } from "../../constants/calculator.constants";
-
-interface ISelectBoxProps {
-  placeholder: string;
-  value: string;
-  onChange: (value: string) => void;
-}
+import type { ISelectBoxProps } from "../../interfaces/ISelectBoxProps";
 
 export default function SelectBox({ placeholder, value, onChange }: ISelectBoxProps) {
   const { t } = useTranslation();
@@ -16,17 +11,17 @@ export default function SelectBox({ placeholder, value, onChange }: ISelectBoxPr
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className={`${INPUT_CLASSES} appearance-none pe-12`}
+        className={`${INPUT_CLASSES} appearance-none pe-12 text-start cursor-pointer`}
       >
         <option value="">{placeholder}</option>
-        <option value={t("financeCalculator.cities.riyadh")}>
-          {t("financeCalculator.cities.riyadh")}
+        <option value={t("financeCalculator.cities.riyadh", "الرياض")}>
+          {t("financeCalculator.cities.riyadh", "الرياض")}
         </option>
-        <option value={t("financeCalculator.cities.jeddah")}>
-          {t("financeCalculator.cities.jeddah")}
+        <option value={t("financeCalculator.cities.jeddah", "جدة")}>
+          {t("financeCalculator.cities.jeddah", "جدة")}
         </option>
-        <option value={t("financeCalculator.cities.dammam")}>
-          {t("financeCalculator.cities.dammam")}
+        <option value={t("financeCalculator.cities.dammam", "الدمام")}>
+          {t("financeCalculator.cities.dammam", "الدمام")}
         </option>
       </select>
       <ChevronDown

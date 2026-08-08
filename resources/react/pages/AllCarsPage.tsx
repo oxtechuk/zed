@@ -13,6 +13,8 @@ import { useSEO } from "../utils/useSEO";
 import type { IFilterValues, ICarsQueryParams } from "../types/cars.types";
 import { DEFAULT_FILTER_VALUES } from "../types/cars.types";
 import type { ICarItem } from "../types/home.types";
+import AllCarsPageSkeleton from "../components/skeletons/AllCarsPageSkeleton";
+import { usePageImagesReady } from "../hooks/usePageImagesReady";
 
 const PAGE_SIZE = 9;
 
@@ -179,6 +181,19 @@ export default function AllCarsPage() {
     setCurrentPage(1);
   };
 
+  const pageImageUrls = useMemo(
+    () =>
+      (carsResponse?.data ?? [])
+        .map((car) => getImageUrl(car.main_image))
+        .filter(Boolean) as string[],
+    [carsResponse],
+  );
+  const imagesReady = usePageImagesReady(isLoading, pageImageUrls);
+
+  if (isLoading || !imagesReady) {
+    return <AllCarsPageSkeleton />;
+  }
+
   return (
     <main dir={i18n.dir()} className="min-h-screen bg-[#F3F4F6]">
       {/* Page Header Banner */}
@@ -309,18 +324,9 @@ export default function AllCarsPage() {
       {/* Cars Grid Content */}
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <span className="mb-4 block text-[13px] font-black text-gray-400">
-          {isLoading
-            ? t("allCarsPage.loading", { defaultValue: "جاري التحميل..." })
-            : t("allCarsPage.carsCount", { defaultValue: `${totalCarsCount} سيارات`, count: totalCarsCount })}
+          {t("allCarsPage.carsCount", { defaultValue: `${totalCarsCount} سيارات`, count: totalCarsCount })}
         </span>
-        {isLoading ? (
-          <div className="py-24 text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite] text-[#0F172A]" />
-            <p className="mt-4 text-sm font-extrabold text-gray-400">
-              {t("allCarsPage.loadingCars", { defaultValue: "جاري تحميل السيارات..." })}
-            </p>
-          </div>
-        ) : allCars.length > 0 ? (
+        {allCars.length > 0 ? (
           <CarsResultsGrid
             cars={allCars}
             currentPage={currentPage}

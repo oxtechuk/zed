@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { X, Users } from "lucide-react";
 import { APP_IMAGES, getImageUrl } from "../../constants/app-images";
 import type { ICompareCarCardProps } from "../../interfaces/ICompareCarCardProps";
+import LazyImg from "../LazyImg";
 
 function getSpecVal(car: any, key: string, altKey?: string): string {
   if (altKey && car[altKey]) {
@@ -71,11 +72,10 @@ export default function CompareCarCard({
     >
       {/* Top Image Banner Area */}
       <div className="relative h-[210px] sm:h-[240px] w-full overflow-hidden flex items-end justify-end p-5 bg-[#12224A]">
-        <img
+        <LazyImg
           src={imageUrl}
           alt={car.name}
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-          loading="lazy"
         />
 
         {/* Dark Gradient Overlay for Title Visibility */}

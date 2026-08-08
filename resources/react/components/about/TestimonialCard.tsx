@@ -1,5 +1,6 @@
 import type { ITestimonialItem } from "../../interfaces/ITestimonialItem";
 import RatingStars from "./RatingStars";
+import LazyImg from "../LazyImg";
 
 export default function TestimonialCard({
   testimonial,
@@ -38,11 +39,10 @@ export default function TestimonialCard({
       {/* Client Info Section */}
       <div className={`mt-6 border-t pt-5 ${borderDivider}`}>
         <div className="flex items-center justify-start gap-4">
-          <img
+          <LazyImg
             src={testimonial.avatar}
             alt={testimonial.name}
             className={`h-11 w-11 rounded-full object-cover ring-4 ${avatarRing}`}
-            loading="lazy"
           />
           <div className="text-start">
             <h3 className={`font-extrabold text-[15px] ${isActive ? "text-[#010915]" : "text-white"}`}>

@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, Play, X } from "lucide-react";
 import type { ITestimonialItem } from "../../interfaces/ITestimonialItem";
+import LazyImg from "../LazyImg";
 
 interface MediaReviewsSectionProps {
   testimonials: ITestimonialItem[];
@@ -100,11 +101,10 @@ export default function MediaReviewsSection({ testimonials }: MediaReviewsSectio
               style={{ scrollSnapAlign: "start" }}
             >
               {/* Review Media (Image fallback or Poster) */}
-              <img
+              <LazyImg
                 src={item.reviewImage || item.avatar}
                 alt={item.name}
                 className="h-full w-full object-cover transition-all duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-95"
-                loading="lazy"
               />
 
               {/* Dark Gradient Overlay */}

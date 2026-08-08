@@ -1,9 +1,4 @@
-import type { ReactNode } from "react";
-
-interface ISummaryRowProps {
-  label: string;
-  value: string | ReactNode;
-}
+import type { ISummaryRowProps } from "../../interfaces/ISummaryRowProps";
 
 export default function SummaryRow({ label, value }: ISummaryRowProps) {
   return (

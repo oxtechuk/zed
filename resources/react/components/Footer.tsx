@@ -11,6 +11,7 @@ import type { IFooterProps } from "../interfaces/IFooterProps";
 import { useSettingsStore } from "../store/settings.store";
 import { useLanguageStore } from "../store/language.store";
 import { getSocialIcon } from "../utils/social-icons";
+import LazyImg from "./LazyImg";
 
 interface FooterLink {
   label: string;
@@ -143,10 +144,9 @@ export default function Footer({
                 className="inline-flex"
                 aria-label={logoAlt}
               >
-                <img
+                <LazyImg
                   src={logoSrc}
                   alt={logoAlt}
-                  loading="lazy"
                   className="h-[54px] w-auto max-w-[120px] object-contain"
                 />
               </NavLink>

@@ -14,6 +14,7 @@ import type {
     ICarColor,
     ICarDetailsHeroProps,
 } from "../../interfaces/ICarDetailsHeroProps";
+import LazyImg from "../LazyImg";
 
 export default function CarDetailsHero({
     id,
@@ -111,11 +112,10 @@ export default function CarDetailsHero({
                             {/* Main Gallery Container */}
                             <div className="order-2 lg:order-1 mt-8 lg:mt-0 relative overflow-hidden rounded-[24px] bg-white border border-[#E7E9EF] shadow-sm flex items-center justify-center min-h-[380px] md:min-h-[480px] w-full">
                                 {/* Main Image */}
-                                <img
+                                <LazyImg
                                     src={currentImage}
                                     alt={title}
                                     className="absolute inset-0 w-full h-full object-cover transition-all duration-500"
-                                    loading="lazy"
                                 />
 
                                 {/* Bottom Overlay containing Thumbnails and Navigation Arrows */}

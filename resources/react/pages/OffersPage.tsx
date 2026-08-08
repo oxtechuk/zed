@@ -3,11 +3,13 @@ import { useTranslation } from "react-i18next";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import OffersGridSection from "../components/offers-page/OffersGridSection";
 import OffersPageHero from "../components/offers-page/OffersPageHero";
+import OffersPageSkeleton from "../components/skeletons/OffersPageSkeleton";
 import { getOffers } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
 import { APP_IMAGES, getImageUrl } from "../constants/app-images";
 import { offerToCardProps } from "../utils/offers";
 import { useSEO } from "../utils/useSEO";
+import { usePageImagesReady } from "../hooks/usePageImagesReady";
 
 const PAGE_SIZE = 6;
 
@@ -22,6 +24,7 @@ export default function OffersPage() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isLoading,
   } = useInfiniteQuery({
     queryKey: ["offers", language, activeCategory],
     queryFn: ({ pageParam }) => getOffers(pageParam as number, PAGE_SIZE, activeCategory),
@@ -40,6 +43,23 @@ export default function OffersPage() {
       page.data.map((offer) => offerToCardProps(offer, t))
     );
   }, [offersResponse, t]);
+
+  const pageImageUrls = useMemo(() => {
+    const urls: string[] = [];
+    offersResponse?.pages?.forEach((page) =>
+      page.data.forEach((offer) => {
+        const resolved = getImageUrl(offer.image);
+        if (resolved) urls.push(resolved);
+      }),
+    );
+    return urls;
+  }, [offersResponse]);
+
+  const imagesReady = usePageImagesReady(isLoading, pageImageUrls);
+
+  if (isLoading || !imagesReady) {
+    return <OffersPageSkeleton />;
+  }
 
   return (
     <>

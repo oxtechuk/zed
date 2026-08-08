@@ -8,3 +8,6 @@ export { default as StepOneForm } from "./StepOneForm";
 export { default as StepTwoCalculator } from "./StepTwoCalculator";
 export { default as StepTwoCarSelector } from "./StepTwoCarSelector";
 export { default as StepFourSuccess } from "./StepFourSuccess";
+export { default as ColorPicker } from "./ColorPicker";
+export { default as CarPriceBanner } from "./CarPriceBanner";
+export { default as CalculatorResultCard } from "./CalculatorResultCard";

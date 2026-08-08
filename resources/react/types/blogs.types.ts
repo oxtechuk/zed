@@ -1,5 +1,7 @@
 import type { IBlogApiResponse } from "../interfaces/IBlogApiResponse";
 import type { IBlogCategory } from "../interfaces/IBlogCategory";
+import type { IBlogDetails } from "../interfaces/IBlogDetails";
+import type { IBlogDetailsApiResponse } from "../interfaces/IBlogDetailsApiResponse";
 import type { IBlogEmployee } from "../interfaces/IBlogEmployee";
 import type { IBlogHero } from "../interfaces/IBlogHero";
 import type { IBlogMeta } from "../interfaces/IBlogMeta";
@@ -12,6 +14,8 @@ export type {
   IBlogHero,
   IBlogMeta,
   IBlogApiResponse,
+  IBlogDetails,
+  IBlogDetailsApiResponse,
 };
 
 // Legacy type aliases starting without I for backward compatibility
@@ -21,24 +25,6 @@ export type BlogPost = IBlogPost;
 export type BlogHero = IBlogHero;
 export type BlogMeta = IBlogMeta;
 export type BlogApiResponse = IBlogApiResponse;
-
-export interface IBlogDetails extends IBlogPost {
-  content: string;
-  meta_title: string | null;
-  meta_description: string | null;
-  meta_keywords: string | null;
-  is_featured: boolean;
-  related_posts: IBlogPost[];
-}
-
 export type BlogDetails = IBlogDetails;
-
-export interface IBlogDetailsApiResponse {
-  success: boolean;
-  message: string;
-  data: IBlogDetails;
-  errors: null;
-  meta: null;
-}
-
 export type BlogDetailsApiResponse = IBlogDetailsApiResponse;
+

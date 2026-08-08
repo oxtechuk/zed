@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useLanguageStore } from "../store/language.store";
 import type { IHeaderProps } from "../interfaces/IHeaderProps";
+import LazyImg from "./LazyImg";
 
 function isActivePath(path: string, currentPath: string): boolean {
   if (path === "/") return currentPath === "/";
@@ -26,11 +27,10 @@ export default function Header({
         >
           {/* Logo */}
           <NavLink to="/" className="flex items-center shrink-0">
-            <img
+            <LazyImg
               src={logoSrc}
               alt={logoAlt}
               className="h-[52px] w-auto object-contain"
-              loading="lazy"
             />
           </NavLink>
 

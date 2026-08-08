@@ -1,68 +1,57 @@
 import { useTranslation } from "react-i18next";
-import { CalendarDays, Clock } from "lucide-react";
+import { Clock, CalendarDays } from "lucide-react";
 import type { IBlogDetailsHeroProps } from "../../interfaces/IBlogDetailsHeroProps";
 
 export default function BlogDetailsHero({
   category,
   title,
-  authorName,
-  authorRole,
-  authorImage,
   date,
   readTime,
-  image,
 }: IBlogDetailsHeroProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
+
   return (
-    <section dir={i18n.dir()} className="w-full bg-[#F0F2F5] pt-12 pb-8">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-start">
-          <span className="inline-flex rounded-full bg-[#FFF0EB] px-4 py-2 text-[13px] font-bold text-[var(--brand-secondary-color)]">
-            {category}
+    <section
+      dir={i18n.dir()}
+      className="w-full bg-[#080E1E] py-6 md:py-8 text-white"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-start text-start w-full">
+          {/* Top Label */}
+          <span className="text-[#EDC98E] text-[13px] md:text-[14px] font-bold mb-2">
+            {t("blogPage.details.heroBadge")}
           </span>
 
-          <h1 className="mt-5 text-[30px] font-extrabold leading-[1.6] text-[#07111F] md:text-[42px]">
+          {/* Main Title */}
+          <h1 className="text-[22px] sm:text-[28px] md:text-[36px] font-black leading-[1.3] text-white tracking-tight mb-4 w-full">
             {title}
           </h1>
 
-          <div className="mt-7 flex flex-wrap items-center justify-start gap-5 text-[13px] text-[#8A8F99]">
-            <div className="flex items-center gap-3">
-              <img
-                src={authorImage}
-                alt={authorName}
-                className="h-[48px] w-[48px] rounded-full object-cover"
-                loading="lazy"
-              />
+          {/* Metadata Row */}
+          <div className="flex flex-wrap items-center gap-4 text-[12px] sm:text-[13px] text-white/70 font-medium">
+            {/* Category Pill */}
+            {category && (
+              <span className="inline-flex items-center rounded-full bg-[#064E3B]/80 border border-[#10B981]/30 px-3.5 py-1 text-[12px] font-bold text-[#34D399]">
+                {category}
+              </span>
+            )}
 
-              <div className="text-start">
-                <p className="font-bold text-[#07111F]">{authorName}</p>
-                <p className="mt-1">{authorRole}</p>
+            {/* Reading Time */}
+            {readTime && (
+              <div className="flex items-center gap-1.5 text-white/80">
+                <Clock size={14} className="text-white/60" />
+                <span>{readTime}</span>
               </div>
-            </div>
+            )}
 
-            <span className="hidden h-1.5 w-1.5 rounded-full bg-[#CBD5E1] sm:block" />
-
-            <div className="flex items-center gap-2">
-              <CalendarDays size={15} />
-              <span>{date}</span>
-            </div>
-
-            <span className="hidden h-1.5 w-1.5 rounded-full bg-[#CBD5E1] sm:block" />
-
-            <div className="flex items-center gap-2">
-              <Clock size={15} />
-              <span>{readTime}</span>
-            </div>
+            {/* Publication Date */}
+            {date && (
+              <div className="flex items-center gap-1.5 text-white/80">
+                <CalendarDays size={14} className="text-white/60" />
+                <span>{date}</span>
+              </div>
+            )}
           </div>
-        </div>
-
-        <div className="mt-12 overflow-hidden rounded-[18px]">
-          <img
-            src={image}
-            alt={title}
-            className="h-[320px] w-full object-cover md:h-[560px]"
-            loading="lazy"
-          />
         </div>
       </div>
     </section>

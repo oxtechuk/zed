@@ -1,8 +1,11 @@
+import { useMemo } from "react";
 import BlogHeroSection from "../components/blogs/BlogHeroSection";
 import BlogCategoryFilter from "../components/blogs/BlogCategoryFilter";
 import BlogGrid from "../components/blogs/BlogGrid";
 import BlogPagination from "../components/blogs/BlogPagination";
+import BlogsPageSkeleton from "../components/skeletons/BlogsPageSkeleton";
 import { useBlogsPage } from "../hooks/useBlogsPage";
+import { usePageImagesReady } from "../hooks/usePageImagesReady";
 
 export default function BlogsPage() {
   const {
@@ -17,6 +20,16 @@ export default function BlogsPage() {
     handleCategoryChange,
     handlePageChange,
   } = useBlogsPage();
+
+  const imageUrls = useMemo(
+    () => articles.map((article) => article.image).filter(Boolean) as string[],
+    [articles],
+  );
+  const imagesReady = usePageImagesReady(isLoading, imageUrls);
+
+  if (isLoading || !imagesReady) {
+    return <BlogsPageSkeleton />;
+  }
 
   return (
     <main dir={i18n.dir()} className="min-h-screen bg-[#FAFAFB]">

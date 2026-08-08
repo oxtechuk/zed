@@ -18,6 +18,8 @@ import { formatPrice } from "../utils/format";
 import { useSEO } from "../utils/useSEO";
 import type { IBrandCardProps } from "../interfaces/IBrandCardProps";
 import BrandsCarousel from "../components/BrandsCarousel";
+import HomePageSkeleton from "../components/skeletons/HomePageSkeleton";
+import { usePageImagesReady } from "../hooks/usePageImagesReady";
 
 const SPEC_KEY_MAP: Record<string, string> = {
   "Fuel Type": "fuel",
@@ -158,6 +160,32 @@ export default function Home() {
     [data],
   );
 
+  const pageImageUrls = useMemo(() => {
+    const urls: string[] = [];
+    const push = (path?: string | null) => {
+      const resolved = getImageUrl(path ?? null);
+      if (resolved) urls.push(resolved);
+    };
+    data?.hero_slides?.forEach((slide: any) => {
+      push(slide?.image);
+      push(slide?.image_mobile);
+    });
+    data?.promo_cards?.forEach((card: any) => push(card?.image));
+    if (data?.featured_section) {
+      push(data.featured_section.background_image);
+      push(data.featured_section.image);
+    }
+    data?.featured_cars?.forEach((car) => push(car.main_image));
+    data?.offer_cars?.forEach((car) => push(car.main_image));
+    data?.budget_ranges?.forEach((range) =>
+      range.cars?.forEach((car) => push(car.main_image)),
+    );
+    data?.brands?.forEach((brand) => push(brand.logo));
+    return urls;
+  }, [data]);
+
+  const imagesReady = usePageImagesReady(isLoading, pageImageUrls);
+
   const activeRangeValue = activeBudgetRange === "all" ? "all" : (budgetRangeItems.find((range) => range.value === activeBudgetRange)?.value ?? "all");
 
   const activeBudgetCars = useMemo(
@@ -187,12 +215,8 @@ export default function Home() {
     [data, activeRangeValue],
   );
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[var(--brand-primary-color)] border-t-transparent" />
-      </div>
-    );
+  if (isLoading || !imagesReady) {
+    return <HomePageSkeleton />;
   }
 
   return (

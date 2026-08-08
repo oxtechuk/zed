@@ -6,6 +6,7 @@ import { useSettingsStore } from "../store/settings.store";
 import { mobileNavItems } from "../constants/navigation";
 import { APP_IMAGES, getImageUrl } from "../constants/app-images";
 import { X, Info, Phone, Newspaper, Languages, MapPin } from "lucide-react";
+import LazyImg from "./LazyImg";
 
 const menuLinks = [
   { labelKey: "nav.about", to: "/about", icon: Info },
@@ -118,11 +119,10 @@ export default function MobileBottomNav() {
       >
         <div className="flex h-full flex-col">
           <div className="flex items-center justify-between px-5 pt-5 pb-3">
-            <img
+            <LazyImg
               src={getImageUrl(settings?.logo ?? null) || APP_IMAGES.LOGO}
               alt="Zed Capital"
               className="h-20 w-auto object-contain"
-              loading="lazy"
             />
             <button
               type="button"

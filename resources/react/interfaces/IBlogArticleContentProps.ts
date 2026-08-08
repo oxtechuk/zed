@@ -1,11 +1,7 @@
-export interface IBlogArticleSection {
-  title?: string;
-  paragraphs: string[];
-  list?: string[];
-  highlight?: boolean;
-}
+import type { IBlogArticleSection } from "./IBlogArticleSection";
 
 export interface IBlogArticleContentProps {
   sections: IBlogArticleSection[];
   content?: string;
 }
+

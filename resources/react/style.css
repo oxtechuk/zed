@@ -187,7 +187,6 @@ select {
   margin-bottom: 0.5rem;
 }
 .blog-content-html blockquote {
-  border-right: 4px solid var(--brand-secondary-color, #EDC98E);
   padding-right: 1.5rem;
   margin: 1.5rem 0;
   font-style: italic;
@@ -197,4 +196,27 @@ select {
 .blog-content-html strong {
   font-weight: 700;
   color: #0F172A;
+}
+
+/* Lazy image skeleton shimmer */
+.lazy-img-skeleton {
+  background: linear-gradient(90deg, #e8ecf1 25%, #f4f7fa 50%, #e8ecf1 75%);
+  background-size: 200% 100%;
+  animation: lazy-img-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Generic content skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #e8ecf1 25%, #f4f7fa 50%, #e8ecf1 75%);
+  background-size: 200% 100%;
+  animation: lazy-img-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes lazy-img-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

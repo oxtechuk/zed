@@ -3,6 +3,8 @@ import { initReactI18next } from "react-i18next";
 import HttpBackend from "i18next-http-backend";
 
 const savedLang = localStorage.getItem("language") || "ar";
+const base = import.meta.env.BASE_URL || "/";
+const cleanBase = base.endsWith("/") ? base : `${base}/`;
 
 i18n
   .use(HttpBackend)
@@ -12,7 +14,7 @@ i18n
     fallbackLng: "en",
     debug: true,
     backend: {
-      loadPath: `/locales/{{lng}}.json`,
+      loadPath: `${cleanBase}locales/{{lng}}.json`,
     },
     interpolation: {
       escapeValue: false,

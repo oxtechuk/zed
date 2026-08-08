@@ -1,4 +1,5 @@
 import type { IPartnersSectionProps } from "../../interfaces/IPartnersSectionProps";
+import LazyImg from "../LazyImg";
 
 export default function PartnersSection({ partners }: IPartnersSectionProps) {
   if (partners.length === 0) return null;
@@ -13,11 +14,10 @@ export default function PartnersSection({ partners }: IPartnersSectionProps) {
               key={partner.id}
               className="flex items-center justify-center transition-all duration-300 hover:scale-105"
             >
-              <img
+              <LazyImg
                 src={partner.logo}
                 alt={partner.name}
                 className="h-10 md:h-12 w-auto object-contain opacity-80 hover:opacity-100 transition-all duration-300"
-                loading="lazy"
               />
             </div>
           ))}

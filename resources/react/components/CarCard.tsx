@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ArrowUpRight, Scale, Users } from "lucide-react";
 import type { ICarCardProps } from "../interfaces/ICarCardProps";
+import LazyImg from "./LazyImg";
 
 export type { ICarCardProps as CarCardProps };
 
@@ -62,11 +63,10 @@ export default function CarCard({
 
             {/* Image Area */}
             <div className="relative h-[208px] overflow-hidden">
-                <img
+                <LazyImg
                     src={image}
                     alt={`${brand} ${name}`}
                     className="h-full w-full object-cover"
-                    loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             </div>

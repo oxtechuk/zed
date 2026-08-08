@@ -58,11 +58,11 @@
 
                         <div class="mb-4">
                             <label class="form-label fw-bold small text-muted"><?php echo e(__('المحتوى الكامل (عربي)')); ?> <span class="text-danger">*</span></label>
-                            <textarea name="content[ar]" class="form-control bg-light border-0 shadow-none" rows="10" required><?php echo e(old('content.ar', $blog->getTranslation('content', 'ar'))); ?></textarea>
+                            <textarea name="content[ar]" class="form-control bg-light border-0 shadow-none" rows="10"><?php echo e(old('content.ar', $blog->getTranslation('content', 'ar'))); ?></textarea>
                         </div>
                         <div class="mb-0">
                             <label class="form-label fw-bold small text-muted"><?php echo e(__('المحتوى الكامل (EN)')); ?> <span class="text-danger">*</span></label>
-                            <textarea name="content[en]" class="form-control bg-light border-0 shadow-none" rows="10" required><?php echo e(old('content.en', $blog->getTranslation('content', 'en'))); ?></textarea>
+                            <textarea name="content[en]" class="form-control bg-light border-0 shadow-none" rows="10"><?php echo e(old('content.en', $blog->getTranslation('content', 'en'))); ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -201,11 +201,41 @@
     .fw-black { font-weight: 900; }
     .shadow-xs { box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
     .cursor-pointer { cursor: pointer; }
+    .ck-editor__editable {
+        min-height: 350px !important;
+        background-color: #fff !important;
+        color: #1e293b !important;
+        border-radius: 0 0 12px 12px !important;
+    }
+    .ck-editor {
+        border-radius: 12px !important;
+        overflow: hidden;
+    }
 </style>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('js'); ?>
+<script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
 <script>
+// Initialize CKEditor 5
+ClassicEditor
+    .create(document.querySelector('textarea[name="content[ar]"]'), {
+        language: 'ar',
+        toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo' ]
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
+ClassicEditor
+    .create(document.querySelector('textarea[name="content[en]"]'), {
+        language: 'en',
+        toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo' ]
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
 // رفع وعرض الصورة
 document.getElementById('thumbnailInput').addEventListener('change', function(e) {
     const file = e.target.files[0];

@@ -1,6 +1,6 @@
-import { getImageUrl } from "../constants/app-images";
-import type { BlogPost } from "../types/blogs.types";
-import type { IBlogArticleSection } from "../interfaces/IBlogArticleContentProps";
+import { APP_IMAGES, getImageUrl } from "../constants/app-images";
+import type { IBlogPost } from "../interfaces/IBlogPost";
+import type { IBlogArticleSection } from "../interfaces/IBlogArticleSection";
 
 export function formatBlogDate(iso: string, language: string): string {
   const date = new Date(iso);
@@ -12,7 +12,18 @@ export function formatBlogDate(iso: string, language: string): string {
   });
 }
 
-export function formatBlogReadTime(minutes: number, language: string): string {
+export function formatBlogReadTime(
+  minutes: number,
+  language: string,
+  t?: (key: string, options?: Record<string, unknown>) => string
+): string {
+  if (t) {
+    if (minutes < 1) return t("blogPage.details.readTime.lessThanMinute");
+    if (minutes === 1) return t("blogPage.details.readTime.oneMinute");
+    if (minutes === 2) return t("blogPage.details.readTime.twoMinutes");
+    return t("blogPage.details.readTime.minutes", { count: minutes });
+  }
+
   if (language === "ar") {
     if (minutes < 1) return "أقل من دقيقة";
     if (minutes === 1) return "دقيقة واحدة";
@@ -23,36 +34,34 @@ export function formatBlogReadTime(minutes: number, language: string): string {
 }
 
 export function postToCardProps(
-  post: BlogPost,
+  post: IBlogPost,
   language: string,
-  t: (key: string) => string
+  t: (key: string, options?: Record<string, unknown>) => string
 ) {
   return {
     id: post.id,
-    image: getImageUrl(post.thumbnail) || "/images/blog.png",
+    image: getImageUrl(post.thumbnail) || APP_IMAGES.BLOG_PLACEHOLDER,
     category:
       post.categories.map((c) => c.name).join(", ") ||
       t("blogPage.hero.featuredPost.category"),
     categorySlug:
       post.categories.map((c) => c.slug).join(", "),
     date: formatBlogDate(post.published_at, language),
-    readTime: formatBlogReadTime(post.reading_time, language),
+    readTime: formatBlogReadTime(post.reading_time, language, t),
     title: post.title || t("blogPage.hero.featuredPost.title"),
     description: post.excerpt || t("blogPage.hero.featuredPost.description"),
     authorName:
-      post.employee.name || t("blogPage.hero.featuredPost.author.name"),
+      post.employee?.name || t("blogPage.hero.featuredPost.author.name"),
     authorRole:
-      post.employee.role || t("blogPage.hero.featuredPost.author.role"),
+      post.employee?.role || t("blogPage.hero.featuredPost.author.role"),
     authorImage:
-      getImageUrl(post.employee.avatar) || "/images/blogs/author.png",
+      getImageUrl(post.employee?.avatar ?? null) || APP_IMAGES.BLOG_AUTHOR_PLACEHOLDER,
     readMoreTo: `/blog/${post.slug}`,
     tag: post.tag ?? undefined,
   };
 }
 
-export function parseBlogContent(
-  content: string
-): IBlogArticleSection[] {
+export function parseBlogContent(content: string): IBlogArticleSection[] {
   const blocks = content.split(/\r?\n\r?\n/).filter(Boolean);
   const sections: IBlogArticleSection[] = [];
   let currentSection: IBlogArticleSection | null = null;

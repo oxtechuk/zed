@@ -8,6 +8,7 @@ import {
   Search,
   Pencil,
 } from "lucide-react";
+import LazyImg from "./LazyImg";
 import Select from "./Select";
 import { getBrands } from "../services/api/cars.service";
 import { APP_IMAGES, getImageUrl } from "../constants/app-images";
@@ -336,11 +337,10 @@ function BrandButton({
     >
       <div className="flex items-center gap-4">
         {logo && (
-          <img
+          <LazyImg
             src={logo}
             alt={label}
             className="h-[34px] w-[34px] rounded-full object-cover"
-            loading="lazy"
           />
         )}
 

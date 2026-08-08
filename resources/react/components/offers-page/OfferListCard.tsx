@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useCountdown } from "../../hooks/useCountdown";
 import { APP_IMAGES, getImageUrl } from "../../constants/app-images";
 import type { IOfferListCardProps } from "../../interfaces/IOfferListCardProps";
+import LazyImg from "../LazyImg";
 
 export default function OfferListCard({
     id,
@@ -64,11 +65,10 @@ export default function OfferListCard({
                         {tagLabel}
                     </span>
                 )}
-                <img
+                <LazyImg
                     src={cardImage}
                     alt={title ?? "Offer"}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
                 />
             </div>
 
