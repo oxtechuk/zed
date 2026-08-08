@@ -1,10 +1,7 @@
 import { Eye, Target } from "lucide-react";
+import type { IIconBoxProps } from "../../interfaces/IIconBoxProps";
 
-interface IconBoxProps {
-  icon: "target" | "eye";
-}
-
-export default function IconBox({ icon }: IconBoxProps) {
+export default function IconBox({ icon }: IIconBoxProps) {
   const Icon = icon === "target" ? Target : Eye;
 
   return (

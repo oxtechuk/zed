@@ -1,19 +1,30 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 
 import RootLayout from "../pages/RootLayout";
-import HomePage from "../pages/HomePage";
 import NotFoundPage from "../pages/NotFoundPage";
-import AllCarsPage from "../pages/AllCarsPage";
-import CarDetailsPage from "../pages/CarDetailsPage";
-import ComparePage from "../pages/ComparePage";
-import OffersPage from "../pages/OffersPage";
-import AboutPage from "../pages/AboutPage";
-import BlogsPage from "../pages/BlogsPage";
-import BlogDetailsPage from "../pages/BlogDetailsPage";
-import ContactPage from "../pages/ContactPage";
-import FinanceCalculatorPage from "../pages/FinanceCalculatorPage";
-import CarRequestPage from "../pages/CarRequestPage";
-import BrandsPage from "../pages/BrandsPage";
+
+import HomePageSkeleton from "../components/skeletons/HomePageSkeleton";
+import AllCarsPageSkeleton from "../components/skeletons/AllCarsPageSkeleton";
+import AboutPageSkeleton from "../components/skeletons/AboutPageSkeleton";
+import BlogsPageSkeleton from "../components/skeletons/BlogsPageSkeleton";
+import BlogDetailsPageSkeleton from "../components/skeletons/BlogDetailsPageSkeleton";
+import ContactPageSkeleton from "../components/skeletons/ContactPageSkeleton";
+import OffersPageSkeleton from "../components/skeletons/OffersPageSkeleton";
+import CarRequestPageSkeleton from "../components/skeletons/CarRequestPageSkeleton";
+
+const HomePage = lazy(() => import("../pages/HomePage"));
+const AllCarsPage = lazy(() => import("../pages/AllCarsPage"));
+const CarDetailsPage = lazy(() => import("../pages/CarDetailsPage"));
+const ComparePage = lazy(() => import("../pages/ComparePage"));
+const OffersPage = lazy(() => import("../pages/OffersPage"));
+const AboutPage = lazy(() => import("../pages/AboutPage"));
+const BlogsPage = lazy(() => import("../pages/BlogsPage"));
+const BlogDetailsPage = lazy(() => import("../pages/BlogDetailsPage"));
+const ContactPage = lazy(() => import("../pages/ContactPage"));
+const FinanceCalculatorPage = lazy(() => import("../pages/FinanceCalculatorPage"));
+const CarRequestPage = lazy(() => import("../pages/CarRequestPage"));
+const BrandsPage = lazy(() => import("../pages/BrandsPage"));
 
 export const router = createBrowserRouter([
   {
@@ -23,39 +34,99 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: HomePage,
+        element: (
+          <Suspense fallback={<HomePageSkeleton />}>
+            <HomePage />
+          </Suspense>
+        ),
       },
-      { path: "/cars", element: <AllCarsPage /> },
-      { path: "/cars/:slug", element: <CarDetailsPage /> },
-      { path: "/compare", element: <ComparePage /> },
-      { path: "/offers", element: <OffersPage /> },
+      {
+        path: "/cars",
+        element: (
+          <Suspense fallback={<AllCarsPageSkeleton />}>
+            <AllCarsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/cars/:slug",
+        element: (
+          <Suspense fallback={<AllCarsPageSkeleton />}>
+            <CarDetailsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/compare",
+        element: (
+          <Suspense fallback={<HomePageSkeleton />}>
+            <ComparePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/offers",
+        element: (
+          <Suspense fallback={<OffersPageSkeleton />}>
+            <OffersPage />
+          </Suspense>
+        ),
+      },
       {
         path: "/about",
-        element: <AboutPage />,
+        element: (
+          <Suspense fallback={<AboutPageSkeleton />}>
+            <AboutPage />
+          </Suspense>
+        ),
       },
       {
         path: "/blog",
-        element: <BlogsPage />,
+        element: (
+          <Suspense fallback={<BlogsPageSkeleton />}>
+            <BlogsPage />
+          </Suspense>
+        ),
       },
       {
         path: "/blog/:slug",
-        element: <BlogDetailsPage />,
+        element: (
+          <Suspense fallback={<BlogDetailsPageSkeleton />}>
+            <BlogDetailsPage />
+          </Suspense>
+        ),
       },
       {
         path: "/contact",
-        element: <ContactPage />,
+        element: (
+          <Suspense fallback={<ContactPageSkeleton />}>
+            <ContactPage />
+          </Suspense>
+        ),
       },
       {
         path: "/finance-calculator",
-        element: <FinanceCalculatorPage />,
+        element: (
+          <Suspense fallback={<HomePageSkeleton />}>
+            <FinanceCalculatorPage />
+          </Suspense>
+        ),
       },
       {
         path: "/request-car",
-        element: <CarRequestPage />,
+        element: (
+          <Suspense fallback={<CarRequestPageSkeleton />}>
+            <CarRequestPage />
+          </Suspense>
+        ),
       },
       {
         path: "/brands",
-        element: <BrandsPage />,
+        element: (
+          <Suspense fallback={<HomePageSkeleton />}>
+            <BrandsPage />
+          </Suspense>
+        ),
       },
       {
         path: "*",

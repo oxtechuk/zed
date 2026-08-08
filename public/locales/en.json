@@ -368,6 +368,16 @@
       "noMap": "No map available",
       "mapTitle": "Map of {{city}}"
     },
+    "mediaReviews": {
+      "title": "What Our Clients Say?",
+      "badge": "What Our",
+      "titleBlack": "What Our",
+      "titleBlue": "Clients Say?",
+      "previous": "Previous",
+      "next": "Next",
+      "reviewDetails": "Review details",
+      "close": "Close"
+    },
     "testimonials": {
       "badge": "What Our",
       "titleBlack": "Clients Say?",

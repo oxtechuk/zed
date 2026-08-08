@@ -1,11 +1,6 @@
-interface LocationInfoProps {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  href?: string;
-}
+import type { ILocationInfoProps } from "../../interfaces/ILocationInfoProps";
 
-export default function LocationInfo({ icon, label, value, href }: LocationInfoProps) {
+export default function LocationInfo({ icon, label, value, href }: ILocationInfoProps) {
   const content = (
     <p className="text-[17px] font-bold leading-7 text-[#07111F]">{value}</p>
   );

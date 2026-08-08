@@ -31,5 +31,14 @@ export default defineConfig({
     build: {
         outDir: 'public/build',
         emptyOutDir: true,
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vendor: ['react', 'react-dom', 'react-router-dom'],
+                    query: ['@tanstack/react-query'],
+                    icons: ['lucide-react', 'react-icons'],
+                },
+            },
+        },
     },
 });

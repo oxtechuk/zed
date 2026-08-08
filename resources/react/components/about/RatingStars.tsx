@@ -1,11 +1,7 @@
 import { Star } from "lucide-react";
+import type { IRatingStarsProps } from "../../interfaces/IRatingStarsProps";
 
-interface RatingStarsProps {
-  fillColor?: string;
-  rating?: number;
-}
-
-export default function RatingStars({ fillColor = "#FFB800", rating = 5 }: RatingStarsProps) {
+export default function RatingStars({ fillColor = "#FFB800", rating = 5 }: IRatingStarsProps) {
   return (
     <div className="flex items-center gap-1">
       {Array.from({ length: 5 }).map((_, index) => {

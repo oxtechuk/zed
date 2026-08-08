@@ -368,6 +368,16 @@
             "noMap": "لا تتوفر خريطة",
             "mapTitle": "خريطة {{city}}"
         },
+        "mediaReviews": {
+            "title": "ماذا يقول عملاؤنا؟",
+            "badge": "ماذا يقول",
+            "titleBlack": "ماذا يقول",
+            "titleBlue": "عملائنا؟",
+            "previous": "السابق",
+            "next": "التالي",
+            "reviewDetails": "تفاصيل التقييم",
+            "close": "إغلاق"
+        },
         "testimonials": {
             "badge": "ماذا يقول",
             "titleBlack": "عملائنا؟",
