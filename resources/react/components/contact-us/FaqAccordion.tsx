@@ -1,19 +1,11 @@
 import { ChevronDown } from "lucide-react";
-import type { IFaqItem } from "../../interfaces/IFaqItem";
+import type { IFaqAccordionProps } from "../../interfaces/IFaqAccordionProps";
 
-interface FaqAccordionProps {
-  faq: IFaqItem;
-  isOpen: boolean;
-  onToggle: (id: string | number) => void;
-}
-
-export default function FaqAccordion({ faq, isOpen, onToggle }: FaqAccordionProps) {
+export default function FaqAccordion({ faq, isOpen, onToggle }: IFaqAccordionProps) {
   return (
     <div
       className={`overflow-hidden rounded-2xl border transition-all duration-300 bg-white ${
-        isOpen
-          ? "border-gray-200 shadow-xs"
-          : "border-gray-100"
+        isOpen ? "border-gray-200 shadow-xs" : "border-gray-100"
       }`}
     >
       <button
@@ -21,7 +13,7 @@ export default function FaqAccordion({ faq, isOpen, onToggle }: FaqAccordionProp
         onClick={() => onToggle(faq.id)}
         className="flex w-full items-center justify-between gap-5 px-6 py-5 text-end"
       >
-        <span className="text-[16px] font-extrabold leading-relaxed text-[#0F172A]">
+        <span className="text-[16px]  leading-relaxed text-[#0F172A]">
           {faq.question}
         </span>
 

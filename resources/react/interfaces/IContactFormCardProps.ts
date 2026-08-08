@@ -1,9 +1,7 @@
 import type { IContactFormValues } from "./IContactFormValues";
 
-export interface IContactUsSectionProps {
-  eyebrow: string;
-  title: string;
-  description: string;
+export interface IContactFormCardProps {
   isSubmitting?: boolean;
+  whatsappNumber: string;
   onSubmit?: (values: IContactFormValues) => void;
 }

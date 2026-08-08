@@ -38,6 +38,7 @@ export const APP_IMAGES = {
   BG_IMAGE: `${cleanBase}images/offers-section-bg.png`,
   OFFERS_SECTION_BG: `${cleanBase}images/offers-section-bg.png`,
   ALL_CARS_OFFER_IMAGE: `${cleanBase}images/all-cars-offer-page.png`,
+  CONTACT_US_HERO: `${cleanBase}images/contact-us-hero.png`,
   COMPARE_IMAGE: `${cleanBase}images/compre-image.png`,
   OFFER1: `${cleanBase}images/offer1.png`,
   OFFER_PLACEHOLDER: `${cleanBase}images/offer1.png`,

@@ -553,7 +553,50 @@
         }
       ],
       "successToast": "Your message has been sent successfully. We will contact you soon.",
-      "errorToast": "An error occurred while sending. Please try again."
+      "errorToast": "An error occurred while sending. Please try again.",
+      "labels": {
+        "whatsapp": "WhatsApp",
+        "callNow": "Call Now",
+        "email": "Email",
+        "location": "Location",
+        "formTag": "Contact Form",
+        "formTitle": "Send us a message",
+        "formSubtitle": "We will respond within business hours",
+        "openInMaps": "Open in Google Maps",
+        "workingHours": "Working Hours",
+        "whatsappAvailable": "WhatsApp available 24/7",
+        "whatsappFallback": "Instant reply"
+      },
+      "subjects": {
+        "general_inquiry": "General Inquiry",
+        "financing_request": "Financing Request",
+        "car_booking": "Car Booking",
+        "car_import": "Car Import",
+        "complaint": "Complaint",
+        "other": "Other"
+      },
+      "whatsappMessage": "Inquiry from the contact form regarding: {{subject}}",
+      "fallbackBranches": [
+        {
+          "name": "King Fahd Road, Olaya",
+          "address": "Riyadh, Saudi Arabia",
+          "mapLink": "https://maps.google.com/?q=Olaya+Riyadh",
+          "workingHours": [
+            {
+              "day": "Sunday - Thursday",
+              "hours": "9:00 AM - 9:00 PM"
+            },
+            {
+              "day": "Friday",
+              "hours": "4:00 PM - 9:00 PM"
+            },
+            {
+              "day": "Saturday",
+              "hours": "10:00 AM - 8:00 PM"
+            }
+          ]
+        }
+      ]
     },
     "faq": {
       "eyebrow": "FAQ",
