@@ -15,6 +15,50 @@ Route::get('/', function () {
     return view('app');
 })->name('store.home');
 
+Route::get('/cars', function () {
+    return view('app');
+})->name('store.cars');
+
+Route::get('/cars/{slug}', function () {
+    return view('app');
+})->name('store.cars.show');
+
+Route::get('/offers', function () {
+    return view('app');
+})->name('store.offers');
+
+Route::get('/about', function () {
+    return view('app');
+})->name('store.about');
+
+Route::get('/contact', function () {
+    return view('app');
+})->name('store.contact');
+
+Route::get('/blog', function () {
+    return view('app');
+})->name('store.blog');
+
+Route::get('/blog/{slug}', function () {
+    return view('app');
+})->name('store.blog.show');
+
+Route::get('/finance-calculator', function () {
+    return view('app');
+})->name('store.finance-calculator');
+
+Route::get('/request-car', function () {
+    return view('app');
+})->name('store.request-car');
+
+Route::get('/brands', function () {
+    return view('app');
+})->name('store.brands');
+
+Route::get('/compare', function () {
+    return view('app');
+})->name('store.compare');
+
 Route::get('/{any}', function () {
     return view('app');
 })->where('any', '^(?!crm|manager-login|api|store-api|storage).*$');
