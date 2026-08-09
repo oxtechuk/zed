@@ -26,6 +26,56 @@
         "more": "المزيد",
         "blog": "المدونة"
     },
+    "carRequest": {
+        "serviceDurations": {
+            "under1Year": "أقل من سنة",
+            "1Year": "سنة واحدة",
+            "2Years": "سنتان",
+            "3YearsPlus": "3 سنوات أو أكثر"
+        },
+        "employerTypes": {
+            "government": "قطاع حكومي",
+            "military": "قطاع عسكري",
+            "company": "شركة خاصة",
+            "institution": "مؤسسة خاصة",
+            "retired": "متقاعد"
+        },
+        "cities": {
+            "riyadh": "الرياض",
+            "jeddah": "جدة",
+            "dammam": "الدمام",
+            "makkah": "مكة المكرمة",
+            "madinah": "المدينة المنورة",
+            "khobar": "الخبر",
+            "jubail": "الجبيل",
+            "hofuf": "الهفوف",
+            "taif": "الطائف",
+            "tabuk": "تبوك",
+            "buraidah": "بريدة",
+            "khamis_mushait": "خميس مشيط",
+            "hail": "حائل",
+            "najran": "نجران",
+            "abha": "أبها",
+            "jizan": "جيزان"
+        },
+        "colors": {
+            "navy": "كحلي",
+            "gray": "رمادي",
+            "silver": "فضي",
+            "black": "أسود",
+            "white": "أبيض",
+            "darkGreen": "أخضر داكن",
+            "gold": "ذهبي",
+            "blue": "أزرق",
+            "red": "أحمر"
+        },
+        "toasts": {
+            "selectCarFirst": "الرجاء اختيار سيارة أولاً",
+            "fillRequired": "الرجاء تعبئة جميع الحقول المطلوبة",
+            "submitSuccess": "تم إرسال طلبك بنجاح! سيتواصل معك أحد مستشارينا قريباً.",
+            "submitError": "حدث خطأ أثناء إرسال الطلب، يرجى المحاولة لاحقاً"
+        }
+    },
     "carFinder": {
         "title": "لقي سيارة تناسبك",
         "brand": "الماركة / الشركة",

@@ -6,6 +6,7 @@ export { getOffers } from "./offers.service";
 export { getAboutPageData } from "./about.service";
 export { submitContactForm } from "./contact.service";
 export { submitCalculatorLead, getBanks, calculateFinance } from "./calculator.service";
+export { submitBooking } from "./booking.service";
 export { getFaqs } from "./faq.service";
 export { getSettings } from "./settings.service";
 export { getBrands } from "./brands.service";

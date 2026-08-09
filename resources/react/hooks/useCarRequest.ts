@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { getCars } from "../services/api/cars.service";
-import { submitCalculatorLead } from "../services/api/calculator.service";
+import { submitBooking } from "../services/api/booking.service";
 import { useLanguageStore } from "../store/language.store";
 import { useSettingsStore } from "../store/settings.store";
 import type { CarItem } from "../types/home.types";
@@ -184,28 +184,16 @@ export function useCarRequest() {
 
         setIsSubmitting(true);
         try {
-            const notesText = t(
-                "carRequest.notesTemplate",
-                "طلب سيارة مباشر | مدة التمويل: {{term}} شهر | القسط المقدر: {{installment}} ريال",
-                { term, installment: calculatedInstallment },
-            );
+            const notesText = `طلب سيارة مخصصة | مدة التمويل: ${term} شهر | اللون المطلوب: ${selectedColor} | جهة العمل: ${formData.employerType} | سنوات الخدمة: ${formData.yearsOfService} | الراتب: ${formData.salary} | الالتزامات: ${formData.obligations}`;
 
-            await submitCalculatorLead({
-                name: formData.fullName,
-                phone: formData.phone,
-                email: `${formData.phone}@zed.com`,
-                city: formData.city,
-                salary: Number(formData.salary),
-                monthly_obligations: Number(formData.obligations),
-                car_ids: [selectedCarId],
-                preferred_color: selectedColor,
-                employer_type: formData.employerType,
-                years_of_service: formData.yearsOfService,
-                has_personal_loan: formData.hasPersonalLoan,
-                has_mortgage_loan: formData.hasMortgageLoan,
-                has_simah_default: formData.hasSimahDefault,
-                has_traffic_violations: formData.hasTrafficViolations,
+            await submitBooking({
+                car_id: selectedCarId,
+                client_name: formData.fullName,
+                client_phone: formData.phone,
+                duration_years: Math.round(term / 12),
                 notes: notesText,
+                booking_type: "purchase",
+                location: formData.city,
             });
 
             setIsSuccess(true);
