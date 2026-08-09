@@ -18,6 +18,14 @@
     "contact": "Contact Us",
     "requestCar": "Request Car"
   },
+  "mobileNav": {
+    "newCars": "Cars",
+    "offers": "Offers",
+    "home": "Home",
+    "finance": "Finance",
+    "more": "More",
+    "blog": "Blog"
+  },
   "carFinder": {
     "title": "Find a car that suits you",
     "brand": "Brand / Manufacturer",
