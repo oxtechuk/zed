@@ -14,7 +14,7 @@ export interface ISubmitBookingData {
 }
 
 export async function submitBooking(data: ISubmitBookingData) {
-  const res = await api.post("/store-api/bookings", {
+  const res = await api.post("/store-api/booking", {
     car_id: data.car_id,
     client_name: data.client_name,
     client_phone: data.client_phone,
