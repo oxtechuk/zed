@@ -91,11 +91,14 @@ final class CalculatorApiService
         $annualRate = $bank->annual_rate;
         $monthlyRate = $annualRate / 12 / 100;
 
-        if ($monthlyRate > 0) {
+        if ($monthlyRate > 0 && $periodMonths > 0) {
             $compounded = pow(1 + $monthlyRate, $periodMonths);
-            $monthlyPayment = round($loanAmount * ($monthlyRate * $compounded) / ($compounded - 1));
-        } else {
+            $denom = $compounded - 1;
+            $monthlyPayment = $denom > 0 ? round($loanAmount * ($monthlyRate * $compounded) / $denom) : round($loanAmount / $periodMonths);
+        } elseif ($periodMonths > 0) {
             $monthlyPayment = round($loanAmount / $periodMonths);
+        } else {
+            $monthlyPayment = 0;
         }
 
         $totalPayment = $monthlyPayment * $periodMonths;
