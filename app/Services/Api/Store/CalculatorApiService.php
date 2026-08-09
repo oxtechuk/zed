@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\Api\Store;
 
-use App\Models\Booking;
 use App\Models\CalculatorBank;
 use App\Models\CalculatorLead;
 use App\Models\Car;
 use App\Services\TwilioOtpService;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 
 final class CalculatorApiService
 {
