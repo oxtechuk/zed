@@ -70,8 +70,8 @@
 
                         {{-- Image Holder --}}
                         <div class="car-img-wrapper">
-                            @if($car->thumbnail)
-                                <img src="{{ asset('storage/' . $car->thumbnail) }}" alt="{{ $car->name }}" class="car-img-main">
+                            @if($car->main_image)
+                                <img src="{{ str_starts_with($car->main_image, 'http') ? $car->main_image : asset('storage/' . $car->main_image) }}" alt="{{ $car->name }}" class="car-img-main">
                             @else
                                 <div class="car-no-img">
                                     <i class="bi bi-car-front"></i>
