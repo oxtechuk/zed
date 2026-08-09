@@ -8,7 +8,7 @@ final class InstallmentCalculator
 {
     public function calculate(float $principal, int $totalMonths, float $annualRate): float
     {
-        if ($totalMonths <= 0) {
+        if ($totalMonths <= 0 || $principal <= 0) {
             return 0;
         }
 
@@ -19,7 +19,12 @@ final class InstallmentCalculator
         }
 
         $factor = pow(1 + $monthlyRate, $totalMonths);
+        $denominator = $factor - 1;
 
-        return $principal * ($monthlyRate * $factor) / ($factor - 1);
+        if ($denominator <= 0) {
+            return $principal / $totalMonths;
+        }
+
+        return $principal * ($monthlyRate * $factor) / $denominator;
     }
 }

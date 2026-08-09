@@ -31,8 +31,11 @@ final class BookingData
             ? (float) $validated['interest_rate']
             : (float) config('store-api.booking.default_interest_rate', 4.0);
 
-        $principal = max(0, $cashPrice - (float) $validated['down_payment']);
-        $totalMonths = (int) $validated['duration_years'] * 12;
+        $downPayment = (float) ($validated['down_payment'] ?? 0);
+        $durationYears = max(1, (int) ($validated['duration_years'] ?? 5));
+
+        $principal = max(0, $cashPrice - $downPayment);
+        $totalMonths = $durationYears * 12;
 
         $calculator = new InstallmentCalculator;
         $monthly = $calculator->calculate($principal, $totalMonths, $interestRate);
@@ -41,11 +44,11 @@ final class BookingData
             car_id: (int) $validated['car_id'],
             client_name: $validated['client_name'],
             client_phone: $validated['client_phone'],
-            down_payment: (float) $validated['down_payment'],
-            duration_years: (int) $validated['duration_years'],
+            down_payment: $downPayment,
+            duration_years: $durationYears,
             interest_rate: $interestRate,
             monthly_installment: (int) round($monthly),
-            total_price: (int) round($monthly * $totalMonths + (float) $validated['down_payment']),
+            total_price: (int) round($monthly * $totalMonths + $downPayment),
             booking_type: $validated['booking_type'] ?? null,
             location: $validated['location'] ?? null,
             client_email: $validated['client_email'] ?? null,

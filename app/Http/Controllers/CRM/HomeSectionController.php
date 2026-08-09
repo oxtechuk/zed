@@ -19,7 +19,11 @@ class HomeSectionController extends Controller
      */
     public function index()
     {
-        $sections = HomeSection::query()->orderBy('sort_order')->get();
+        $activeKeys = ['featured_banner', 'search', 'featured_cars', 'offers', 'budget', 'finance'];
+        $sections = HomeSection::query()
+            ->whereIn('key', $activeKeys)
+            ->orderBy('sort_order')
+            ->get();
 
         return view('crm.settings.home-sections.index', compact('sections'));
     }

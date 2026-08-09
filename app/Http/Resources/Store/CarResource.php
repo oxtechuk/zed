@@ -14,7 +14,7 @@ class CarResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'main_image' => $this->main_image,
-            'thumbnail' => $this->thumbnail,
+            'thumbnail' => $this->thumbnail ?? $this->main_image,
             'images' => $this->whenLoaded('images', fn () => $this->images->pluck('image_path'),
             ),
             'exterior_images' => $this->whenLoaded('images', fn () => $this->images->where('type', 'exterior')->pluck('image_path')->values(),

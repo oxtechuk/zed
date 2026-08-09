@@ -11,16 +11,12 @@
 
     @php
         $sectionMeta = [
-            'hero' => ['icon' => 'bi-images', 'label' => __('الهيرو الرئيسي (تفاصيله في شرائح الهيرو)')],
-            'promo' => ['icon' => 'bi-grid-3x3-gap', 'label' => __('البطاقات الترويجية (تفاصيلها في البطاقات الترويجية)')],
+            'featured_banner' => ['icon' => 'bi-megaphone', 'label' => __('البانر الترويجي الكبير (صورة عربي وإنجليزي)')],
             'search' => ['icon' => 'bi-search', 'label' => __('قسم البحث والتصفية')],
-            'brands' => ['icon' => 'bi-award', 'label' => __('الماركات')],
-            'featured_cars' => ['icon' => 'bi-star', 'label' => __('السيارات المميزة')],
-            'featured_banner' => ['icon' => 'bi-megaphone', 'label' => __('البانر الترويجي الكبير')],
-            'latest_cars' => ['icon' => 'bi-car-front', 'label' => __('أحدث السيارات')],
-            'budget' => ['icon' => 'bi-wallet2', 'label' => __('السيارات حسب الميزانية')],
-            'finance' => ['icon' => 'bi-currency-dollar', 'label' => __('كيف يعمل التمويل (خطواته في خطوات التمويل)')],
-            'footer' => ['icon' => 'bi-layout-text-window-reverse', 'label' => __('الفوتر')],
+            'featured_cars' => ['icon' => 'bi-star', 'label' => __('قسم السيارات المميزة')],
+            'offers' => ['icon' => 'bi-percent', 'label' => __('قسم العروض')],
+            'budget' => ['icon' => 'bi-wallet2', 'label' => __('قسم السيارات حسب الميزانية')],
+            'finance' => ['icon' => 'bi-currency-dollar', 'label' => __('قسم خطوات التمويل')],
         ];
     @endphp
 
@@ -87,14 +83,14 @@
                             </div>
                             @if(in_array($section->key, ['featured_banner']))
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small text-muted d-block mb-2">{{ __('الصورة') }}</label>
+                                <label class="form-label fw-semibold small text-muted d-block mb-2">{{ __('صورة البانر — عربي') }}</label>
                                 @if($section->image)
                                     <div class="mb-2 rounded-3 overflow-hidden bg-light" style="max-height:100px;"><img src="{{ $section->image }}" class="img-fluid w-100 object-fit-cover" style="max-height:100px;"></div>
                                 @endif
                                 <input type="file" name="image" class="form-control bg-light border-0" accept="image/*">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold small text-muted d-block mb-2">{{ __('صورة الخلفية') }}</label>
+                                <label class="form-label fw-semibold small text-muted d-block mb-2">{{ __('صورة البانر — إنجليزي') }}</label>
                                 @if($section->background_image)
                                     <div class="mb-2 rounded-3 overflow-hidden bg-light" style="max-height:100px;"><img src="{{ $section->background_image }}" class="img-fluid w-100 object-fit-cover" style="max-height:100px;"></div>
                                 @endif

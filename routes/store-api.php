@@ -32,6 +32,7 @@ Route::prefix('store')->name('store.api.')->group(function () {
     // Booking & Calculator (US2)
     Route::get('/booking/meta', [BookingController::class, 'meta'])->name('booking.meta');
     Route::post('/booking', [BookingController::class, 'store'])->name('booking.store');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     Route::get('/calculator/banks', [CalculatorController::class, 'banks'])->name('calculator.banks');
     Route::post('/calculator/calculate', [CalculatorController::class, 'calculate'])->name('calculator.calculate');
     Route::post('/calculator/lead', [CalculatorController::class, 'saveLead'])->name('calculator.lead');

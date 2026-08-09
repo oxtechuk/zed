@@ -36,26 +36,37 @@ final class BookingController extends ApiBaseController
      */
     public function store(BookingRequest $request)
     {
-        $car = Car::findOrFail($request->input('car_id'));
+        try {
+            $car = Car::findOrFail($request->input('car_id'));
 
-        $data = BookingData::fromRequest(
-            $request->validated(),
-            $car->cash_price,
-        );
+            $cashPrice = (float) ($car->current_price ?? $car->cash_price ?? 0);
 
-        $booking = $this->bookingService->create($data);
+            $data = BookingData::fromRequest(
+                $request->validated(),
+                $cashPrice,
+            );
 
-        return $this->respondCreated([
-            'booking_id' => $booking->id,
-            'client_name' => $booking->client_name,
-            'client_phone' => $booking->client_phone,
-            'car_id' => $booking->car_id,
-            'booking_type' => $booking->booking_type,
-            'monthly_installment' => $booking->monthly_installment,
-            'total_price' => $booking->total_price,
-            'down_payment' => $booking->down_payment,
-            'duration_years' => $booking->duration_years,
-            'status' => $booking->status,
-        ], 'Booking created successfully');
+            $booking = $this->bookingService->create($data);
+
+            return $this->respondCreated([
+                'booking_id' => $booking->id,
+                'client_name' => $booking->client_name,
+                'client_phone' => $booking->client_phone,
+                'car_id' => $booking->car_id,
+                'booking_type' => $booking->booking_type,
+                'monthly_installment' => $booking->monthly_installment,
+                'total_price' => $booking->total_price,
+                'down_payment' => $booking->down_payment,
+                'duration_years' => $booking->duration_years,
+                'status' => $booking->status,
+            ], 'Booking created successfully');
+        } catch (\Throwable $e) {
+            logger()->error('Booking creation failed: '.$e->getMessage(), [
+                'exception' => $e,
+                'input' => $request->all(),
+            ]);
+
+            return $this->respondError('Failed to process booking request: '.$e->getMessage(), 422);
+        }
     }
 }

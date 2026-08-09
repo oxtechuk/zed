@@ -14,7 +14,7 @@ class CarMiniResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'main_image' => $this->main_image,
-            'thumbnail' => $this->thumbnail,
+            'thumbnail' => $this->thumbnail ?? $this->main_image,
             'badge_color' => $this->badge_color,
             'cash_price' => $this->cash_price,
             'current_price' => $this->current_price,

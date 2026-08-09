@@ -18,6 +18,64 @@
     "contact": "Contact Us",
     "requestCar": "Request Car"
   },
+  "mobileNav": {
+    "newCars": "Cars",
+    "offers": "Offers",
+    "home": "Home",
+    "finance": "Finance",
+    "more": "More",
+    "blog": "Blog"
+  },
+  "carRequest": {
+    "serviceDurations": {
+      "under1Year": "Under 1 Year",
+      "1Year": "1 Year",
+      "2Years": "2 Years",
+      "3YearsPlus": "3 Years or More"
+    },
+    "employerTypes": {
+      "government": "Government Sector",
+      "military": "Military Sector",
+      "company": "Private Company",
+      "institution": "Private Institution",
+      "retired": "Retired"
+    },
+    "cities": {
+      "riyadh": "Riyadh",
+      "jeddah": "Jeddah",
+      "dammam": "Dammam",
+      "makkah": "Makkah",
+      "madinah": "Madinah",
+      "khobar": "Khobar",
+      "jubail": "Jubail",
+      "hofuf": "Hofuf",
+      "taif": "Taif",
+      "tabuk": "Tabuk",
+      "buraidah": "Buraidah",
+      "khamis_mushait": "Khamis Mushait",
+      "hail": "Hail",
+      "najran": "Najran",
+      "abha": "Abha",
+      "jizan": "Jizan"
+    },
+    "colors": {
+      "navy": "Navy",
+      "gray": "Gray",
+      "silver": "Silver",
+      "black": "Black",
+      "white": "White",
+      "darkGreen": "Dark Green",
+      "gold": "Gold",
+      "blue": "Blue",
+      "red": "Red"
+    },
+    "toasts": {
+      "selectCarFirst": "Please select a car first",
+      "fillRequired": "Please fill in all required fields",
+      "submitSuccess": "Your request has been sent successfully! One of our advisors will contact you soon.",
+      "submitError": "An error occurred while submitting your request, please try again later."
+    }
+  },
   "carFinder": {
     "title": "Find a car that suits you",
     "brand": "Brand / Manufacturer",

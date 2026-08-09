@@ -9,7 +9,7 @@ import { formatPrice } from "../utils/format";
 interface FilterContentProps {
   local: FilterValues;
   brands: IFilterDrawerModalProps["brands"];
-  fuelOptions: string[];
+  fuelOptions: IFilterDrawerModalProps["fuelOptions"];
   maxPriceLimit: number;
   isRTL: boolean;
   toggleBrand: (id: number) => void;
@@ -47,12 +47,29 @@ function FilterContent({ local, brands, fuelOptions, maxPriceLimit, isRTL, toggl
             <input type="radio" name="fuelType" value="all" checked={local.fuelType === "all"} onChange={() => updateField("fuelType", "all")} className="h-4 w-4 accent-[#16254F]" />
             {t("allCarsFilterBar.all", { defaultValue: "الكل" })}
           </label>
-          {fuelOptions.map((fuel) => (
-            <label key={fuel} className="flex cursor-pointer items-center gap-2.5 text-[13px] font-bold text-[#374151]">
-              <input type="radio" name="fuelType" value={fuel} checked={local.fuelType === fuel} onChange={() => updateField("fuelType", fuel)} className="h-4 w-4 accent-[#16254F]" />
-              {fuel}
-            </label>
-          ))}
+          {fuelOptions.map((fuelItem, idx) => {
+            const fuelValue = typeof fuelItem === "object" && fuelItem !== null ? fuelItem.value : String(fuelItem ?? "");
+            const fuelCount = typeof fuelItem === "object" && fuelItem !== null ? fuelItem.count : undefined;
+            if (!fuelValue) return null;
+            return (
+              <label key={`${fuelValue}-${idx}`} className="flex cursor-pointer items-center justify-between text-[13px] font-bold text-[#374151]">
+                <div className="flex items-center gap-2.5">
+                  <input
+                    type="radio"
+                    name="fuelType"
+                    value={fuelValue}
+                    checked={local.fuelType === fuelValue}
+                    onChange={() => updateField("fuelType", fuelValue)}
+                    className="h-4 w-4 accent-[#16254F]"
+                  />
+                  <span>{fuelValue}</span>
+                </div>
+                {fuelCount !== undefined && (
+                  <span className="text-[11px] font-bold text-gray-400">({fuelCount})</span>
+                )}
+              </label>
+            );
+          })}
         </div>
       </div>
 

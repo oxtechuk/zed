@@ -138,6 +138,11 @@ class Car extends Model
             return $this->images->first()->image_path;
         }
 
+        $defaultImage = Setting::where('key', 'default_car_image')->value('value');
+        if ($defaultImage) {
+            return Storage::disk('public')->url($defaultImage);
+        }
+
         return null;
     }
 

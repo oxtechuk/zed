@@ -7,6 +7,6 @@ export interface IFilterDrawerModalProps {
   filters: FilterValues;
   onApply: (filters: FilterValues) => void;
   brands: IBrandInfo[];
-  fuelOptions: string[];
+  fuelOptions: (string | { value: string; count?: number })[];
   maxPriceLimit?: number;
 }
