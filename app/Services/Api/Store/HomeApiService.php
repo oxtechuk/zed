@@ -128,9 +128,14 @@ final class HomeApiService
 
     private function featuredBanner(?HomeSection $section): ?array
     {
-        if (! $section) {
+        if (! $section || ! $section->is_active) {
             return null;
         }
+
+        $locale = app()->getLocale();
+        $image = $locale === 'en' && $section->background_image
+            ? $section->background_image
+            : ($section->image ?: $section->background_image);
 
         return [
             'title' => $section->title,
@@ -138,7 +143,7 @@ final class HomeApiService
             'description' => $section->description,
             'badge' => $section->badge,
             'button' => ['text' => $section->button_text, 'url' => $section->button_url],
-            'image' => $section->image,
+            'image' => $image,
             'background_image' => $section->background_image,
         ];
     }

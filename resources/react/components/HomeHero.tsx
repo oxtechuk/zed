@@ -98,11 +98,10 @@ export default function HomeHero({
                       key={idx}
                       type="button"
                       onClick={() => setCurrentSlide(idx)}
-                      className={`h-[4px] sm:h-[6px] rounded-full transition-all duration-300 ${
-                        idx === currentSlide
+                      className={`h-[4px] sm:h-[6px] rounded-full transition-all duration-300 ${idx === currentSlide
                           ? "w-[40px] sm:w-[65px] md:w-[90px] bg-[#DFC675]"
                           : "w-[16px] sm:w-[24px] md:w-[32px] bg-[#D9D9D9]/80 hover:bg-white"
-                      }`}
+                        }`}
                     />
                   ))}
                 </div>
@@ -120,9 +119,8 @@ export default function HomeHero({
                 <div
                   key={idx}
                   onClick={() => navigate(card.button?.url || "/cars")}
-                  className={`relative cursor-pointer transition-all duration-300 hover:-translate-y-1.5 w-full aspect-[403/320] mx-auto select-none ${
-                    idx >= 2 ? "hidden lg:block" : ""
-                  }`}
+                  className={`relative cursor-pointer transition-all duration-300 hover:-translate-y-1.5 w-full aspect-[403/320] mx-auto select-none ${idx >= 2 ? "hidden lg:block" : ""
+                    }`}
                   style={{
                     backgroundImage: `url(${cardImg})`,
                     backgroundSize: "contain",
@@ -131,7 +129,7 @@ export default function HomeHero({
                   }}
                 >
                   {/* Action Button centered in the bottom notch */}
-                  <div className="absolute bottom-[5%] sm:bottom-[7%] left-0 right-0 flex justify-center">
+                  <div className="absolute bottom-[1%] sm:bottom-[7%] left-0 right-0 flex justify-center">
                     {card.button?.text && (
                       <span className="rounded-lg sm:rounded-xl bg-[#0A1628] px-2.5 sm:px-7 py-1 sm:py-2.5 text-[9.5px] sm:text-[12.5px] font-black text-white hover:bg-[#1E293B] shadow-sm transition-colors whitespace-nowrap active:scale-95">
                         {card.button.text}
