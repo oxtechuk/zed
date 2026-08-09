@@ -19,4 +19,5 @@ export interface ICarCardProps {
   reserveText?: string;
   badgeText?: string;
   badgeColor?: string;
+  loading?: "eager" | "lazy";
 }

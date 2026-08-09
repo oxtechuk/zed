@@ -46,8 +46,8 @@ export default function CarsResultsGrid({
     <section className="w-full">
       {/* Cars Grid */}
       <div className="grid grid-cols-1 gap-7 md:grid-cols-2 xl:grid-cols-3 justify-items-center">
-        {cars.map((car) => (
-          <CarCard key={car.id} {...car} />
+        {cars.map((car, idx) => (
+          <CarCard key={car.id} {...car} loading={idx < 3 ? "eager" : "lazy"} />
         ))}
       </div>
 

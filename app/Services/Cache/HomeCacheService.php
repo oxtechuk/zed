@@ -68,26 +68,26 @@ class HomeCacheService extends BaseCacheService
 
             $filterBrandTypes = BrandType::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
 
-            $carPrices = Car::where('is_active', true)->pluck('cash_price');
-            $priceBrackets = [
-                ['min' => 0, 'max' => 150000],
-                ['min' => 150001, 'max' => 250000],
-                ['min' => 250001, 'max' => 350000],
-                ['min' => 350001, 'max' => null],
-            ];
-            $filterPrices = collect($priceBrackets)->map(function (array $bracket) use ($carPrices): array {
-                $count = $carPrices->filter(
-                    fn (int $price): bool => $price >= $bracket['min']
-                        && ($bracket['max'] === null || $price <= $bracket['max'])
-                )->count();
+            $filterBrandTypes = BrandType::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
 
-                return [
-                    'min' => $bracket['min'],
-                    'max' => $bracket['max'],
-                    'count' => $count,
-                ];
-            })->values();
+            // SQL aggregation for price brackets (0 memory overhead compared to plucking all prices)
+            $priceCounts = Car::where('is_active', true)
+                ->selectRaw('
+                    COUNT(CASE WHEN cash_price BETWEEN 0 AND 150000 THEN 1 END) as b1,
+                    COUNT(CASE WHEN cash_price BETWEEN 150001 AND 250000 THEN 1 END) as b2,
+                    COUNT(CASE WHEN cash_price BETWEEN 250001 AND 350000 THEN 1 END) as b3,
+                    COUNT(CASE WHEN cash_price >= 350001 THEN 1 END) as b4
+                ')
+                ->first();
 
+            $filterPrices = collect([
+                ['min' => 0, 'max' => 150000, 'count' => (int) ($priceCounts->b1 ?? 0)],
+                ['min' => 150001, 'max' => 250000, 'count' => (int) ($priceCounts->b2 ?? 0)],
+                ['min' => 250001, 'max' => 350000, 'count' => (int) ($priceCounts->b3 ?? 0)],
+                ['min' => 350001, 'max' => null, 'count' => (int) ($priceCounts->b4 ?? 0)],
+            ]);
+
+            // Lightweight column selection for specs & horsepower facet calculations
             $activeCars = Car::where('is_active', true)->get(['id', 'specs']);
 
             $filterFuels = $activeCars->pluck('specs.fuel')
@@ -139,10 +139,12 @@ class HomeCacheService extends BaseCacheService
                 ->latest()
                 ->get();
 
+            // SQL aggregation for highlight counts
             $highlightCounts = Car::where('is_active', true)
                 ->where('is_highlighted', '!=', 'none')
-                ->pluck('is_highlighted')
-                ->countBy()
+                ->selectRaw('is_highlighted, COUNT(*) as count')
+                ->groupBy('is_highlighted')
+                ->pluck('count', 'is_highlighted')
                 ->all();
 
             // Cached as raw models (not $this->rememberHeroSlides()) so locale resolves fresh

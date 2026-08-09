@@ -52,20 +52,25 @@ export default function HomeHero({
               className="flex h-full transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(${isRTL ? "" : "-"}${currentSlide * 100}%)` }}
             >
-              {slides.map((slide) => {
+              {slides.map((slide, idx) => {
                 const targetImage = isMobile && slide.image_mobile ? slide.image_mobile : slide.image;
                 const bgImg = getImageUrl(targetImage);
                 return (
                   <div
                     key={slide.id}
-                    className="relative h-full w-full shrink-0 flex items-center justify-between px-6 sm:px-12 md:px-20 text-white"
+                    className="relative h-full w-full shrink-0 flex items-center justify-between px-6 sm:px-12 md:px-20 text-white overflow-hidden bg-[#051023]"
                     dir={direction}
-                    style={{
-                      backgroundImage: `url(${bgImg})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
                   >
+                    {bgImg && (
+                      <img
+                        src={bgImg}
+                        alt={slide.title || "Hero Banner"}
+                        loading={idx === 0 ? "eager" : "lazy"}
+                        fetchPriority={idx === 0 ? "high" : "auto"}
+                        decoding="async"
+                        className="absolute inset-0 h-full w-full object-cover object-center pointer-events-none"
+                      />
+                    )}
                   </div>
                 );
               })}
@@ -120,18 +125,21 @@ export default function HomeHero({
                 <div
                   key={idx}
                   onClick={() => navigate(card.button?.url || "/cars")}
-                  className={`relative cursor-pointer transition-all duration-300 hover:-translate-y-1.5 w-full aspect-[403/320] mx-auto select-none ${
+                  className={`relative cursor-pointer transition-all duration-300 hover:-translate-y-1.5 w-full aspect-[403/320] mx-auto select-none overflow-hidden ${
                     idx >= 2 ? "hidden lg:block" : ""
                   }`}
-                  style={{
-                    backgroundImage: `url(${cardImg})`,
-                    backgroundSize: "contain",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat",
-                  }}
                 >
+                  {cardImg && (
+                    <img
+                      src={cardImg}
+                      alt={card.title || "Promo Card"}
+                      loading="eager"
+                      decoding="async"
+                      className="h-full w-full object-contain object-center pointer-events-none"
+                    />
+                  )}
                   {/* Action Button centered in the bottom notch */}
-                  <div className="absolute bottom-[5%] sm:bottom-[7%] left-0 right-0 flex justify-center">
+                  <div className="absolute bottom-[5%] sm:bottom-[7%] left-0 right-0 flex justify-center z-10">
                     {card.button?.text && (
                       <span className="rounded-lg sm:rounded-xl bg-[#0A1628] px-2.5 sm:px-7 py-1 sm:py-2.5 text-[9.5px] sm:text-[12.5px] font-black text-white hover:bg-[#1E293B] shadow-sm transition-colors whitespace-nowrap active:scale-95">
                         {card.button.text}

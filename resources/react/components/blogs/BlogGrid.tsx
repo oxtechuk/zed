@@ -26,8 +26,8 @@ export default function BlogGrid({ articles, isLoading }: IBlogGridProps) {
 
   return (
     <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-      {articles.map((article) => (
-        <BlogCard key={article.id} {...article} />
+      {articles.map((article, idx) => (
+        <BlogCard key={article.id} {...article} loading={idx < 3 ? "eager" : "lazy"} />
       ))}
     </div>
   );

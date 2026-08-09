@@ -5,7 +5,6 @@ import BlogDetailsHero from "../components/blogs/BlogDetailsHero";
 import RelatedArticlesSection from "../components/blogs/RelatedArticlesSection";
 import BlogDetailsPageSkeleton from "../components/skeletons/BlogDetailsPageSkeleton";
 import { useBlogDetailsPage } from "../hooks/useBlogDetailsPage";
-import { usePageImagesReady } from "../hooks/usePageImagesReady";
 
 export default function BlogDetailsPage() {
   const {
@@ -24,14 +23,7 @@ export default function BlogDetailsPage() {
     t,
   } = useBlogDetailsPage();
 
-  const imageUrls = useMemo(() => {
-    const related = relatedArticles.map((article) => article.image).filter(Boolean);
-    return [heroImage, ...related] as string[];
-  }, [heroImage, relatedArticles]);
-
-  const imagesReady = usePageImagesReady(isLoading, imageUrls);
-
-  if (isLoading || !imagesReady) {
+  if (isLoading) {
     return <BlogDetailsPageSkeleton />;
   }
 

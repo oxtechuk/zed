@@ -9,7 +9,6 @@ import { useLanguageStore } from "../store/language.store";
 import { APP_IMAGES, getImageUrl } from "../constants/app-images";
 import { offerToCardProps } from "../utils/offers";
 import { useSEO } from "../utils/useSEO";
-import { usePageImagesReady } from "../hooks/usePageImagesReady";
 
 const PAGE_SIZE = 6;
 
@@ -44,20 +43,7 @@ export default function OffersPage() {
     );
   }, [offersResponse, t]);
 
-  const pageImageUrls = useMemo(() => {
-    const urls: string[] = [];
-    offersResponse?.pages?.forEach((page) =>
-      page.data.forEach((offer) => {
-        const resolved = getImageUrl(offer.image);
-        if (resolved) urls.push(resolved);
-      }),
-    );
-    return urls;
-  }, [offersResponse]);
-
-  const imagesReady = usePageImagesReady(isLoading, pageImageUrls);
-
-  if (isLoading || !imagesReady) {
+  if (isLoading) {
     return <OffersPageSkeleton />;
   }
 

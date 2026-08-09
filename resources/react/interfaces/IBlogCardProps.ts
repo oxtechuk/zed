@@ -11,4 +11,5 @@ export interface IBlogCardProps {
   authorImage: string;
   readMoreTo: string;
   tag?: string;
+  loading?: "eager" | "lazy";
 }

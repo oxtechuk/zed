@@ -8,6 +8,7 @@ import type {
   IBudgetCarsSectionProps,
   IBudgetRange,
 } from "../interfaces/IBudgetCarsSectionProps";
+import { formatPrice } from "../utils/format";
 
 function getItemsPerPage(width: number): number {
   if (width >= 1024) return 4;
@@ -163,13 +164,22 @@ export default function BudgetCarsSection({
           {resolvedRanges.map((range) => {
             const isActive = range.value === activeRange;
 
-            // Render label helper
-            const renderRangeLabel = (label: string) => {
-              if (label.includes("﷼") || label.includes("SAR") || label.includes("ر.س")) {
-                return label;
+            // Render label helper using formatPrice
+            const renderRangeLabel = (rangeItem: IBudgetRange) => {
+              const label = rangeItem.label || "";
+              const color = isActive ? "#FFFFFF" : "var(--brand-primary-color)";
+              // If label contains plain number or range min-max, convert numbers to formatPrice
+              const cleaned = label.replace(/ر\.س|SAR|﷼/g, "").trim();
+              const num = parseInt(cleaned.replace(/,/g, ""), 10);
+              if (!isNaN(num) && cleaned === String(num)) {
+                return formatPrice(num, color);
               }
-              const currency = isRTL ? "ر.س" : "SAR";
-              return isRTL ? `${currency} ${label}` : `${label} ${currency}`;
+              return (
+                <span className="inline-flex items-center gap-1">
+                  <span>{cleaned}</span>
+                  {formatPrice(0, color)}
+                </span>
+              );
             };
 
             return (
@@ -183,7 +193,7 @@ export default function BudgetCarsSection({
                     : "border-[#E5E7EB] bg-white text-[#4F5A6B] hover:border-gray-300 hover:text-[#16254F]"
                 }`}
               >
-                {renderRangeLabel(range.label)}
+                {renderRangeLabel(range)}
               </button>
             );
           })}

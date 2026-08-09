@@ -18,18 +18,19 @@ export default function FeaturedBanner({ banner }: IFeaturedBannerProps) {
     return (
         <section className="w-full pb-6" dir={direction}>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div
-                    className="relative h-[220px] overflow-hidden rounded-2xl bg-[#051023] md:h-[400px]"
-                    style={
-                        backgroundImage
-                            ? {
-                                  backgroundImage: `linear-gradient(to left, rgba(5,16,35,0.9) 0%, rgba(5,16,35,0.45) 100%), url(${backgroundImage})`,
-                                  backgroundSize: "cover",
-                                  backgroundPosition: "center",
-                              }
-                            : undefined
-                    }
-                >
+                <div className="relative h-[220px] overflow-hidden rounded-2xl bg-[#051023] md:h-[400px]">
+                    {backgroundImage && (
+                        <>
+                            <img
+                                src={backgroundImage}
+                                alt={banner.title || "Featured Banner"}
+                                loading="lazy"
+                                decoding="async"
+                                className="absolute inset-0 h-full w-full object-cover object-center pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-l from-[#051023]/90 to-[#051023]/45 pointer-events-none" />
+                        </>
+                    )}
                     <div className="relative z-10 flex h-full max-w-2xl flex-col items-start justify-center gap-3 p-8 md:gap-4 md:p-14">
                         {button?.text && button.url && (
                             <button

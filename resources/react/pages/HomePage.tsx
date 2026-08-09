@@ -19,7 +19,7 @@ import { useSEO } from "../utils/useSEO";
 import type { IBrandCardProps } from "../interfaces/IBrandCardProps";
 import BrandsCarousel from "../components/BrandsCarousel";
 import HomePageSkeleton from "../components/skeletons/HomePageSkeleton";
-import { usePageImagesReady } from "../hooks/usePageImagesReady";
+import { useEffect } from "react";
 
 const SPEC_KEY_MAP: Record<string, string> = {
   "Fuel Type": "fuel",
@@ -160,31 +160,25 @@ export default function Home() {
     [data],
   );
 
-  const pageImageUrls = useMemo(() => {
-    const urls: string[] = [];
-    const push = (path?: string | null) => {
-      const resolved = getImageUrl(path ?? null);
-      if (resolved) urls.push(resolved);
-    };
-    data?.hero_slides?.forEach((slide: any) => {
-      push(slide?.image);
-      push(slide?.image_mobile);
-    });
-    data?.promo_cards?.forEach((card: any) => push(card?.image));
-    if (data?.featured_section) {
-      push(data.featured_section.background_image);
-      push(data.featured_section.image);
+  // Preload primary hero slide image for optimal LCP performance without blocking UI render
+  useEffect(() => {
+    const firstHero = data?.hero_slides?.[0];
+    if (firstHero) {
+      const heroUrl = getImageUrl(firstHero.image || firstHero.image_mobile);
+      if (heroUrl) {
+        const link = document.createElement("link");
+        link.rel = "preload";
+        link.as = "image";
+        link.href = heroUrl;
+        document.head.appendChild(link);
+        return () => {
+          if (document.head.contains(link)) {
+            document.head.removeChild(link);
+          }
+        };
+      }
     }
-    data?.featured_cars?.forEach((car) => push(car.main_image));
-    data?.offer_cars?.forEach((car) => push(car.main_image));
-    data?.budget_ranges?.forEach((range) =>
-      range.cars?.forEach((car) => push(car.main_image)),
-    );
-    data?.brands?.forEach((brand) => push(brand.logo));
-    return urls;
-  }, [data]);
-
-  const imagesReady = usePageImagesReady(isLoading, pageImageUrls);
+  }, [data?.hero_slides]);
 
   const activeRangeValue = activeBudgetRange === "all" ? "all" : (budgetRangeItems.find((range) => range.value === activeBudgetRange)?.value ?? "all");
 
@@ -215,7 +209,7 @@ export default function Home() {
     [data, activeRangeValue],
   );
 
-  if (isLoading || !imagesReady) {
+  if (isLoading) {
     return <HomePageSkeleton />;
   }
 

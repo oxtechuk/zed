@@ -13,6 +13,7 @@ export default function BlogCard({
   title,
   description,
   readMoreTo,
+  loading,
 }: Partial<IBlogCardProps>) {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.dir() === "rtl";
@@ -30,6 +31,7 @@ export default function BlogCard({
         <LazyImg
           src={cardImage}
           alt={title ?? t("blogPage.details.postAlt")}
+          loading={loading}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       </div>
