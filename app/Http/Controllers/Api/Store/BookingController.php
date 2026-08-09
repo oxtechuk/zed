@@ -38,9 +38,11 @@ final class BookingController extends ApiBaseController
     {
         $car = Car::findOrFail($request->input('car_id'));
 
+        $cashPrice = (float) ($car->current_price ?? $car->cash_price ?? 0);
+
         $data = BookingData::fromRequest(
             $request->validated(),
-            $car->cash_price,
+            $cashPrice,
         );
 
         $booking = $this->bookingService->create($data);

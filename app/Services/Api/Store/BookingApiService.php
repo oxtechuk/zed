@@ -27,12 +27,26 @@ final class BookingApiService
 
         $booking = Booking::create($data->toDatabase());
 
-        $this->assignmentService->autoAssign($booking);
+        try {
+            $this->assignmentService->autoAssign($booking);
+        } catch (\Throwable $e) {
+            logger()->warning('Auto assignment failed for booking '.$booking->id.': '.$e->getMessage());
+        }
 
-        $admins = Employee::where('role', 'admin')->orWhere('id', 1)->get();
-        Notification::send($admins, new NewBookingNotification($booking));
+        try {
+            $admins = Employee::where('role', 'admin')->orWhere('id', 1)->get();
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new NewBookingNotification($booking));
+            }
+        } catch (\Throwable $e) {
+            logger()->warning('Admin notification failed for booking '.$booking->id.': '.$e->getMessage());
+        }
 
-        $this->sendWelcomeWhatsApp($booking, $car);
+        try {
+            $this->sendWelcomeWhatsApp($booking, $car);
+        } catch (\Throwable $e) {
+            logger()->warning('WhatsApp notification failed for booking '.$booking->id.': '.$e->getMessage());
+        }
 
         return $booking;
     }
