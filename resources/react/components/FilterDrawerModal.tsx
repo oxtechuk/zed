@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import type { IFilterDrawerModalProps } from "../interfaces/IFilterDrawerModalProps";
 import type { FilterValues } from "../types/cars.types";
 import { DEFAULT_FILTER_VALUES } from "../types/cars.types";
+import { formatPrice } from "../utils/format";
 
 interface FilterContentProps {
   local: FilterValues;
@@ -78,7 +79,7 @@ function FilterContent({ local, brands, fuelOptions, maxPriceLimit, isRTL, toggl
         <p className="mb-3 text-[18px] font-black text-[#EDC98E]">
           {local.priceMax === Infinity
             ? t("allCarsFilterBar.all", { defaultValue: "الكل" })
-            : `${isRTL ? "ر.س" : "SAR"} ${local.priceMax.toLocaleString(isRTL ? "ar-SA" : "en-US")}`}
+            : formatPrice(local.priceMax, "#EDC98E")}
         </p>
         <input
           type="range"

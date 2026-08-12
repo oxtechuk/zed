@@ -10,7 +10,6 @@ import { getFaqs, submitContactForm } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
 import { contactFormValuesToRequest } from "../utils/contact";
 import { useSEO } from "../utils/useSEO";
-import { usePageImagesReady } from "../hooks/usePageImagesReady";
 import type { IContactFormValues } from "../interfaces/IContactFormValues";
 import type { IFaqItem } from "../interfaces/IFaqItem";
 
@@ -26,7 +25,7 @@ export default function ContactPage() {
     queryFn: getFaqs,
   });
 
-  const imagesReady = usePageImagesReady(isLoading, [APP_IMAGES.CONTACT_US_HERO]);
+
 
   const handleSubmit = useCallback(
     async (values: IContactFormValues) => {
@@ -44,7 +43,7 @@ export default function ContactPage() {
     [t],
   );
 
-  if (isLoading || !imagesReady) {
+  if (isLoading) {
     return <ContactPageSkeleton />;
   }
 

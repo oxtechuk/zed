@@ -14,7 +14,6 @@ import type { IFilterValues, ICarsQueryParams } from "../types/cars.types";
 import { DEFAULT_FILTER_VALUES } from "../types/cars.types";
 import type { ICarItem } from "../types/home.types";
 import AllCarsPageSkeleton from "../components/skeletons/AllCarsPageSkeleton";
-import { usePageImagesReady } from "../hooks/usePageImagesReady";
 
 const PAGE_SIZE = 9;
 
@@ -182,16 +181,7 @@ export default function AllCarsPage() {
     setCurrentPage(1);
   };
 
-  const pageImageUrls = useMemo(
-    () =>
-      (carsResponse?.data ?? [])
-        .map((car) => getImageUrl(car.main_image))
-        .filter(Boolean) as string[],
-    [carsResponse],
-  );
-  const imagesReady = usePageImagesReady(isLoading, pageImageUrls);
-
-  if (isLoading || !imagesReady) {
+  if (isLoading) {
     return <AllCarsPageSkeleton />;
   }
 

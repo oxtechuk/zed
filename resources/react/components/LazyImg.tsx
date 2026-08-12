@@ -6,9 +6,6 @@ import {
   useState,
 } from "react";
 
-const PLACEHOLDER =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-
 type LazyImgStatus = "pending" | "revealed";
 
 export interface ILazyImgProps extends ImgHTMLAttributes<HTMLImageElement> {
@@ -22,27 +19,18 @@ export default function LazyImg({
   onLoad,
   onError,
   skeletonClassName = "",
+  loading = "lazy",
   ...rest
 }: ILazyImgProps) {
   const imgRef = useRef<HTMLImageElement>(null);
   const [status, setStatus] = useState<LazyImgStatus>("pending");
 
   useEffect(() => {
+    setStatus("pending");
     const el = imgRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.src = src as string;
-          observer.unobserve(el);
-        }
-      },
-      { rootMargin: "200px" },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
+    if (el && el.complete && el.naturalWidth > 0) {
+      setStatus("revealed");
+    }
   }, [src]);
 
   const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
@@ -55,20 +43,21 @@ export default function LazyImg({
     onError?.(event);
   };
 
-  const showSkeleton = status !== "revealed";
+  const isPending = status === "pending";
 
   return (
-    <img
-      {...rest}
-      ref={imgRef}
-      src={PLACEHOLDER}
-      onLoad={handleLoad}
-      onError={handleError}
-      className={`${className ?? ""} ${showSkeleton ? `lazy-img-skeleton ${skeletonClassName}` : ""}`}
-      style={{
-        ...style,
-        ...(showSkeleton ? { width: "100%", height: "100%" } : {}),
-      }}
-    />
+    <div className={`relative overflow-hidden ${isPending ? `lazy-img-skeleton ${skeletonClassName}` : ""}`}>
+      <img
+        {...rest}
+        ref={imgRef}
+        src={src}
+        loading={loading}
+        decoding="async"
+        onLoad={handleLoad}
+        onError={handleError}
+        className={`${className ?? ""} transition-opacity duration-300 ${status === "revealed" ? "opacity-100" : "opacity-0"}`}
+        style={style}
+      />
+    </div>
   );
 }

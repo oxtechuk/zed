@@ -52,20 +52,25 @@ export default function HomeHero({
               className="flex h-full transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(${isRTL ? "" : "-"}${currentSlide * 100}%)` }}
             >
-              {slides.map((slide) => {
+              {slides.map((slide, idx) => {
                 const targetImage = isMobile && slide.image_mobile ? slide.image_mobile : slide.image;
                 const bgImg = getImageUrl(targetImage);
                 return (
                   <div
                     key={slide.id}
-                    className="relative h-full w-full shrink-0 flex items-center justify-between px-6 sm:px-12 md:px-20 text-white"
+                    className="relative h-full w-full shrink-0 flex items-center justify-between px-6 sm:px-12 md:px-20 text-white overflow-hidden bg-[#051023]"
                     dir={direction}
-                    style={{
-                      backgroundImage: `url(${bgImg})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
                   >
+                    {bgImg && (
+                      <img
+                        src={bgImg}
+                        alt={slide.title || "Hero Banner"}
+                        loading={idx === 0 ? "eager" : "lazy"}
+                        fetchPriority={idx === 0 ? "high" : "auto"}
+                        decoding="async"
+                        className="absolute inset-0 h-full w-full object-cover object-center pointer-events-none"
+                      />
+                    )}
                   </div>
                 );
               })}
