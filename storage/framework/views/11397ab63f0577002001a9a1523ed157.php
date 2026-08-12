@@ -49,7 +49,7 @@
 
         
         <?php
-            $catOpen = $groupActive(['crm.cars','crm.brands','crm.brand-types','crm.car-categories','crm.car-types','crm.specifications','crm.features','crm.safety-features','crm.offers']);
+            $catOpen = $groupActive(['crm.cars','crm.brands','crm.car-models','crm.brand-types','crm.car-categories','crm.car-types','crm.specifications','crm.features','crm.safety-features','crm.offers']);
             $canCatalog = $currentUser->hasAnyPermission(['manage-cars','manage-brands','manage-brand-types','manage-car-categories','manage-car-types','manage-specifications','manage-features','manage-safety-features','manage-offers']);
         ?>
         <?php if($canCatalog): ?>
@@ -75,6 +75,13 @@
                     <a href="<?php echo e(route('crm.brands.index')); ?>"
                        class="crm-sub-link <?php echo e(str_starts_with($r,'crm.brands') ? 'active' : ''); ?>">
                         <i class="bi bi-bookmark-star"></i> <?php echo e(__('الماركات')); ?>
+
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo e(route('crm.car-models.index')); ?>"
+                       class="crm-sub-link <?php echo e(str_starts_with($r,'crm.car-models') ? 'active' : ''); ?>">
+                        <i class="bi bi-list-nested"></i> <?php echo e(__('الموديلات')); ?>
 
                     </a>
                 </li>

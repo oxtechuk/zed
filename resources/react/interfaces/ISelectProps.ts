@@ -12,4 +12,5 @@ export interface ISelectProps {
   className?: string;
   searchable?: boolean;
   chevronClassName?: string;
+  disabled?: boolean;
 }

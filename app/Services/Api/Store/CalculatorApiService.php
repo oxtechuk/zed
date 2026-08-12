@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\Api\Store;
 
+use App\Models\Booking;
 use App\Models\CalculatorBank;
 use App\Models\CalculatorLead;
 use App\Models\Car;
+use App\Models\Employee;
+use App\Notifications\NewBookingNotification;
+use App\Services\BookingAssignmentService;
 use App\Services\TwilioOtpService;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Notification;
 
 final class CalculatorApiService
 {
@@ -17,7 +22,7 @@ final class CalculatorApiService
         $carIds = $data['car_ids'] ?? [];
         $primaryCarId = $carIds[0] ?? null;
 
-        return CalculatorLead::create([
+        $lead = CalculatorLead::create([
             'name' => $data['name'],
             'phone' => $data['phone'],
             'car_id' => $primaryCarId,
@@ -39,6 +44,10 @@ final class CalculatorApiService
                 'notes' => $data['notes'] ?? null,
             ],
         ]);
+
+        $this->createBookingForLead($lead, $primaryCarId, $data['email'] ?? null, $data['notes'] ?? null);
+
+        return $lead;
     }
 
     public function sendOtp(string $phone): array
@@ -64,7 +73,7 @@ final class CalculatorApiService
 
     public function createLeadFromVerified(string $name, string $phone): CalculatorLead
     {
-        return CalculatorLead::create([
+        $lead = CalculatorLead::create([
             'name' => $name,
             'phone' => $phone,
             'details' => [
@@ -72,6 +81,43 @@ final class CalculatorApiService
                 'otp_verified_at' => now()->toISOString(),
             ],
         ]);
+
+        $this->createBookingForLead($lead);
+
+        return $lead;
+    }
+
+    private function createBookingForLead(CalculatorLead $lead, ?int $carId = null, ?string $email = null, ?string $notes = null): void
+    {
+        $booking = Booking::create([
+            'client_name' => $lead->name,
+            'client_phone' => $lead->phone,
+            'client_email' => $email,
+            'car_id' => $carId,
+            'source' => 'calculator',
+            'status' => 'new',
+            'notes' => $notes,
+            'total_price' => $carId ? (Car::find($carId)?->current_price ?? 0) : 0,
+            'down_payment' => 0,
+            'duration_years' => 5,
+            'monthly_installment' => $lead->details['monthly_installment'] ?? 0,
+        ]);
+
+        try {
+            $assignmentService = app(BookingAssignmentService::class);
+            $assignmentService->autoAssign($booking);
+        } catch (\Throwable $e) {
+            logger()->warning('Auto assignment failed for calculator booking '.$booking->id.': '.$e->getMessage());
+        }
+
+        try {
+            $admins = Employee::where('role', 'admin')->orWhere('id', 1)->get();
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new NewBookingNotification($booking));
+            }
+        } catch (\Throwable $e) {
+            logger()->warning('Admin notification failed for calculator booking '.$booking->id.': '.$e->getMessage());
+        }
     }
 
     /** @return Collection<int, CalculatorBank> */

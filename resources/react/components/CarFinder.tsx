@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { CalendarDays, Car, Gauge, Search, Tag } from "lucide-react";
 import Select from "./Select";
@@ -25,15 +25,39 @@ export default function CarFinder({
     const { t, i18n } = useTranslation();
     const isRTL = i18n.dir() === "rtl";
     const [brandId, setBrandId] = useState("");
+    const [modelId, setModelId] = useState("");
+    const [models, setModels] = useState<{ id: number; name: string }[]>([]);
+    const [isLoadingModels, setIsLoadingModels] = useState(false);
     const [typeId, setTypeId] = useState("");
     const [categoryId, setCategoryId] = useState("");
     const [yearVal, setYearVal] = useState("");
     const [searchText, setSearchText] = useState("");
     const [filtersOpen, setFiltersOpen] = useState(false);
 
+    useEffect(() => {
+        setModelId("");
+        if (!brandId) {
+            setModels([]);
+            return;
+        }
+        setIsLoadingModels(true);
+        fetch(`/api/store/brands/${brandId}/models`)
+            .then((res) => res.json())
+            .then((res) => {
+                if (res.success && Array.isArray(res.data)) {
+                    setModels(res.data);
+                } else {
+                    setModels([]);
+                }
+            })
+            .catch(() => setModels([]))
+            .finally(() => setIsLoadingModels(false));
+    }, [brandId]);
+
     const handleSearch = () => {
         onSearch?.({
             brandId,
+            modelId,
             typeId,
             categoryId,
             year: yearVal,
@@ -43,6 +67,7 @@ export default function CarFinder({
 
     const handleReset = () => {
         setBrandId("");
+        setModelId("");
         setTypeId("");
         setCategoryId("");
         setYearVal("");
@@ -127,8 +152,8 @@ export default function CarFinder({
 
                 {/* Filter Selects Panel */}
                 {filtersOpen && (
-                    <div className="mt-6 rounded-2xl border border-[#E7E9EF] bg-white p-6 shadow-sm">
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <div class="mt-6 rounded-2xl border border-[#E7E9EF] bg-white p-6 shadow-sm">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
                             {/* Brand */}
                             <div>
                                 <label className={`mb-2 block text-[12px] font-bold text-[#64748B] ${isRTL ? "text-right" : "text-left"}`}>
@@ -152,6 +177,35 @@ export default function CarFinder({
                                         <Tag
                                             size={16}
                                             className="text-[#FF4A4A]"
+                                        />
+                                    }
+                                    className="h-[48px] rounded-[12px] border border-[#E5E7EB] bg-[#FAFBFC] text-sm text-[#111827] focus:ring-1"
+                                />
+                            </div>
+
+                            {/* Model */}
+                            <div>
+                                <label className={`mb-2 block text-[12px] font-bold text-[#64748B] ${isRTL ? "text-right" : "text-left"}`}>
+                                    {t("carFinder.model", { defaultValue: "الموديل" })}
+                                </label>
+                                <Select
+                                    searchable
+                                    placeholder={
+                                        isLoadingModels
+                                            ? t("carFinder.loading", { defaultValue: "جاري التحميل..." })
+                                            : t("carFinder.modelPlaceholder", { defaultValue: "اختر الموديل" })
+                                    }
+                                    value={modelId}
+                                    onChange={setModelId}
+                                    disabled={!brandId || isLoadingModels}
+                                    options={models.map((m) => ({
+                                        label: m.name,
+                                        value: String(m.id),
+                                    }))}
+                                    icon={
+                                        <Tag
+                                            size={16}
+                                            className="text-[#FF4A4A] opacity-60"
                                         />
                                     }
                                     className="h-[48px] rounded-[12px] border border-[#E5E7EB] bg-[#FAFBFC] text-sm text-[#111827] focus:ring-1"

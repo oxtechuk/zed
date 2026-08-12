@@ -173,6 +173,10 @@ final class CarApiService
             $query->whereIn('brand_id', $brands);
         }
 
+        if (! empty($filters['model_id'])) {
+            $query->where('car_model_id', $filters['model_id']);
+        }
+
         if (! empty($filters['category_id'])) {
             $query->where('category_id', $filters['category_id']);
         }

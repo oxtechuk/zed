@@ -103,6 +103,7 @@ export default function Home() {
     queryFn: () =>
       getCars({
         ...(filters!.brandId && { brands: [Number(filters!.brandId)] }),
+        ...(filters!.modelId && { model_id: Number(filters!.modelId) }),
         ...(filters!.typeId && { type: Number(filters!.typeId) }),
         ...(filters!.categoryId && { category_id: Number(filters!.categoryId) }),
         ...(filters!.year && { year: filters!.year }),

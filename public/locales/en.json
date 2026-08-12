@@ -80,6 +80,9 @@
     "title": "Find a car that suits you",
     "brand": "Brand / Manufacturer",
     "brandPlaceholder": "Choose a brand",
+    "model": "Model",
+    "modelPlaceholder": "Choose a model",
+    "loading": "Loading...",
     "brandOptions": {
       "toyota": "Toyota",
       "hyundai": "Hyundai",

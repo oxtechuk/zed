@@ -19,6 +19,11 @@ export default function StepOneForm({ onNext }: IStepOneFormProps) {
       toast.error(t("financeCalculator.validation.fillRequired", "يرجى تعبئة جميع الحقول المطلوبة"));
       return;
     }
+    const saudiPhoneRegex = /^05\d{8}$/;
+    if (!saudiPhoneRegex.test(phone)) {
+      toast.error(t("financeCalculator.validation.invalidPhone", "الرجاء إدخال رقم جوال سعودي صحيح مكون من 10 أرقام ويبدأ بـ 05 (مثال: 05xxxxxxxx)"));
+      return;
+    }
     if (!acceptTerms) {
       toast.error(t("financeCalculator.validation.acceptTerms", "يجب الموافقة على الشروط وسياسة الخصوصية للمتابعة"));
       return;
@@ -72,7 +77,10 @@ export default function StepOneForm({ onNext }: IStepOneFormProps) {
               required
               dir="ltr"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                const cleaned = e.target.value.replace(/\D/g, "").slice(0, 10);
+                setPhone(cleaned);
+              }}
             />
           </FormField>
 

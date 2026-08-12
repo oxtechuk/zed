@@ -50,6 +50,7 @@ export function useCarRequest() {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [bookingId, setBookingId] = useState<number | null>(null);
 
     // Dropdown state
     const [isCarDropdownOpen, setIsCarDropdownOpen] = useState(false);
@@ -144,9 +145,15 @@ export function useCarRequest() {
     }, [t]);
 
     const serviceDurations = useMemo<ICarOption[]>(() => {
+        const labels: Record<string, string> = {
+            "1Month": "شهر",
+            "2Months": "شهران",
+            "3Months": "3 أشهر",
+            "moreThan3Months": "أكثر من 3 أشهر",
+        };
         return SERVICE_DURATION_KEYS.map((dur) => ({
             value: dur.value,
-            label: t(`carRequest.serviceDurations.${dur.key}`),
+            label: t(`carRequest.serviceDurations.${dur.key}`, labels[dur.key]),
         }));
     }, [t]);
 
@@ -182,11 +189,22 @@ export function useCarRequest() {
             return;
         }
 
+        const saudiPhoneRegex = /^05\d{8}$/;
+        if (!saudiPhoneRegex.test(formData.phone)) {
+            toast.error(
+                t(
+                    "carRequest.toasts.invalidPhone",
+                    "الرجاء إدخال رقم جوال سعودي صحيح مكون من 10 أرقام ويبدأ بـ 05 (مثال: 05xxxxxxxx)",
+                ),
+            );
+            return;
+        }
+
         setIsSubmitting(true);
         try {
-            const notesText = `طلب سيارة مخصصة | مدة التمويل: ${term} شهر | اللون المطلوب: ${selectedColor} | جهة العمل: ${formData.employerType} | سنوات الخدمة: ${formData.yearsOfService} | الراتب: ${formData.salary} | الالتزامات: ${formData.obligations}`;
+            const notesText = `طلب سيارة مخصصة | مدة التمويل: ${term} شهر | اللون المطلوب: ${selectedColor} | جهة العمل: ${formData.employerType} | مدة الخدمة بالوظيفة: ${formData.yearsOfService} شهر | الراتب: ${formData.salary} | الالتزامات: ${formData.obligations}`;
 
-            await submitBooking({
+            const bookingResponse = await submitBooking({
                 car_id: selectedCarId,
                 client_name: formData.fullName,
                 client_phone: formData.phone,
@@ -196,6 +214,7 @@ export function useCarRequest() {
                 location: formData.city,
             });
 
+            setBookingId(bookingResponse?.data?.booking_id ?? bookingResponse?.booking_id ?? null);
             setIsSuccess(true);
             toast.success(
                 t(
@@ -222,11 +241,10 @@ export function useCarRequest() {
         ? `${activeCar.brand?.name || ""} ${activeCar.name}`.trim()
         : "";
     const whatsappNum = settings?.contact?.whatsapp?.replace(/\D/g, "") ?? "";
-    const whatsappDefaultMsg = t(
-        "carRequest.whatsappMsg",
-        "مرحباً، أرسلت طلب سيارة مخصصة ({{carLabel}}) وأود المتابعة.",
-        { carLabel },
-    );
+    const bookingRef = bookingId ? `#${bookingId}` : "";
+    const whatsappDefaultMsg = bookingId
+        ? `مرحباً، أنا ${formData.fullName} أرغب في متابعة طلب التمويل رقم ${bookingRef} لسيارة ${carLabel}.`
+        : `مرحباً، أرغب في متابعة طلب التمويل المرسل لسيارة ${carLabel}.`;
     const whatsappMsg = encodeURIComponent(whatsappDefaultMsg);
     const whatsappHref = whatsappNum
         ? `https://wa.me/${whatsappNum}?text=${whatsappMsg}`

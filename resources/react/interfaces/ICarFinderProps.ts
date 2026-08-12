@@ -2,6 +2,7 @@ import type { BrandInfo, FilterCategory } from "../types/home.types";
 
 export interface CarFinderValues {
   brandId: string;
+  modelId?: string;
   typeId: string;
   categoryId: string;
   year: string;

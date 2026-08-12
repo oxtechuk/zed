@@ -11,6 +11,8 @@ use App\Http\Resources\Store\CarMiniResource;
 use App\Http\Resources\Store\CarResource;
 use App\Http\Resources\Store\CarTypeResource;
 use App\Http\Resources\Store\HomeOfferResource;
+use App\Models\Brand;
+use App\Models\CarModel;
 use App\Services\Api\Store\CarApiService;
 use App\Services\Api\Store\CompareApiService;
 use Illuminate\Http\Request;
@@ -57,7 +59,7 @@ final class CarController extends ApiBaseController
 
     public function index(Request $request)
     {
-        $filters = $request->only(['brands', 'type', 'year', 'min_price', 'max_price', 'search', 'q', 'offer_id', 'sort', 'category_id', 'brand_type_id', 'fuel', 'min_hp', 'max_hp', 'highlight']);
+        $filters = $request->only(['brands', 'model_id', 'type', 'year', 'min_price', 'max_price', 'search', 'q', 'offer_id', 'sort', 'category_id', 'brand_type_id', 'fuel', 'min_hp', 'max_hp', 'highlight']);
         $paginator = $this->carService->list($filters, (int) $request->get('per_page', 12));
 
         $paginator->setCollection(collect(
@@ -107,6 +109,21 @@ final class CarController extends ApiBaseController
         return $this->respondSuccess(
             BrandResource::collection($this->carService->brands())->resolve(),
             'Brands retrieved successfully'
+        );
+    }
+
+    public function brandModels(Brand $brand)
+    {
+        $models = CarModel::where('brand_id', $brand->id)
+            ->where('is_active', true)
+            ->get();
+
+        return $this->respondSuccess(
+            $models->map(fn ($model) => [
+                'id' => $model->id,
+                'name' => $model->getTranslation('name', app()->getLocale()) ?? $model->name,
+            ]),
+            'Models retrieved successfully'
         );
     }
 }

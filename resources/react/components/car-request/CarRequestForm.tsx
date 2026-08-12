@@ -68,7 +68,10 @@ export function CarRequestForm({
                                 "05xxxxxxxx",
                             )}
                             value={formData.phone}
-                            onChange={(e) => onChange("phone", e.target.value)}
+                            onChange={(e) => {
+                                const cleaned = e.target.value.replace(/\D/g, "").slice(0, 10);
+                                onChange("phone", cleaned);
+                            }}
                         />
                     </div>
 
@@ -203,7 +206,7 @@ export function CarRequestForm({
                             className={inputClasses}
                             placeholder={t(
                                 "carRequest.form.obligationsPlaceholder",
-                                "أدخل إجمالي التزاماتك أو أقساطك الشهرية الأخرى...",
+                                "اكتب إجمالي الالتزامات الشهرية",
                             )}
                             value={formData.obligations}
                             onChange={(e) =>

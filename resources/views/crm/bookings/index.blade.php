@@ -16,26 +16,23 @@
     <div class="row g-3 mb-4">
         <div class="col-6 col-xl-4">
             <div class="crm-stat-new">
-                <span class="stat-badge orange">65%</span>
                 <div class="stat-icon red"><i class="bi bi-clock"></i></div>
                 <div class="stat-lbl">{{ __('بانتظار المراجعة') }}</div>
-                <div class="stat-val">{{ number_format($stats['new'] ?? 0) }}</div>
+                <div class="stat-val">{{ number_format($stats['pending']) }}</div>
             </div>
         </div>
         <div class="col-6 col-xl-4">
             <div class="crm-stat-new">
-                <span class="stat-badge green">+3%</span>
                 <div class="stat-icon blue"><i class="bi bi-people"></i></div>
-                <div class="stat-lbl">{{ __('عدد طلبات اليوم') }}</div>
-                <div class="stat-val">{{ number_format($stats['in_progress'] ?? 0) }}</div>
+                <div class="stat-lbl">{{ __('طلبات اليوم') }}</div>
+                <div class="stat-val">{{ number_format($stats['today']) }}</div>
             </div>
         </div>
         <div class="col-6 col-xl-4">
             <div class="crm-stat-new">
-                <span class="stat-badge green">+12%</span>
                 <div class="stat-icon purple"><i class="bi bi-person-lines-fill"></i></div>
-                <div class="stat-lbl">{{ __('إجمالي عدد الطلبات') }}</div>
-                <div class="stat-val">{{ number_format($bookings->total()) }}</div>
+                <div class="stat-lbl">{{ __('إجمالي الطلبات') }}</div>
+                <div class="stat-val">{{ number_format($stats['total']) }}</div>
             </div>
         </div>
     </div>
@@ -51,12 +48,16 @@
                                style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 36px 8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif; width: 170px; min-width: 170px;">
                         <i class="bi bi-calendar3" style="position:absolute;{{ app()->getLocale()=='ar'?'left':'right' }}:10px;top:50%;transform:translateY(-50%);color:var(--crm-text-muted);pointer-events:none;"></i>
                     </div>
-                    {{-- مصرف الخدمة --}}
-                    <select name="type" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:150px;">
-                        <option value="">{{ __('مصرف الخدمة — الكل') }}</option>
-                        <option value="loan" {{ request('type')=='loan'?'selected':'' }}>{{ __('تمويل') }}</option>
-                        <option value="test" {{ request('type')=='test'?'selected':'' }}>{{ __('تجربة قيادة') }}</option>
-                        <option value="booking" {{ request('type')=='booking'?'selected':'' }}>{{ __('حجز سيارة') }}</option>
+                    {{-- مصدر الطلب --}}
+                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:160px;">
+                        <option value="">{{ __('المصدر — الكل') }}</option>
+                        <option value="booking" {{ request('source')==='booking'?'selected':'' }}>{{ __('طلبات فقط') }}</option>
+                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>{{ __('عملاء حاسبة فقط') }}</option>
+                    </select>
+                    {{-- الترتيب --}}
+                    <select name="sort" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:160px;">
+                        <option value="newest" {{ request('sort','newest')==='newest'?'selected':'' }}>{{ __('الأحدث أولاً') }}</option>
+                        <option value="oldest" {{ request('sort','newest')==='oldest'?'selected':'' }}>{{ __('الأقدم أولاً') }}</option>
                     </select>
                     {{-- الحالة --}}
                     <select name="status" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:140px;">
@@ -80,8 +81,153 @@
     </form>
 
 
+    {{-- ====== قسم بانتظار اعتماد المشرف (الأدمن فقط) ====== --}}
+    @if($isAdmin && $pendingApprovals->isNotEmpty())
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="border: 2px solid #FCA5A5 !important; background: #FFF5F5;">
+        <div class="card-header border-0 px-4 py-3 d-flex justify-content-between align-items-center"
+             style="background: linear-gradient(135deg, #FEE2E2, #FFF5F5); border-bottom: 1px solid #FCA5A5 !important;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-hourglass-split" style="color: #DC2626; font-size: 18px;"></i>
+                <h6 class="fw-bold mb-0" style="color: #DC2626;">{{ __('بانتظار اعتماد المشرف') }}</h6>
+                <span class="badge rounded-pill" style="background:#DC2626; color:#fff; font-size:12px;">{{ $pendingApprovals->count() }}</span>
+            </div>
+            <span style="font-size:12px;color:#7f1d1d;">{{ __('هذه الطلبات تحتاج موافقتك على الإغلاق أو إعادتها للمندوب') }}</span>
+        </div>
+        <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover align-middle mb-0">
+                <thead style="background:#FEF2F2;">
+                    <tr>
+                        <th class="px-4 py-3 text-muted" style="font-size:12px;font-weight:700;">#</th>
+                        <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;">{{ __('العميل') }}</th>
+                        <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;">{{ __('السيارة') }}</th>
+                        <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;">{{ __('المندوب') }}</th>
+                        <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;">{{ __('سبب الإغلاق المقترح') }}</th>
+                        <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;">{{ __('الإجراء') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($pendingApprovals as $pa)
+                    <tr>
+                        <td class="px-4 py-3">
+                            <a href="{{ route('crm.bookings.show', $pa) }}" class="fw-bold text-decoration-none" style="color:var(--crm-red);">#{{ $pa->id }}</a>
+                        </td>
+                        <td class="px-3 py-3">
+                            <div class="fw-bold" style="font-size:13px;">{{ $pa->client_name }}</div>
+                            <div style="font-size:12px;color:var(--crm-text-muted);" dir="ltr">{{ $pa->client_phone }}</div>
+                        </td>
+                        <td class="px-3 py-3" style="font-size:13px;">
+                            {{ $pa->car?->brand?->name }} {{ $pa->car?->name ?? '—' }}
+                        </td>
+                        <td class="px-3 py-3" style="font-size:13px;">
+                            {{ $pa->employee?->name ?? '—' }}
+                        </td>
+                        <td class="px-3 py-3">
+                            @if($pa->proposed_status && isset($statuses[$pa->proposed_status]))
+                                <span class="badge" style="background:#FEE2E2;color:#DC2626;font-size:11px;font-weight:700;border:1px solid #FCA5A5;">
+                                    {{ $statuses[$pa->proposed_status]['label'] }}
+                                </span>
+                            @else
+                                <span class="text-muted" style="font-size:12px;">—</span>
+                            @endif
+                        </td>
+                        <td class="px-3 py-3">
+                            <div class="d-flex gap-2 flex-wrap">
+                                {{-- موافقة --}}
+                                <form action="{{ route('crm.bookings.approve', $pa) }}" method="POST" class="m-0"
+                                      onsubmit="return confirm('{{ __('هل تريد الموافقة على إغلاق هذا الطلب؟') }}')">
+                                    @csrf @method('PATCH')
+                                    <button type="submit" class="btn btn-sm btn-success fw-bold rounded-2" style="font-size:12px;padding:5px 12px;">
+                                        <i class="bi bi-check-lg me-1"></i>{{ __('موافقة') }}
+                                    </button>
+                                </form>
+                                {{-- رفض وإعادة --}}
+                                <button type="button" class="btn btn-sm fw-bold rounded-2"
+                                        style="font-size:12px;padding:5px 12px;background:#FEE2E2;color:#DC2626;border:1px solid #FCA5A5;"
+                                        data-bs-toggle="modal" data-bs-target="#rejectModal{{ $pa->id }}">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i>{{ __('إعادة للمندوب') }}
+                                </button>
+                                {{-- حذف --}}
+                                <form action="{{ route('crm.bookings.destroy', $pa) }}" method="POST" class="m-0"
+                                      onsubmit="return confirm('{{ __('هل تريد حذف هذا الطلب نهائياً؟') }}')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-light border fw-bold rounded-2" style="font-size:12px;color:var(--crm-red);padding:5px 10px;">
+                                        <i class="bi bi-trash" style="font-size:13px;"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {{-- Reject Modal --}}
+                    <div class="modal fade" id="rejectModal{{ $pa->id }}" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content rounded-4 border-0 shadow">
+                                <div class="modal-header border-0 pb-0">
+                                    <h6 class="modal-title fw-bold">{{ __('إعادة الطلب #') }}{{ $pa->id }} {{ __('للمندوب') }}</h6>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form action="{{ route('crm.bookings.reject', $pa) }}" method="POST">
+                                    @csrf @method('PATCH')
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold" style="font-size:13px;">{{ __('إعادة إلى مرحلة') }}</label>
+                                            <select name="status" class="form-select form-select-sm" required>
+                                                @foreach($statuses as $key => $s)
+                                                    @if($s['group'] === 'active' && !($s['is_close'] ?? false) && $key !== 'waiting_supervisor_approval')
+                                                        <option value="{{ $key }}">{{ $s['label'] }}</option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="mb-0">
+                                            <label class="form-label fw-bold" style="font-size:13px;">{{ __('سبب الإعادة') }} <span class="text-danger">*</span></label>
+                                            <textarea name="note" class="form-control form-control-sm" rows="3"
+                                                      placeholder="{{ __('اكتب سبب إعادة الطلب للمندوب...') }}" required></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer border-0 pt-0">
+                                        <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal">{{ __('إلغاء') }}</button>
+                                        <button type="submit" class="btn btn-sm btn-danger">{{ __('إعادة للمندوب') }}</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        {{-- Mobile pending approvals --}}
+        <div class="d-md-none p-3">
+            @foreach($pendingApprovals as $pa)
+            <div class="mb-3 p-3 rounded-3" style="border:1px solid #FCA5A5;background:#FFF5F5;">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <a href="{{ route('crm.bookings.show', $pa) }}" class="fw-bold text-decoration-none" style="color:var(--crm-red);font-size:14px;">#{{ $pa->id }}</a>
+                        <div class="fw-bold mt-1" style="font-size:13px;">{{ $pa->client_name }}</div>
+                        <div style="font-size:11px;color:var(--crm-text-muted);">{{ $pa->employee?->name }} &bull; {{ $pa->car?->brand?->name }} {{ $pa->car?->name }}</div>
+                    </div>
+                    @if($pa->proposed_status && isset($statuses[$pa->proposed_status]))
+                        <span class="badge" style="background:#FEE2E2;color:#DC2626;font-size:10px;border:1px solid #FCA5A5;">
+                            {{ $statuses[$pa->proposed_status]['label'] }}
+                        </span>
+                    @endif
+                </div>
+                <div class="d-flex gap-2">
+                    <form action="{{ route('crm.bookings.approve', $pa) }}" method="POST" class="m-0 flex-fill">
+                        @csrf @method('PATCH')
+                        <button class="btn btn-sm btn-success w-100 fw-bold" style="font-size:11px;">{{ __('موافقة') }}</button>
+                    </form>
+                    <button class="btn btn-sm fw-bold flex-fill" style="font-size:11px;background:#FEE2E2;color:#DC2626;border:1px solid #FCA5A5;"
+                            data-bs-toggle="modal" data-bs-target="#rejectModal{{ $pa->id }}">{{ __('إعادة') }}</button>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
 
     {{-- Table --}}
+
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="border:1px solid var(--crm-border)!important;">
         <div class="card-header bg-white border-0 px-4 py-3 d-flex justify-content-between align-items-center" style="border-bottom:1px solid var(--crm-border)!important;">
             <h6 class="fw-bold mb-0">{{ __('سجل الطلبات') }}</h6>
@@ -93,108 +239,116 @@
             <table class="table table-hover align-middle mb-0">
                 <thead style="background:#F8F9FC;">
                     <tr>
-                        <th class="px-4 py-3 text-muted fw-bold" style="font-size:12px;">{{ __('رقم الطلب') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('رقم العميل') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('الراتب') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('نوع الطلب') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('نوع السيارات') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('سعر السيارة') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('المسؤول') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('تاريخ الطلب') }}</th>
+                        <th class="px-4 py-3 text-muted fw-bold" style="font-size:12px;">#</th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('رقم الطلب') }}</th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('تاريخ التحديث') }}</th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('العميل') }}</th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('السيارة') }}</th>
                         <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('الحالة') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('إجراءات') }}</th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('تحكم') }}</th>
                     </tr>
                 </thead>
                 <tbody class="border-top-0">
-                    @forelse($bookings as $b)
+                    @forelse($bookings as $index => $b)
                     <tr>
-                        <td class="px-4 fw-bold" style="font-size:13px;">
-                            <a href="{{ route('crm.bookings.show', $b) }}" class="text-decoration-none" style="color:var(--crm-text);">#{{ $b->id }}</a>
+                        <td class="px-4 text-muted small" style="font-size:13px;">
+                            {{ $bookings->firstItem() + $index }}
+                        </td>
+                        <td class="fw-bold" style="font-size:13px;">
+                            <a href="{{ route('crm.bookings.show', $b) }}" class="text-decoration-none fw-bold" style="color:var(--crm-red);">{{ $b->id }}</a>
                         </td>
                         <td>
-                            <div class="fw-bold" style="font-size:13px;color:var(--crm-text);">{{ $b->client_name }}</div>
-                            <small class="text-muted" dir="ltr">{{ $b->client_phone }}</small>
-                        </td>
-                        <td style="font-size:13px;">
-                            {{ number_format($b->monthly_installment) }}
-                            <small class="text-muted">{!! __('ريال') !!}</small>
-                        </td>
-                        <td style="font-size:12px;color:var(--crm-text-muted);">{{ __('طلب تجربة قيادة') }}</td>
-                        <td>
-                            <div style="font-size:12px;color:var(--crm-text);">{{ $b->car?->name ?? '—' }}</div>
-                            <small class="text-muted">{{ $b->car?->brand?->name }}</small>
-                        </td>
-                        <td style="font-size:13px;font-weight:700;">
-                            {{ number_format($b->car?->cash_price ?? 0) }}
-                            <small class="text-muted fw-normal">{!! __('ريال') !!}</small>
-                        </td>
-                        <td style="font-size:12px;">
-                            <form action="{{ route('crm.bookings.assign', $b) }}" method="POST" class="m-0">
-                                @csrf @method('PATCH')
-                                <div class="d-flex align-items-center gap-1 bg-light rounded-pill p-1 pe-2 border" style="width: fit-content; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--crm-red)'" onmouseout="this.style.borderColor='var(--crm-border)'">
-                                    @if($b->employee)
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width:24px;height:24px;font-size:10px;font-weight:bold;background:#16254F;">
-                                            {{ strtoupper(substr($b->employee->name, 0, 1)) }}
-                                        </div>
+                            <div style="font-size: 12px; line-height: 1.8;">
+                                <div><span class="text-muted">{{ __('انشاء :') }}</span> <strong class="text-dark">{{ $b->created_at->diffForHumans() }}</strong></div>
+                                <div><span class="text-muted">{{ __('التعديل :') }}</span> <strong class="text-dark">{{ $b->updated_at->diffForHumans() }}</strong></div>
+                                <div><span class="text-muted">{{ __('الموظف :') }}</span> <strong class="text-dark">{{ $b->employee?->name ?: __('غير معين') }}</strong></div>
+                                <div class="mt-1">
+                                    <span class="text-muted">{{ __('المصدر :') }}</span>
+                                    @if($b->source === 'calculator')
+                                        <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                                            <i class="bi bi-calculator me-1"></i>{{ __('عملاء حاسبة') }}
+                                        </span>
                                     @else
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center bg-white text-muted flex-shrink-0 border shadow-sm" style="width:24px;height:24px;font-size:12px;">
-                                            <i class="bi bi-person"></i>
-                                        </div>
+                                        <span class="badge" style="background-color: #EBF5FF; color: #1E40AF; border: 1px solid #BFDBFE; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                                            <i class="bi bi-file-earmark-text me-1"></i>{{ __('طلب عادي') }}
+                                        </span>
                                     @endif
-                                    <select @disabled(!auth()->user()->hasRole('admin')) name="employee_id" class="form-select form-select-sm border-0 shadow-none bg-transparent fw-bold p-0 ps-1" style="font-size:12px;color:var(--crm-text);width:auto;cursor:pointer;background-image:none;outline:none;" onchange="this.form.submit()">
-                                        <option value="">{{ __('غير معين') }}</option>
-                                        @foreach($employees as $emp)
-                                            <option value="{{ $emp->id }}" {{ $b->assigned_to == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    <i class="bi bi-chevron-down text-muted" style="font-size:10px; pointer-events: none;"></i>
                                 </div>
-                            </form>
+                            </div>
                         </td>
-                        <td style="font-size:12px;color:var(--crm-text-muted);">{{ $b->created_at->format('d/m/Y') }}</td>
                         <td>
-                            <form action="{{ route('crm.bookings.status', $b) }}" method="POST" class="m-0">
-                                @csrf @method('PATCH')
-                                @php
-                                    $dotClass = match(true) {
-                                        $b->status === 'new' => 'planned',
-                                        in_array($b->status, ['pending', 'waiting_supervisor_approval']) => 'waiting',
-                                        $b->status === 'received' => 'done',
-                                        str_starts_with($b->status, 'lost_') => 'late',
-                                        default => 'confirmed',
-                                    };
-                                @endphp
-                                <select name="status" class="form-select form-select-sm border-0 shadow-none status-dot {{ $dotClass }}" style="font-size:12px;font-weight:700;padding-top:4px;padding-bottom:4px;width:auto;display:inline-block;" onchange="this.form.submit()" {{ ($b->status === 'waiting_supervisor_approval' && ! auth('employee')->user()->isAdmin()) ? 'disabled' : '' }}>
-                                    <optgroup label="{{ __('الحالات الأساسية (Active)') }}">
-                                        @foreach($statuses as $key => $s)
-                                            @if($s['group'] === 'active')
-                                            <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
-                                            @endif
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="{{ __('الحالات الخاسرة (Closed - Lost)') }}">
-                                        @foreach($statuses as $key => $s)
-                                            @if($s['group'] === 'lost')
-                                            <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
-                                            @endif
-                                        @endforeach
-                                    </optgroup>
-                                </select>
-                            </form>
+                            <div class="fw-bold text-dark" style="font-size:13px;">{{ $b->client_name }}</div>
+                            <a href="tel:{{ $b->client_phone }}" class="text-decoration-none small text-muted" dir="ltr">{{ $b->client_phone }}</a>
+                        </td>
+                        <td>
+                            <div style="font-size: 12px; line-height: 1.8;">
+                                <div><span class="text-muted">{{ __('الماركة :') }}</span> <strong class="text-dark">{{ $b->car?->brand?->name ?? '—' }}</strong></div>
+                                <div><span class="text-muted">{{ __('موديل :') }}</span> <strong class="text-dark">{{ $b->car?->model ?? '—' }}</strong></div>
+                                <div><span class="text-muted">{{ __('الفئة :') }}</span> <strong class="text-dark">{{ $b->car?->category?->name ?? '—' }}</strong></div>
+                                <div><span class="text-muted">{{ __('سنة الصنع :') }}</span> <strong class="text-dark">{{ $b->car?->year ?? '—' }}</strong></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-size: 12px; line-height: 1.8;">
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="text-muted me-1" style="white-space: nowrap;">{{ __('حالة الطلب :') }}</span>
+                                    <form action="{{ route('crm.bookings.status', $b) }}" method="POST" class="m-0 d-inline-block">
+                                        @csrf @method('PATCH')
+                                        @php
+                                            $dotClass = match(true) {
+                                                $b->status === 'new' => 'planned',
+                                                in_array($b->status, ['pending', 'waiting_supervisor_approval']) => 'waiting',
+                                                $b->status === 'received' => 'done',
+                                                str_starts_with($b->status, 'lost_') => 'late',
+                                                default => 'confirmed',
+                                            };
+                                        @endphp
+                                        <select name="status" class="form-select form-select-sm border-0 shadow-none status-dot {{ $dotClass }}" style="font-size:12px;font-weight:700;padding-top:2px;padding-bottom:2px;padding-right:24px;width:auto;display:inline-block;cursor:pointer;" onchange="this.form.submit()" {{ ($b->status === 'waiting_supervisor_approval' && ! auth('employee')->user()->isAdmin()) ? 'disabled' : '' }}>
+                                            <optgroup label="{{ __('الحالات الأساسية (Active)') }}">
+                                                @foreach($statuses as $key => $s)
+                                                    @if($s['group'] === 'active')
+                                                    <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                                                    @endif
+                                                @endforeach
+                                            </optgroup>
+                                            <optgroup label="{{ __('الحالات الخاسرة (Closed - Lost)') }}">
+                                                @foreach($statuses as $key => $s)
+                                                    @if($s['group'] === 'lost')
+                                                    <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                                                    @endif
+                                                @endforeach
+                                            </optgroup>
+                                        </select>
+                                    </form>
+                                </div>
+                                <div>
+                                    <span class="text-muted">{{ __('الحالة الرئيسية :') }}</span>
+                                    @php
+                                        $currentStatus = $statuses[$b->status] ?? [];
+                                        $isClosed = (($currentStatus['group'] ?? '') === 'lost') || ($currentStatus['is_close'] ?? false);
+                                    @endphp
+                                    <strong class="{{ $isClosed ? 'text-danger' : 'text-success' }}">
+                                        {{ $isClosed ? __('مغلق') : __('مفتوح') }}
+                                    </strong>
+                                </div>
+                            </div>
                         </td>
                         <td>
                             <div class="d-flex gap-1 align-items-center">
-                                <a href="{{ route('crm.bookings.show', $b) }}" class="btn btn-sm btn-light rounded-2" title="{{ __('عرض') }}">
-                                    <i class="bi bi-eye" style="font-size:14px;"></i>
+                                <a href="{{ route('crm.bookings.show', $b) }}" class="btn btn-sm btn-light rounded-2 border" title="{{ __('عرض وتعديل') }}">
+                                    <i class="bi bi-pencil" style="font-size:14px;color:var(--crm-text);"></i>
                                 </a>
-                                <a href="https://wa.me/{{ $b->client_phone }}" target="_blank" class="btn btn-sm btn-light rounded-2" title="{{ __('واتساب') }}" style="color:#25D366;">
+                                <a href="{{ route('crm.bookings.show', $b) }}" class="btn btn-sm btn-light rounded-2 border" title="{{ __('عرض التفاصيل') }}">
+                                    <i class="bi bi-eye" style="font-size:14px;color:var(--crm-text);"></i>
+                                </a>
+                                <a href="https://wa.me/{{ $b->client_phone }}" target="_blank" class="btn btn-sm btn-light rounded-2 border" title="{{ __('واتساب') }}" style="color:#25D366;">
                                     <i class="bi bi-whatsapp" style="font-size:14px;"></i>
                                 </a>
                                 @can('manage-bookings')
-                                <form action="{{ route('crm.bookings.destroy', $b) }}" method="POST"
+                                <form action="{{ route('crm.bookings.destroy', $b) }}" method="POST" class="m-0"
                                       onsubmit="return confirm('{{ __('هل تريد حذف هذا الطلب؟') }}')">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-light rounded-2" style="color:var(--crm-red);" title="{{ __('حذف') }}">
+                                    <button class="btn btn-sm btn-light rounded-2 border" style="color:var(--crm-red);" title="{{ __('حذف') }}">
                                         <i class="bi bi-trash" style="font-size:14px;"></i>
                                     </button>
                                 </form>
@@ -204,7 +358,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="10" class="text-center text-muted py-5">
+                        <td colspan="7" class="text-center text-muted py-5">
                             <i class="bi bi-inbox fs-1 d-block mb-2 opacity-25"></i>
                             {{ __('لا توجد طلبات حالياً') }}
                         </td>
@@ -230,7 +384,14 @@
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <div>
                         <a href="{{ route('crm.bookings.show', $b) }}" class="fw-bold text-decoration-none" style="color:var(--crm-red);font-size:14px;">#{{ $b->id }}</a>
-                        <div class="fw-bold mt-1" style="font-size:14px;color:var(--crm-text);">{{ $b->client_name }}</div>
+                        <div class="fw-bold mt-1" style="font-size:14px;color:var(--crm-text);">
+                            {{ $b->client_name }}
+                            @if($b->source === 'calculator')
+                                <span class="badge ms-1" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
+                                    <i class="bi bi-calculator me-1"></i>{{ __('عميل حاسبة') }}
+                                </span>
+                            @endif
+                        </div>
                         <div style="font-size:12px;color:var(--crm-text-muted);" dir="ltr">{{ $b->client_phone }}</div>
                     </div>
                     <form action="{{ route('crm.bookings.status', $b) }}" method="POST">

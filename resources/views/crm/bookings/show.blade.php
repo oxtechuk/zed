@@ -42,7 +42,14 @@
             </div>
         </div>
         <div class="d-flex flex-wrap align-items-center gap-4 text-white" style="font-size:13px;opacity:0.95;">
-            <span><i class="bi bi-person-circle me-1"></i>{{ __('العميل') }}: <strong>{{ $booking->client_name }}</strong></span>
+            <span>
+                <i class="bi bi-person-circle me-1"></i>{{ __('العميل') }}: <strong>{{ $booking->client_name }}</strong>
+                @if($booking->source === 'calculator')
+                    <span class="badge ms-1" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: bold;">
+                        <i class="bi bi-calculator me-1"></i>{{ __('عميل حاسبة') }}
+                    </span>
+                @endif
+            </span>
             <span dir="ltr"><i class="bi bi-telephone me-1"></i>{{ $booking->client_phone }}</span>
             <span><i class="bi bi-flag me-1"></i>{{ __('الحالة') }}: <strong>{{ $booking->status_label }}</strong></span>
             <span><i class="bi bi-calendar3 me-1"></i>{{ $booking->created_at->format('d/m/Y H:i') }}</span>

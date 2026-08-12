@@ -98,6 +98,7 @@ export default function AllCarsPage() {
   function buildParams(): ICarsQueryParams {
     const params: ICarsQueryParams = {};
     if (filters.brandId !== null) params.brands = [filters.brandId];
+    if (filters.modelId !== null) params.model_id = filters.modelId;
     if (filters.type !== "all") params.type = filters.type as any;
     if (filters.year) params.year = filters.year;
     if (filters.priceMin > 0) params.min_price = filters.priceMin;

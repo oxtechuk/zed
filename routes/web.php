@@ -77,6 +77,7 @@ use App\Http\Controllers\CRM\CalculatorLeadController;
 use App\Http\Controllers\CRM\CalculatorSettingsController;
 use App\Http\Controllers\CRM\CarCategoryController;
 use App\Http\Controllers\CRM\CarController;
+use App\Http\Controllers\CRM\CarModelController;
 use App\Http\Controllers\CRM\CarTypeController;
 use App\Http\Controllers\CRM\ContactSourceController;
 use App\Http\Controllers\CRM\DashboardController;
@@ -161,6 +162,9 @@ Route::prefix('crm')->name('crm.')->middleware(['auth:employee', 'guard.employee
         Route::post('brands', [BrandController::class, 'store'])->name('brands.store');
         Route::put('brands/{brand}', [BrandController::class, 'update'])->name('brands.update');
         Route::delete('brands/{brand}', [BrandController::class, 'destroy'])->name('brands.destroy');
+
+        Route::get('brands/{brand}/models', [CarModelController::class, 'getModelsByBrand'])->name('brands.models');
+        Route::resource('car-models', CarModelController::class)->except(['create', 'show', 'edit']);
     });
 
     // === أنواع الماركات ===

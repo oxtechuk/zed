@@ -20,21 +20,71 @@ class BookingController extends Controller
 {
     public function index(Request $request)
     {
+        $sort = $request->input('sort', 'newest');
+        $isSuperAdmin = auth()->user()->hasRole('super-admin');
+        $isAdmin = auth('employee')->user()->isAdmin();
 
-        $query = Booking::with(['car.brand', 'employee'])->latest();
+        // Base scoped query (per employee or all for admin)
+        $scopedQuery = Booking::query();
+        if (! $isAdmin) {
+            $scopedQuery->where('assigned_to', auth()->id());
+        }
+
+        // Dynamic stats (scoped per role)
+        $pendingStatuses = collect(Booking::STATUSES)
+            ->filter(fn ($s) => ($s['group'] ?? '') === 'open')
+            ->keys()
+            ->toArray();
+
+        $stats = [
+            'pending'  => (clone $scopedQuery)->whereIn('status', $pendingStatuses)->count(),
+            'today'    => (clone $scopedQuery)->whereDate('created_at', today())->count(),
+            'total'    => (clone $scopedQuery)->count(),
+        ];
+
+        // Pending supervisor approvals (admin only)
+        $pendingApprovals = $isAdmin
+            ? Booking::with(['car.brand', 'employee'])
+                ->where('status', 'waiting_supervisor_approval')
+                ->latest()
+                ->get()
+            : collect();
+
+        $query = Booking::with(['car.brand', 'employee']);
+
+        // ترتيب
+        if ($sort === 'oldest') {
+            $query->oldest();
+        } else {
+            $query->latest();
+        }
+
+        // المندوب: لا يرى طلبات بانتظار المشرف ولا المغلقة
+        if (! $isAdmin) {
+            $query->where('assigned_to', auth()->id())
+                ->where('status', '!=', 'waiting_supervisor_approval')
+                ->whereNotIn('status', array_keys(array_filter(Booking::STATUSES, fn ($s) => ($s['is_close'] ?? false) === true)));
+        }
+
+        // فلترة بالمصدر (طلبات / عملاء حاسبة)
+        if ($request->filled('source')) {
+            if ($request->source === 'calculator') {
+                $query->whereNotNull('calculator_lead_id');
+            } elseif ($request->source === 'booking') {
+                $query->whereNull('calculator_lead_id');
+            }
+        }
 
         // فلترة بالحالة
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // فلترة بالموظف
+        // فلترة بالموظف (الأدمن فقط)
         if ($request->filled('employee_id')) {
             $query->where('assigned_to', $request->employee_id);
         }
-        if (! auth()->user()->hasRole('super-admin')) {
-            $query->where('assigned_to', \auth()->id());
-        }
+
         // بحث
         if ($request->filled('search')) {
             $s = $request->search;
@@ -49,7 +99,7 @@ class BookingController extends Controller
         $statuses = Booking::STATUSES;
         $cars = Car::with('brand')->where('is_active', true)->get();
 
-        return view('crm.bookings.index', compact('bookings', 'employees', 'statuses', 'cars'));
+        return view('crm.bookings.index', compact('bookings', 'employees', 'statuses', 'cars', 'stats', 'pendingApprovals', 'isAdmin'));
     }
 
     public function store(Request $request)

@@ -41,7 +41,15 @@
             </div>
         </div>
         <div class="d-flex flex-wrap align-items-center gap-4 text-white" style="font-size:13px;opacity:0.95;">
-            <span><i class="bi bi-person-circle me-1"></i><?php echo e(__('العميل')); ?>: <strong><?php echo e($booking->client_name); ?></strong></span>
+            <span>
+                <i class="bi bi-person-circle me-1"></i><?php echo e(__('العميل')); ?>: <strong><?php echo e($booking->client_name); ?></strong>
+                <?php if($booking->source === 'calculator'): ?>
+                    <span class="badge ms-1" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: bold;">
+                        <i class="bi bi-calculator me-1"></i><?php echo e(__('عميل حاسبة')); ?>
+
+                    </span>
+                <?php endif; ?>
+            </span>
             <span dir="ltr"><i class="bi bi-telephone me-1"></i><?php echo e($booking->client_phone); ?></span>
             <span><i class="bi bi-flag me-1"></i><?php echo e(__('الحالة')); ?>: <strong><?php echo e($booking->status_label); ?></strong></span>
             <span><i class="bi bi-calendar3 me-1"></i><?php echo e($booking->created_at->format('d/m/Y H:i')); ?></span>
@@ -218,6 +226,76 @@
                                     <strong><?php echo e(__('موعد المتابعة')); ?>:</strong> <?php echo e($booking->follow_up_at?->format('d/m/Y H:i')); ?> (<?php echo e($booking->follow_up_at?->diffForHumans()); ?>)
                                 </div>
                             </div>
+                            <?php endif; ?>
+
+                            <?php if($booking->calculatorLead && !empty($booking->calculatorLead->details)): ?>
+                                <?php
+                                    $leadDetails = $booking->calculatorLead->details;
+                                ?>
+                                <div class="p-3 mb-3 rounded-4" style="background:#F0FDF4; border:1px solid #BBF7D0;">
+                                    <div class="fw-bold text-success mb-2" style="font-size:13.5px;">
+                                        <i class="bi bi-wallet2 me-1"></i> <?php echo e(__('تفاصيل الملاءة المالية والائتمانية (حاسبة التمويل)')); ?>
+
+                                    </div>
+                                    
+                                    <div class="row g-2 text-start" style="font-family:'Cairo', sans-serif;">
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong><?php echo e(__('الراتب الشهري')); ?>:</strong> <?php echo e(number_format($leadDetails['salary'] ?? 0)); ?> <?php echo e(__('ريال')); ?>
+
+                                        </div>
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong><?php echo e(__('الالتزامات الشهريّة')); ?>:</strong> <?php echo e(number_format($leadDetails['monthly_obligations'] ?? 0)); ?> <?php echo e(__('ريال')); ?>
+
+                                        </div>
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong><?php echo e(__('جهة العمل')); ?>:</strong> 
+                                            <?php
+                                                $empTypes = [
+                                                    'government' => 'حكومي',
+                                                    'semi-government' => 'شبه حكومي',
+                                                    'private' => 'قطاع خاص',
+                                                    'retired' => 'متقاعد',
+                                                ];
+                                                $empKey = $leadDetails['employer_type'] ?? '';
+                                                $empVal = $empTypes[$empKey] ?? $empKey ?: '—';
+                                            ?>
+                                            <?php echo e($empVal); ?>
+
+                                        </div>
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong><?php echo e(__('مدة الخدمة')); ?>:</strong> <?php echo e($leadDetails['years_of_service'] ?? '—'); ?> <?php echo e(__('سنة')); ?>
+
+                                        </div>
+                                        
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong><?php echo e(__('تمويل شخصي')); ?>:</strong> <?php echo e(($leadDetails['has_personal_loan'] ?? false) ? __('نعم') : __('لا')); ?>
+
+                                        </div>
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong><?php echo e(__('تمويل عقاري')); ?>:</strong> <?php echo e(($leadDetails['has_mortgage_loan'] ?? false) ? __('نعم') : __('لا')); ?>
+
+                                        </div>
+                                        
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong><?php echo e(__('تعثر في سمة')); ?>:</strong> 
+                                            <span class="<?php echo e(($leadDetails['has_simah_default'] ?? false) ? 'text-danger fw-bold' : ''); ?>">
+                                                <?php echo e(($leadDetails['has_simah_default'] ?? false) ? __('نعم') : __('لا')); ?>
+
+                                            </span>
+                                        </div>
+                                        <div class="col-6" style="font-size:12px;color:#166534;">
+                                            <strong><?php echo e(__('مخالفات مرورية')); ?>:</strong> <?php echo e(($leadDetails['has_traffic_violations'] ?? false) ? __('نعم') : __('لا')); ?>
+
+                                        </div>
+
+                                        <?php if(!empty($leadDetails['preferred_color'])): ?>
+                                        <div class="col-12 text-success mt-2 pt-2 border-top" style="font-size:12px;border-top-style:dashed!important;">
+                                            <strong><?php echo e(__('اللون المفضل للعميل')); ?>:</strong> <?php echo e($leadDetails['preferred_color']); ?>
+
+                                        </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             <?php endif; ?>
 
                             <div class="d-flex justify-content-between py-2 align-items-center">

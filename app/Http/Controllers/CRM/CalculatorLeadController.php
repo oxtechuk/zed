@@ -10,7 +10,7 @@ class CalculatorLeadController extends Controller
 {
     public function index(Request $request)
     {
-        $query = CalculatorLead::with('car.brand')->latest();
+        $query = CalculatorLead::with(['car.brand', 'booking'])->latest();
 
         if ($request->filled('search')) {
             $s = $request->search;

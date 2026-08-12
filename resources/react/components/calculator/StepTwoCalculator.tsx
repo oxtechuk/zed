@@ -27,7 +27,7 @@ export default function StepTwoCalculator({
     const [calcResult, setCalcResult] = useState<ICalculateData | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const minDownPayment = Math.round(selectedCar.price * 0.1);
+    const minDownPayment = 0;
     const maxDownPayment = Math.round(selectedCar.price * 0.5);
 
     const downPaymentPercent = Math.round(
@@ -251,8 +251,8 @@ export default function StepTwoCalculator({
                                     })}
                                 </span>
                             </div>
-                            <div className="grid grid-cols-6 gap-2">
-                                {[24, 36, 48, 60, 72, 84].map((option) => (
+                            <div className="grid grid-cols-5 gap-2">
+                                {[12, 24, 36, 48, 60].map((option) => (
                                     <button
                                         key={option}
                                         type="button"

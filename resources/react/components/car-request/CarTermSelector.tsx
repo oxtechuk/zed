@@ -16,8 +16,8 @@ export function CarTermSelector({
                     {t("carRequest.summary.months", "{{term}} شهر", { term })}
                 </span>
             </span>
-            <div className="grid grid-cols-4 gap-2">
-                {FINANCE_TERMS.map((month) => (
+            <div className="grid grid-cols-5 gap-2">
+                {[12, 24, 36, 48, 60].map((month) => (
                     <button
                         key={month}
                         type="button"

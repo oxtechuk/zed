@@ -28,10 +28,10 @@ export const EMPLOYER_TYPE_KEYS = [
 ] as const;
 
 export const SERVICE_DURATION_KEYS = [
-    { value: 0.5, key: "under1Year" },
-    { value: 1, key: "1Year" },
-    { value: 2, key: "2Years" },
-    { value: 3, key: "3YearsPlus" },
+    { value: 1, key: "1Month" },
+    { value: 2, key: "2Months" },
+    { value: 3, key: "3Months" },
+    { value: 4, key: "moreThan3Months" },
 ] as const;
 
 export const DEFAULT_COLOR_OPTIONS: (ICarColorOption & { key: string })[] = [

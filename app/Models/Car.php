@@ -23,7 +23,7 @@ class Car extends Model
     public $translatable = ['name', 'description', 'features', 'slug'];
 
     protected $fillable = [
-        'brand_id', 'category_id', 'name', 'slug', 'model', 'year', 'type',
+        'brand_id', 'category_id', 'car_model_id', 'name', 'slug', 'model', 'year', 'type',
         'color', 'colors', 'cash_price', 'min_down_payment', 'min_installment',
         'description', 'features', 'specs', 'thumbnail', 'badge_color', 'is_featured', 'is_active', 'is_highlighted', 'views',
         'availability_status',
@@ -91,6 +91,25 @@ class Car extends Model
     public function safety_features()
     {
         return $this->belongsToMany(SafetyFeature::class, 'car_safety_feature');
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Car $car) {
+            if ($car->car_model_id) {
+                $carModel = CarModel::find($car->car_model_id);
+                if ($carModel) {
+                    $car->model = $carModel->getTranslation('name', 'en', false)
+                        ?? $carModel->getTranslation('name', 'ar', false)
+                        ?? $carModel->name;
+                }
+            }
+        });
+    }
+
+    public function carModel(): BelongsTo
+    {
+        return $this->belongsTo(CarModel::class);
     }
 
     public function brand(): BelongsTo

@@ -13,7 +13,7 @@ final class BookingRequest extends ApiBaseRequest
         return [
             'car_id' => ['required', 'exists:cars,id'],
             'client_name' => ['required', 'string', 'max:255'],
-            'client_phone' => ['required', 'string', 'max:20'],
+            'client_phone' => ['required', 'string', 'max:20', 'regex:/^05\d{8}$/'],
             'client_email' => ['nullable', 'email', 'max:255'],
             'down_payment' => ['nullable', 'numeric', 'min:0'],
             'duration_years' => ['nullable', 'numeric', 'min:1', 'max:10'],
@@ -21,6 +21,13 @@ final class BookingRequest extends ApiBaseRequest
             'notes' => ['nullable', 'string', 'max:1000'],
             'booking_type' => ['nullable', 'string', 'in:test_drive,purchase,inquiry'],
             'location' => ['nullable', 'string', 'max:500'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'client_phone.regex' => 'الرجاء إدخال رقم جوال سعودي صحيح (مثال: 05xxxxxxxx)',
         ];
     }
 }

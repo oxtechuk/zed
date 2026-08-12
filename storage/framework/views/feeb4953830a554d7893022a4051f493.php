@@ -60,6 +60,15 @@
                                 <td class="text-muted small"><?php echo e($lead->created_at->format('Y-m-d H:i')); ?></td>
                                 <td>
                                     <div class="d-flex gap-2 justify-content-end px-3">
+                                        <?php if($lead->booking): ?>
+                                        <a href="<?php echo e(route('crm.bookings.show', $lead->booking)); ?>" class="btn btn-sm btn-primary-subtle rounded-2 fw-bold" title="<?php echo e(__('متابعة الطلب الإداري')); ?>">
+                                            <i class="bi bi-eye me-1"></i> <?php echo e(__('متابعة الطلب')); ?>
+
+                                        </a>
+                                        <?php endif; ?>
+                                        <a href="https://wa.me/<?php echo e($lead->phone); ?>" target="_blank" class="btn btn-sm btn-success-subtle rounded-2" title="<?php echo e(__('واتساب')); ?>">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
                                         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage-calculator-leads')): ?>
                                         <form action="<?php echo e(route('crm.calculator-leads.destroy', $lead)); ?>" method="POST" onsubmit="return confirm('<?php echo e(__('هل أنت متأكد من حذف هذا السجل؟')); ?>')">
                                             <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
@@ -93,6 +102,10 @@
 
     <style>
         .btn-danger-subtle { background: #ffebee; }
+        .btn-primary-subtle { background: #E0F2FE; color: #0369A1; }
+        .btn-primary-subtle:hover { background: #BAE6FD; color: #0369A1; }
+        .btn-success-subtle { background: #E8F5E9; color: #2E7D32; }
+        .btn-success-subtle:hover { background: #C8E6C9; color: #2E7D32; }
     </style>
 <?php $__env->stopSection(); ?>
 

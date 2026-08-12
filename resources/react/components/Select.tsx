@@ -24,6 +24,7 @@ function NativeSelect({
   icon,
   className,
   chevronClassName,
+  disabled,
 }: ISelectProps) {
   return (
     <div className="relative">
@@ -36,7 +37,8 @@ function NativeSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full appearance-none outline-none transition ${icon ? "px-11" : "px-4"} ${className ?? ""}`}
+        disabled={disabled}
+        className={`w-full appearance-none outline-none transition ${icon ? "px-11" : "px-4"} ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className ?? ""}`}
       >
         {placeholder && (
           <option value="" disabled>
@@ -70,6 +72,7 @@ function SearchableSelect({
   icon,
   className,
   chevronClassName,
+  disabled,
 }: ISelectProps) {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.dir() === "rtl";
@@ -147,8 +150,9 @@ function SearchableSelect({
       <button
         ref={buttonRef}
         type="button"
-        onClick={() => setOpen((p) => !p)}
-        className={`w-full text-start outline-none transition ${icon ? "px-11" : "px-4"} ${className ?? ""}`}
+        disabled={disabled}
+        onClick={() => !disabled && setOpen((p) => !p)}
+        className={`w-full text-start outline-none transition ${icon ? "px-11" : "px-4"} ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className ?? ""}`}
       >
         {value && selectedLabel ? (
           <span>{selectedLabel}</span>

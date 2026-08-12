@@ -11,6 +11,7 @@ export interface ICarsQueryParams {
   page?: number;
   per_page?: number;
   brands?: number[];
+  model_id?: number;
   type?: number;
   category_id?: number;
   year?: string;
@@ -95,6 +96,7 @@ export type CarsSidebarFilterData = ICarsSidebarFilterData;
 
 export interface IFilterValues {
   brandId: number | null;
+  modelId: number | null;
   type: string;
   categoryId: number | null;
   year: string;
@@ -110,6 +112,7 @@ export type FilterValues = IFilterValues;
 
 export const DEFAULT_FILTER_VALUES: IFilterValues = {
   brandId: null,
+  modelId: null,
   type: "all",
   categoryId: null,
   year: "",

@@ -71,8 +71,8 @@
 
                         
                         <div class="car-img-wrapper">
-                            <?php if($car->thumbnail): ?>
-                                <img src="<?php echo e(asset('storage/' . $car->thumbnail)); ?>" alt="<?php echo e($car->name); ?>" class="car-img-main">
+                            <?php if($car->main_image): ?>
+                                <img src="<?php echo e(str_starts_with($car->main_image, 'http') ? $car->main_image : asset('storage/' . $car->main_image)); ?>" alt="<?php echo e($car->name); ?>" class="car-img-main">
                             <?php else: ?>
                                 <div class="car-no-img">
                                     <i class="bi bi-car-front"></i>

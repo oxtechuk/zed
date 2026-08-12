@@ -168,6 +168,17 @@
                                         </div>
                                         <input type="file" name="breadcrumb_bg" class="form-control bg-light border-0" accept="image/*">
                                     </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold small text-muted d-block mb-2"><?php echo e(__('صورة السيارة الافتراضية')); ?></label>
+                                        <div class="upload-preview rounded-3 mb-2">
+                                            <?php if(isset($settings['default_car_image'])): ?>
+                                                <img src="<?php echo e(asset('storage/' . $settings['default_car_image'])); ?>" alt="Default Car Image" class="img-fluid rounded-3" style="max-height:60px;">
+                                            <?php else: ?>
+                                                <i class="bi bi-car-front fs-2 opacity-25"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                        <input type="file" name="default_car_image" class="form-control bg-light border-0" accept="image/*">
+                                    </div>
                                     <div class="col-12">
                                         <div class="p-3 bg-info-subtle rounded-3 small text-info">
                                             <i class="bi bi-info-circle-fill me-1"></i>

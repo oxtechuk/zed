@@ -1,4 +1,4 @@
-<?php $__env->startSection('title', __('إضافة سيارة جديدة') . ' | GR Motors'); ?>
+<?php $__env->startSection('title', __('إضافة سيارة جديدة') . ' | Zad Capital'); ?>
 
 <?php $__env->startSection('content'); ?>
 <div class="container-fluid" dir="<?php echo e(app()->getLocale() == 'ar' ? 'rtl' : 'ltr'); ?>">
@@ -50,7 +50,7 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label"><?php echo e(__('الماركة')); ?> <span class="text-danger">*</span></label>
-                                <select name="brand_id" class="form-select <?php $__errorArgs = ['brand_id'];
+                                <select name="brand_id" id="brand_id" class="form-select <?php $__errorArgs = ['brand_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -91,7 +91,29 @@ unset($__errorArgs, $__bag); ?>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label"><?php echo e(__('الموديل')); ?> <span class="text-danger">*</span></label>
-                                <input type="text" name="model" class="form-control" value="<?php echo e(old('model')); ?>" placeholder="<?php echo e(__('مثال: 2.5L V6')); ?>" required>
+                                <div class="d-flex gap-2">
+                                    <select name="car_model_id" id="car_model_id" class="form-select <?php $__errorArgs = ['car_model_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
+                                        <option value=""><?php echo e(__('اختر الموديل')); ?></option>
+                                    </select>
+                                    <button type="button" class="btn btn-outline-primary btn-sm rounded-3 px-3" data-bs-toggle="modal" data-bs-target="#quickAddModelModal" title="<?php echo e(__('إضافة موديل جديد')); ?>" id="btn-quick-add-model" disabled>
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>
+                                </div>
+                                <?php $__errorArgs = ['car_model_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <div class="invalid-feedback d-block"><?php echo e($message); ?></div> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label"><?php echo e(__('سنة الصنع')); ?> <span class="text-danger">*</span></label>
@@ -575,7 +597,136 @@ function toggleCheckboxes(name, state) {
     const checkboxes = document.querySelectorAll(`input[name="${name}"]`);
     checkboxes.forEach(cb => cb.checked = state);
 }
+
+// Model loader based on brand selection
+$('#brand_id').on('change', function() {
+    const brandId = $(this).val();
+    const brandName = $(this).find('option:selected').text();
+    const modelSelect = $('#car_model_id');
+    const quickAddBtn = $('#btn-quick-add-model');
+
+    modelSelect.html('<option value=""><?php echo e(__("جاري التحميل...")); ?></option>');
+
+    if (!brandId) {
+        modelSelect.html('<option value=""><?php echo e(__("اختر الموديل")); ?></option>');
+        quickAddBtn.prop('disabled', true);
+        $('#quick_add_brand_id').val('');
+        $('#quick_add_brand_name').val('');
+        return;
+    }
+
+    // Enable quick add button
+    quickAddBtn.prop('disabled', false);
+    $('#quick_add_brand_id').val(brandId);
+    $('#quick_add_brand_name').val(brandName);
+
+    // Fetch models
+    $.ajax({
+        url: `/crm/brands/${brandId}/models`,
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            modelSelect.html('<option value=""><?php echo e(__("اختر الموديل")); ?></option>');
+            $.each(data, function(index, model) {
+                modelSelect.append(`<option value="${model.id}" ${model.id == "<?php echo e(old('car_model_id')); ?>" ? 'selected' : ''}>${model.name}</option>`);
+            });
+        },
+        error: function() {
+            modelSelect.html('<option value=""><?php echo e(__("خطأ في تحميل الموديلات")); ?></option>');
+        }
+    });
+});
+
+// Trigger change on load if brand is already selected (e.g. back validation)
+if ($('#brand_id').val()) {
+    $('#brand_id').trigger('change');
+}
+
+// Quick Add Model Form Submit
+$('#quick-add-model-form').on('submit', function(e) {
+    e.preventDefault();
+    const form = $(this);
+    const btn = $('#btn-save-quick-model');
+    btn.prop('disabled', true).text('<?php echo e(__("جاري الحفظ...")); ?>');
+
+    $.ajax({
+        url: '<?php echo e(route("crm.car-models.store")); ?>',
+        type: 'POST',
+        data: form.serialize(),
+        success: function(response) {
+            if (response.success) {
+                // Add new model to option and select it
+                const newOption = new Option(response.model.name, response.model.id, true, true);
+                $('#car_model_id').append(newOption).trigger('change');
+
+                // Reset and close modal
+                $('#quick_add_name_ar').val('');
+                $('#quick_add_name_en').val('');
+                bootstrap.Modal.getInstance(document.getElementById('quickAddModelModal')).hide();
+            } else {
+                alert(response.message || '<?php echo e(__("حدث خطأ ما")); ?>');
+            }
+        },
+        error: function(xhr) {
+            let msg = '<?php echo e(__("حدث خطأ ما")); ?>';
+            if (xhr.responseJSON && xhr.responseJSON.errors) {
+                msg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+            }
+            alert(msg);
+        },
+        complete: function() {
+            btn.prop('disabled', false).text('<?php echo e(__("حفظ الموديل")); ?>');
+        }
+    });
+});
 </script>
+
+
+<div class="modal fade" id="quickAddModelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden text-start">
+            <div class="modal-header border-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold" id="quickAddModelModalLabel"><?php echo e(__('إضافة موديل جديد')); ?></h5>
+                <button type="button" class="btn-close <?php echo e(app()->getLocale() == 'ar' ? 'ms-0 me-auto' : ''); ?>" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="quick-add-model-form">
+                <?php echo csrf_field(); ?>
+                <input type="hidden" name="brand_id" id="quick_add_brand_id">
+                <div class="modal-body p-4 pt-2">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small"><?php echo e(__('الماركة المختارة')); ?></label>
+                        <input type="text" id="quick_add_brand_name" class="form-control bg-light border-0 shadow-none" readonly>
+                    </div>
+
+                    
+                    <ul class="nav nav-pills nav-fill bg-light p-1 rounded-pill mb-4" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active rounded-pill py-1 fw-bold" data-bs-toggle="tab" data-bs-target="#quick-add-ar" type="button" role="tab"><?php echo e(__('العربية')); ?></button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link rounded-pill py-1 fw-bold" data-bs-toggle="tab" data-bs-target="#quick-add-en" type="button" role="tab"><?php echo e(__('الإنجليزية')); ?></button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content mb-4">
+                        <div class="tab-pane fade show active" id="quick-add-ar" role="tabpanel">
+                            <label class="form-label fw-bold small"><?php echo e(__('اسم الموديل (بالعربية)')); ?> <span class="text-danger">*</span></label>
+                            <input type="text" name="name[ar]" id="quick_add_name_ar" class="form-control bg-light border-0 shadow-none" placeholder="<?php echo e(__('مثال: كامري')); ?>" required>
+                        </div>
+                        <div class="tab-pane fade" id="quick-add-en" role="tabpanel">
+                            <label class="form-label fw-bold small"><?php echo e(__('اسم الموديل (بالإنجليزية)')); ?> <span class="text-danger">*</span></label>
+                            <input type="text" name="name[en]" id="quick_add_name_en" class="form-control bg-light border-0 shadow-none" placeholder="<?php echo e(__('e.g., Camry')); ?>" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal"><?php echo e(__('إلغاء')); ?></button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold" id="btn-save-quick-model"><?php echo e(__('حفظ الموديل')); ?></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('partials.Layouts.crm-master', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\wamp64\www\zed\resources\views/crm/cars/create.blade.php ENDPATH**/ ?>

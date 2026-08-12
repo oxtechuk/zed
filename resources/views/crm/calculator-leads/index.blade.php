@@ -61,6 +61,14 @@
                                 <td class="text-muted small">{{ $lead->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
                                     <div class="d-flex gap-2 justify-content-end px-3">
+                                        @if($lead->booking)
+                                        <a href="{{ route('crm.bookings.show', $lead->booking) }}" class="btn btn-sm btn-primary-subtle rounded-2 fw-bold" title="{{ __('متابعة الطلب الإداري') }}">
+                                            <i class="bi bi-eye me-1"></i> {{ __('متابعة الطلب') }}
+                                        </a>
+                                        @endif
+                                        <a href="https://wa.me/{{ $lead->phone }}" target="_blank" class="btn btn-sm btn-success-subtle rounded-2" title="{{ __('واتساب') }}">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
                                         @can('manage-calculator-leads')
                                         <form action="{{ route('crm.calculator-leads.destroy', $lead) }}" method="POST" onsubmit="return confirm('{{ __('هل أنت متأكد من حذف هذا السجل؟') }}')">
                                             @csrf @method('DELETE')
@@ -93,5 +101,9 @@
 
     <style>
         .btn-danger-subtle { background: #ffebee; }
+        .btn-primary-subtle { background: #E0F2FE; color: #0369A1; }
+        .btn-primary-subtle:hover { background: #BAE6FD; color: #0369A1; }
+        .btn-success-subtle { background: #E8F5E9; color: #2E7D32; }
+        .btn-success-subtle:hover { background: #C8E6C9; color: #2E7D32; }
     </style>
 @endsection

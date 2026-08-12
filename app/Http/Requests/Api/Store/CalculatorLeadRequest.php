@@ -12,7 +12,7 @@ final class CalculatorLeadRequest extends ApiBaseRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:20', 'regex:/^05\d{8}$/'],
             'email' => ['nullable', 'email', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
             'salary' => ['required', 'numeric', 'min:0'],
@@ -29,6 +29,13 @@ final class CalculatorLeadRequest extends ApiBaseRequest
             'car_ids.*' => ['integer', 'exists:cars,id'],
             'preferred_color' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string', 'max:500'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'phone.regex' => 'الرجاء إدخال رقم جوال سعودي صحيح (مثال: 05xxxxxxxx)',
         ];
     }
 }

@@ -80,6 +80,9 @@
         "title": "لقي سيارة تناسبك",
         "brand": "الماركة / الشركة",
         "brandPlaceholder": "اختر الماركة",
+        "model": "الموديل",
+        "modelPlaceholder": "اختر الموديل",
+        "loading": "جاري التحميل...",
         "brandOptions": {
             "toyota": "تويوتا",
             "hyundai": "هيونداي",

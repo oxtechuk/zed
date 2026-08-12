@@ -101,7 +101,7 @@ export default function FinanceCalculatorPage() {
               if (car.colors && car.colors.length > 0) {
                 setSelectedColor(car.colors[0].name);
               }
-              setDownPayment(Math.round(car.current_price * 0.3));
+              setDownPayment(0);
             }}
             selectedColor={selectedColor}
             setSelectedColor={setSelectedColor}
