@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { getCars } from "../services/api/cars.service";
 import { submitBooking } from "../services/api/booking.service";
+import { getBanks } from "../services/api/calculator.service";
 import { useLanguageStore } from "../store/language.store";
 import { useSettingsStore } from "../store/settings.store";
 import type { CarItem } from "../types/home.types";
@@ -16,6 +17,7 @@ import {
     SERVICE_DURATION_KEYS,
     DEFAULT_COLOR_OPTIONS,
 } from "../constants/car-request.constants";
+import { FALLBACK_WHATSAPP_NUMBER } from "../constants/contact.constants";
 
 export function useCarRequest() {
     const { t } = useTranslation();
@@ -32,6 +34,12 @@ export function useCarRequest() {
     const [selectedCarId, setSelectedCarId] = useState<number>(0);
     const [selectedColor, setSelectedColor] = useState<string>("أبيض");
     const [term, setTerm] = useState<number>(60);
+    const [customCarName, setCustomCarName] = useState<string>("");
+
+    // Banks list & selection
+    const [banks, setBanks] = useState<any[]>([]);
+    const [loadingBanks, setLoadingBanks] = useState(true);
+    const [selectedBankId, setSelectedBankId] = useState<number | null>(null);
 
     // Form State
     const [formData, setFormData] = useState<ICarRequestFormData>({
@@ -94,10 +102,36 @@ export function useCarRequest() {
             });
     }, [searchParams]);
 
+    // Load banks on mount
+    useEffect(() => {
+        getBanks()
+            .then((res) => {
+                setBanks(res);
+                setLoadingBanks(false);
+            })
+            .catch(() => {
+                setLoadingBanks(false);
+            });
+    }, []);
+
     // Active car object
     const activeCar = useMemo(() => {
+        if (selectedCarId === 9999) {
+            return {
+                id: 9999,
+                name: t("carRequest.customCar.placeholderName", "طلب سيارة غير مدرجة بالمعرض"),
+                slug: "custom-car",
+                brand: { name: t("carRequest.customCar.placeholderBrand", "سيارة مخصصة"), logo: "" },
+                year: 2026,
+                cash_price: 0,
+                min_down_payment: 0,
+                min_installment: 0,
+                is_active: false,
+                colors: null,
+            } as any;
+        }
         return cars.find((c) => c.id === selectedCarId) || null;
-    }, [cars, selectedCarId]);
+    }, [cars, selectedCarId, t]);
 
     // Installment calculation
     const calculatedInstallment = useMemo(() => {
@@ -189,6 +223,16 @@ export function useCarRequest() {
             return;
         }
 
+        if (selectedCarId === 9999 && !customCarName.trim()) {
+            toast.error(
+                t(
+                    "carRequest.toasts.fillCustomCarName",
+                    "الرجاء إدخال اسم ومواصفات السيارة المطلوبة",
+                ),
+            );
+            return;
+        }
+
         const saudiPhoneRegex = /^05\d{8}$/;
         if (!saudiPhoneRegex.test(formData.phone)) {
             toast.error(
@@ -202,7 +246,14 @@ export function useCarRequest() {
 
         setIsSubmitting(true);
         try {
-            const notesText = `طلب سيارة مخصصة | مدة التمويل: ${term} شهر | اللون المطلوب: ${selectedColor} | جهة العمل: ${formData.employerType} | مدة الخدمة بالوظيفة: ${formData.yearsOfService} شهر | الراتب: ${formData.salary} | الالتزامات: ${formData.obligations}`;
+            const activeBank = banks.find((b) => b.id === selectedBankId);
+            const bankDetails = activeBank ? activeBank.name : 'غير محدد';
+
+            const carDetailsText = selectedCarId === 9999
+                ? `طلب سيارة مخصصة: ${customCarName}`
+                : (activeCar ? `${activeCar.brand?.name} ${activeCar.name}` : '');
+
+            const notesText = `${carDetailsText} | البنك المفضل: ${bankDetails} | مدة التمويل: ${term} month | اللون المطلوب: ${selectedColor} | جهة العمل: ${formData.employerType} | مدة الخدمة بالوظيفة: ${formData.yearsOfService} شهر | الراتب: ${formData.salary} | الالتزامات: ${formData.obligations}`;
 
             const bookingResponse = await submitBooking({
                 car_id: selectedCarId,
@@ -212,6 +263,7 @@ export function useCarRequest() {
                 notes: notesText,
                 booking_type: "purchase",
                 location: formData.city,
+                calculator_bank_id: selectedBankId,
             });
 
             setBookingId(bookingResponse?.data?.booking_id ?? bookingResponse?.booking_id ?? null);
@@ -237,10 +289,13 @@ export function useCarRequest() {
         }
     };
 
-    const carLabel = activeCar
-        ? `${activeCar.brand?.name || ""} ${activeCar.name}`.trim()
-        : "";
-    const whatsappNum = settings?.contact?.whatsapp?.replace(/\D/g, "") ?? "";
+    const carLabel = selectedCarId === 9999
+        ? customCarName
+        : (activeCar
+            ? `${activeCar.brand?.name || ""} ${activeCar.name}`.trim()
+            : "");
+    const whatsappRaw = settings?.contact?.whatsapp || settings?.contact?.phone || FALLBACK_WHATSAPP_NUMBER;
+    const whatsappNum = whatsappRaw.replace(/\D/g, "");
     const bookingRef = bookingId ? `#${bookingId}` : "";
     const whatsappDefaultMsg = bookingId
         ? `مرحباً، أنا ${formData.fullName} أرغب في متابعة طلب التمويل رقم ${bookingRef} لسيارة ${carLabel}.`
@@ -261,6 +316,12 @@ export function useCarRequest() {
         setSelectedColor,
         term,
         setTerm,
+        customCarName,
+        setCustomCarName,
+        banks,
+        loadingBanks,
+        selectedBankId,
+        setSelectedBankId,
         formData,
         handleFormChange,
         isSubmitting,

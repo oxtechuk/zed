@@ -23,6 +23,7 @@ final class BookingData
         public readonly ?string $location = null,
         public readonly ?string $client_email = null,
         public readonly ?string $notes = null,
+        public readonly ?int $calculator_bank_id = null,
     ) {}
 
     public static function fromRequest(array $validated, float $cashPrice): self
@@ -53,6 +54,7 @@ final class BookingData
             location: $validated['location'] ?? null,
             client_email: $validated['client_email'] ?? null,
             notes: $validated['notes'] ?? null,
+            calculator_bank_id: isset($validated['calculator_bank_id']) ? (int) $validated['calculator_bank_id'] : null,
         );
     }
 
@@ -73,6 +75,7 @@ final class BookingData
             'location' => $this->location,
             'client_email' => $this->client_email,
             'notes' => $this->notes,
+            'calculator_bank_id' => $this->calculator_bank_id,
         ];
     }
 }

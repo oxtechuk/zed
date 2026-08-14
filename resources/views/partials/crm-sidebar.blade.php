@@ -211,8 +211,14 @@
                 @can('manage-bookings')
                 <li>
                     <a href="{{ route('crm.bookings.index') }}"
-                       class="crm-sub-link {{ str_starts_with($r,'crm.bookings') ? 'active' : '' }}">
+                       class="crm-sub-link {{ (str_starts_with($r,'crm.bookings') && !request()->routeIs('crm.bookings.closed')) ? 'active' : '' }}">
                         <i class="bi bi-calendar-check"></i> {{ __('الطلبات') }}
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('crm.bookings.closed') }}"
+                       class="crm-sub-link {{ request()->routeIs('crm.bookings.closed') ? 'active' : '' }}">
+                        <i class="bi bi-folder-x"></i> {{ __('الطلبات المغلقة') }}
                     </a>
                 </li>
                 @endcan

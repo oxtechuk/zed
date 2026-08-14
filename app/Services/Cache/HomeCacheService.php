@@ -121,12 +121,20 @@ class HomeCacheService extends BaseCacheService
             $financeSteps = FinanceStep::query()->activeOrdered()->get();
 
             $budgetRanges = BudgetRange::query()->activeOrdered()->get()->map(function (BudgetRange $range): array {
+                $maxPrice = null;
+                if ($range->min == 3000 && $range->max == 5000) {
+                    $maxPrice = 120000;
+                } elseif ($range->min == 5000 && $range->max == 7000) {
+                    $maxPrice = 150000;
+                } elseif ($range->min == 7000 && $range->max == 10000) {
+                    $maxPrice = 200000;
+                }
+
                 return [
                     'range' => $range,
                     'cars' => Car::with(['brand', 'images'])
                         ->where('is_active', true)
-                        ->where('cash_price', '>=', $range->min)
-                        ->when($range->max !== null, fn ($q) => $q->where('cash_price', '<=', $range->max))
+                        ->when($maxPrice !== null, fn ($q) => $q->where('cash_price', '<=', $maxPrice))
                         ->latest()
                         ->limit(8)
                         ->get(),

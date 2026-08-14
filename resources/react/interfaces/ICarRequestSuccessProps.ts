@@ -6,4 +6,5 @@ export interface ICarRequestSuccessProps {
     whatsappHref: string;
     onBackToCars: () => void;
     direction: "rtl" | "ltr";
+    customCarName?: string;
 }

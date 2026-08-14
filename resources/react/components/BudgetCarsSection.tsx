@@ -9,6 +9,7 @@ import type {
   IBudgetRange,
 } from "../interfaces/IBudgetCarsSectionProps";
 import { formatPrice } from "../utils/format";
+import { APP_IMAGES } from "../constants/app-images";
 
 function getItemsPerPage(width: number): number {
   if (width >= 1024) return 4;
@@ -18,10 +19,10 @@ function getItemsPerPage(width: number): number {
 
 function useDefaultRanges(t: (key: string) => string): IBudgetRange[] {
   return [
-    { label: t("budgetCars.ranges.0"), value: "3000-4000" },
-    { label: t("budgetCars.ranges.1"), value: "4000-6000" },
-    { label: t("budgetCars.ranges.2"), value: "7000-9000" },
-    { label: t("budgetCars.ranges.3"), value: "9000-plus" },
+    { label: t("budgetCars.ranges.0"), value: "3000-5000" },
+    { label: t("budgetCars.ranges.1"), value: "5000-7000" },
+    { label: t("budgetCars.ranges.2"), value: "7000-10000" },
+    { label: t("budgetCars.ranges.3"), value: "10001-plus" },
   ];
 }
 
@@ -33,7 +34,7 @@ export default function BudgetCarsSection({
   buttonTo,
   cars,
   ranges,
-  activeRange = "3000-4000",
+  activeRange = "3000-5000",
   onRangeChange,
 }: IBudgetCarsSectionProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -174,10 +175,28 @@ export default function BudgetCarsSection({
               if (!isNaN(num) && cleaned === String(num)) {
                 return formatPrice(num, color);
               }
+              
+              // For custom strings like "من 3,000 إلى 5,000 ريال", replace "ريال"/"SAR"/"﷼" with Riyal icon
+              const parts = label.split(/(ريال|SAR|﷼)/);
               return (
                 <span className="inline-flex items-center gap-1">
-                  <span>{cleaned}</span>
-                  {formatPrice(0, color)}
+                  {parts.map((part, index) => {
+                    if (part === "ريال" || part === "SAR" || part === "﷼") {
+                      return (
+                        <span
+                          key={index}
+                          aria-label="ريال"
+                          className="inline-block h-[14px] w-[14px] align-middle"
+                          style={{
+                            backgroundColor: color,
+                            WebkitMask: `url(${APP_IMAGES.RIYAL}) center / contain no-repeat`,
+                            mask: `url(${APP_IMAGES.RIYAL}) center / contain no-repeat`,
+                          }}
+                        />
+                      );
+                    }
+                    return <span key={index}>{part}</span>;
+                  })}
                 </span>
               );
             };

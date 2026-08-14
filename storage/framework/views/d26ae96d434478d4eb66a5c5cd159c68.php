@@ -254,7 +254,9 @@
                                                     'government' => 'حكومي',
                                                     'semi-government' => 'شبه حكومي',
                                                     'private' => 'قطاع خاص',
+                                                    'military' => 'عسكري',
                                                     'retired' => 'متقاعد',
+                                                    'freelance' => 'عمل حر',
                                                 ];
                                                 $empKey = $leadDetails['employer_type'] ?? '';
                                                 $empVal = $empTypes[$empKey] ?? $empKey ?: '—';

@@ -18,6 +18,12 @@ export default function CarRequestPage() {
         setSelectedColor,
         term,
         setTerm,
+        customCarName,
+        setCustomCarName,
+        banks,
+        loadingBanks,
+        selectedBankId,
+        setSelectedBankId,
         formData,
         handleFormChange,
         isSubmitting,
@@ -46,6 +52,7 @@ export default function CarRequestPage() {
                 whatsappHref={whatsappHref}
                 onBackToCars={onBackToCars}
                 direction={direction}
+                customCarName={customCarName}
             />
         );
     }
@@ -69,6 +76,10 @@ export default function CarRequestPage() {
                         saudiCities={saudiCities}
                         employerTypes={employerTypes}
                         serviceDurations={serviceDurations}
+                        banks={banks}
+                        selectedBankId={selectedBankId}
+                        onSelectBankId={setSelectedBankId}
+                        loadingBanks={loadingBanks}
                     />
 
                     {/* Car Details & Term Selection Summary */}
@@ -84,6 +95,8 @@ export default function CarRequestPage() {
                         onChangeTerm={setTerm}
                         calculatedInstallment={calculatedInstallment}
                         carColors={carColors}
+                        customCarName={customCarName}
+                        onCustomCarNameChange={setCustomCarName}
                     />
                 </form>
             </div>

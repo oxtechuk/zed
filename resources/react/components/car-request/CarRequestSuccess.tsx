@@ -10,11 +10,14 @@ export function CarRequestSuccess({
     whatsappHref,
     onBackToCars,
     direction,
+    customCarName,
 }: ICarRequestSuccessProps) {
     const { t } = useTranslation();
-    const carLabel = activeCar
-        ? `${activeCar.brand?.name || ""} ${activeCar.name}`.trim()
-        : "";
+    const carLabel = activeCar?.id === 9999
+        ? (customCarName || "")
+        : (activeCar
+            ? `${activeCar.brand?.name || ""} ${activeCar.name}`.trim()
+            : "");
 
     return (
         <main dir={direction} className="min-h-screen w-full bg-[#F8FAFC]">

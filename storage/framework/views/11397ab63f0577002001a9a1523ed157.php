@@ -225,8 +225,15 @@
                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage-bookings')): ?>
                 <li>
                     <a href="<?php echo e(route('crm.bookings.index')); ?>"
-                       class="crm-sub-link <?php echo e(str_starts_with($r,'crm.bookings') ? 'active' : ''); ?>">
+                       class="crm-sub-link <?php echo e((str_starts_with($r,'crm.bookings') && !request()->routeIs('crm.bookings.closed')) ? 'active' : ''); ?>">
                         <i class="bi bi-calendar-check"></i> <?php echo e(__('الطلبات')); ?>
+
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo e(route('crm.bookings.closed')); ?>"
+                       class="crm-sub-link <?php echo e(request()->routeIs('crm.bookings.closed') ? 'active' : ''); ?>">
+                        <i class="bi bi-folder-x"></i> <?php echo e(__('الطلبات المغلقة')); ?>
 
                     </a>
                 </li>

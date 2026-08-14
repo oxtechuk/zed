@@ -17,7 +17,7 @@ final class CalculatorLeadRequest extends ApiBaseRequest
             'city' => ['required', 'string', 'max:255'],
             'salary' => ['required', 'numeric', 'min:0'],
             'monthly_obligations' => ['required', 'numeric', 'min:0'],
-            'employer_type' => ['nullable', 'string', 'in:government,company,institution,military,retired'],
+            'employer_type' => ['nullable', 'string', 'in:government,private,company,institution,military,retired,freelance'],
             'employer_name' => ['nullable', 'string', 'max:255'],
             'years_of_service' => ['nullable', 'numeric', 'min:0', 'max:60'],
             'has_mortgage_loan' => ['nullable', 'boolean'],

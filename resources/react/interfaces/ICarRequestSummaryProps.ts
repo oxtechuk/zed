@@ -13,4 +13,6 @@ export interface ICarRequestSummaryProps {
     onChangeTerm: (term: number) => void;
     calculatedInstallment: number;
     carColors: ICarColorOption[];
+    customCarName?: string;
+    onCustomCarNameChange?: (name: string) => void;
 }

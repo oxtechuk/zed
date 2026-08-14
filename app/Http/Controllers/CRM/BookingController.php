@@ -32,14 +32,14 @@ class BookingController extends Controller
 
         // Dynamic stats (scoped per role)
         $pendingStatuses = collect(Booking::STATUSES)
-            ->filter(fn ($s) => ($s['group'] ?? '') === 'open')
+            ->filter(fn ($s) => ($s['group'] ?? '') === 'active' && ($s['is_close'] ?? false) === false)
             ->keys()
             ->toArray();
 
         $stats = [
-            'pending'  => (clone $scopedQuery)->whereIn('status', $pendingStatuses)->count(),
-            'today'    => (clone $scopedQuery)->whereDate('created_at', today())->count(),
-            'total'    => (clone $scopedQuery)->count(),
+            'pending' => (clone $scopedQuery)->whereIn('status', $pendingStatuses)->count(),
+            'today' => (clone $scopedQuery)->whereDate('created_at', today())->count(),
+            'total' => (clone $scopedQuery)->count(),
         ];
 
         // Pending supervisor approvals (admin only)
@@ -100,6 +100,87 @@ class BookingController extends Controller
         $cars = Car::with('brand')->where('is_active', true)->get();
 
         return view('crm.bookings.index', compact('bookings', 'employees', 'statuses', 'cars', 'stats', 'pendingApprovals', 'isAdmin'));
+    }
+
+    public function closedIndex(Request $request)
+    {
+        $sort = $request->input('sort', 'newest');
+        $isAdmin = auth('employee')->user()->isAdmin();
+
+        // Get all closed status keys from Booking::STATUSES
+        $closedStatuses = collect(Booking::STATUSES)
+            ->filter(fn ($s) => ($s['is_close'] ?? false) === true)
+            ->keys()
+            ->toArray();
+
+        // Base scoped query (per employee or all for admin)
+        $scopedQuery = Booking::query()->whereIn('status', $closedStatuses);
+        if (! $isAdmin) {
+            $scopedQuery->where('assigned_to', auth()->id());
+        }
+
+        // Calculate closed stats
+        $totalClosed = (clone $scopedQuery)->count();
+
+        $statsByStatus = [];
+        foreach ($closedStatuses as $statusKey) {
+            $statusCount = (clone $scopedQuery)->where('status', $statusKey)->count();
+            $percentage = $totalClosed > 0 ? round(($statusCount / $totalClosed) * 100) : 0;
+            $statsByStatus[$statusKey] = [
+                'count' => $statusCount,
+                'percentage' => $percentage,
+                'label' => Booking::STATUSES[$statusKey]['label'] ?? $statusKey,
+                'color' => Booking::STATUSES[$statusKey]['color'] ?? 'secondary',
+            ];
+        }
+
+        // Sort stats by count descending
+        uasort($statsByStatus, fn ($a, $b) => $b['count'] <=> $a['count']);
+
+        $query = Booking::with(['car.brand', 'employee'])->whereIn('status', $closedStatuses);
+
+        if (! $isAdmin) {
+            $query->where('assigned_to', auth()->id());
+        }
+
+        // Sorting
+        if ($sort === 'oldest') {
+            $query->oldest();
+        } else {
+            $query->latest();
+        }
+
+        // Filtering by source
+        if ($request->filled('source')) {
+            if ($request->source === 'calculator') {
+                $query->whereNotNull('calculator_lead_id');
+            } elseif ($request->source === 'booking') {
+                $query->whereNull('calculator_lead_id');
+            }
+        }
+
+        // Filtering by status (only if it is a closed status)
+        if ($request->filled('status') && in_array($request->status, $closedStatuses)) {
+            $query->where('status', $request->status);
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('client_name', 'like', "%$s%")
+                    ->orWhere('client_phone', 'like', "%$s%");
+            });
+        }
+
+        $bookings = $query->paginate(20);
+        $employees = Employee::where('is_active', true)->get();
+        $statuses = collect(Booking::STATUSES)->only($closedStatuses)->toArray();
+        $cars = Car::with('brand')->where('is_active', true)->get();
+
+        return view('crm.bookings.closed', compact(
+            'bookings', 'employees', 'statuses', 'cars', 'totalClosed', 'statsByStatus', 'isAdmin'
+        ));
     }
 
     public function store(Request $request)

@@ -13,4 +13,8 @@ export interface ICarRequestFormProps {
     saudiCities: ICarOption[];
     employerTypes: ICarOption[];
     serviceDurations: ICarOption[];
+    banks: { id: number; name: string }[];
+    selectedBankId: number | null;
+    onSelectBankId: (id: number | null) => void;
+    loadingBanks: boolean;
 }

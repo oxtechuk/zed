@@ -78,9 +78,9 @@ class HomeSectionSeeder extends Seeder
             ],
             [
                 'key' => 'budget', 'sort_order' => 8,
-                'badge' => ['ar' => 'حسب الميزانية', 'en' => 'By budget'],
-                'title' => ['ar' => 'سيارات حسب ميزانيتك', 'en' => 'Cars by your budget'],
-                'description' => ['ar' => 'اختر النطاق السعري المناسب لك', 'en' => 'Pick the price range that suits you'],
+                'badge' => ['ar' => 'حسب الراتب', 'en' => 'By salary'],
+                'title' => ['ar' => 'سيارات حسب راتبك', 'en' => 'Cars by your salary'],
+                'description' => ['ar' => 'اختر نطاق راتبك لرؤية السيارات المناسبة لك', 'en' => 'Select your salary range to see suitable cars'],
                 'button_text' => ['ar' => 'عرض الكل', 'en' => 'View all'],
             ],
             [
@@ -182,15 +182,18 @@ class HomeSectionSeeder extends Seeder
 
     private function seedBudgetRanges(): void
     {
+        // Delete existing budget ranges to avoid conflict with min values
+        BudgetRange::query()->delete();
+
         $ranges = [
-            ['label' => ['ar' => 'أقل من 300 ألف', 'en' => 'Under 300k'], 'min' => 0, 'max' => 300000],
-            ['label' => ['ar' => '300 - 500 ألف', 'en' => '300k - 500k'], 'min' => 300001, 'max' => 500000],
-            ['label' => ['ar' => '500 - 800 ألف', 'en' => '500k - 800k'], 'min' => 500001, 'max' => 800000],
-            ['label' => ['ar' => 'أكثر من 800 ألف', 'en' => 'Over 800k'], 'min' => 800001, 'max' => null],
+            ['label' => ['ar' => 'من 3,000 إلى 5,000 ريال', 'en' => 'From 3,000 to 5,000 SAR'], 'min' => 3000, 'max' => 5000],
+            ['label' => ['ar' => 'من 5,000 إلى 7,000 ريال', 'en' => 'From 5,000 to 7,000 SAR'], 'min' => 5000, 'max' => 7000],
+            ['label' => ['ar' => 'من 7,000 إلى 10,000 ريال', 'en' => 'From 7,000 to 10,000 SAR'], 'min' => 7000, 'max' => 10000],
+            ['label' => ['ar' => 'أكثر من 10,000 ريال', 'en' => 'Over 10,000 SAR'], 'min' => 10001, 'max' => null],
         ];
 
         foreach ($ranges as $index => $range) {
-            BudgetRange::query()->updateOrCreate(['min' => $range['min']], $range + ['sort_order' => $index + 1]);
+            BudgetRange::query()->create($range + ['sort_order' => $index + 1]);
         }
     }
 

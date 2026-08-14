@@ -22,9 +22,9 @@ export const SAUDI_CITY_KEYS = [
 export const EMPLOYER_TYPE_KEYS = [
     { value: "government", key: "government" },
     { value: "military", key: "military" },
-    { value: "company", key: "company" },
-    { value: "institution", key: "institution" },
+    { value: "private", key: "private" },
     { value: "retired", key: "retired" },
+    { value: "freelance", key: "freelance" },
 ] as const;
 
 export const SERVICE_DURATION_KEYS = [

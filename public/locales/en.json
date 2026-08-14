@@ -36,9 +36,9 @@
     "employerTypes": {
       "government": "Government Sector",
       "military": "Military Sector",
-      "company": "Private Company",
-      "institution": "Private Institution",
-      "retired": "Retired"
+      "private": "Private Sector",
+      "retired": "Retired",
+      "freelance": "Freelancer / Self-employed"
     },
     "cities": {
       "riyadh": "Riyadh",
@@ -73,7 +73,12 @@
       "selectCarFirst": "Please select a car first",
       "fillRequired": "Please fill in all required fields",
       "submitSuccess": "Your request has been sent successfully! One of our advisors will contact you soon.",
-      "submitError": "An error occurred while submitting your request, please try again later."
+      "submitError": "An error occurred while submitting your request, please try again later.",
+      "fillCustomCarName": "Please enter the requested car details"
+    },
+    "customCar": {
+      "label": "Enter details of the requested car",
+      "placeholder": "e.g. Isuzu D-Max 2025"
     }
   },
   "carFinder": {
@@ -249,15 +254,15 @@
     "all": "All"
   },
   "budgetCars": {
-    "titleBlue": "Your Car Within",
-    "titleOrange": "Your Budget",
-    "description": "Choose your next car from a wide selection of the latest models, and enjoy flexible financing solutions designed specifically to fit your budget in all cities of the kingdom.",
+    "titleBlue": "Cars by Your",
+    "titleOrange": "Salary",
+    "description": "Select your salary range to see suitable cars, and enjoy flexible financing solutions designed specifically to fit your needs in all cities of the kingdom.",
     "buttonText": "Browse All Cars",
     "ranges": [
-      "3,000 - 4,000 SAR",
-      "4,000 - 6,000 SAR",
-      "7,000 - 9,000 SAR",
-      "More than 9,000 SAR"
+      "From 3,000 to 5,000 SAR",
+      "From 5,000 to 7,000 SAR",
+      "From 7,000 to 10,000 SAR",
+      "Over 10,000 SAR"
     ]
   },
   "financeSolutions": {
@@ -1113,9 +1118,9 @@
       "employerTypes": {
         "government": "Government Sector",
         "military": "Military Sector",
-        "company": "Private Sector (Company)",
-        "institution": "Private Sector (Institution)",
-        "retired": "Retired"
+        "private": "Private Sector",
+        "retired": "Retired",
+        "freelance": "Freelancer / Self-employed"
       },
       "serviceDurations": {
         "under1Year": "Less than 1 year",

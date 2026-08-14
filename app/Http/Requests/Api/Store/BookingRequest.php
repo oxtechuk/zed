@@ -21,6 +21,7 @@ final class BookingRequest extends ApiBaseRequest
             'notes' => ['nullable', 'string', 'max:1000'],
             'booking_type' => ['nullable', 'string', 'in:test_drive,purchase,inquiry'],
             'location' => ['nullable', 'string', 'max:500'],
+            'calculator_bank_id' => ['nullable', 'integer', 'exists:calculator_banks,id'],
         ];
     }
 

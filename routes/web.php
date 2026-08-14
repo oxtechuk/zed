@@ -233,6 +233,7 @@ Route::prefix('crm')->name('crm.')->middleware(['auth:employee', 'guard.employee
         Route::get('bookings/new', [BookingController::class, 'index'])->name('bookings.new')->defaults('status', 'new');
         Route::get('bookings/inprogress', [BookingController::class, 'index'])->name('bookings.inprogress');
         Route::get('bookings/completed', [BookingController::class, 'index'])->name('bookings.completed');
+        Route::get('bookings/closed', [BookingController::class, 'closedIndex'])->name('bookings.closed');
         Route::post('bookings', [BookingController::class, 'store'])->name('bookings.store');
         Route::get('bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
         Route::patch('bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.status');

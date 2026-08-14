@@ -10,4 +10,6 @@ export interface ICarDropdownSelectorProps {
     isCarDropdownOpen: boolean;
     setIsCarDropdownOpen: Dispatch<SetStateAction<boolean>>;
     carDropdownRef: RefObject<HTMLDivElement | null>;
+    customCarName?: string;
+    onCustomCarNameChange?: (name: string) => void;
 }

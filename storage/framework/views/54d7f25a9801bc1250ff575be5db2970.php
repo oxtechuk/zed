@@ -126,7 +126,7 @@
             border-bottom: 1px solid var(--crm-border);
             text-align: center;
         }
-        .crm-sidebar-logo img { max-height: 44px; }
+        .crm-sidebar-logo img { max-height: 75px; max-width: 100%; width: auto; object-fit: contain; }
         .crm-sidebar-brand { color: var(--crm-text); font-weight: 900; font-size: 15px; line-height: 1.2; margin-top: 8px; }
         .crm-sidebar-brand small { color: var(--crm-text-muted); font-size: 10px; font-weight: 600; display: block; letter-spacing: 1px; }
 

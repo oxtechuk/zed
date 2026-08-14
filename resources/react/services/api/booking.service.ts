@@ -11,6 +11,7 @@ export interface ISubmitBookingData {
   notes?: string;
   booking_type?: "test_drive" | "purchase" | "inquiry";
   location?: string;
+  calculator_bank_id?: number | null;
 }
 
 export async function submitBooking(data: ISubmitBookingData) {
@@ -25,6 +26,7 @@ export async function submitBooking(data: ISubmitBookingData) {
     notes: data.notes || null,
     booking_type: data.booking_type || "purchase",
     location: data.location || null,
+    calculator_bank_id: data.calculator_bank_id || null,
   });
   return res.data;
 }

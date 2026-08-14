@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ App::getLocale() }}" dir="{{ App::getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
+<html lang="<?php echo e(App::getLocale()); ?>" dir="<?php echo e(App::getLocale() == 'ar' ? 'rtl' : 'ltr'); ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ __('انتهت الجلسة') }} — Zad Capital</title>
+    <title><?php echo e(__('انتهت الجلسة')); ?> — Zad Capital</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -25,13 +25,13 @@
         .orb--1 {
             width: 600px; height: 600px;
             background: radial-gradient(circle, #ED1C24, transparent);
-            top: -200px; {{ App::getLocale() == 'ar' ? 'left' : 'right' }}: -100px;
+            top: -200px; <?php echo e(App::getLocale() == 'ar' ? 'left' : 'right'); ?>: -100px;
             animation-delay: 0s;
         }
         .orb--2 {
             width: 400px; height: 400px;
             background: radial-gradient(circle, #8A1217, transparent);
-            bottom: -100px; {{ App::getLocale() == 'ar' ? 'right' : 'left' }}: -50px;
+            bottom: -100px; <?php echo e(App::getLocale() == 'ar' ? 'right' : 'left'); ?>: -50px;
             animation-delay: 5s;
         }
         @keyframes orbFloat {
@@ -143,16 +143,18 @@
         </div>
         <div class="error-code">419</div>
         <div class="err-divider"></div>
-        <h1 class="error-title">{{ __('انتهت') }} <span>{{ __('الجلسة') }}</span></h1>
-        <p class="error-subtitle">{{ __('انتهت صلاحية جلستك بسبب عدم النشاط. يرجى تسجيل الدخول مرة أخرى للمتابعة.') }}</p>
+        <h1 class="error-title"><?php echo e(__('انتهت')); ?> <span><?php echo e(__('الجلسة')); ?></span></h1>
+        <p class="error-subtitle"><?php echo e(__('انتهت صلاحية جلستك بسبب عدم النشاط. يرجى تسجيل الدخول مرة أخرى للمتابعة.')); ?></p>
         <div class="err-btn-group">
-            <a href="{{ route('store.home') }}" class="btn-err btn-err--primary">
+            <a href="<?php echo e(route('store.auth.login')); ?>" class="btn-err btn-err--primary">
                 <i class="bi bi-box-arrow-in-right"></i>
-                {{ __('تسجيل الدخول مجدداً') }}
+                <?php echo e(__('تسجيل الدخول مجدداً')); ?>
+
             </a>
-            <a href="{{ route('store.home') }}" class="btn-err btn-err--ghost">
+            <a href="<?php echo e(route('store.home')); ?>" class="btn-err btn-err--ghost">
                 <i class="bi bi-house-door-fill"></i>
-                {{ __('الصفحة الرئيسية') }}
+                <?php echo e(__('الصفحة الرئيسية')); ?>
+
             </a>
         </div>
     </div>
@@ -199,4 +201,4 @@
     })();
     </script>
 </body>
-</html>
+</html><?php /**PATH C:\wamp64\www\zed\resources\views/errors/419.blade.php ENDPATH**/ ?>

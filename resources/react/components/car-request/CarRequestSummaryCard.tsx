@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { Plus } from "lucide-react";
 import { getImageUrl, APP_IMAGES } from "../../constants/app-images";
 import { formatPrice } from "../../utils/format";
 import { CarDropdownSelector } from "./CarDropdownSelector";
@@ -19,6 +20,8 @@ export function CarRequestSummaryCard({
     onChangeTerm,
     calculatedInstallment,
     carColors,
+    customCarName,
+    onCustomCarNameChange,
 }: ICarRequestSummaryProps) {
     const { t } = useTranslation();
     const [isCarDropdownOpen, setIsCarDropdownOpen] = useState(false);
@@ -71,6 +74,8 @@ export function CarRequestSummaryCard({
                     isCarDropdownOpen={isCarDropdownOpen}
                     setIsCarDropdownOpen={setIsCarDropdownOpen}
                     carDropdownRef={carDropdownRef}
+                    customCarName={customCarName}
+                    onCustomCarNameChange={onCustomCarNameChange}
                 />
 
                 {/* Active Car Details Card */}
@@ -89,23 +94,35 @@ export function CarRequestSummaryCard({
                         </div>
                     </div>
                 ) : activeCar ? (
-                    <div className="border border-gray-100 rounded-2xl p-4 bg-gray-50 flex flex-col items-center">
+                    <div className="border border-gray-100 rounded-2xl p-4 bg-gray-50 flex flex-col items-center animate-in fade-in duration-200">
                         <div className="h-40 w-full overflow-hidden rounded-xl bg-white mb-4 border border-gray-100 flex items-center justify-center">
-                            <img
-                                src={
-                                    getImageUrl(activeCar.main_image) ||
-                                    APP_IMAGES.CAR_PLACEHOLDER
-                                }
-                                alt={activeCar.name}
-                                className="h-full max-w-full object-contain"
-                            />
+                            {activeCar.id === 9999 ? (
+                                <div className="text-gray-300">
+                                    <Plus size={48} className="stroke-[1.5]" />
+                                </div>
+                            ) : (
+                                <img
+                                    src={
+                                        getImageUrl(activeCar.main_image) ||
+                                        APP_IMAGES.CAR_PLACEHOLDER
+                                    }
+                                    alt={activeCar.name}
+                                    className="h-full max-w-full object-contain"
+                                />
+                            )}
                         </div>
 
                         <h3 className="text-[18px] font-black text-[#0F172A] text-center mb-1">
-                            {activeCar.brand?.name} {activeCar.name}
+                            {activeCar.id === 9999
+                                ? t("carRequest.summary.customCarSelected", "طلب سيارة مخصصة")
+                                : `${activeCar.brand?.name} ${activeCar.name}`
+                            }
                         </h3>
                         <p className="text-[12px] text-gray-400 font-bold text-center mb-4">
-                            {activeCar.year} . {fuelType} . {transmissionType}
+                            {activeCar.id === 9999
+                                ? t("carRequest.summary.customCarDesc", "سيارة غير مدرجة بالمعرض")
+                                : `${activeCar.year} . ${fuelType} . ${transmissionType}`
+                            }
                         </p>
 
                         {/* Colors Selector */}
@@ -131,7 +148,10 @@ export function CarRequestSummaryCard({
                                     {t("carRequest.summary.carPrice", "سعر السيارة")}
                                 </span>
                                 <strong className="text-[18px] font-black text-white">
-                                    {formatPrice(activeCar.current_price, "white")}
+                                    {activeCar.id === 9999
+                                        ? t("carRequest.summary.toBeDetermined", "يحدد لاحقاً")
+                                        : formatPrice(activeCar.current_price, "white")
+                                    }
                                 </strong>
                             </div>
                             <div className="text-end">
@@ -139,16 +159,25 @@ export function CarRequestSummaryCard({
                                     {t("carRequest.summary.estimatedInstallment", "القسط التقديري")}
                                 </span>
                                 <strong className="text-[20px] font-black text-[#EDC98E]">
-                                    {formatPrice(calculatedInstallment, "#EDC98E")}
+                                    {activeCar.id === 9999
+                                        ? t("carRequest.summary.toBeDetermined", "يحدد لاحقاً")
+                                        : formatPrice(calculatedInstallment, "#EDC98E")
+                                    }
                                 </strong>
                             </div>
                         </div>
 
                         <p className="text-[10px] text-white/40 font-semibold leading-relaxed">
-                            {t(
-                                "carRequest.summary.disclaimer",
-                                "* الأرقام تقديرية بناءً على نسبة فائدة تمويلية 4.5%. التمويل النهائي يخضع للتقييم الائتماني من الجهة الممولة.",
-                            )}
+                            {activeCar.id === 9999
+                                ? t(
+                                    "carRequest.summary.customCarDisclaimer",
+                                    "* سيتم حساب السعر النهائي والقسط بعد مراجعة طلبك والتواصل معك لتأكيد المواصفات المطلوبة.",
+                                  )
+                                : t(
+                                    "carRequest.summary.disclaimer",
+                                    "* الأرقام تقديرية بناءً على نسبة فائدة تمويلية 4.5%. التمويل النهائي يخضع للتقييم الائتماني من الجهة الممولة.",
+                                  )
+                            }
                         </p>
                     </div>
                 )}

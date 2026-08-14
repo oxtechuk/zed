@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Sparkles, ChevronDown, Send } from "lucide-react";
 import type { ICarRequestFormProps } from "../../interfaces/ICarRequestFormProps";
+import { BankDropdownSelector } from "./BankDropdownSelector";
 
 export function CarRequestForm({
     formData,
@@ -10,6 +11,10 @@ export function CarRequestForm({
     saudiCities,
     employerTypes,
     serviceDurations,
+    banks,
+    selectedBankId,
+    onSelectBankId,
+    loadingBanks,
 }: ICarRequestFormProps) {
     const { t } = useTranslation();
 
@@ -194,8 +199,16 @@ export function CarRequestForm({
                         />
                     </div>
 
+                    {/* البنك المفضل */}
+                    <BankDropdownSelector
+                        banks={banks}
+                        selectedBankId={selectedBankId}
+                        onSelectBankId={onSelectBankId}
+                        loadingBanks={loadingBanks}
+                    />
+
                     {/* الالتزامات الشهرية */}
-                    <div className="flex flex-col text-start md:col-span-2">
+                    <div className="flex flex-col text-start">
                         <label className="text-[14px] font-extrabold text-[#374151] mb-2">
                             {t("carRequest.form.obligations", "الالتزامات الشهرية")}{" "}
                             <span className="text-red-500">*</span>
