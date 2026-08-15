@@ -146,18 +146,18 @@ Route::prefix('crm')->name('crm.')->middleware(['auth:employee', 'guard.employee
     });
 
     // === المواصفات والمميزات ===
-    Route::middleware('permission:manage-specifications')->group(function () {
+    Route::middleware('permission:manage-specifications|manage-cars')->group(function () {
         Route::resource('specifications', SpecificationController::class);
     });
-    Route::middleware('permission:manage-features')->group(function () {
+    Route::middleware('permission:manage-features|manage-cars')->group(function () {
         Route::resource('features', FeatureController::class);
     });
-    Route::middleware('permission:manage-safety-features')->group(function () {
+    Route::middleware('permission:manage-safety-features|manage-cars')->group(function () {
         Route::resource('safety-features', SafetyFeatureController::class);
     });
 
-    // === الماركات ===
-    Route::middleware('permission:manage-brands')->group(function () {
+    // === الماركات والموديلات ===
+    Route::middleware('permission:manage-brands|manage-cars')->group(function () {
         Route::get('brands', [BrandController::class, 'index'])->name('brands.index');
         Route::post('brands', [BrandController::class, 'store'])->name('brands.store');
         Route::put('brands/{brand}', [BrandController::class, 'update'])->name('brands.update');

@@ -17,14 +17,28 @@ class FeatureController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required|array',
             'name.ar' => 'required|string',
             'name.en' => 'required|string',
             'icon' => 'nullable|string',
         ]);
 
-        Feature::create($request->all());
+        $feature = Feature::create($data);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'تمت إضافة الخاصية بنجاح',
+                'feature' => [
+                    'id' => $feature->id,
+                    'name' => $feature->getTranslation('name', app()->getLocale()) ?? $feature->name,
+                    'name_ar' => $feature->getTranslation('name', 'ar', false),
+                    'name_en' => $feature->getTranslation('name', 'en', false),
+                    'icon' => $feature->icon,
+                ],
+            ]);
+        }
 
         return back()->with('success', 'تمت إضافة الخاصية بنجاح');
     }

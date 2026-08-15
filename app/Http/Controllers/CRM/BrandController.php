@@ -32,7 +32,20 @@ class BrandController extends Controller
         if ($request->hasFile('logo')) {
             $data['logo'] = $request->file('logo')->store('brands', 'public');
         }
-        Brand::create($data);
+        $brand = Brand::create($data);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'تمت إضافة الماركة بنجاح',
+                'brand' => [
+                    'id' => $brand->id,
+                    'name' => $brand->getTranslation('name', app()->getLocale()) ?? $brand->name,
+                    'name_ar' => $brand->getTranslation('name', 'ar', false),
+                    'name_en' => $brand->getTranslation('name', 'en', false),
+                ],
+            ]);
+        }
 
         return back()->with('success', 'تمت إضافة الماركة');
     }

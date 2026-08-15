@@ -17,14 +17,28 @@ class SpecificationController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required|array',
             'name.ar' => 'required|string',
             'name.en' => 'required|string',
             'icon' => 'nullable|string',
         ]);
 
-        Specification::create($request->all());
+        $specification = Specification::create($data);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'تمت إضافة المواصفة بنجاح',
+                'specification' => [
+                    'id' => $specification->id,
+                    'name' => $specification->getTranslation('name', app()->getLocale()) ?? $specification->name,
+                    'name_ar' => $specification->getTranslation('name', 'ar', false),
+                    'name_en' => $specification->getTranslation('name', 'en', false),
+                    'icon' => $specification->icon,
+                ],
+            ]);
+        }
 
         return back()->with('success', 'تمت إضافة المواصفة بنجاح');
     }

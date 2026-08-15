@@ -17,14 +17,28 @@ class SafetyFeatureController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required|array',
             'name.ar' => 'required|string',
             'name.en' => 'required|string',
             'icon' => 'nullable|string',
         ]);
 
-        SafetyFeature::create($request->all());
+        $safetyFeature = SafetyFeature::create($data);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'تمت إضافة ميزة السلامة بنجاح',
+                'safety_feature' => [
+                    'id' => $safetyFeature->id,
+                    'name' => $safetyFeature->getTranslation('name', app()->getLocale()) ?? $safetyFeature->name,
+                    'name_ar' => $safetyFeature->getTranslation('name', 'ar', false),
+                    'name_en' => $safetyFeature->getTranslation('name', 'en', false),
+                    'icon' => $safetyFeature->icon,
+                ],
+            ]);
+        }
 
         return back()->with('success', 'تمت إضافة ميزة السلامة بنجاح');
     }
