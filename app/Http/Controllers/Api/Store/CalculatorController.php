@@ -10,7 +10,6 @@ use App\Http\Requests\Api\Store\CalculatorOtpSendRequest;
 use App\Http\Requests\Api\Store\CalculatorOtpVerifyRequest;
 use App\Http\Resources\Store\CalculatorBankResource;
 use App\Jobs\SendConversionTrackingJob;
-use App\Models\CalculatorBank;
 use App\Services\Api\Store\CalculatorApiService;
 
 final class CalculatorController extends ApiBaseController
@@ -32,11 +31,13 @@ final class CalculatorController extends ApiBaseController
 
     public function calculate(CalculatorCalculateRequest $request)
     {
+        $bankId = $request->filled('bank_id') ? (int) $request->input('bank_id') : null;
+
         $result = $this->calculatorService->calculate(
             carId: (int) $request->input('car_id'),
-            downPaymentPct: (float) $request->input('down_payment_percentage', 10),
-            periodMonths: (int) $request->input('period_months', 12),
-            bankId: (int) $request->input('bank_id', CalculatorBank::query()->first()->id),
+            downPaymentPct: (float) $request->input('down_payment_percentage', 0),
+            periodMonths: (int) $request->input('period_months', 60),
+            bankId: $bankId,
         );
 
         return $this->respondSuccess($result);

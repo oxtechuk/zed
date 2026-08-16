@@ -81,14 +81,14 @@ export function useCarRequest() {
         };
     }, []);
 
-    // Load cars on mount
+    // Load cars and parse URL params on mount
     useEffect(() => {
         getCars()
             .then((res) => {
                 setCars(res.data);
                 setLoadingCars(false);
 
-                const carIdParam = searchParams.get("car_id");
+                const carIdParam = searchParams.get("car_id") || searchParams.get("carId");
                 if (carIdParam) {
                     const parsedId = parseInt(carIdParam, 10);
                     if (res.data.some((c) => c.id === parsedId)) {
@@ -96,6 +96,19 @@ export function useCarRequest() {
                     }
                 } else if (res.data.length > 0) {
                     setSelectedCarId(res.data[0].id);
+                }
+
+                const termParam = searchParams.get("term");
+                if (termParam) {
+                    const parsedTerm = parseInt(termParam, 10);
+                    if ([12, 24, 36, 48, 60, 72, 84].includes(parsedTerm)) {
+                        setTerm(parsedTerm);
+                    }
+                }
+
+                const colorParam = searchParams.get("color");
+                if (colorParam && colorParam.trim() !== "") {
+                    setSelectedColor(decodeURIComponent(colorParam.trim()));
                 }
             })
             .catch(() => {
@@ -247,14 +260,16 @@ export function useCarRequest() {
 
         setIsSubmitting(true);
         try {
-            const activeBank = banks.find((b) => b.id === selectedBankId);
+            const activeBank = selectedBankId === 0
+                ? { id: 0, name: 'الراتب كاش' }
+                : banks.find((b) => b.id === selectedBankId);
             const bankDetails = activeBank ? activeBank.name : 'غير محدد';
 
             const carDetailsText = selectedCarId === 9999
                 ? `طلب سيارة مخصصة: ${customCarName}`
                 : (activeCar ? `${activeCar.brand?.name} ${activeCar.name}` : '');
 
-            const notesText = `${carDetailsText} | البنك المفضل: ${bankDetails} | مدة التمويل: ${term} month | اللون المطلوب: ${selectedColor} | جهة العمل: ${formData.employerType} | مدة الخدمة بالوظيفة: ${formData.yearsOfService} شهر | الراتب: ${formData.salary} | الالتزامات: ${formData.obligations}`;
+            const notesText = `${carDetailsText} | بنك التحصيل: ${bankDetails} | مدة التمويل: ${term} شهر | اللون المطلوب: ${selectedColor} | جهة العمل: ${formData.employerType} | مدة الخدمة بالوظيفة: ${formData.yearsOfService} شهر | الراتب: ${formData.salary} | الالتزامات: ${formData.obligations}`;
 
             const bookingResponse = await submitBooking({
                 car_id: selectedCarId,
@@ -264,7 +279,17 @@ export function useCarRequest() {
                 notes: notesText,
                 booking_type: "purchase",
                 location: formData.city,
-                calculator_bank_id: selectedBankId,
+                calculator_bank_id: (selectedBankId && selectedBankId > 0) ? selectedBankId : null,
+                salary: Number(formData.salary) || 0,
+                monthly_obligations: Number(formData.obligations) || 0,
+                employer_type: formData.employerType,
+                years_of_service: formData.yearsOfService,
+                has_personal_loan: formData.hasPersonalLoan,
+                has_mortgage_loan: formData.hasMortgageLoan,
+                has_simah_default: formData.hasSimahDefault,
+                has_traffic_violations: formData.hasTrafficViolations,
+                preferred_color: selectedColor,
+                monthly_installment: calculatedInstallment,
             });
 
             const bId = bookingResponse?.data?.booking_id ?? bookingResponse?.booking_id ?? null;

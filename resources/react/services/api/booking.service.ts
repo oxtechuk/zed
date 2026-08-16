@@ -12,6 +12,16 @@ export interface ISubmitBookingData {
   booking_type?: "test_drive" | "purchase" | "inquiry";
   location?: string;
   calculator_bank_id?: number | null;
+  salary?: number;
+  monthly_obligations?: number;
+  employer_type?: string;
+  years_of_service?: number;
+  has_personal_loan?: boolean;
+  has_mortgage_loan?: boolean;
+  has_simah_default?: boolean;
+  has_traffic_violations?: boolean;
+  preferred_color?: string;
+  monthly_installment?: number;
 }
 
 export async function submitBooking(data: ISubmitBookingData) {
@@ -27,6 +37,16 @@ export async function submitBooking(data: ISubmitBookingData) {
     booking_type: data.booking_type || "purchase",
     location: data.location || null,
     calculator_bank_id: data.calculator_bank_id || null,
+    salary: data.salary,
+    monthly_obligations: data.monthly_obligations,
+    employer_type: data.employer_type,
+    years_of_service: data.years_of_service,
+    has_personal_loan: data.has_personal_loan,
+    has_mortgage_loan: data.has_mortgage_loan,
+    has_simah_default: data.has_simah_default,
+    has_traffic_violations: data.has_traffic_violations,
+    preferred_color: data.preferred_color,
+    monthly_installment: data.monthly_installment,
   });
   return res.data;
 }

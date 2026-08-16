@@ -97,20 +97,20 @@ export default function CalculatorResultCard({
                               "قدّم طلب التمويل الآن",
                           )}
                 </button>
+                {/* WhatsApp Button */}
+                <a
+                    href={whatsappHref}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="h-[52px] w-[52px] shrink-0 bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-[16px] flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
+                    title={t(
+                        "financeCalculator.step3.whatsapp",
+                        "تواصل عبر واتساب",
+                    )}
+                >
+                    <SiWhatsapp size={24} />
+                </a>
             </div>
-            {/* WhatsApp Button */}
-            <a
-                href={whatsappHref}
-                target="_blank"
-                rel="noreferrer"
-                className="h-[52px] w-[52px] shrink-0 bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-[16px] flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95"
-                title={t(
-                    "financeCalculator.step3.whatsapp",
-                    "تواصل عبر واتساب",
-                )}
-            >
-                <SiWhatsapp size={24} />
-            </a>
             {/* Disclaimer Note */}
             <p className="mt-5 text-center text-[11px] md:text-[12px] text-white/50 font-medium leading-relaxed">
                 {t(

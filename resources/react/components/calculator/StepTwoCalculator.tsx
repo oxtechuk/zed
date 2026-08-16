@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { calculateFinance, submitCalculatorLead } from "../../services/api";
+import { calculateFinance, getBanks, submitCalculatorLead } from "../../services/api";
 import { formatPrice } from "../../utils/format";
 import { useSettingsStore } from "../../store/settings.store";
 import { trackCalculatorLead } from "../../services/analytics";
-import type { ICalculateData } from "../../interfaces/ICalculatorTypes";
+import type { IBankItem, ICalculateData } from "../../interfaces/ICalculatorTypes";
 import type { IStepTwoCalculatorProps } from "../../interfaces/IStepTwoCalculatorProps";
 import CalculatorResultCard from "./CalculatorResultCard";
 
@@ -25,31 +25,85 @@ export default function StepTwoCalculator({
 }: IStepTwoCalculatorProps) {
     const { t, i18n } = useTranslation();
     const settings = useSettingsStore((s) => s.settings);
+    const [banks, setBanks] = useState<IBankItem[]>([]);
+    const [selectedBankId, setSelectedBankId] = useState<number | undefined>(undefined);
     const [calcResult, setCalcResult] = useState<ICalculateData | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const minDownPayment = 0;
-    const maxDownPayment = Math.round(selectedCar.price * 0.5);
-
-    const downPaymentPercent = Math.round(
-        (downPayment * 100) / selectedCar.price,
-    );
-
+    // Load active banks on mount
     useEffect(() => {
+        getBanks()
+            .then((loadedBanks) => {
+                if (Array.isArray(loadedBanks) && loadedBanks.length > 0) {
+                    setBanks(loadedBanks);
+                    setSelectedBankId((prev) => prev ?? loadedBanks[0].id);
+                }
+            })
+            .catch(() => {});
+    }, []);
+
+    const carPrice = selectedCar.price || 0;
+    const minDownPayment = 0;
+    const maxDownPayment = Math.round(carPrice * 0.5);
+
+    const downPaymentPercent = carPrice > 0
+        ? Math.min(100, Math.max(0, Math.round((downPayment * 100) / carPrice)))
+        : 0;
+
+    // Instant client-side fallback calculation to prevent zero-state glitch
+    const selectedBank = banks.find((b) => b.id === selectedBankId);
+    const annualRate = calcResult?.annual_rate ?? selectedBank?.annual_rate ?? 4.5;
+    
+    const clientCalc = useMemo(() => {
+        const loan = Math.max(0, carPrice - downPayment);
+        const monthlyRate = annualRate / 12 / 100;
+        let monthly = 0;
+
+        if (monthlyRate > 0 && term > 0) {
+            const compounded = Math.pow(1 + monthlyRate, term);
+            const denom = compounded - 1;
+            monthly = denom > 0
+                ? Math.round((loan * (monthlyRate * compounded)) / denom)
+                : Math.round(loan / term);
+        } else if (term > 0) {
+            monthly = Math.round(loan / term);
+        }
+
+        const total = monthly * term;
+        const interest = Math.max(0, total - loan);
+
+        return {
+            loanAmount: loan,
+            monthlyPayment: monthly,
+            totalPayment: total,
+            totalInterest: interest,
+        };
+    }, [carPrice, downPayment, annualRate, term]);
+
+    // Query backend calculate endpoint
+    useEffect(() => {
+        if (!carId) return;
+
         calculateFinance({
             car_id: carId,
             down_payment_percentage: downPaymentPercent,
             period_months: term,
-            bank_id: 2,
+            bank_id: selectedBankId,
         })
-            .then(setCalcResult)
-            .catch(() => {});
-    }, [carId, downPaymentPercent, term]);
+            .then((res) => {
+                if (res) {
+                    setCalcResult(res);
+                }
+            })
+            .catch((err) => {
+                console.debug("Backend calculation fallback:", err);
+            });
+    }, [carId, downPaymentPercent, term, selectedBankId]);
 
-    const monthlyPayment = calcResult?.monthly_payment ?? 0;
-    const loanAmount = calcResult?.loan_amount ?? 0;
-    const totalPayment = calcResult?.total_payment ?? 0;
-    const totalInterest = calcResult?.total_interest ?? 0;
+    const monthlyPayment = calcResult?.monthly_payment ?? clientCalc.monthlyPayment;
+    const loanAmount = calcResult?.loan_amount ?? clientCalc.loanAmount;
+    const totalPayment = calcResult?.total_payment ?? clientCalc.totalPayment;
+    const totalInterest = calcResult?.total_interest ?? clientCalc.totalInterest;
 
     const handleSubmitLead = async () => {
         setIsSubmitting(true);
@@ -61,19 +115,23 @@ export default function StepTwoCalculator({
                 purpose: "شراء",
                 salary: Number(salary),
                 monthly_obligations: Number(personalInfo.obligations),
-                car_ids: [carId],
+                car_ids: carId ? [carId] : [],
                 notes: t("financeCalculator.step3.leadNotes", {
                     color: selectedColor,
                     salary,
                     downPayment,
-                    defaultValue: `اللون المطلوبة: ${selectedColor} | الراتب: ${salary} | الدفعة الأولى: ${downPayment}`,
+                    defaultValue: `اللون المطلوب: ${selectedColor} | الراتب: ${salary} | الدفعة الأولى: ${downPayment}`,
                 }),
-                preferred_bank_id: 2,
+                preferred_bank_id: selectedBankId,
+                monthly_installment: monthlyPayment,
+                down_payment: downPayment,
+                period_months: term,
+                preferred_color: selectedColor,
             });
 
             // Trigger Pixel & GTM Calculator Lead events
             trackCalculatorLead({
-                carName: selectedCar ? `${selectedCar.brand?.name || ''} ${selectedCar.name}` : undefined,
+                carName: selectedCar ? `${selectedCar.brand || ''} ${selectedCar.name}`.trim() : undefined,
                 salary: Number(salary),
                 monthlyInstallment: monthlyPayment,
             });
@@ -104,10 +162,8 @@ export default function StepTwoCalculator({
 
     const isRtl = i18n.dir() === "rtl";
     const sliderTrackStyle = (val: number, min: number, max: number) => {
-        const percent = Math.min(
-            100,
-            Math.max(0, ((val - min) / (max - min)) * 100),
-        );
+        const range = max - min;
+        const percent = range > 0 ? Math.min(100, Math.max(0, ((val - min) / range) * 100)) : 0;
         const direction = isRtl ? "to left" : "to right";
         return {
             background: `linear-gradient(${direction}, #16254F ${percent}%, #E2E8F0 ${percent}%)`,
@@ -141,7 +197,7 @@ export default function StepTwoCalculator({
                         <span className="text-[13px] font-extrabold text-[#EDC98E] block mb-1">
                             {t(
                                 "financeCalculator.step3.badge",
-                                "الخطوة الثانية",
+                                "الخطوة الثالثة",
                             )}
                         </span>
                         <h2 className="text-[26px] md:text-[30px] font-black text-[#16254F] leading-tight">
@@ -229,7 +285,7 @@ export default function StepTwoCalculator({
                             <input
                                 type="range"
                                 min={minDownPayment}
-                                max={maxDownPayment}
+                                max={maxDownPayment || 100000}
                                 step={1000}
                                 value={downPayment}
                                 onChange={(e) =>
@@ -238,7 +294,7 @@ export default function StepTwoCalculator({
                                 style={sliderTrackStyle(
                                     downPayment,
                                     minDownPayment,
-                                    maxDownPayment,
+                                    maxDownPayment || 100000,
                                 )}
                                 className="h-[6px] w-full cursor-pointer rounded-lg appearance-none accent-[#16254F]"
                             />

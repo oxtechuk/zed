@@ -10,11 +10,13 @@ type LazyImgStatus = "pending" | "revealed";
 
 export interface ILazyImgProps extends ImgHTMLAttributes<HTMLImageElement> {
   skeletonClassName?: string;
+  containerClassName?: string;
 }
 
 export default function LazyImg({
   src,
-  className,
+  className = "",
+  containerClassName = "",
   style,
   onLoad,
   onError,
@@ -46,7 +48,7 @@ export default function LazyImg({
   const isPending = status === "pending";
 
   return (
-    <div className={`relative overflow-hidden ${isPending ? `lazy-img-skeleton ${skeletonClassName}` : ""}`}>
+    <div className={`relative overflow-hidden ${containerClassName} ${isPending ? `lazy-img-skeleton ${skeletonClassName}` : ""}`}>
       <img
         {...rest}
         ref={imgRef}
@@ -55,7 +57,7 @@ export default function LazyImg({
         decoding="async"
         onLoad={handleLoad}
         onError={handleError}
-        className={`${className ?? ""} transition-opacity duration-300 ${status === "revealed" ? "opacity-100" : "opacity-0"}`}
+        className={`${className} transition-opacity duration-300 ${status === "revealed" ? "opacity-100" : "opacity-0"}`}
         style={style}
       />
     </div>

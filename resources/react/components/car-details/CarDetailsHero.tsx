@@ -8,13 +8,13 @@ import {
     MessageCircle,
     Phone,
 } from "lucide-react";
-import { getImageUrl } from "../../constants/app-images";
+import { getImageUrl, APP_IMAGES } from "../../constants/app-images";
 import { formatPrice } from "../../utils/format";
+import { useSettingsStore } from "../../store/settings.store";
 import type {
     ICarColor,
     ICarDetailsHeroProps,
 } from "../../interfaces/ICarDetailsHeroProps";
-import LazyImg from "../LazyImg";
 
 export default function CarDetailsHero({
     id,
@@ -35,21 +35,28 @@ export default function CarDetailsHero({
     brandName,
 }: ICarDetailsHeroProps) {
     const { t, i18n } = useTranslation();
+    const settings = useSettingsStore((s) => s.settings);
     const [activeImage, setActiveImage] = useState(0);
     const [selectedColor, setSelectedColor] = useState<ICarColor | null>(null);
 
-    // Interactive month term state
+    // Interactive month term state (max 60 months)
     const [selectedMonth, setSelectedMonth] = useState(60);
 
     const currentImages = useMemo(() => {
-        const baseList = images.map(getImageUrl);
+        const baseList = (images || []).map(getImageUrl).filter(Boolean);
 
         if (mainImage) {
             const mainImgUrl = getImageUrl(mainImage);
-            return [
-                mainImgUrl,
-                ...baseList.filter((img) => img !== mainImgUrl),
-            ];
+            if (mainImgUrl) {
+                return [
+                    mainImgUrl,
+                    ...baseList.filter((img) => img !== mainImgUrl),
+                ];
+            }
+        }
+
+        if (baseList.length === 0) {
+            return [APP_IMAGES.CAR_PLACEHOLDER];
         }
 
         return baseList;
@@ -58,8 +65,13 @@ export default function CarDetailsHero({
     const colorImage = selectedColor?.image
         ? getImageUrl(selectedColor.image)
         : null;
-    const currentImage = colorImage ?? currentImages[activeImage];
+    const currentImage = colorImage ?? currentImages[activeImage] ?? APP_IMAGES.CAR_PLACEHOLDER;
     const totalImages = currentImages.length;
+
+    const rawWhatsapp = settings?.contact?.whatsapp || settings?.contact?.phone || "966500000000";
+    const cleanWhatsapp = rawWhatsapp.replace(/\D/g, "");
+    const whatsappPhone = cleanWhatsapp.startsWith("05") ? `966${cleanWhatsapp.slice(1)}` : (cleanWhatsapp || "966500000000");
+    const rawPhone = settings?.contact?.phone || settings?.contact?.whatsapp || "966500000000";
 
     const handleNext = () => {
         setActiveImage((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
@@ -112,10 +124,16 @@ export default function CarDetailsHero({
                             {/* Main Gallery Container */}
                             <div className="order-2 lg:order-1 mt-8 lg:mt-0 relative overflow-hidden rounded-[24px] bg-white border border-[#E7E9EF] shadow-sm flex items-center justify-center min-h-[380px] md:min-h-[480px] w-full">
                                 {/* Main Image */}
-                                <LazyImg
+                                <img
+                                    key={currentImage}
                                     src={currentImage}
                                     alt={title}
-                                    className="absolute inset-0 w-full h-full object-cover transition-all duration-500"
+                                    className="w-full h-full min-h-[380px] md:min-h-[480px] max-h-[540px] object-contain md:object-cover transition-all duration-500 bg-[#FAFAFC]"
+                                    loading="eager"
+                                    decoding="async"
+                                    onError={(e) => {
+                                        (e.currentTarget as HTMLImageElement).src = APP_IMAGES.CAR_PLACEHOLDER;
+                                    }}
                                 />
 
                                 {/* Bottom Overlay containing Thumbnails and Navigation Arrows */}
@@ -256,7 +274,7 @@ export default function CarDetailsHero({
                                     </strong>
                                 </div>
 
-                                {/* Term months selection */}
+                                {/* Term months selection (up to 60 months) */}
                                 <div className="mt-7 text-start">
                                     <span className="text-[13px] text-white/50 font-bold block mb-3.5">
                                         {t("carDetails.calculator.monthsTerm", {
@@ -264,7 +282,7 @@ export default function CarDetailsHero({
                                         })}
                                     </span>
                                     <div className="flex gap-2">
-                                        {[24, 36, 48, 60, 72, 84].map(
+                                        {[24, 36, 48, 60].map(
                                             (month) => (
                                                 <button
                                                     key={month}
@@ -272,7 +290,7 @@ export default function CarDetailsHero({
                                                     onClick={() =>
                                                         setSelectedMonth(month)
                                                     }
-                                                    className={`flex h-9 flex-1 items-center justify-center rounded-xl text-[11px] font-black transition-all duration-300 ${
+                                                    className={`flex h-9 flex-1 items-center justify-center rounded-xl text-[12px] font-black transition-all duration-300 ${
                                                         selectedMonth === month
                                                             ? "bg-[#EDC98E] text-[#16254F] scale-105 shadow-md"
                                                             : "bg-white/[0.08] hover:bg-white/[0.14] text-white"
@@ -322,7 +340,7 @@ export default function CarDetailsHero({
                                 {/* Social Actions Row */}
                                 <div className="mt-3.5 grid grid-cols-2 gap-3">
                                     <a
-                                        href={`https://wa.me/966500000000?text=أرغب في الاستفسار عن سيارة ${brandName} ${title}`}
+                                        href={`https://wa.me/${whatsappPhone}?text=${encodeURIComponent(`مرحباً، أرغب في الاستفسار عن سيارة ${brandName || ""} ${title}`)}`}
                                         target="_blank"
                                         rel="noreferrer"
                                         className="flex h-[46px] items-center justify-center gap-2 rounded-xl bg-[#25D366] text-[14px] font-bold text-white transition hover:bg-[#20ba59] hover:scale-[1.01] active:scale-95"
@@ -331,7 +349,7 @@ export default function CarDetailsHero({
                                         <span>{t("contact.whatsapp", { defaultValue: "واتساب" })}</span>
                                     </a>
                                     <a
-                                        href="tel:+966500000000"
+                                        href={`tel:${rawPhone.startsWith("+") ? rawPhone : `+${rawPhone}`}`}
                                         className="flex h-[46px] items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 text-[14px] font-bold text-white transition hover:bg-white/10 hover:scale-[1.01] active:scale-95"
                                     >
                                         <Phone size={16} />

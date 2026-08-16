@@ -31,6 +31,9 @@ final class CalculatorApiService
                 'city' => $data['city'],
                 'salary' => $data['salary'],
                 'monthly_obligations' => $data['monthly_obligations'],
+                'monthly_installment' => $data['monthly_installment'] ?? null,
+                'down_payment' => $data['down_payment'] ?? null,
+                'period_months' => $data['period_months'] ?? null,
                 'employer_type' => $data['employer_type'] ?? null,
                 'employer_name' => $data['employer_name'] ?? null,
                 'years_of_service' => $data['years_of_service'] ?? null,
@@ -89,18 +92,23 @@ final class CalculatorApiService
 
     private function createBookingForLead(CalculatorLead $lead, ?int $carId = null, ?string $email = null, ?string $notes = null): void
     {
+        $downPayment = (float) ($lead->details['down_payment'] ?? 0);
+        $periodMonths = (int) ($lead->details['period_months'] ?? 60);
+        $durationYears = max(1, (int) round($periodMonths / 12));
+
         $booking = Booking::create([
             'client_name' => $lead->name,
             'client_phone' => $lead->phone,
             'client_email' => $email,
             'car_id' => $carId,
+            'calculator_bank_id' => $lead->details['preferred_bank_id'] ?? null,
             'source' => 'calculator',
             'status' => 'new',
             'notes' => $notes,
-            'total_price' => $carId ? (Car::find($carId)?->current_price ?? 0) : 0,
-            'down_payment' => 0,
-            'duration_years' => 5,
-            'monthly_installment' => $lead->details['monthly_installment'] ?? 0,
+            'total_price' => $carId ? (Car::find($carId)?->current_price ?? Car::find($carId)?->cash_price ?? 0) : 0,
+            'down_payment' => $downPayment,
+            'duration_years' => $durationYears,
+            'monthly_installment' => (float) ($lead->details['monthly_installment'] ?? 0),
         ]);
 
         try {
@@ -126,15 +134,24 @@ final class CalculatorApiService
         return CalculatorBank::query()->activeOrdered()->get();
     }
 
-    public function calculate(int $carId, float $downPaymentPct, int $periodMonths, int $bankId): array
+    public function calculate(int $carId, float $downPaymentPct, int $periodMonths, ?int $bankId = null): array
     {
         $car = Car::findOrFail($carId);
-        $bank = CalculatorBank::findOrFail($bankId);
+
+        $bank = null;
+        if ($bankId) {
+            $bank = CalculatorBank::find($bankId);
+        }
+
+        if (! $bank) {
+            $bank = CalculatorBank::query()->where('is_active', true)->orderBy('sort_order')->first()
+                ?? CalculatorBank::query()->first();
+        }
 
         $carPrice = (float) ($car->current_price ?? $car->cash_price);
         $downPaymentAmount = round($carPrice * $downPaymentPct / 100);
-        $loanAmount = $carPrice - $downPaymentAmount;
-        $annualRate = $bank->annual_rate;
+        $loanAmount = max(0, $carPrice - $downPaymentAmount);
+        $annualRate = $bank ? (float) $bank->annual_rate : 4.5;
         $monthlyRate = $annualRate / 12 / 100;
 
         if ($monthlyRate > 0 && $periodMonths > 0) {
@@ -161,8 +178,8 @@ final class CalculatorApiService
             'total_interest' => max(0, $totalInterest),
             'annual_rate' => $annualRate,
             'bank' => [
-                'id' => $bank->id,
-                'name' => $bank->name,
+                'id' => $bank?->id ?? 0,
+                'name' => $bank?->name ?? 'البنك الافتراضي',
             ],
         ];
     }

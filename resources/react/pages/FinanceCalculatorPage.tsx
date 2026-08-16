@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   StepOneForm,
@@ -8,6 +9,7 @@ import {
 } from "../components/calculator";
 import Stepper from "../components/calculator/Stepper";
 import { getImageUrl, APP_IMAGES } from "../constants/app-images";
+import { getCars } from "../services/api/cars.service";
 import type { CarItem } from "../types/home.types";
 import type { ISelectedCar } from "../interfaces/ISelectedCar";
 import type { IPersonalInfo } from "../interfaces/IPersonalInfo";
@@ -15,6 +17,7 @@ import type { FinanceStep } from "../interfaces/IStepperProps";
 import { useSEO } from "../utils/useSEO";
 
 export default function FinanceCalculatorPage() {
+  const [searchParams] = useSearchParams();
   const { i18n, t } = useTranslation();
   useSEO(
     t("pageTitles.financeCalculator", "حاسبة التمويل"),
@@ -30,6 +33,28 @@ export default function FinanceCalculatorPage() {
   const [downPayment, setDownPayment] = useState<number>(0);
   const [term, setTerm] = useState<number>(60);
   const [personalInfo, setPersonalInfo] = useState<IPersonalInfo | null>(null);
+
+  // Auto-detect car from URL parameters (e.g. ?car_id=1 or ?carId=1)
+  useEffect(() => {
+    const paramCarId = searchParams.get("car_id") || searchParams.get("carId");
+    if (paramCarId && !selectedCarId) {
+      const parsedId = parseInt(paramCarId, 10);
+      if (parsedId > 0) {
+        getCars()
+          .then((res) => {
+            const found = res.data?.find((c) => c.id === parsedId);
+            if (found) {
+              setSelectedCarId(found.id);
+              setSelectedCarData(found);
+              if (found.colors && found.colors.length > 0) {
+                setSelectedColor(found.colors[0].name);
+              }
+            }
+          })
+          .catch(() => {});
+      }
+    }
+  }, [searchParams, selectedCarId]);
 
   const selectedCar: ISelectedCar = useMemo(() => {
     if (!selectedCarData) {

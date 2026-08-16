@@ -9,6 +9,9 @@ export interface ICalculatorLeadRequest {
   car_ids?: number[];
   notes?: string;
   preferred_bank_id?: number;
+  monthly_installment?: number;
+  down_payment?: number;
+  period_months?: number;
   employer_type?: string;
   employer_name?: string;
   years_of_service?: number;

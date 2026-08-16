@@ -6,6 +6,7 @@ use App\Http\Api\Response\Builder\ApiResponseBuilder;
 use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Requests\Api\Store\BookingRequest;
 use App\Jobs\SendConversionTrackingJob;
+use App\Models\CalculatorLead;
 use App\Models\Car;
 use App\Services\Api\Store\BookingApiService;
 use App\Services\Api\Store\Data\BookingData;
@@ -48,6 +49,34 @@ final class BookingController extends ApiBaseController
             );
 
             $booking = $this->bookingService->create($data);
+
+            if ($request->filled('salary') || $request->filled('employer_type') || $request->filled('calculator_bank_id') || $request->filled('monthly_obligations')) {
+                try {
+                    CalculatorLead::create([
+                        'name' => $booking->client_name,
+                        'phone' => $booking->client_phone,
+                        'car_id' => $booking->car_id,
+                        'details' => [
+                            'city' => $booking->location,
+                            'salary' => $request->input('salary'),
+                            'monthly_obligations' => $request->input('monthly_obligations'),
+                            'employer_type' => $request->input('employer_type'),
+                            'years_of_service' => $request->input('years_of_service'),
+                            'has_personal_loan' => (bool) $request->input('has_personal_loan', false),
+                            'has_mortgage_loan' => (bool) $request->input('has_mortgage_loan', false),
+                            'has_simah_default' => (bool) $request->input('has_simah_default', false),
+                            'has_traffic_violations' => (bool) $request->input('has_traffic_violations', false),
+                            'preferred_color' => $request->input('preferred_color'),
+                            'preferred_bank_id' => $request->input('calculator_bank_id'),
+                            'monthly_installment' => $booking->monthly_installment,
+                            'period_months' => $booking->duration_years * 12,
+                            'notes' => $booking->notes,
+                        ],
+                    ]);
+                } catch (\Throwable $e) {
+                    logger()->warning('Failed to attach CalculatorLead on booking creation: '.$e->getMessage());
+                }
+            }
 
             $eventId = $request->input('event_id') ?: ('booking_'.$booking->id);
 

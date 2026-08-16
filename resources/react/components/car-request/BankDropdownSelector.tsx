@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown, Check, Building2 } from "lucide-react";
+import { ChevronDown, Check, Building2, Banknote } from "lucide-react";
 import type { IBankDropdownSelectorProps } from "../../interfaces/IBankDropdownSelectorProps";
 
 export function BankDropdownSelector({
@@ -17,6 +17,12 @@ export function BankDropdownSelector({
     const inputClasses =
         "h-[50px] w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 text-[14px] font-medium text-[#0F172A] outline-none transition placeholder:text-gray-400 focus:border-[#0F172A] focus:bg-white focus:ring-2 focus:ring-[#0F172A]/10";
 
+    const cashOption = useMemo(() => ({
+        id: 0,
+        name: t("carRequest.form.cashSalary", "الراتب كاش"),
+        isCash: true,
+    }), [t]);
+
     // Click outside handler
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -28,21 +34,23 @@ export function BankDropdownSelector({
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Filter banks based on search term
+    // Filter banks based on search term (cash option is at the top)
     const filteredBanks = useMemo(() => {
-        if (!searchTerm.trim()) return banks;
+        const list = [cashOption, ...banks];
+        if (!searchTerm.trim()) return list;
         const term = searchTerm.toLowerCase().trim();
-        return banks.filter((bank) => bank.name.toLowerCase().includes(term));
-    }, [banks, searchTerm]);
+        return list.filter((b) => b.name.toLowerCase().includes(term));
+    }, [banks, searchTerm, cashOption]);
 
     const activeBank = useMemo(() => {
+        if (selectedBankId === 0) return cashOption;
         return banks.find((b) => b.id === selectedBankId) || null;
-    }, [banks, selectedBankId]);
+    }, [banks, selectedBankId, cashOption]);
 
     return (
         <div className="flex flex-col text-start relative" ref={dropdownRef}>
             <label className="text-[14px] font-extrabold text-[#374151] mb-2">
-                {t("carRequest.form.preferredBank", "البنك المفضل")}
+                {t("carRequest.form.yourBank", "البنك الخاص بك")}
             </label>
             <div className="relative">
                 <button
@@ -57,18 +65,22 @@ export function BankDropdownSelector({
                 >
                     {loadingBanks ? (
                         <span className="text-gray-400">
-                            {t("carRequest.form.loadingBanks", "جاري تحميل البنوك...")}
+                            {t("carRequest.form.loadingBanks", "جاري تحميل الخيارات...")}
                         </span>
                     ) : activeBank ? (
                         <div className="flex items-center gap-2 overflow-hidden">
-                            <Building2 size={16} className="text-[#0F172A] shrink-0" />
+                            {activeBank.id === 0 ? (
+                                <Banknote size={18} className="text-[#16A34A] shrink-0" />
+                            ) : (
+                                <Building2 size={16} className="text-[#0F172A] shrink-0" />
+                            )}
                             <span className="truncate font-bold text-[#0F172A] text-[14px]">
                                 {activeBank.name}
                             </span>
                         </div>
                     ) : (
                         <span className="text-gray-400">
-                            {t("carRequest.form.selectBankPlaceholder", "اختر البنك المفضل...")}
+                            {t("carRequest.form.selectBankPlaceholder", "اختر البنك الذي يتم التحصيل من خلاله...")}
                         </span>
                     )}
                     <ChevronDown
@@ -85,7 +97,7 @@ export function BankDropdownSelector({
                         <div className="sticky top-0 bg-white pb-2 pt-1 px-1 border-b border-gray-100 z-10">
                             <input
                                 type="text"
-                                placeholder={t("carRequest.form.searchBankPlaceholder", "ابحث باسم البنك...")}
+                                placeholder={t("carRequest.form.searchBankPlaceholder", "ابحث باسم البنك أو كاش...")}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 onClick={(e) => e.stopPropagation()} // Prevent dropdown closing on click
@@ -98,6 +110,7 @@ export function BankDropdownSelector({
                             {filteredBanks.length > 0 ? (
                                 filteredBanks.map((bank) => {
                                     const isSelected = bank.id === selectedBankId;
+                                    const isCash = bank.id === 0;
                                     return (
                                         <button
                                             key={bank.id}
@@ -110,11 +123,23 @@ export function BankDropdownSelector({
                                             className={`flex w-full items-center justify-between rounded-xl p-2.5 text-start transition-colors ${
                                                 isSelected
                                                     ? "bg-[#0F172A] text-white"
+                                                    : isCash
+                                                    ? "hover:bg-[#F0FDF4] text-[#166534] font-extrabold bg-[#F8FAFC]"
                                                     : "hover:bg-[#F1F5F9] text-[#0F172A]"
                                             }`}
                                         >
                                             <div className="flex items-center gap-2 truncate">
-                                                <Building2 size={15} className={`shrink-0 ${isSelected ? "text-[#EDC98E]" : "text-gray-400"}`} />
+                                                {isCash ? (
+                                                    <Banknote
+                                                        size={17}
+                                                        className={`shrink-0 ${isSelected ? "text-[#EDC98E]" : "text-[#16A34A]"}`}
+                                                    />
+                                                ) : (
+                                                    <Building2
+                                                        size={15}
+                                                        className={`shrink-0 ${isSelected ? "text-[#EDC98E]" : "text-gray-400"}`}
+                                                    />
+                                                )}
                                                 <span className="text-[14px] font-bold truncate">
                                                     {bank.name}
                                                 </span>

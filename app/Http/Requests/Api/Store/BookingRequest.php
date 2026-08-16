@@ -22,6 +22,16 @@ final class BookingRequest extends ApiBaseRequest
             'booking_type' => ['nullable', 'string', 'in:test_drive,purchase,inquiry'],
             'location' => ['nullable', 'string', 'max:500'],
             'calculator_bank_id' => ['nullable', 'integer', 'exists:calculator_banks,id'],
+            'salary' => ['nullable', 'numeric', 'min:0'],
+            'monthly_obligations' => ['nullable', 'numeric', 'min:0'],
+            'employer_type' => ['nullable', 'string', 'max:100'],
+            'years_of_service' => ['nullable', 'numeric', 'min:0'],
+            'has_personal_loan' => ['nullable', 'boolean'],
+            'has_mortgage_loan' => ['nullable', 'boolean'],
+            'has_simah_default' => ['nullable', 'boolean'],
+            'has_traffic_violations' => ['nullable', 'boolean'],
+            'preferred_color' => ['nullable', 'string', 'max:100'],
+            'monthly_installment' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 

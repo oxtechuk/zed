@@ -15,6 +15,21 @@
         $historyNotes = $booking->notes_list->where('type', 'status_change');
         $comments = $booking->notes_list->whereIn('type', ['note', 'call']);
         $taskDot = fn ($task) => $task->status === 'done' ? 'done' : ($task->is_late ? 'late' : 'waiting');
+
+        $cleanPhone = preg_replace('/\D/', '', $booking->client_phone);
+        if (str_starts_with($cleanPhone, '05')) {
+            $whatsappPhone = '966' . substr($cleanPhone, 1);
+        } elseif (str_starts_with($cleanPhone, '5')) {
+            $whatsappPhone = '966' . $cleanPhone;
+        } elseif (str_starts_with($cleanPhone, '00966')) {
+            $whatsappPhone = substr($cleanPhone, 2);
+        } elseif (str_starts_with($cleanPhone, '966')) {
+            $whatsappPhone = $cleanPhone;
+        } else {
+            $whatsappPhone = $cleanPhone;
+        }
+        $whatsappText = urlencode(__('مرحباً أستاذ ') . $booking->client_name . __('، بخصوص طلبك لدى زاد كابيتال (طلب #') . $booking->id . ')');
+        $whatsappUrl = 'https://wa.me/' . $whatsappPhone . '?text=' . $whatsappText;
     @endphp
 
     {{-- Breadcrumb --}}
@@ -31,6 +46,10 @@
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
             <h5 class="fw-bold mb-0 text-white">{{ __('عرض بيانات الطلب') }} <span style="opacity:0.85;">#{{ $booking->id }}</span></h5>
             <div class="d-flex gap-2 flex-wrap">
+                <a href="{{ $whatsappUrl }}" target="_blank" class="btn btn-sm rounded-3 fw-bold text-white shadow-xs d-inline-flex align-items-center gap-1.5" style="background:#25D366;padding:8px 14px;border:none;">
+                    <i class="bi bi-whatsapp"></i>
+                    <span>{{ __('تواصل عبر واتساب') }}</span>
+                </a>
                 <a href="{{ route('crm.bookings.index') }}" class="btn btn-sm rounded-3 fw-bold" style="background:rgba(255,255,255,0.18);color:#fff;padding:8px 14px;">
                     <i class="bi bi-arrow-right"></i>
                     <span class="d-none d-md-inline">{{ __('العودة للطلبات') }}</span>
@@ -50,7 +69,12 @@
                     </span>
                 @endif
             </span>
-            <span dir="ltr"><i class="bi bi-telephone me-1"></i>{{ $booking->client_phone }}</span>
+            <span dir="ltr">
+                <i class="bi bi-telephone me-1"></i>{{ $booking->client_phone }}
+                <a href="{{ $whatsappUrl }}" target="_blank" class="badge text-white ms-1 text-decoration-none" style="background:#25D366;font-size:11px;padding:3px 7px;vertical-align:middle;" title="{{ __('مراسلة واتساب') }}">
+                    <i class="bi bi-whatsapp"></i> {{ __('واتساب') }}
+                </a>
+            </span>
             <span><i class="bi bi-flag me-1"></i>{{ __('الحالة') }}: <strong>{{ $booking->status_label }}</strong></span>
             <span><i class="bi bi-calendar3 me-1"></i>{{ $booking->created_at->format('d/m/Y H:i') }}</span>
         </div>
@@ -193,9 +217,18 @@
                                 ];
                             @endphp
                             @foreach($orderRows as $label => $value)
-                            <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid var(--crm-border);">
+                            <div class="d-flex justify-content-between py-2 align-items-center" style="border-bottom:1px solid var(--crm-border);">
                                 <span style="font-size:13px;color:var(--crm-text-muted);">{{ $label }}</span>
-                                <span style="font-size:13px;font-weight:700;color:var(--crm-text);" dir="{{ in_array($label, [__('جوال العميل')]) ? 'ltr' : 'inherit' }}">{{ $value }}</span>
+                                @if($label === __('جوال العميل'))
+                                <span style="font-size:13px;font-weight:700;color:var(--crm-text);" dir="ltr">
+                                    {{ $value }}
+                                    <a href="{{ $whatsappUrl }}" target="_blank" class="btn btn-sm py-0 px-2 rounded-2 text-white ms-1" style="background:#25D366;font-size:11px;font-weight:bold;" title="{{ __('مراسلة واتساب') }}">
+                                        <i class="bi bi-whatsapp"></i> {{ __('واتساب') }}
+                                    </a>
+                                </span>
+                                @else
+                                <span style="font-size:13px;font-weight:700;color:var(--crm-text);">{{ $value }}</span>
+                                @endif
                             </div>
                             @endforeach
                             <div class="d-flex justify-content-between py-2 align-items-center">
@@ -217,7 +250,7 @@
                             </div>
                             @endif
 
-                            @if($booking->status === 'received')
+                            @if($booking->status === 'received' || $booking->purchase_price !== null || $booking->authorization_price !== null || $booking->net_commission !== null || $booking->delivered_at)
                             <div class="p-3 mb-3 rounded-4" style="background:#F0FDF4; border:1px solid #BBF7D0;">
                                 <div class="fw-bold text-success mb-2" style="font-size:13.5px;">
                                     <i class="bi bi-check2-circle me-1"></i> {{ __('تفاصيل التسليم والعمولة') }}
@@ -245,66 +278,130 @@
                             </div>
                             @endif
 
-                            @if($booking->calculatorLead && !empty($booking->calculatorLead->details))
-                                @php
-                                    $leadDetails = $booking->calculatorLead->details;
-                                @endphp
-                                <div class="p-3 mb-3 rounded-4" style="background:#F0FDF4; border:1px solid #BBF7D0;">
-                                    <div class="fw-bold text-success mb-2" style="font-size:13.5px;">
-                                        <i class="bi bi-wallet2 me-1"></i> {{ __('تفاصيل الملاءة المالية والائتمانية (حاسبة التمويل)') }}
+                            @php
+                                $leadDetails = $booking->calculatorLead?->details ?? [];
+                                $notes = $booking->notes ?? '';
+                                
+                                $bankName = $booking->financingBank?->name;
+                                if (!$bankName && !empty($leadDetails['preferred_bank_id'])) {
+                                    $bankModel = \App\Models\CalculatorBank::find($leadDetails['preferred_bank_id']);
+                                    $bankName = $bankModel?->name;
+                                }
+                                if (!$bankName && preg_match('/(?:البنك المفضل|بنك التحصيل|البنك الخاص بك|جهة التمويل):\s*([^\|]+)/u', $notes, $m)) {
+                                    $bankName = trim($m[1]);
+                                }
+                                
+                                $salary = $leadDetails['salary'] ?? null;
+                                if (!$salary && preg_match('/الراتب:\s*([0-9\.]+)/u', $notes, $m)) {
+                                    $salary = (float) $m[1];
+                                }
+                                
+                                $obligations = $leadDetails['monthly_obligations'] ?? null;
+                                if ($obligations === null && preg_match('/الالتزامات:\s*([0-9\.]+)/u', $notes, $m)) {
+                                    $obligations = (float) $m[1];
+                                }
+                                
+                                $empTypes = [
+                                    'government' => 'حكومي',
+                                    'semi-government' => 'شبه حكومي',
+                                    'private' => 'قطاع خاص',
+                                    'military' => 'عسكري',
+                                    'retired' => 'متقاعد',
+                                    'freelance' => 'عمل حر',
+                                ];
+                                $employerTypeKey = $leadDetails['employer_type'] ?? null;
+                                if (!$employerTypeKey && preg_match('/جهة العمل:\s*([^\|]+)/u', $notes, $m)) {
+                                    $employerTypeKey = trim($m[1]);
+                                }
+                                $employerTypeLabel = $empTypes[$employerTypeKey] ?? $employerTypeKey;
+                                
+                                $serviceDuration = $leadDetails['years_of_service'] ?? null;
+                                if (!$serviceDuration && preg_match('/مدة الخدمة[^:]*:\s*([^\|]+)/u', $notes, $m)) {
+                                    $serviceDuration = trim($m[1]);
+                                }
+                                
+                                $hasPersonal = $leadDetails['has_personal_loan'] ?? false;
+                                $hasMortgage = $leadDetails['has_mortgage_loan'] ?? false;
+                                $hasSimah = $leadDetails['has_simah_default'] ?? false;
+                                $hasViolations = $leadDetails['has_traffic_violations'] ?? false;
+                                
+                                $preferredColor = $leadDetails['preferred_color'] ?? null;
+                                if (!$preferredColor && preg_match('/اللون المطلوب:\s*([^\|]+)/u', $notes, $m)) {
+                                    $preferredColor = trim($m[1]);
+                                }
+                                
+                                $financeTerm = null;
+                                if (preg_match('/مدة التمويل:\s*([^\|]+)/u', $notes, $m)) {
+                                    $financeTerm = trim($m[1]);
+                                } elseif ($booking->duration_years) {
+                                    $financeTerm = ($booking->duration_years * 12) . ' شهر (' . $booking->duration_years . ' سنوات)';
+                                }
+
+                                $hasSolvencyData = !empty($leadDetails) || $bankName || $salary || $obligations !== null || $employerTypeLabel || $booking->calculator_bank_id;
+                            @endphp
+
+                            @if($hasSolvencyData)
+                            <div class="p-3 mb-3 rounded-4" style="background:#F0FDF4; border:1px solid #BBF7D0;">
+                                <div class="fw-bold text-success mb-2" style="font-size:13.5px;">
+                                    <i class="bi bi-wallet2 me-1"></i> {{ __('تفاصيل الملاءة المالية والائتمانية والبنك المفضل') }}
+                                </div>
+                                
+                                <div class="row g-2 text-start" style="font-family:'Cairo', sans-serif;">
+                                    @if($bankName)
+                                    <div class="col-12 text-success pb-1 border-bottom" style="font-size:12.5px;border-bottom-style:dashed!important;">
+                                        <i class="bi bi-bank me-1"></i><strong>{{ __('جهة التمويل / البنك المفضل') }}:</strong> <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">{{ $bankName }}</span>
+                                    </div>
+                                    @endif
+
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('الراتب الشهري') }}:</strong> {{ $salary ? number_format($salary) . ' ريال' : '—' }}
+                                    </div>
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('الالتزامات الشهريّة') }}:</strong> {{ $obligations !== null ? number_format($obligations) . ' ريال' : '—' }}
+                                    </div>
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('جهة العمل') }}:</strong> {{ $employerTypeLabel ?: '—' }}
+                                    </div>
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('مدة الخدمة') }}:</strong> {{ $serviceDuration ? $serviceDuration . (is_numeric($serviceDuration) ? ' سنة' : '') : '—' }}
                                     </div>
                                     
-                                    <div class="row g-2 text-start" style="font-family:'Cairo', sans-serif;">
-                                        <div class="col-6" style="font-size:12px;color:#166534;">
-                                            <strong>{{ __('الراتب الشهري') }}:</strong> {{ number_format($leadDetails['salary'] ?? 0) }} {{ __('ريال') }}
-                                        </div>
-                                        <div class="col-6" style="font-size:12px;color:#166534;">
-                                            <strong>{{ __('الالتزامات الشهريّة') }}:</strong> {{ number_format($leadDetails['monthly_obligations'] ?? 0) }} {{ __('ريال') }}
-                                        </div>
-                                        <div class="col-6" style="font-size:12px;color:#166534;">
-                                            <strong>{{ __('جهة العمل') }}:</strong> 
-                                            @php
-                                                $empTypes = [
-                                                    'government' => 'حكومي',
-                                                    'semi-government' => 'شبه حكومي',
-                                                    'private' => 'قطاع خاص',
-                                                    'military' => 'عسكري',
-                                                    'retired' => 'متقاعد',
-                                                    'freelance' => 'عمل حر',
-                                                ];
-                                                $empKey = $leadDetails['employer_type'] ?? '';
-                                                $empVal = $empTypes[$empKey] ?? $empKey ?: '—';
-                                            @endphp
-                                            {{ $empVal }}
-                                        </div>
-                                        <div class="col-6" style="font-size:12px;color:#166534;">
-                                            <strong>{{ __('مدة الخدمة') }}:</strong> {{ $leadDetails['years_of_service'] ?? '—' }} {{ __('سنة') }}
-                                        </div>
-                                        
-                                        <div class="col-6" style="font-size:12px;color:#166534;">
-                                            <strong>{{ __('تمويل شخصي') }}:</strong> {{ ($leadDetails['has_personal_loan'] ?? false) ? __('نعم') : __('لا') }}
-                                        </div>
-                                        <div class="col-6" style="font-size:12px;color:#166534;">
-                                            <strong>{{ __('تمويل عقاري') }}:</strong> {{ ($leadDetails['has_mortgage_loan'] ?? false) ? __('نعم') : __('لا') }}
-                                        </div>
-                                        
-                                        <div class="col-6" style="font-size:12px;color:#166534;">
-                                            <strong>{{ __('تعثر في سمة') }}:</strong> 
-                                            <span class="{{ ($leadDetails['has_simah_default'] ?? false) ? 'text-danger fw-bold' : '' }}">
-                                                {{ ($leadDetails['has_simah_default'] ?? false) ? __('نعم') : __('لا') }}
-                                            </span>
-                                        </div>
-                                        <div class="col-6" style="font-size:12px;color:#166534;">
-                                            <strong>{{ __('مخالفات مرورية') }}:</strong> {{ ($leadDetails['has_traffic_violations'] ?? false) ? __('نعم') : __('لا') }}
-                                        </div>
-
-                                        @if(!empty($leadDetails['preferred_color']))
-                                        <div class="col-12 text-success mt-2 pt-2 border-top" style="font-size:12px;border-top-style:dashed!important;">
-                                            <strong>{{ __('اللون المفضل للعميل') }}:</strong> {{ $leadDetails['preferred_color'] }}
-                                        </div>
-                                        @endif
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('تمويل شخصي') }}:</strong> {{ $hasPersonal ? __('نعم') : __('لا') }}
                                     </div>
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('تمويل عقاري') }}:</strong> {{ $hasMortgage ? __('نعم') : __('لا') }}
+                                    </div>
+                                    
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('تعثر في سمة') }}:</strong> 
+                                        <span class="{{ $hasSimah ? 'text-danger fw-bold' : '' }}">
+                                            {{ $hasSimah ? __('نعم') : __('لا') }}
+                                        </span>
+                                    </div>
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('مخالفات مرورية') }}:</strong> {{ $hasViolations ? __('نعم') : __('لا') }}
+                                    </div>
+
+                                    @if($financeTerm)
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('مدة التمويل') }}:</strong> {{ $financeTerm }}
+                                    </div>
+                                    @endif
+
+                                    @if($booking->monthly_installment > 0)
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('القسط المقدر') }}:</strong> {{ number_format($booking->monthly_installment) }} {{ __('ريال') }}
+                                    </div>
+                                    @endif
+
+                                    @if(!empty($preferredColor))
+                                    <div class="col-12 text-success mt-1 pt-1 border-top" style="font-size:12px;border-top-style:dashed!important;">
+                                        <strong>{{ __('اللون المفضل للعميل') }}:</strong> {{ $preferredColor }}
+                                    </div>
+                                    @endif
                                 </div>
+                            </div>
                             @endif
 
                             <div class="d-flex justify-content-between py-2 align-items-center">
@@ -605,6 +702,11 @@
                                         <i class="bi bi-arrow-{{ app()->getLocale()=='ar'?'left':'right' }}"></i>
                                         <span class="status-dot done" style="font-size:11px;">{{ \App\Models\Booking::STATUSES[$note->new_status]['label'] ?? $note->new_status }}</span>
                                     </div>
+                                    @if(!empty($note->note))
+                                    <div class="p-2 my-2 rounded-3" style="background:#F8F9FC; font-size:12.5px; line-height:1.6; color:var(--crm-text); white-space:pre-line; border:1px solid #EAECF0;">
+                                        {{ $note->note }}
+                                    </div>
+                                    @endif
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="badge bg-light text-dark border" style="font-size:11px;font-weight:600;">{{ $note->employee->name ?? __('النظام') }}</span>
                                         <span style="font-size:11px;color:var(--crm-text-muted);"><i class="bi bi-clock me-1"></i>{{ $note->created_at->format('d/m/Y H:i') }} — {{ $note->created_at->diffForHumans() }}</span>
@@ -656,7 +758,7 @@
                             <div class="position-absolute" style="{{ app()->getLocale()=='ar'?'right':'left' }}:-9px;top:4px;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid {{ $note->type === 'call' ? '#12B76A' : 'var(--crm-orange)' }};"></div>
                             <div class="flex-grow-1">
                                 <div class="p-3 rounded-3 border" style="background:#fff;border-color:var(--crm-border)!important;">
-                                    <p class="mb-2" style="font-size:13px;font-weight:600;color:var(--crm-text);">
+                                    <p class="mb-2" style="font-size:13px;font-weight:600;color:var(--crm-text);white-space:pre-line;">
                                         {{ $note->type === 'call' ? '📞 ' : '📌 ' }}{{ $note->note }}
                                     </p>
                                     <div class="d-flex align-items-center gap-2">
