@@ -58,6 +58,7 @@
 
     <script>
         window.__APP_URL__ = "<?php echo e(rtrim(url('/'), '/')); ?>";
+        window.__BASE_PATH__ = "<?php echo e(rtrim(request()->getBasePath(), '/')); ?>";
         window.__API_URL__ = "<?php echo e(rtrim(url('/api'), '/')); ?>/";
         window.__ASSET_URL__ = "<?php echo e(rtrim(asset('/'), '/')); ?>/";
     </script>
