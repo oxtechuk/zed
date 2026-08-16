@@ -18,6 +18,7 @@ import {
     DEFAULT_COLOR_OPTIONS,
 } from "../constants/car-request.constants";
 import { FALLBACK_WHATSAPP_NUMBER } from "../constants/contact.constants";
+import { trackLead } from "../services/analytics";
 
 export function useCarRequest() {
     const { t } = useTranslation();
@@ -266,8 +267,20 @@ export function useCarRequest() {
                 calculator_bank_id: selectedBankId,
             });
 
-            setBookingId(bookingResponse?.data?.booking_id ?? bookingResponse?.booking_id ?? null);
+            const bId = bookingResponse?.data?.booking_id ?? bookingResponse?.booking_id ?? null;
+            setBookingId(bId);
             setIsSuccess(true);
+
+            // Trigger Pixel & GTM Lead Events
+            trackLead({
+                eventId: bookingResponse?.data?.event_id || `booking_${bId || Date.now()}`,
+                carId: selectedCarId !== 9999 ? selectedCarId : undefined,
+                carName: carDetailsText,
+                clientName: formData.fullName,
+                clientPhone: formData.phone,
+                value: activeCar?.current_price ?? activeCar?.cash_price ?? 0,
+            });
+
             toast.success(
                 t(
                     "carRequest.toasts.submitSuccess",

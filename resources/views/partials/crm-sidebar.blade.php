@@ -211,14 +211,26 @@
                 @can('manage-bookings')
                 <li>
                     <a href="{{ route('crm.bookings.index') }}"
-                       class="crm-sub-link {{ (str_starts_with($r,'crm.bookings') && !request()->routeIs('crm.bookings.closed')) ? 'active' : '' }}">
-                        <i class="bi bi-calendar-check"></i> {{ __('الطلبات') }}
+                       class="crm-sub-link {{ (request()->routeIs('crm.bookings.index') || request()->routeIs('crm.bookings.active') || request()->routeIs('crm.bookings.new') || request()->routeIs('crm.bookings.inprogress')) ? 'active' : '' }}">
+                        <i class="bi bi-lightning-charge"></i> {{ __('الطلبات النشطة') }}
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('crm.bookings.pending') }}"
+                       class="crm-sub-link {{ request()->routeIs('crm.bookings.pending') ? 'active' : '' }}">
+                        <i class="bi bi-hourglass-split"></i> {{ __('طلبات قيد الانتظار') }}
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('crm.bookings.delivered') }}"
+                       class="crm-sub-link {{ (request()->routeIs('crm.bookings.delivered') || request()->routeIs('crm.bookings.completed')) ? 'active' : '' }}">
+                        <i class="bi bi-check2-circle"></i> {{ __('طلبات تم التسليم') }}
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('crm.bookings.closed') }}"
                        class="crm-sub-link {{ request()->routeIs('crm.bookings.closed') ? 'active' : '' }}">
-                        <i class="bi bi-folder-x"></i> {{ __('الطلبات المغلقة') }}
+                        <i class="bi bi-folder-x"></i> {{ __('طلبات الإغلاق') }}
                     </a>
                 </li>
                 @endcan

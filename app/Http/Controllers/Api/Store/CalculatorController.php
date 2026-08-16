@@ -9,6 +9,7 @@ use App\Http\Requests\Api\Store\CalculatorLeadRequest;
 use App\Http\Requests\Api\Store\CalculatorOtpSendRequest;
 use App\Http\Requests\Api\Store\CalculatorOtpVerifyRequest;
 use App\Http\Resources\Store\CalculatorBankResource;
+use App\Jobs\SendConversionTrackingJob;
 use App\Models\CalculatorBank;
 use App\Services\Api\Store\CalculatorApiService;
 
@@ -45,8 +46,36 @@ final class CalculatorController extends ApiBaseController
     {
         $lead = $this->calculatorService->saveLead($request->validated());
 
+        $eventId = $request->input('event_id') ?: ('calc_'.$lead->id);
+
+        SendConversionTrackingJob::dispatch(
+            type: 'calculator',
+            userData: [
+                'phone' => $lead->phone,
+                'name' => $lead->name,
+                'email' => $lead->email,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'url' => $request->fullUrl(),
+                'fbp' => $request->cookie('_fbp'),
+                'fbc' => $request->cookie('_fbc'),
+                'ttclid' => $request->cookie('ttclid'),
+                'scid' => $request->cookie('sc_clickid'),
+            ],
+            customData: [
+                'currency' => 'SAR',
+                'value' => (float) ($lead->monthly_installment ?? $lead->salary ?? 0),
+                'content_name' => 'Finance Calculator Lead',
+                'content_category' => 'Calculator',
+            ],
+            eventId: $eventId,
+        );
+
         return $this->respondCreated(
-            ['lead_id' => $lead->id],
+            [
+                'lead_id' => $lead->id,
+                'event_id' => $eventId,
+            ],
             'Lead saved successfully'
         );
     }

@@ -53,8 +53,11 @@ const REVIEW_VIDEOS: IStaticReviewVideo[] = [
 export default function MediaReviewsSectionvid({
     title,
     className = "",
+    videos,
 }: IMediaReviewsSectionVidProps) {
     const { t, i18n } = useTranslation();
+
+    const displayVideos = videos && videos.length > 0 ? videos : REVIEW_VIDEOS;
 
     const direction = i18n.dir();
     const isRTL = direction === "rtl";
@@ -145,7 +148,7 @@ export default function MediaReviewsSectionvid({
                             "[&::-webkit-scrollbar]:hidden",
                         ].join(" ")}
                     >
-                        {REVIEW_VIDEOS.map((video, index) => (
+                        {displayVideos.map((video, index) => (
                             <MaskedVideoCard
                                 key={video.id}
                                 video={video}

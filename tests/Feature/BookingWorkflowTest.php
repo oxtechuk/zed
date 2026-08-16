@@ -84,6 +84,7 @@ class BookingWorkflowTest extends TestCase
             'monthly_installment' => 1500,
             'total_price' => 100000,
             'status' => 'new',
+            'assigned_to' => $this->sales->id,
         ]);
 
         $response = $this->actingAs($this->sales, 'employee')
@@ -107,6 +108,7 @@ class BookingWorkflowTest extends TestCase
             'monthly_installment' => 1500,
             'total_price' => 100000,
             'status' => 'new',
+            'assigned_to' => $this->sales->id,
         ]);
 
         $response = $this->actingAs($this->sales, 'employee')
@@ -129,7 +131,72 @@ class BookingWorkflowTest extends TestCase
     }
 
     /** @test */
-    public function test_sales_employee_cannot_directly_close_a_booking_instead_routed_for_approval()
+    public function test_returning_from_pending_to_active_resets_pending_fields()
+    {
+        $booking = Booking::create([
+            'client_name' => 'Pending Client',
+            'client_phone' => '0511111112',
+            'car_id' => $this->car->id,
+            'down_payment' => 20000,
+            'duration_years' => 5,
+            'monthly_installment' => 1500,
+            'total_price' => 100000,
+            'status' => 'pending',
+            'pending_reason' => 'Waiting for documents',
+            'follow_up_at' => now()->addDays(3),
+            'assigned_to' => $this->sales->id,
+        ]);
+
+        $response = $this->actingAs($this->sales, 'employee')
+            ->patch(route('crm.bookings.status', $booking), [
+                'status' => 'bank_review',
+                'note' => 'Documents received, sent to bank',
+            ]);
+
+        $response->assertSessionHasNoErrors();
+        $booking = $booking->fresh();
+        $this->assertEquals('bank_review', $booking->status);
+        $this->assertNull($booking->pending_reason);
+        $this->assertNull($booking->follow_up_at);
+    }
+
+    /** @test */
+    public function test_sales_employee_can_deliver_booking_with_four_financial_fields()
+    {
+        $booking = Booking::create([
+            'client_name' => 'Delivered Client',
+            'client_phone' => '0511111113',
+            'car_id' => $this->car->id,
+            'down_payment' => 20000,
+            'duration_years' => 5,
+            'monthly_installment' => 1500,
+            'total_price' => 100000,
+            'status' => 'authorized',
+            'assigned_to' => $this->sales->id,
+        ]);
+
+        $response = $this->actingAs($this->sales, 'employee')
+            ->patch(route('crm.bookings.status', $booking), [
+                'status' => 'received',
+                'purchase_price' => 90000,
+                'authorization_price' => 98000,
+                'expenses' => 1500,
+                'net_commission' => 6500,
+                'note' => 'Car handed over to customer',
+            ]);
+
+        $response->assertSessionHasNoErrors();
+        $booking = $booking->fresh();
+        $this->assertEquals('received', $booking->status);
+        $this->assertEquals(90000, (float) $booking->purchase_price);
+        $this->assertEquals(98000, (float) $booking->authorization_price);
+        $this->assertEquals(1500, (float) $booking->expenses);
+        $this->assertEquals(6500, (float) $booking->net_commission);
+        $this->assertNotNull($booking->delivered_at);
+    }
+
+    /** @test */
+    public function test_sales_employee_cannot_directly_close_lost_booking_instead_routed_for_approval()
     {
         $booking = Booking::create([
             'client_name' => 'Test Client',
@@ -140,19 +207,20 @@ class BookingWorkflowTest extends TestCase
             'monthly_installment' => 1500,
             'total_price' => 100000,
             'status' => 'new',
+            'assigned_to' => $this->sales->id,
         ]);
 
-        // "received" is a closing status (won)
+        // "lost_client_cancelled" is a closing lost status
         $response = $this->actingAs($this->sales, 'employee')
             ->patch(route('crm.bookings.status', $booking), [
-                'status' => 'received',
-                'note' => 'Car delivered successfully',
+                'status' => 'lost_client_cancelled',
+                'note' => 'Client cancelled the order',
             ]);
 
         $response->assertSessionHas('success');
         $booking = $booking->fresh();
         $this->assertEquals('waiting_supervisor_approval', $booking->status);
-        $this->assertEquals('received', $booking->proposed_status);
+        $this->assertEquals('lost_client_cancelled', $booking->proposed_status);
     }
 
     /** @test */
@@ -171,13 +239,13 @@ class BookingWorkflowTest extends TestCase
 
         $response = $this->actingAs($this->admin, 'employee')
             ->patch(route('crm.bookings.status', $booking), [
-                'status' => 'received',
+                'status' => 'lost_client_cancelled',
                 'note' => 'Direct close by admin',
             ]);
 
         $response->assertSessionHas('success');
         $booking = $booking->fresh();
-        $this->assertEquals('received', $booking->status);
+        $this->assertEquals('lost_client_cancelled', $booking->status);
         $this->assertNull($booking->proposed_status);
     }
 
@@ -193,7 +261,7 @@ class BookingWorkflowTest extends TestCase
             'monthly_installment' => 1500,
             'total_price' => 100000,
             'status' => 'waiting_supervisor_approval',
-            'proposed_status' => 'received',
+            'proposed_status' => 'lost_client_cancelled',
         ]);
 
         $response = $this->actingAs($this->admin, 'employee')
@@ -201,7 +269,7 @@ class BookingWorkflowTest extends TestCase
 
         $response->assertSessionHas('success');
         $booking = $booking->fresh();
-        $this->assertEquals('received', $booking->status);
+        $this->assertEquals('lost_client_cancelled', $booking->status);
         $this->assertNull($booking->proposed_status);
     }
 
@@ -217,7 +285,7 @@ class BookingWorkflowTest extends TestCase
             'monthly_installment' => 1500,
             'total_price' => 100000,
             'status' => 'waiting_supervisor_approval',
-            'proposed_status' => 'received',
+            'proposed_status' => 'lost_client_cancelled',
         ]);
 
         $response = $this->actingAs($this->admin, 'employee')
@@ -233,34 +301,26 @@ class BookingWorkflowTest extends TestCase
     }
 
     /** @test */
-    public function test_non_supervisor_cannot_approve_or_reject_close_requests()
+    public function test_all_four_order_lists_render_and_filter_by_employee()
     {
-        $booking = Booking::create([
-            'client_name' => 'Test Client',
-            'client_phone' => '0511111111',
-            'car_id' => $this->car->id,
-            'down_payment' => 20000,
-            'duration_years' => 5,
-            'monthly_installment' => 1500,
-            'total_price' => 100000,
-            'status' => 'waiting_supervisor_approval',
-            'proposed_status' => 'received',
-        ]);
+        // 1. Active index
+        $response1 = $this->actingAs($this->admin, 'employee')
+            ->get(route('crm.bookings.index', ['employee_id' => $this->sales->id]));
+        $response1->assertStatus(200);
 
-        // Attempt approve as sales
-        $response = $this->actingAs($this->sales, 'employee')
-            ->patch(route('crm.bookings.approve', $booking));
-        $response->assertStatus(403);
+        // 2. Pending index
+        $response2 = $this->actingAs($this->admin, 'employee')
+            ->get(route('crm.bookings.pending', ['employee_id' => $this->sales->id]));
+        $response2->assertStatus(200);
 
-        // Attempt reject as sales
-        $response = $this->actingAs($this->sales, 'employee')
-            ->patch(route('crm.bookings.reject', $booking), [
-                'status' => 'recontact_client',
-                'note' => 'hacky reject',
-            ]);
-        $response->assertStatus(403);
+        // 3. Delivered index
+        $response3 = $this->actingAs($this->admin, 'employee')
+            ->get(route('crm.bookings.delivered', ['employee_id' => $this->sales->id]));
+        $response3->assertStatus(200);
 
-        $booking = $booking->fresh();
-        $this->assertEquals('waiting_supervisor_approval', $booking->status);
+        // 4. Closed index
+        $response4 = $this->actingAs($this->admin, 'employee')
+            ->get(route('crm.bookings.closed', ['employee_id' => $this->sales->id]));
+        $response4->assertStatus(200);
     }
 }

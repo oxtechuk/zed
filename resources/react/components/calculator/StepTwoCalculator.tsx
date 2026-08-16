@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { calculateFinance, submitCalculatorLead } from "../../services/api";
 import { formatPrice } from "../../utils/format";
 import { useSettingsStore } from "../../store/settings.store";
+import { trackCalculatorLead } from "../../services/analytics";
 import type { ICalculateData } from "../../interfaces/ICalculatorTypes";
 import type { IStepTwoCalculatorProps } from "../../interfaces/IStepTwoCalculatorProps";
 import CalculatorResultCard from "./CalculatorResultCard";
@@ -69,6 +70,14 @@ export default function StepTwoCalculator({
                 }),
                 preferred_bank_id: 2,
             });
+
+            // Trigger Pixel & GTM Calculator Lead events
+            trackCalculatorLead({
+                carName: selectedCar ? `${selectedCar.brand?.name || ''} ${selectedCar.name}` : undefined,
+                salary: Number(salary),
+                monthlyInstallment: monthlyPayment,
+            });
+
             onSubmitSuccess();
         } catch (error: any) {
             console.error("Submission error:", error);

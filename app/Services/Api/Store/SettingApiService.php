@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Api\Store;
 
 use App\Services\Cache\BaseCacheService;
-use Illuminate\Support\Facades\Storage;
 
 final class SettingApiService
 {
@@ -198,6 +197,6 @@ final class SettingApiService
             return $path;
         }
 
-        return Storage::disk('public')->url($path);
+        return asset('storage/'.ltrim($path, '/'));
     }
 }

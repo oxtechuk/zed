@@ -1,5 +1,5 @@
 export interface IStaticReviewVideo {
-  id: number;
+  id: number | string;
   src: string;
   poster?: string;
 }

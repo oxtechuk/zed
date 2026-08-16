@@ -225,15 +225,29 @@
                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage-bookings')): ?>
                 <li>
                     <a href="<?php echo e(route('crm.bookings.index')); ?>"
-                       class="crm-sub-link <?php echo e((str_starts_with($r,'crm.bookings') && !request()->routeIs('crm.bookings.closed')) ? 'active' : ''); ?>">
-                        <i class="bi bi-calendar-check"></i> <?php echo e(__('الطلبات')); ?>
+                       class="crm-sub-link <?php echo e((request()->routeIs('crm.bookings.index') || request()->routeIs('crm.bookings.active') || request()->routeIs('crm.bookings.new') || request()->routeIs('crm.bookings.inprogress')) ? 'active' : ''); ?>">
+                        <i class="bi bi-lightning-charge"></i> <?php echo e(__('الطلبات النشطة')); ?>
+
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo e(route('crm.bookings.pending')); ?>"
+                       class="crm-sub-link <?php echo e(request()->routeIs('crm.bookings.pending') ? 'active' : ''); ?>">
+                        <i class="bi bi-hourglass-split"></i> <?php echo e(__('طلبات قيد الانتظار')); ?>
+
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo e(route('crm.bookings.delivered')); ?>"
+                       class="crm-sub-link <?php echo e((request()->routeIs('crm.bookings.delivered') || request()->routeIs('crm.bookings.completed')) ? 'active' : ''); ?>">
+                        <i class="bi bi-check2-circle"></i> <?php echo e(__('طلبات تم التسليم')); ?>
 
                     </a>
                 </li>
                 <li>
                     <a href="<?php echo e(route('crm.bookings.closed')); ?>"
                        class="crm-sub-link <?php echo e(request()->routeIs('crm.bookings.closed') ? 'active' : ''); ?>">
-                        <i class="bi bi-folder-x"></i> <?php echo e(__('الطلبات المغلقة')); ?>
+                        <i class="bi bi-folder-x"></i> <?php echo e(__('طلبات الإغلاق')); ?>
 
                     </a>
                 </li>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Employee;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,8 +22,11 @@ class DashboardController extends Controller
         $search = trim((string) $request->get('search'));
         $sort = $request->get('sort', 'priority') === 'recent' ? 'recent' : 'priority';
 
-        $baseBookings = Booking::with('car.brand')
-            ->where('assigned_to', $employee->id)
+        $activeStatuses = ['new', 'contacted_no_answer', 'recontact_client', 'waiting_documents', 'bank_review', 'approved', 'authorized', 'contacted', 'interested'];
+
+        $baseBookings = Booking::with(['car.brand', 'employee'])
+            ->when(! $isAdmin, fn (Builder $q) => $q->where('assigned_to', $employee->id))
+            ->when($isAdmin && $request->filled('employee_id'), fn (Builder $q) => $q->where('assigned_to', $request->employee_id))
             ->when($from, fn (Builder $q) => $q->whereBetween('created_at', [$from, $to]))
             ->when($search !== '', function (Builder $q) use ($search) {
                 $q->where(function (Builder $q) use ($search) {
@@ -34,14 +38,17 @@ class DashboardController extends Controller
 
         $stats = [
             'total' => (clone $baseBookings)->count(),
-            'open' => (clone $baseBookings)->whereIn('status', ['new', 'contacted', 'interested'])->count(),
-            'closed' => (clone $baseBookings)->where('status', 'rejected')->count(),
-            'completed' => (clone $baseBookings)->where('status', 'sold')->count(),
+            'open' => (clone $baseBookings)->whereIn('status', $activeStatuses)->count(),
+            'pending' => (clone $baseBookings)->where('status', 'pending')->count(),
+            'closed' => (clone $baseBookings)->where(function (Builder $q) {
+                $q->where('status', 'like', 'lost_%')->orWhere('status', 'rejected');
+            })->count(),
+            'completed' => (clone $baseBookings)->whereIn('status', ['received', 'sold', 'done'])->count(),
         ];
 
         $requestsQuery = clone $baseBookings;
         if ($sort === 'priority') {
-            $requestsQuery->orderByRaw("FIELD(status,'new','interested','contacted','sold','rejected')")->latest();
+            $requestsQuery->orderByRaw("FIELD(status,'new','pending','bank_review','approved','authorized','received')")->latest();
         } else {
             $requestsQuery->latest('updated_at');
         }
@@ -72,23 +79,25 @@ class DashboardController extends Controller
                 ->orderBy('due_date')
                 ->limit(5)
                 ->get(),
-            'follow_ups' => (clone $baseBookings)->whereIn('status', ['new', 'contacted', 'interested'])
+            'follow_ups' => (clone $baseBookings)->whereIn('status', $activeStatuses)
                 ->where(function (Builder $q) {
                     $q->whereNull('last_contacted_at')->orWhere('last_contacted_at', '<=', now()->subDays(2));
                 })
                 ->latest('created_at')
                 ->limit(5)
                 ->get(),
-            'approvals' => (clone $baseBookings)->where('status', 'sold')
+            'approvals' => (clone $baseBookings)->whereIn('status', ['received', 'sold'])
                 ->whereDoesntHave('documents')
                 ->latest('updated_at')
                 ->limit(5)
                 ->get(),
         ];
 
+        $employees = $isAdmin ? Employee::where('is_active', true)->orderBy('name')->get() : collect();
+
         return view('crm.dashboard', compact(
             'stats', 'requests', 'tasksToday', 'tasksOverdue', 'tasksUpcoming',
-            'alerts', 'range', 'from', 'to', 'search', 'sort'
+            'alerts', 'range', 'from', 'to', 'search', 'sort', 'isAdmin', 'employees'
         ));
     }
 

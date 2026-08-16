@@ -6,7 +6,6 @@ namespace App\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 
 final class AsImageUrl implements CastsAttributes
 {
@@ -19,7 +18,7 @@ final class AsImageUrl implements CastsAttributes
             return $value;
         }
 
-        return Storage::disk('public')->url($value);
+        return asset('storage/'.ltrim($value, '/'));
     }
 
     public function set(Model $model, string $key, mixed $value, array $attributes): mixed

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ import { getFinanceSettings } from "../services/api";
 import { getImageUrl, APP_IMAGES } from "../constants/app-images";
 import { formatPrice } from "../utils/format";
 import { useSEO } from "../utils/useSEO";
+import { trackViewContent } from "../services/analytics";
 import type { ICarItem } from "../types/home.types";
 import type { ICarCardProps } from "../interfaces/ICarCardProps";
 
@@ -80,6 +81,17 @@ export default function CarDetailsPage() {
     queryFn: getFinanceSettings,
     staleTime: 5 * 60 * 1000,
   });
+
+  useEffect(() => {
+    if (car) {
+      trackViewContent({
+        id: car.id,
+        name: car.name,
+        brand: car.brand?.name,
+        price: car.current_price ?? car.cash_price ?? 0,
+      });
+    }
+  }, [car?.id]);
 
 
   const relatedCars = useMemo(

@@ -13,10 +13,19 @@ export default function AboutPage() {
         stats,
         storySection,
         partners,
+        mediaTestimonials,
         textTestimonials,
         t,
         isLoading,
     } = useAboutPageData();
+
+    const dynamicVideos = mediaTestimonials
+        .filter((item) => Boolean(item.reviewVideo))
+        .map((item) => ({
+            id: item.id,
+            src: item.reviewVideo!,
+            poster: item.reviewImage,
+        }));
 
     if (isLoading) {
         return <AboutPageSkeleton />;
@@ -42,7 +51,9 @@ export default function AboutPage() {
             />
 
             <AboutStorySection {...storySection} />
-            <MediaReviewsSectionvid />
+            <MediaReviewsSectionvid
+                videos={dynamicVideos.length > 0 ? dynamicVideos : undefined}
+            />
 
             <PartnersSection
                 eyebrow={

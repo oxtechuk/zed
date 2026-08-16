@@ -217,6 +217,34 @@
                             </div>
                             @endif
 
+                            @if($booking->status === 'received')
+                            <div class="p-3 mb-3 rounded-4" style="background:#F0FDF4; border:1px solid #BBF7D0;">
+                                <div class="fw-bold text-success mb-2" style="font-size:13.5px;">
+                                    <i class="bi bi-check2-circle me-1"></i> {{ __('تفاصيل التسليم والعمولة') }}
+                                </div>
+                                <div class="row g-2 text-start" style="font-family:'Cairo', sans-serif;">
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('سعر شراء السيارة') }}:</strong> {{ $booking->purchase_price ? number_format($booking->purchase_price, 2) . ' ر.س' : '—' }}
+                                    </div>
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('سعر تعميد السيارة') }}:</strong> {{ $booking->authorization_price ? number_format($booking->authorization_price, 2) . ' ر.س' : '—' }}
+                                    </div>
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('المصروفات') }}:</strong> {{ $booking->expenses ? number_format($booking->expenses, 2) . ' ر.س' : '0.00 ر.س' }}
+                                    </div>
+                                    <div class="col-6" style="font-size:12px;color:#166534;">
+                                        <strong>{{ __('صافي عمولة الشركة') }}:</strong> 
+                                        <span class="badge bg-success text-white fw-bold">{{ $booking->net_commission !== null ? number_format($booking->net_commission, 2) . ' ر.س' : '—' }}</span>
+                                    </div>
+                                    @if($booking->delivered_at)
+                                    <div class="col-12 text-muted mt-1 pt-1 border-top" style="font-size:11px;">
+                                        <strong>{{ __('تاريخ التسليم') }}:</strong> {{ $booking->delivered_at->format('d/m/Y H:i') }} ({{ $booking->delivered_at->diffForHumans() }})
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
+
                             @if($booking->calculatorLead && !empty($booking->calculatorLead->details))
                                 @php
                                     $leadDetails = $booking->calculatorLead->details;
@@ -916,6 +944,9 @@
     @endcan
 
 </div>
+
+@include('crm.bookings.partials.status-modals')
+
 @endsection
 
 @section('scripts')
@@ -942,19 +973,12 @@ document.addEventListener('DOMContentLoaded', function() {
         statusForm.addEventListener('submit', function(e) {
             const selectedOpt = statusSelect.options[statusSelect.selectedIndex];
             const targetStatus = statusSelect.value;
-            const isClose = selectedOpt.getAttribute('data-close') === '1';
+            const isClose = selectedOpt.getAttribute('data-close') === '1' || targetStatus.startsWith('lost_');
             const isAdmin = {{ auth('employee')->user()->isAdmin() ? 'true' : 'false' }};
 
-            if (targetStatus === 'pending') {
+            if (targetStatus === 'pending' || targetStatus === 'received' || (isClose && !isAdmin)) {
                 e.preventDefault();
-                const modal = new bootstrap.Modal(document.getElementById('pendingStatusModal'));
-                modal.show();
-            } else if (isClose && !isAdmin) {
-                e.preventDefault();
-                document.getElementById('requestCloseTargetStatus').value = targetStatus;
-                document.getElementById('requestCloseTargetLabel').value = selectedOpt.text;
-                const modal = new bootstrap.Modal(document.getElementById('requestCloseModal'));
-                modal.show();
+                handleBookingStatusSelectChange(statusSelect, {{ $booking->id }}, '{{ route('crm.bookings.status', $booking) }}', isAdmin);
             }
         });
     }

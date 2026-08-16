@@ -1,53 +1,59 @@
-import { API_ORIGIN } from "./axios.constants";
-
-const STORAGE_PREFIX = `${API_ORIGIN}/storage/`;
+export const getAssetBase = (): string => {
+  if (typeof window !== "undefined" && (window as any).__ASSET_URL__) {
+    const assetUrl = (window as any).__ASSET_URL__;
+    return assetUrl.endsWith("/") ? assetUrl : `${assetUrl}/`;
+  }
+  const base = import.meta.env.BASE_URL || "/";
+  return base.endsWith("/") ? base : `${base}/`;
+};
 
 export function getImageUrl(path: string | null): string {
   if (!path) return "";
   if (path.startsWith("http://") || path.startsWith("https://")) {
     try {
       const url = new URL(path);
-      // Replace stored origin with current window origin for storage files
-      if (url.pathname.startsWith("/storage/")) {
-        return `${window.location.origin}${url.pathname}`;
+      const storageIdx = url.pathname.indexOf("/storage/");
+      if (storageIdx !== -1) {
+        return `${getAssetBase()}${url.pathname.substring(storageIdx + 1)}`;
       }
     } catch {
       // ignore invalid URLs
     }
     return path.replace(/([^:]\/)\//g, "$1");
   }
-  return `${STORAGE_PREFIX}${path}`;
+  const cleanPath = path.startsWith("/") ? path.slice(1) : path;
+  if (cleanPath.startsWith("storage/")) {
+    return `${getAssetBase()}${cleanPath}`;
+  }
+  return `${getAssetBase()}storage/${cleanPath}`;
 }
 
-const base = import.meta.env.BASE_URL;
-const cleanBase = base.endsWith("/") ? base : `${base}/`;
-
 export const APP_IMAGES = {
-  LOGO: `${cleanBase}images/logo_without_bg.png`,
-  Logo_COLORED:`${cleanBase}images/logo-colored.png`,
-  HOME_HERO: `${cleanBase}images/home_hero.png`,
-  EID: `${cleanBase}images/eid.png`,
-  CAR1: `${cleanBase}images/car1.png`,
-  CAR_PLACEHOLDER: `${cleanBase}images/car-placeholder.png`,
-  BRAND_PLACEHOLDER: `${cleanBase}images/brand-placeholder.svg`,
-  RIYAL: `${cleanBase}images/riyal.svg`,
-  CAR_ICON: `${cleanBase}images/car icons/car.svg`,
-  FUEL_ICON: `${cleanBase}images/car icons/fuel.svg`,
-  GEARBOX_ICON: `${cleanBase}images/car icons/tabler_manual-gearbox.svg`,
-  SEAT_ICON: `${cleanBase}images/car icons/seat.svg`,
-  BG_IMAGE: `${cleanBase}images/offers-section-bg.png`,
-  OFFERS_SECTION_BG: `${cleanBase}images/offers-section-bg.png`,
-  ALL_CARS_OFFER_IMAGE: `${cleanBase}images/all-cars-offer-page.png`,
-  CONTACT_US_HERO: `${cleanBase}images/contact-us-hero.png`,
-  COMPARE_IMAGE: `${cleanBase}images/compre-image.png`,
-  OFFER1: `${cleanBase}images/offer1.png`,
-  OFFER_PLACEHOLDER: `${cleanBase}images/offer1.png`,
-  BLOG_PLACEHOLDER: `${cleanBase}images/blog.png`,
-  BLOG_AUTHOR_PLACEHOLDER: `${cleanBase}images/blogs/author.png`,
-  AVATAR_PLACEHOLDER: `${cleanBase}images/avatar.png`,
-  LOCATION_PLACEHOLDER: `${cleanBase}images/locations/riyadh.png`,
-  SOCIAL_TIKTOK: `${cleanBase}images/social/tiktok.png`,
-  SOCIAL_FACEBOOK: `${cleanBase}images/social/facebook.png`,
-  SOCIAL_INSTAGRAM: `${cleanBase}images/social/instagram.png`,
-  VID_MUSK_POSTER: `${cleanBase}images/vidmusk.png`,
+  get LOGO() { return `${getAssetBase()}images/logo_without_bg.png`; },
+  get Logo_COLORED() { return `${getAssetBase()}images/logo-colored.png`; },
+  get HOME_HERO() { return `${getAssetBase()}images/home_hero.png`; },
+  get EID() { return `${getAssetBase()}images/eid.png`; },
+  get CAR1() { return `${getAssetBase()}images/car1.png`; },
+  get CAR_PLACEHOLDER() { return `${getAssetBase()}images/car-placeholder.png`; },
+  get BRAND_PLACEHOLDER() { return `${getAssetBase()}images/brand-placeholder.svg`; },
+  get RIYAL() { return `${getAssetBase()}images/riyal.svg`; },
+  get CAR_ICON() { return `${getAssetBase()}images/car icons/car.svg`; },
+  get FUEL_ICON() { return `${getAssetBase()}images/car icons/fuel.svg`; },
+  get GEARBOX_ICON() { return `${getAssetBase()}images/car icons/tabler_manual-gearbox.svg`; },
+  get SEAT_ICON() { return `${getAssetBase()}images/car icons/seat.svg`; },
+  get BG_IMAGE() { return `${getAssetBase()}images/offers-section-bg.png`; },
+  get OFFERS_SECTION_BG() { return `${getAssetBase()}images/offers-section-bg.png`; },
+  get ALL_CARS_OFFER_IMAGE() { return `${getAssetBase()}images/all-cars-offer-page.png`; },
+  get CONTACT_US_HERO() { return `${getAssetBase()}images/contact-us-hero.png`; },
+  get COMPARE_IMAGE() { return `${getAssetBase()}images/compre-image.png`; },
+  get OFFER1() { return `${getAssetBase()}images/offer1.png`; },
+  get OFFER_PLACEHOLDER() { return `${getAssetBase()}images/offer1.png`; },
+  get BLOG_PLACEHOLDER() { return `${getAssetBase()}images/blog.png`; },
+  get BLOG_AUTHOR_PLACEHOLDER() { return `${getAssetBase()}images/blogs/author.png`; },
+  get AVATAR_PLACEHOLDER() { return `${getAssetBase()}images/avatar.png`; },
+  get LOCATION_PLACEHOLDER() { return `${getAssetBase()}images/locations/riyadh.png`; },
+  get SOCIAL_TIKTOK() { return `${getAssetBase()}images/social/tiktok.png`; },
+  get SOCIAL_FACEBOOK() { return `${getAssetBase()}images/social/facebook.png`; },
+  get SOCIAL_INSTAGRAM() { return `${getAssetBase()}images/social/instagram.png`; },
+  get VID_MUSK_POSTER() { return `${getAssetBase()}images/vidmusk.png`; },
 } as const;

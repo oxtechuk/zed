@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Store;
 use App\Http\Api\Response\Builder\ApiResponseBuilder;
 use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Requests\Api\Store\BookingRequest;
+use App\Jobs\SendConversionTrackingJob;
 use App\Models\Car;
 use App\Services\Api\Store\BookingApiService;
 use App\Services\Api\Store\Data\BookingData;
@@ -48,8 +49,34 @@ final class BookingController extends ApiBaseController
 
             $booking = $this->bookingService->create($data);
 
+            $eventId = $request->input('event_id') ?: ('booking_'.$booking->id);
+
+            SendConversionTrackingJob::dispatch(
+                type: 'booking',
+                userData: [
+                    'phone' => $booking->client_phone,
+                    'name' => $booking->client_name,
+                    'email' => $booking->client_email,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'url' => $request->fullUrl(),
+                    'fbp' => $request->cookie('_fbp'),
+                    'fbc' => $request->cookie('_fbc'),
+                    'ttclid' => $request->cookie('ttclid'),
+                    'scid' => $request->cookie('sc_clickid'),
+                ],
+                customData: [
+                    'currency' => 'SAR',
+                    'value' => (float) ($booking->total_price ?: $cashPrice),
+                    'content_name' => $car->name,
+                    'content_category' => 'Car Request',
+                ],
+                eventId: $eventId,
+            );
+
             return $this->respondCreated([
                 'booking_id' => $booking->id,
+                'event_id' => $eventId,
                 'client_name' => $booking->client_name,
                 'client_phone' => $booking->client_phone,
                 'car_id' => $booking->car_id,

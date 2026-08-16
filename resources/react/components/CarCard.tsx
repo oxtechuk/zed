@@ -63,7 +63,7 @@ export default function CarCard({
             </div>
 
             {/* Image Area */}
-            <div className="relative h-[208px] overflow-hidden">
+            <div className="relative h-[240px] overflow-hidden">
                 <LazyImg
                     src={image}
                     alt={`${brand} ${name}`}

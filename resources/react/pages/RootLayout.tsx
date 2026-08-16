@@ -14,6 +14,7 @@ import Footer from "../components/Footer";
 import MobileBottomNav from "../components/MobileBottomNav";
 import ScrollToTop from "../components/ScrollToTop";
 import WhatsAppWidget from "../components/WhatsAppWidget";
+import AnalyticsTracker from "../components/AnalyticsTracker";
 
 export default function RootLayout() {
   const { t } = useTranslation();
@@ -49,6 +50,7 @@ export default function RootLayout() {
 
   return (
     <div className="min-h-screen bg-[#F0F2F5]">
+      <AnalyticsTracker />
       <ScrollToTop />
       <ToastContainer
         position="top-center"

@@ -51,32 +51,52 @@
 
     {{-- ===== شريط الإحصائيات العلوي ===== --}}
     <div class="d-flex gap-3 mb-4 pb-1" style="overflow-x:auto;">
-        <div class="crm-stat-new flex-shrink-0" style="min-width:220px;">
-            <div class="stat-icon blue"><i class="bi bi-bag"></i></div>
-            <div class="stat-lbl">{{ __('إجمالي الطلبات') }}</div>
-            <div class="stat-val">{{ number_format($stats['total']) }}</div>
-        </div>
-        <div class="crm-stat-new flex-shrink-0" style="min-width:220px;">
+        <a href="{{ route('crm.bookings.index') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:210px;">
+            <div class="stat-icon blue"><i class="bi bi-lightning-charge"></i></div>
+            <div class="stat-lbl">{{ __('الطلبات النشطة (Active)') }}</div>
+            <div class="stat-val text-primary">{{ number_format($stats['open']) }}</div>
+        </a>
+        <a href="{{ route('crm.bookings.pending') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:210px;">
             <div class="stat-icon orange"><i class="bi bi-hourglass-split"></i></div>
-            <div class="stat-lbl">{{ __('الطلبات المفتوحة') }}</div>
-            <div class="stat-val">{{ number_format($stats['open']) }}</div>
-        </div>
-        <div class="crm-stat-new flex-shrink-0" style="min-width:220px;">
-            <div class="stat-icon red"><i class="bi bi-x-circle"></i></div>
+            <div class="stat-lbl">{{ __('قيد الانتظار') }}</div>
+            <div class="stat-val text-warning-dark">{{ number_format($stats['pending']) }}</div>
+        </a>
+        <a href="{{ route('crm.bookings.delivered') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:210px;">
+            <div class="stat-icon green"><i class="bi bi-check2-circle"></i></div>
+            <div class="stat-lbl">{{ __('تم التسليم (المستلمة)') }}</div>
+            <div class="stat-val text-success">{{ number_format($stats['completed']) }}</div>
+        </a>
+        <a href="{{ route('crm.bookings.closed') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:210px;">
+            <div class="stat-icon red"><i class="bi bi-folder-x"></i></div>
             <div class="stat-lbl">{{ __('الطلبات المغلقة') }}</div>
-            <div class="stat-val">{{ number_format($stats['closed']) }}</div>
-        </div>
-        <div class="crm-stat-new flex-shrink-0" style="min-width:220px;">
-            <div class="stat-icon green"><i class="bi bi-check-circle"></i></div>
-            <div class="stat-lbl">{{ __('الطلبات المكتملة (تم الاستلام)') }}</div>
-            <div class="stat-val">{{ number_format($stats['completed']) }}</div>
-        </div>
+            <div class="stat-val text-danger">{{ number_format($stats['closed']) }}</div>
+        </a>
+        <a href="{{ route('crm.bookings.index') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:210px;">
+            <div class="stat-icon purple"><i class="bi bi-collection"></i></div>
+            <div class="stat-lbl">{{ __('إجمالي الطلبات') }}</div>
+            <div class="stat-val" style="color:#7C3AED;">{{ number_format($stats['total']) }}</div>
+        </a>
     </div>
 
     {{-- ===== البحث والفلترة ===== --}}
     <div class="card border-0 shadow-sm rounded-4 mb-4" style="border:1px solid var(--crm-border)!important;">
         <div class="card-body p-4">
             <form action="{{ route('crm.dashboard') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
+                {{-- فلتر الموظف للأدمن --}}
+                @if($isAdmin && $employees->isNotEmpty())
+                <div style="min-width:180px;">
+                    <select name="employee_id" class="form-select form-select-sm" style="border:1px solid var(--crm-border);border-radius:8px;padding:6px 12px;font-size:13px;" onchange="this.form.submit()">
+                        <option value="">{{ __('الموظف — جميع الموظفين') }}</option>
+                        @foreach($employees as $emp)
+                            <option value="{{ $emp->id }}" {{ request('employee_id') == $emp->id ? 'selected' : '' }}>
+                                {{ $emp->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <span class="mx-1" style="width:1px;height:24px;background:var(--crm-border);display:inline-block;"></span>
+                @endif
+
                 {{-- فترات سريعة --}}
                 @foreach($rangeLinks as $key => $label)
                     <a href="{{ route('crm.dashboard', $qs(['range' => $key, 'from' => null, 'to' => null])) }}"

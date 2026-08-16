@@ -14,31 +14,43 @@ use App\Notifications\NewBookingNotification;
 use App\Services\TwilioWhatsAppService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class BookingController extends Controller
 {
+    /**
+     * Active bookings list (مسار المبيعات النشط)
+     */
     public function index(Request $request)
     {
         $sort = $request->input('sort', 'newest');
-        $isSuperAdmin = auth()->user()->hasRole('super-admin');
         $isAdmin = auth('employee')->user()->isAdmin();
 
-        // Base scoped query (per employee or all for admin)
-        $scopedQuery = Booking::query();
+        // Active pipeline statuses (excludes pending, received, lost statuses)
+        $activeStatuses = ['new', 'contacted_no_answer', 'recontact_client', 'waiting_documents', 'bank_review', 'approved', 'authorized'];
+
+        // Base scoped query (per employee or filtered for admin)
+        $scopedQuery = Booking::query()->whereIn('status', $activeStatuses);
         if (! $isAdmin) {
             $scopedQuery->where('assigned_to', auth()->id());
+        } elseif ($request->filled('employee_id')) {
+            $scopedQuery->where('assigned_to', $request->employee_id);
         }
 
-        // Dynamic stats (scoped per role)
-        $pendingStatuses = collect(Booking::STATUSES)
-            ->filter(fn ($s) => ($s['group'] ?? '') === 'active' && ($s['is_close'] ?? false) === false)
-            ->keys()
-            ->toArray();
+        // Apply month/date filter to stats if provided
+        if ($request->filled('month')) {
+            $parts = explode('-', $request->month);
+            if (count($parts) === 2) {
+                $scopedQuery->whereYear('created_at', $parts[0])->whereMonth('created_at', $parts[1]);
+            }
+        } elseif ($request->filled('date')) {
+            $scopedQuery->whereDate('created_at', $request->date);
+        }
 
         $stats = [
-            'pending' => (clone $scopedQuery)->whereIn('status', $pendingStatuses)->count(),
-            'today' => (clone $scopedQuery)->whereDate('created_at', today())->count(),
+            'pending_review' => (clone $scopedQuery)->whereIn('status', ['new', 'contacted_no_answer', 'recontact_client'])->count(),
+            'under_bank' => (clone $scopedQuery)->whereIn('status', ['waiting_documents', 'bank_review', 'approved', 'authorized'])->count(),
             'total' => (clone $scopedQuery)->count(),
         ];
 
@@ -50,23 +62,25 @@ class BookingController extends Controller
                 ->get()
             : collect();
 
-        $query = Booking::with(['car.brand', 'employee']);
+        $query = Booking::with(['car.brand', 'employee'])->whereIn('status', $activeStatuses);
 
-        // ترتيب
-        if ($sort === 'oldest') {
-            $query->oldest();
-        } else {
-            $query->latest();
-        }
-
-        // المندوب: لا يرى طلبات بانتظار المشرف ولا المغلقة
         if (! $isAdmin) {
-            $query->where('assigned_to', auth()->id())
-                ->where('status', '!=', 'waiting_supervisor_approval')
-                ->whereNotIn('status', array_keys(array_filter(Booking::STATUSES, fn ($s) => ($s['is_close'] ?? false) === true)));
+            $query->where('assigned_to', auth()->id());
+        } elseif ($request->filled('employee_id')) {
+            $query->where('assigned_to', $request->employee_id);
         }
 
-        // فلترة بالمصدر (طلبات / عملاء حاسبة)
+        // Month / Date filter
+        if ($request->filled('month')) {
+            $parts = explode('-', $request->month);
+            if (count($parts) === 2) {
+                $query->whereYear('created_at', $parts[0])->whereMonth('created_at', $parts[1]);
+            }
+        } elseif ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        // Source filter
         if ($request->filled('source')) {
             if ($request->source === 'calculator') {
                 $query->whereNotNull('calculator_lead_id');
@@ -75,17 +89,12 @@ class BookingController extends Controller
             }
         }
 
-        // فلترة بالحالة
-        if ($request->filled('status')) {
+        // Status filter (within active statuses)
+        if ($request->filled('status') && in_array($request->status, $activeStatuses)) {
             $query->where('status', $request->status);
         }
 
-        // فلترة بالموظف (الأدمن فقط)
-        if ($request->filled('employee_id')) {
-            $query->where('assigned_to', $request->employee_id);
-        }
-
-        // بحث
+        // Search
         if ($request->filled('search')) {
             $s = $request->search;
             $query->where(function ($q) use ($s) {
@@ -94,22 +103,271 @@ class BookingController extends Controller
             });
         }
 
-        $bookings = $query->paginate(20);
+        // Sort
+        if ($sort === 'oldest') {
+            $query->oldest();
+        } else {
+            $query->latest();
+        }
+
+        $bookings = $query->paginate(20)->withQueryString();
         $employees = Employee::where('is_active', true)->get();
-        $statuses = Booking::STATUSES;
+        $statuses = collect(Booking::STATUSES)->only($activeStatuses)->toArray();
         $cars = Car::with('brand')->where('is_active', true)->get();
 
-        return view('crm.bookings.index', compact('bookings', 'employees', 'statuses', 'cars', 'stats', 'pendingApprovals', 'isAdmin'));
+        return view('crm.bookings.index', compact(
+            'bookings', 'employees', 'statuses', 'cars', 'stats', 'pendingApprovals', 'isAdmin'
+        ));
     }
 
+    /**
+     * Pending bookings list (طلبات قيد الانتظار)
+     */
+    public function pendingIndex(Request $request)
+    {
+        $sort = $request->input('sort', 'nearest_follow_up');
+        $isAdmin = auth('employee')->user()->isAdmin();
+
+        $scopedQuery = Booking::query()->where('status', 'pending');
+        if (! $isAdmin) {
+            $scopedQuery->where('assigned_to', auth()->id());
+        } elseif ($request->filled('employee_id')) {
+            $scopedQuery->where('assigned_to', $request->employee_id);
+        }
+
+        // Month filter
+        if ($request->filled('month')) {
+            $parts = explode('-', $request->month);
+            if (count($parts) === 2) {
+                $scopedQuery->whereYear('created_at', $parts[0])->whereMonth('created_at', $parts[1]);
+            }
+        } elseif ($request->filled('date')) {
+            $scopedQuery->whereDate('created_at', $request->date);
+        }
+
+        $today = today();
+        $now = now();
+
+        $stats = [
+            'total' => (clone $scopedQuery)->count(),
+            'today' => (clone $scopedQuery)->whereDate('follow_up_at', $today)->count(),
+            'overdue' => (clone $scopedQuery)->where('follow_up_at', '<', $now)->count(),
+            'upcoming' => (clone $scopedQuery)->where('follow_up_at', '>', $now)->count(),
+        ];
+
+        $query = Booking::with(['car.brand', 'employee'])->where('status', 'pending');
+
+        if (! $isAdmin) {
+            $query->where('assigned_to', auth()->id());
+        } elseif ($request->filled('employee_id')) {
+            $query->where('assigned_to', $request->employee_id);
+        }
+
+        // Month / Date filter
+        if ($request->filled('month')) {
+            $parts = explode('-', $request->month);
+            if (count($parts) === 2) {
+                $query->whereYear('created_at', $parts[0])->whereMonth('created_at', $parts[1]);
+            }
+        } elseif ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        // Timing filter
+        if ($request->filled('timing')) {
+            if ($request->timing === 'today') {
+                $query->whereDate('follow_up_at', $today);
+            } elseif ($request->timing === 'overdue') {
+                $query->where('follow_up_at', '<', $now);
+            } elseif ($request->timing === 'upcoming') {
+                $query->where('follow_up_at', '>', $now);
+            }
+        }
+
+        // Source filter
+        if ($request->filled('source')) {
+            if ($request->source === 'calculator') {
+                $query->whereNotNull('calculator_lead_id');
+            } elseif ($request->source === 'booking') {
+                $query->whereNull('calculator_lead_id');
+            }
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('client_name', 'like', "%$s%")
+                    ->orWhere('client_phone', 'like', "%$s%");
+            });
+        }
+
+        // Sort
+        if ($sort === 'oldest') {
+            $query->oldest('created_at');
+        } elseif ($sort === 'newest') {
+            $query->latest('created_at');
+        } elseif ($sort === 'furthest_follow_up') {
+            $query->orderByDesc('follow_up_at');
+        } else {
+            // nearest_follow_up (default)
+            $query->orderBy('follow_up_at', 'asc');
+        }
+
+        $bookings = $query->paginate(20)->withQueryString();
+        $employees = Employee::where('is_active', true)->get();
+        $allStatuses = Booking::STATUSES;
+        $cars = Car::with('brand')->where('is_active', true)->get();
+
+        return view('crm.bookings.pending', compact(
+            'bookings', 'employees', 'allStatuses', 'cars', 'stats', 'isAdmin'
+        ));
+    }
+
+    /**
+     * Delivered bookings list (طلبات تم التسليم / المستلمة)
+     */
+    public function deliveredIndex(Request $request)
+    {
+        $sort = $request->input('sort', 'newest');
+        $isAdmin = auth('employee')->user()->isAdmin();
+
+        $scopedQuery = Booking::query()->where('status', 'received');
+        if (! $isAdmin) {
+            $scopedQuery->where('assigned_to', auth()->id());
+        } elseif ($request->filled('employee_id')) {
+            $scopedQuery->where('assigned_to', $request->employee_id);
+        }
+
+        // Month filter
+        if ($request->filled('month')) {
+            $parts = explode('-', $request->month);
+            if (count($parts) === 2) {
+                $scopedQuery->where(function ($q) use ($parts) {
+                    $q->where(function ($sub) use ($parts) {
+                        $sub->whereNotNull('delivered_at')
+                            ->whereYear('delivered_at', $parts[0])
+                            ->whereMonth('delivered_at', $parts[1]);
+                    })->orWhere(function ($sub) use ($parts) {
+                        $sub->whereNull('delivered_at')
+                            ->whereYear('updated_at', $parts[0])
+                            ->whereMonth('updated_at', $parts[1]);
+                    });
+                });
+            }
+        } elseif ($request->filled('date')) {
+            $scopedQuery->where(function ($q) use ($request) {
+                $q->whereDate('delivered_at', $request->date)
+                    ->orWhere(function ($sub) use ($request) {
+                        $sub->whereNull('delivered_at')->whereDate('updated_at', $request->date);
+                    });
+            });
+        }
+
+        $now = now();
+        $currentMonthDeliveredQuery = (clone $scopedQuery)->where(function ($q) use ($now) {
+            $q->where(function ($sub) use ($now) {
+                $sub->whereNotNull('delivered_at')
+                    ->whereYear('delivered_at', $now->year)
+                    ->whereMonth('delivered_at', $now->month);
+            })->orWhere(function ($sub) use ($now) {
+                $sub->whereNull('delivered_at')
+                    ->whereYear('updated_at', $now->year)
+                    ->whereMonth('updated_at', $now->month);
+            });
+        });
+
+        $stats = [
+            'total_delivered' => (clone $scopedQuery)->count(),
+            'month_delivered' => (clone $currentMonthDeliveredQuery)->count(),
+            'total_commission' => (clone $scopedQuery)->sum('net_commission'),
+            'month_commission' => (clone $currentMonthDeliveredQuery)->sum('net_commission'),
+            'total_sales_value' => (clone $scopedQuery)->sum('total_price'),
+        ];
+
+        $query = Booking::with(['car.brand', 'employee'])->where('status', 'received');
+
+        if (! $isAdmin) {
+            $query->where('assigned_to', auth()->id());
+        } elseif ($request->filled('employee_id')) {
+            $query->where('assigned_to', $request->employee_id);
+        }
+
+        // Month / Date filter
+        if ($request->filled('month')) {
+            $parts = explode('-', $request->month);
+            if (count($parts) === 2) {
+                $query->where(function ($q) use ($parts) {
+                    $q->where(function ($sub) use ($parts) {
+                        $sub->whereNotNull('delivered_at')
+                            ->whereYear('delivered_at', $parts[0])
+                            ->whereMonth('delivered_at', $parts[1]);
+                    })->orWhere(function ($sub) use ($parts) {
+                        $sub->whereNull('delivered_at')
+                            ->whereYear('updated_at', $parts[0])
+                            ->whereMonth('updated_at', $parts[1]);
+                    });
+                });
+            }
+        } elseif ($request->filled('date')) {
+            $query->where(function ($q) use ($request) {
+                $q->whereDate('delivered_at', $request->date)
+                    ->orWhere(function ($sub) use ($request) {
+                        $sub->whereNull('delivered_at')->whereDate('updated_at', $request->date);
+                    });
+            });
+        }
+
+        // Source filter
+        if ($request->filled('source')) {
+            if ($request->source === 'calculator') {
+                $query->whereNotNull('calculator_lead_id');
+            } elseif ($request->source === 'booking') {
+                $query->whereNull('calculator_lead_id');
+            }
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('client_name', 'like', "%$s%")
+                    ->orWhere('client_phone', 'like', "%$s%");
+            });
+        }
+
+        // Sort
+        if ($sort === 'oldest') {
+            $query->orderBy(DB::raw('COALESCE(delivered_at, updated_at)'), 'asc');
+        } elseif ($sort === 'highest_commission') {
+            $query->orderByDesc('net_commission');
+        } elseif ($sort === 'highest_price') {
+            $query->orderByDesc('total_price');
+        } else {
+            $query->orderBy(DB::raw('COALESCE(delivered_at, updated_at)'), 'desc');
+        }
+
+        $bookings = $query->paginate(20)->withQueryString();
+        $employees = Employee::where('is_active', true)->get();
+        $allStatuses = Booking::STATUSES;
+        $cars = Car::with('brand')->where('is_active', true)->get();
+
+        return view('crm.bookings.delivered', compact(
+            'bookings', 'employees', 'allStatuses', 'cars', 'stats', 'isAdmin'
+        ));
+    }
+
+    /**
+     * Closed bookings list (الحالات المغلقة / الخاسرة)
+     */
     public function closedIndex(Request $request)
     {
         $sort = $request->input('sort', 'newest');
         $isAdmin = auth('employee')->user()->isAdmin();
 
-        // Get all closed status keys from Booking::STATUSES
+        // Get all closed lost status keys from Booking::STATUSES (is_lost == true or group == 'lost')
         $closedStatuses = collect(Booking::STATUSES)
-            ->filter(fn ($s) => ($s['is_close'] ?? false) === true)
+            ->filter(fn ($s) => ($s['is_lost'] ?? false) === true || ($s['group'] ?? '') === 'lost')
             ->keys()
             ->toArray();
 
@@ -117,10 +375,24 @@ class BookingController extends Controller
         $scopedQuery = Booking::query()->whereIn('status', $closedStatuses);
         if (! $isAdmin) {
             $scopedQuery->where('assigned_to', auth()->id());
+        } elseif ($request->filled('employee_id')) {
+            $scopedQuery->where('assigned_to', $request->employee_id);
+        }
+
+        // Month filter
+        if ($request->filled('month')) {
+            $parts = explode('-', $request->month);
+            if (count($parts) === 2) {
+                $scopedQuery->whereYear('updated_at', $parts[0])->whereMonth('updated_at', $parts[1]);
+            }
+        } elseif ($request->filled('date')) {
+            $scopedQuery->whereDate('updated_at', $request->date);
         }
 
         // Calculate closed stats
         $totalClosed = (clone $scopedQuery)->count();
+        $now = now();
+        $closedThisMonth = (clone $scopedQuery)->whereYear('updated_at', $now->year)->whereMonth('updated_at', $now->month)->count();
 
         $statsByStatus = [];
         foreach ($closedStatuses as $statusKey) {
@@ -141,13 +413,18 @@ class BookingController extends Controller
 
         if (! $isAdmin) {
             $query->where('assigned_to', auth()->id());
+        } elseif ($request->filled('employee_id')) {
+            $query->where('assigned_to', $request->employee_id);
         }
 
-        // Sorting
-        if ($sort === 'oldest') {
-            $query->oldest();
-        } else {
-            $query->latest();
+        // Month / Date filter
+        if ($request->filled('month')) {
+            $parts = explode('-', $request->month);
+            if (count($parts) === 2) {
+                $query->whereYear('updated_at', $parts[0])->whereMonth('updated_at', $parts[1]);
+            }
+        } elseif ($request->filled('date')) {
+            $query->whereDate('updated_at', $request->date);
         }
 
         // Filtering by source
@@ -173,13 +450,20 @@ class BookingController extends Controller
             });
         }
 
-        $bookings = $query->paginate(20);
+        // Sorting
+        if ($sort === 'oldest') {
+            $query->oldest('updated_at');
+        } else {
+            $query->latest('updated_at');
+        }
+
+        $bookings = $query->paginate(20)->withQueryString();
         $employees = Employee::where('is_active', true)->get();
         $statuses = collect(Booking::STATUSES)->only($closedStatuses)->toArray();
         $cars = Car::with('brand')->where('is_active', true)->get();
 
         return view('crm.bookings.closed', compact(
-            'bookings', 'employees', 'statuses', 'cars', 'totalClosed', 'statsByStatus', 'isAdmin'
+            'bookings', 'employees', 'statuses', 'cars', 'totalClosed', 'closedThisMonth', 'statsByStatus', 'isAdmin'
         ));
     }
 
@@ -256,7 +540,60 @@ class BookingController extends Controller
             return back()->with('error', 'لا يمكن تعديل حالة الطلب وهو بانتظار اعتماد المشرف.');
         }
 
-        // If target status is pending, enforce validation
+        // Case 1: Target status is delivered / received (تم التسليم)
+        if ($targetStatus === 'received') {
+            $request->validate([
+                'purchase_price' => 'nullable|numeric|min:0',
+                'authorization_price' => 'nullable|numeric|min:0',
+                'expenses' => 'nullable|numeric|min:0',
+                'net_commission' => 'nullable|numeric',
+                'note' => 'nullable|string|max:2000',
+            ]);
+
+            $purchasePrice = $request->filled('purchase_price') ? (float) $request->purchase_price : null;
+            $authPrice = $request->filled('authorization_price') ? (float) $request->authorization_price : null;
+            $expenses = $request->filled('expenses') ? (float) $request->expenses : null;
+            $netCommission = $request->filled('net_commission') ? (float) $request->net_commission : null;
+
+            $booking->update([
+                'status' => 'received',
+                'purchase_price' => $purchasePrice,
+                'authorization_price' => $authPrice,
+                'expenses' => $expenses,
+                'net_commission' => $netCommission,
+                'delivered_at' => $booking->delivered_at ?? now(),
+                'pending_reason' => null,
+                'follow_up_at' => null,
+                'proposed_status' => null,
+                'last_contacted_at' => now(),
+            ]);
+
+            $noteDetails = "تم تسليم الطلب بنجاح (تم الاستلام):\n"
+                .'- سعر شراء السيارة: '.($purchasePrice !== null ? number_format($purchasePrice, 2).' ر.س' : '—')."\n"
+                .'- سعر تعميد السيارة: '.($authPrice !== null ? number_format($authPrice, 2).' ر.س' : '—')."\n"
+                .'- المصروفات: '.($expenses !== null ? number_format($expenses, 2).' ر.س' : '—')."\n"
+                .'- صافي عمولة الشركة: '.($netCommission !== null ? number_format($netCommission, 2).' ر.س' : '—');
+            if ($request->filled('note')) {
+                $noteDetails .= "\nملاحظة: ".$request->note;
+            }
+
+            BookingNote::create([
+                'booking_id' => $booking->id,
+                'employee_id' => $employee->id,
+                'note' => $noteDetails,
+                'type' => 'status_change',
+                'old_status' => $oldStatus,
+                'new_status' => 'received',
+            ]);
+
+            if ($booking->assignedTo && $booking->assignedTo->id !== $employee->id) {
+                $booking->assignedTo->notify(new NewBookingNotification($booking, __('تم تسليم الطلب'), __('تم تغيير حالة طلب العميل ').$booking->client_name.__(' إلى تم التسليم')));
+            }
+
+            return back()->with('success', 'تم نقل الطلب إلى قائمة "تم التسليم" بنجاح.');
+        }
+
+        // Case 2: Target status is pending (قيد الانتظار)
         if ($targetStatus === 'pending') {
             $request->validate([
                 'pending_reason' => 'required|string|max:500',
@@ -289,10 +626,10 @@ class BookingController extends Controller
             return back()->with('success', 'تم نقل الطلب إلى "قيد الانتظار" بنجاح.');
         }
 
-        $isClosingStatus = Booking::STATUSES[$targetStatus]['is_close'] ?? false;
+        // Case 3: Target status is a closing lost status
+        $isLostStatus = (Booking::STATUSES[$targetStatus]['is_lost'] ?? false) || ((Booking::STATUSES[$targetStatus]['group'] ?? '') === 'lost');
 
-        // If target status is a closing status
-        if ($isClosingStatus) {
+        if ($isLostStatus) {
             if (! $employee->isAdmin()) {
                 // Not a supervisor: route to supervisor approval
                 $booking->update([
@@ -321,6 +658,8 @@ class BookingController extends Controller
                 $booking->update([
                     'status' => $targetStatus,
                     'proposed_status' => null,
+                    'pending_reason' => null,
+                    'follow_up_at' => null,
                     'last_contacted_at' => now(),
                 ]);
 
@@ -342,7 +681,7 @@ class BookingController extends Controller
             }
         }
 
-        // Normal active status update
+        // Case 4: Normal active status update (returning from pending/closed or advancing in pipeline)
         $booking->update([
             'status' => $targetStatus,
             'proposed_status' => null,

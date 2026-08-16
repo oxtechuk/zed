@@ -12,7 +12,8 @@ class Booking extends Model
     protected $fillable = [
         'car_id', 'assigned_to', 'client_name', 'client_phone', 'client_email',
         'down_payment', 'duration_years', 'interest_rate', 'monthly_installment',
-        'total_price', 'notes', 'status', 'source', 'last_contacted_at',
+        'total_price', 'purchase_price', 'authorization_price', 'expenses', 'net_commission',
+        'notes', 'status', 'source', 'last_contacted_at', 'delivered_at',
         'booking_type', 'location', 'calculator_bank_id', 'balloon_payment', 'offer_notes',
         'pending_reason', 'follow_up_at', 'proposed_status',
     ];
@@ -20,6 +21,12 @@ class Booking extends Model
     protected $casts = [
         'last_contacted_at' => 'datetime',
         'follow_up_at' => 'datetime',
+        'delivered_at' => 'datetime',
+        'purchase_price' => 'decimal:2',
+        'authorization_price' => 'decimal:2',
+        'expenses' => 'decimal:2',
+        'net_commission' => 'decimal:2',
+        'total_price' => 'decimal:2',
     ];
 
     public const BOOKING_TYPES = ['test_drive', 'purchase', 'inquiry'];
