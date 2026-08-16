@@ -19,6 +19,10 @@ Route::get('/cars', function () {
     return view('app');
 })->name('store.cars');
 
+Route::get('/cars-catalog', function () {
+    return redirect()->route('store.cars');
+})->name('store.cars.index');
+
 Route::get('/cars/{slug}', function () {
     return view('app');
 })->name('store.cars.show');
