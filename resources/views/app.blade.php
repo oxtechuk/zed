@@ -58,6 +58,7 @@
 
     <script>
         window.__APP_URL__ = "{{ rtrim(url('/'), '/') }}";
+        window.__BASE_PATH__ = "{{ rtrim(request()->getBasePath(), '/') }}";
         window.__API_URL__ = "{{ rtrim(url('/api'), '/') }}/";
         window.__ASSET_URL__ = "{{ rtrim(asset('/'), '/') }}/";
     </script>

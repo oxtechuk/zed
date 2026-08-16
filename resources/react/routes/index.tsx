@@ -26,6 +26,31 @@ const FinanceCalculatorPage = lazy(() => import("../pages/FinanceCalculatorPage"
 const CarRequestPage = lazy(() => import("../pages/CarRequestPage"));
 const BrandsPage = lazy(() => import("../pages/BrandsPage"));
 
+function getRouterBasename(): string | undefined {
+  if (typeof window !== "undefined") {
+    const base = (window as any).__BASE_PATH__;
+    if (base && typeof base === "string" && base.trim() !== "") {
+      return base.endsWith("/") ? base.slice(0, -1) : base;
+    }
+    const appUrl = (window as any).__APP_URL__;
+    if (appUrl && typeof appUrl === "string") {
+      try {
+        const path = new URL(appUrl).pathname;
+        if (path && path !== "/" && path !== "") {
+          return path.endsWith("/") ? path.slice(0, -1) : path;
+        }
+      } catch {
+        // ignore
+      }
+    }
+    const match = window.location.pathname.match(/^(\/[^\/]+\/public)/);
+    if (match) {
+      return match[1];
+    }
+  }
+  return undefined;
+}
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -134,4 +159,6 @@ export const router = createBrowserRouter([
       },
     ],
   },
-]);
+], {
+  basename: getRouterBasename(),
+});
