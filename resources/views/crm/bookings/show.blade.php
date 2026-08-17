@@ -251,6 +251,9 @@
                             @endif
 
                             @if($booking->status === 'received' || $booking->purchase_price !== null || $booking->authorization_price !== null || $booking->net_commission !== null || $booking->delivered_at)
+                            @php
+                                $deliveryNote = $booking->delivery_note_text;
+                            @endphp
                             <div class="p-3 mb-3 rounded-4" style="background:#F0FDF4; border:1px solid #BBF7D0;">
                                 <div class="fw-bold text-success mb-2" style="font-size:13.5px;">
                                     <i class="bi bi-check2-circle me-1"></i> {{ __('تفاصيل التسليم والعمولة') }}
@@ -272,6 +275,12 @@
                                     @if($booking->delivered_at)
                                     <div class="col-12 text-muted mt-1 pt-1 border-top" style="font-size:11px;">
                                         <strong>{{ __('تاريخ التسليم') }}:</strong> {{ $booking->delivered_at->format('d/m/Y H:i') }} ({{ $booking->delivered_at->diffForHumans() }})
+                                    </div>
+                                    @endif
+                                    @if(!empty($deliveryNote))
+                                    <div class="col-12 mt-2 pt-2 border-top" style="font-size:12px;color:#166534;border-color:#BBF7D0!important;border-top-style:dashed!important;">
+                                        <strong class="d-block mb-1"><i class="bi bi-chat-square-text me-1"></i>{{ __('ملاحظة التسليم') }}:</strong>
+                                        <div class="p-2 rounded-3 text-dark bg-white" style="border:1px solid #BBF7D0;font-size:12.5px;line-height:1.6;white-space:pre-wrap;">{{ $deliveryNote }}</div>
                                     </div>
                                     @endif
                                 </div>
@@ -432,7 +441,7 @@
                                 <label style="font-size:12px;font-weight:700;margin-bottom:8px;display:block;">{{ __('تغيير حالة الطلب') }}</label>
                                 <form action="{{ route('crm.bookings.status', $booking) }}" method="POST" class="d-flex align-items-center gap-2 w-100" id="bookingStatusForm">
                                     @csrf @method('PATCH')
-                                    <select name="status" id="bookingStatusSelect" class="form-select form-select-sm border-0 shadow-none" style="background:#fff;border-radius:8px;font-size:13px;font-weight:700;" {{ ($booking->status === 'waiting_supervisor_approval' && ! auth('employee')->user()->isAdmin()) ? 'disabled' : '' }}>
+                                    <select name="status" id="bookingStatusSelect" class="form-select form-select-sm border-0 shadow-none" style="background:#fff;border-radius:8px;font-size:13px;font-weight:700;" {{ ($booking->status === 'waiting_supervisor_approval' && ! auth('employee')->user()->isAdmin()) ? 'disabled' : '' }} data-current-status="{{ $booking->status }}" data-purchase-price="{{ $booking->purchase_price }}" data-auth-price="{{ $booking->authorization_price }}" data-expenses="{{ $booking->expenses ?? 0 }}" data-net-commission="{{ $booking->net_commission }}" data-delivery-note="{{ $booking->delivery_note_text }}">
                                         <optgroup label="{{ __('الحالات الأساسية (Active)') }}">
                                             @foreach($statuses as $key => $s)
                                                 @if($s['group'] === 'active')

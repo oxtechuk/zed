@@ -4,11 +4,16 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App\Models\Testimonial;
+use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class TestimonialController extends Controller
 {
+    public function __construct(
+        protected ImageOptimizerService $imageOptimizer
+    ) {}
+
     public function index()
     {
         $textTestimonials = Testimonial::where('type', 'text')->latest()->get();
@@ -36,8 +41,8 @@ class TestimonialController extends Controller
             'content' => 'required|array',
             'rating' => 'required|integer|min:1|max:5',
             'type' => 'required|string|in:text,video',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            'review_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
+            'review_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
             'review_video' => 'nullable|file|mimes:mp4,mov,ogg,qt,webm|max:20480',
         ]);
 
@@ -45,11 +50,11 @@ class TestimonialController extends Controller
         $data['is_visible'] = $request->has('is_visible');
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('testimonials', 'public');
+            $data['image'] = $this->imageOptimizer->storeAndOptimize($request->file('image'), 'testimonials', ['maxWidth' => 600, 'quality' => 85]);
         }
 
         if ($request->hasFile('review_image')) {
-            $data['review_image'] = $request->file('review_image')->store('testimonials/reviews', 'public');
+            $data['review_image'] = $this->imageOptimizer->storeAndOptimize($request->file('review_image'), 'testimonials/reviews', ['maxWidth' => 1200, 'quality' => 82]);
         }
 
         if ($request->hasFile('review_video')) {
@@ -92,8 +97,8 @@ class TestimonialController extends Controller
             'content' => 'required|array',
             'rating' => 'required|integer|min:1|max:5',
             'type' => 'required|string|in:text,video',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            'review_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
+            'review_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
             'review_video' => 'nullable|file|mimes:mp4,mov,ogg,qt,webm|max:20480',
         ]);
 
@@ -104,14 +109,14 @@ class TestimonialController extends Controller
             if ($testimonial->image) {
                 Storage::disk('public')->delete($testimonial->image);
             }
-            $data['image'] = $request->file('image')->store('testimonials', 'public');
+            $data['image'] = $this->imageOptimizer->storeAndOptimize($request->file('image'), 'testimonials', ['maxWidth' => 600, 'quality' => 85]);
         }
 
         if ($request->hasFile('review_image')) {
             if ($testimonial->review_image) {
                 Storage::disk('public')->delete($testimonial->review_image);
             }
-            $data['review_image'] = $request->file('review_image')->store('testimonials/reviews', 'public');
+            $data['review_image'] = $this->imageOptimizer->storeAndOptimize($request->file('review_image'), 'testimonials/reviews', ['maxWidth' => 1200, 'quality' => 82]);
         }
 
         if ($request->hasFile('review_video')) {

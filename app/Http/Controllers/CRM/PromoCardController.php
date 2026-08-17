@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CRM;
 use App\Http\Controllers\Controller;
 use App\Models\PromoCard;
 use App\Services\Cache\HomeCacheService;
+use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,6 +13,7 @@ class PromoCardController extends Controller
 {
     public function __construct(
         private readonly HomeCacheService $homeCache,
+        private readonly ImageOptimizerService $imageOptimizer,
     ) {}
 
     public function index()
@@ -29,7 +31,7 @@ class PromoCardController extends Controller
             'title.en' => 'required|string|max:255',
             'subtitle.ar' => 'nullable|string|max:255',
             'subtitle.en' => 'nullable|string|max:255',
-            'image' => ($isCreate ? 'required' : 'nullable').'|image|max:4096',
+            'image' => ($isCreate ? 'required' : 'nullable').'|image|max:8192',
             'button_text.ar' => 'nullable|string|max:100',
             'button_text.en' => 'nullable|string|max:100',
             'button_url' => 'nullable|string|max:255',
@@ -46,7 +48,7 @@ class PromoCardController extends Controller
         $data['is_active'] = $request->boolean('is_active', true);
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('promo-cards', 'public');
+            $data['image'] = $this->imageOptimizer->storeAndOptimize($request->file('image'), 'promo-cards', ['maxWidth' => 1200, 'quality' => 82]);
         }
 
         PromoCard::create($data);
@@ -64,7 +66,7 @@ class PromoCardController extends Controller
             if ($promoCard->getRawOriginal('image')) {
                 Storage::disk('public')->delete($promoCard->getRawOriginal('image'));
             }
-            $data['image'] = $request->file('image')->store('promo-cards', 'public');
+            $data['image'] = $this->imageOptimizer->storeAndOptimize($request->file('image'), 'promo-cards', ['maxWidth' => 1200, 'quality' => 82]);
         }
 
         $promoCard->update($data);

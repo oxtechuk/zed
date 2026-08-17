@@ -11,11 +11,16 @@ use App\Models\CarType;
 use App\Models\Feature;
 use App\Models\SafetyFeature;
 use App\Models\Specification;
+use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class CarController extends Controller
 {
+    public function __construct(
+        protected ImageOptimizerService $imageOptimizer
+    ) {}
+
     public function index(Request $request)
     {
         $query = Car::with(['brand', 'category'])->latest();
@@ -100,7 +105,7 @@ class CarController extends Controller
             }
             $entry = ['name' => $name, 'hex' => $colorHexes[$i] ?? '#000000', 'image' => null];
             if (! empty($colorFiles[$i])) {
-                $entry['image'] = $colorFiles[$i]->store('cars/colors', 'public');
+                $entry['image'] = $this->imageOptimizer->storeAndOptimize($colorFiles[$i], 'cars/colors', ['maxWidth' => 1200, 'quality' => 82]);
             }
             $colors[] = $entry;
         }
@@ -115,7 +120,7 @@ class CarController extends Controller
         $data['availability_status'] = $request->input('availability_status', 'available');
 
         if ($request->hasFile('thumbnail')) {
-            $data['thumbnail'] = $request->file('thumbnail')->store('cars/thumbnails', 'public');
+            $data['thumbnail'] = $this->imageOptimizer->storeAndOptimize($request->file('thumbnail'), 'cars/thumbnails', ['maxWidth' => 1000, 'quality' => 82]);
         }
 
         $car = Car::create($data);
@@ -135,7 +140,7 @@ class CarController extends Controller
         if ($request->hasFile('interior_images')) {
             foreach ($request->file('interior_images') as $image) {
                 $car->images()->create([
-                    'image_path' => $image->store('cars/gallery', 'public'),
+                    'image_path' => $this->imageOptimizer->storeAndOptimize($image, 'cars/gallery', ['maxWidth' => 1600, 'quality' => 82]),
                     'type' => 'interior',
                 ]);
             }
@@ -145,7 +150,7 @@ class CarController extends Controller
         if ($request->hasFile('exterior_images')) {
             foreach ($request->file('exterior_images') as $image) {
                 $car->images()->create([
-                    'image_path' => $image->store('cars/gallery', 'public'),
+                    'image_path' => $this->imageOptimizer->storeAndOptimize($image, 'cars/gallery', ['maxWidth' => 1600, 'quality' => 82]),
                     'type' => 'exterior',
                 ]);
             }
@@ -223,7 +228,7 @@ class CarController extends Controller
                 if (! empty($keepImages[$i])) {
                     Storage::disk('public')->delete($keepImages[$i]);
                 }
-                $entry['image'] = $colorFiles[$i]->store('cars/colors', 'public');
+                $entry['image'] = $this->imageOptimizer->storeAndOptimize($colorFiles[$i], 'cars/colors', ['maxWidth' => 1200, 'quality' => 82]);
             }
             $colors[] = $entry;
         }
@@ -238,7 +243,7 @@ class CarController extends Controller
             if ($car->thumbnail) {
                 Storage::disk('public')->delete($car->thumbnail);
             }
-            $data['thumbnail'] = $request->file('thumbnail')->store('cars/thumbnails', 'public');
+            $data['thumbnail'] = $this->imageOptimizer->storeAndOptimize($request->file('thumbnail'), 'cars/thumbnails', ['maxWidth' => 1000, 'quality' => 82]);
         }
 
         $data['slug'] = [
@@ -271,7 +276,7 @@ class CarController extends Controller
         if ($request->hasFile('interior_images')) {
             foreach ($request->file('interior_images') as $image) {
                 $car->images()->create([
-                    'image_path' => $image->store('cars/gallery', 'public'),
+                    'image_path' => $this->imageOptimizer->storeAndOptimize($image, 'cars/gallery', ['maxWidth' => 1600, 'quality' => 82]),
                     'type' => 'interior',
                 ]);
             }
@@ -281,7 +286,7 @@ class CarController extends Controller
         if ($request->hasFile('exterior_images')) {
             foreach ($request->file('exterior_images') as $image) {
                 $car->images()->create([
-                    'image_path' => $image->store('cars/gallery', 'public'),
+                    'image_path' => $this->imageOptimizer->storeAndOptimize($image, 'cars/gallery', ['maxWidth' => 1600, 'quality' => 82]),
                     'type' => 'exterior',
                 ]);
             }

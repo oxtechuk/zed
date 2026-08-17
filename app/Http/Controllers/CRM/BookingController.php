@@ -554,6 +554,7 @@ class BookingController extends Controller
             $authPrice = $request->filled('authorization_price') ? (float) $request->authorization_price : null;
             $expenses = $request->filled('expenses') ? (float) $request->expenses : null;
             $netCommission = $request->filled('net_commission') ? (float) $request->net_commission : null;
+            $deliveryNote = $request->filled('note') ? trim($request->note) : ($booking->delivery_note ?? null);
 
             $booking->update([
                 'status' => 'received',
@@ -561,6 +562,7 @@ class BookingController extends Controller
                 'authorization_price' => $authPrice,
                 'expenses' => $expenses,
                 'net_commission' => $netCommission,
+                'delivery_note' => $deliveryNote,
                 'delivered_at' => $booking->delivered_at ?? now(),
                 'pending_reason' => null,
                 'follow_up_at' => null,

@@ -14,87 +14,220 @@
     </nav>
 
     {{-- Header --}}
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <h5 class="fw-bold mb-0">{{ __('العملاء') }}</h5>
-        @can('manage-leads')
-        <a href="{{ route('crm.leads.create') }}" class="btn-crm-primary">
-            <i class="bi bi-person-plus"></i> {{ __('إضافة عميل') }}
-        </a>
-        @endcan
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+        <div>
+            <h5 class="fw-bold mb-1">{{ __('قائمة العملاء') }}</h5>
+            <p class="text-muted small mb-0">{{ __('استهداف ومتابعة العملاء وإدارة حملات رسائل الواتساب بناءً على مسار الطلبات') }}</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-success d-inline-flex align-items-center gap-1.5 fw-bold rounded-3 shadow-xs" id="btnOpenCampaignFiltered" style="font-size:13px;padding:8px 16px;">
+                <i class="bi bi-whatsapp"></i>
+                <span>{{ __('إرسال حملة واتساب للفلتر') }} ({{ $leads->total() }})</span>
+            </button>
+            @can('manage-leads')
+            <a href="{{ route('crm.leads.create') }}" class="btn-crm-primary">
+                <i class="bi bi-person-plus"></i> {{ __('إضافة عميل') }}
+            </a>
+            @endcan
+        </div>
     </div>
 
     {{-- Stat Cards --}}
     <div class="row g-3 mb-4">
-        <div class="col-6 col-xl-4">
-            <div class="crm-stat-new">
-                <span class="stat-badge orange">{{ $activeLeadsRatio }}%</span>
-                <div class="stat-icon green"><i class="bi bi-person-check"></i></div>
-                <div class="stat-lbl">{{ __('العملاء النشطون') }}</div>
-                <div class="stat-val">{{ number_format($activeLeadsCount) }}</div>
-            </div>
+        {{-- 1. إجمالي العملاء --}}
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('crm.leads.index') }}" class="text-decoration-none">
+                <div class="crm-stat-new {{ !request('booking_status_group') ? 'border-primary' : '' }}">
+                    <span class="stat-badge purple">100%</span>
+                    <div class="stat-icon purple"><i class="bi bi-people"></i></div>
+                    <div class="stat-lbl">{{ __('إجمالي العملاء') }}</div>
+                    <div class="stat-val">{{ number_format($totalLeadsAllCount) }}</div>
+                </div>
+            </a>
         </div>
-        <div class="col-6 col-xl-4">
-            <div class="crm-stat-new">
-                <span class="stat-badge green">{{ $newLeadsRatio }}%</span>
-                <div class="stat-icon blue"><i class="bi bi-people"></i></div>
-                <div class="stat-lbl">{{ __('العملاء الجدد') }}</div>
-                <div class="stat-val">{{ number_format($newLeadsCount) }}</div>
-            </div>
+
+        {{-- 2. طلبات نشطة --}}
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('crm.leads.index', ['booking_status_group' => 'active']) }}" class="text-decoration-none">
+                <div class="crm-stat-new {{ request('booking_status_group') === 'active' ? 'border-primary' : '' }}">
+                    <span class="stat-badge blue">{{ $totalLeadsAllCount > 0 ? round(($activeOrdersLeadsCount / $totalLeadsAllCount) * 100) : 0 }}%</span>
+                    <div class="stat-icon blue"><i class="bi bi-lightning-charge"></i></div>
+                    <div class="stat-lbl">{{ __('عملاء بطلبات نشطة') }}</div>
+                    <div class="stat-val text-primary">{{ number_format($activeOrdersLeadsCount) }}</div>
+                </div>
+            </a>
         </div>
-        <div class="col-6 col-xl-4">
-            <div class="crm-stat-new">
-                <span class="stat-badge green">100%</span>
-                <div class="stat-icon purple"><i class="bi bi-person-lines-fill"></i></div>
-                <div class="stat-lbl">{{ __('إجمالي عدد العملاء') }}</div>
-                <div class="stat-val">{{ number_format($totalLeadsAllCount) }}</div>
-            </div>
+
+        {{-- 3. طلبات مستلمة --}}
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('crm.leads.index', ['booking_status_group' => 'received']) }}" class="text-decoration-none">
+                <div class="crm-stat-new {{ request('booking_status_group') === 'received' ? 'border-success' : '' }}">
+                    <span class="stat-badge green">{{ $totalLeadsAllCount > 0 ? round(($receivedOrdersLeadsCount / $totalLeadsAllCount) * 100) : 0 }}%</span>
+                    <div class="stat-icon green"><i class="bi bi-patch-check"></i></div>
+                    <div class="stat-lbl">{{ __('عملاء بطلبات مستلمة') }}</div>
+                    <div class="stat-val text-success">{{ number_format($receivedOrdersLeadsCount) }}</div>
+                </div>
+            </a>
+        </div>
+
+        {{-- 4. طلبات مغلقة --}}
+        <div class="col-6 col-lg-3">
+            <a href="{{ route('crm.leads.index', ['booking_status_group' => 'closed']) }}" class="text-decoration-none">
+                <div class="crm-stat-new {{ request('booking_status_group') === 'closed' ? 'border-danger' : '' }}">
+                    <span class="stat-badge red">{{ $totalLeadsAllCount > 0 ? round(($closedOrdersLeadsCount / $totalLeadsAllCount) * 100) : 0 }}%</span>
+                    <div class="stat-icon red"><i class="bi bi-x-circle"></i></div>
+                    <div class="stat-lbl">{{ __('عملاء بطلبات مغلقة') }}</div>
+                    <div class="stat-val text-danger">{{ number_format($closedOrdersLeadsCount) }}</div>
+                </div>
+            </a>
         </div>
     </div>
 
-    {{-- Filter Tabs + Search --}}
+    {{-- Main Filter Tabs (حسب مسار الطلبات) --}}
+    @php
+        $currentGroup = request('booking_status_group');
+    @endphp
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
         <div class="crm-filter-tabs mb-0">
-            <a href="{{ route('crm.leads.index') }}"
-               class="crm-filter-tab {{ !request('status') ? 'active' : '' }}">{{ __('الكل') }}</a>
-            @foreach($statuses as $key => $s)
-            <a href="{{ route('crm.leads.index', ['status' => $key]) }}"
-               class="crm-filter-tab {{ request('status') === $key ? 'active' : '' }}">{{ $s['label'] }}</a>
-            @endforeach
+            <a href="{{ route('crm.leads.index', request()->except('booking_status_group', 'page')) }}"
+               class="crm-filter-tab {{ empty($currentGroup) ? 'active' : '' }}">
+                <i class="bi bi-grid me-1"></i> {{ __('جميع العملاء') }}
+                <span class="badge rounded-pill bg-light text-dark ms-1">{{ number_format($totalLeadsAllCount) }}</span>
+            </a>
+            <a href="{{ route('crm.leads.index', array_merge(request()->except('page'), ['booking_status_group' => 'active'])) }}"
+               class="crm-filter-tab {{ $currentGroup === 'active' ? 'active' : '' }}">
+                <i class="bi bi-lightning-charge me-1 text-primary"></i> {{ __('طلبات نشطة') }}
+                <span class="badge rounded-pill {{ $currentGroup === 'active' ? 'bg-white text-primary' : 'bg-primary-subtle text-primary' }} ms-1">{{ number_format($activeOrdersLeadsCount) }}</span>
+            </a>
+            <a href="{{ route('crm.leads.index', array_merge(request()->except('page'), ['booking_status_group' => 'received'])) }}"
+               class="crm-filter-tab {{ $currentGroup === 'received' ? 'active' : '' }}">
+                <i class="bi bi-patch-check me-1 text-success"></i> {{ __('طلبات مستلمة') }}
+                <span class="badge rounded-pill {{ $currentGroup === 'received' ? 'bg-white text-success' : 'bg-success-subtle text-success' }} ms-1">{{ number_format($receivedOrdersLeadsCount) }}</span>
+            </a>
+            <a href="{{ route('crm.leads.index', array_merge(request()->except('page'), ['booking_status_group' => 'closed'])) }}"
+               class="crm-filter-tab {{ $currentGroup === 'closed' ? 'active' : '' }}">
+                <i class="bi bi-x-circle me-1 text-danger"></i> {{ __('طلبات مغلقة') }}
+                <span class="badge rounded-pill {{ $currentGroup === 'closed' ? 'bg-white text-danger' : 'bg-danger-subtle text-danger' }} ms-1">{{ number_format($closedOrdersLeadsCount) }}</span>
+            </a>
+            <a href="{{ route('crm.leads.index', array_merge(request()->except('page'), ['booking_status_group' => 'no_orders'])) }}"
+               class="crm-filter-tab {{ $currentGroup === 'no_orders' ? 'active' : '' }}">
+                <i class="bi bi-dash-circle me-1 text-muted"></i> {{ __('بدون طلبات') }}
+                <span class="badge rounded-pill bg-light text-muted ms-1">{{ number_format($noOrdersLeadsCount) }}</span>
+            </a>
         </div>
-        <form method="GET" class="d-flex gap-2 align-items-center">
-            <div style="position:relative;">
-                <input type="text" name="search" value="{{ request('search') }}"
-                    placeholder="{{ __('بحث ببيانات العميل') }}"
-                    style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 36px 8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;width:220px;">
-                <i class="bi bi-search" style="position:absolute;{{ app()->getLocale()=='ar'?'left':'right' }}:12px;top:50%;transform:translateY(-50%);color:var(--crm-text-muted);"></i>
-            </div>
-            <button type="submit" class="btn-crm-primary" style="padding:8px 16px;">{{ __('بحث') }}</button>
-        </form>
     </div>
 
+    {{-- Advanced Filters Bar --}}
+    <div class="card border-0 shadow-sm rounded-4 mb-3" style="border:1px solid var(--crm-border)!important;">
+        <div class="card-body p-3">
+            <form method="GET" action="{{ route('crm.leads.index') }}" id="leadFilterForm" class="row g-2 align-items-center">
+                @if(request('booking_status_group'))
+                    <input type="hidden" name="booking_status_group" value="{{ request('booking_status_group') }}">
+                @endif
 
+                {{-- البحث --}}
+                <div class="col-12 col-md-3">
+                    <div style="position:relative;">
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="{{ __('بحث بالاسم، الجوال، البريد...') }}"
+                            class="form-control form-control-sm"
+                            style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 36px 8px 14px;font-size:13px;">
+                        <i class="bi bi-search" style="position:absolute;{{ app()->getLocale()=='ar'?'left':'right' }}:12px;top:50%;transform:translateY(-50%);color:var(--crm-text-muted);"></i>
+                    </div>
+                </div>
+
+                {{-- فلتر حالة العميل --}}
+                <div class="col-6 col-md-2">
+                    <select name="status" class="form-select form-select-sm" style="border-radius:8px;font-size:13px;padding:8px 12px;">
+                        <option value="">{{ __('— كل حالات العملاء —') }}</option>
+                        @foreach($statuses as $key => $s)
+                            <option value="{{ $key }}" {{ request('status') === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- فلتر مصدر التواصل --}}
+                <div class="col-6 col-md-2">
+                    <select name="contact_source_id" class="form-select form-select-sm" style="border-radius:8px;font-size:13px;padding:8px 12px;">
+                        <option value="">{{ __('— كل المصادر —') }}</option>
+                        @foreach($sources as $src)
+                            <option value="{{ $src->id }}" {{ request('contact_source_id') == $src->id ? 'selected' : '' }}>{{ $src->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- فلتر الموظف المسؤول --}}
+                <div class="col-6 col-md-2">
+                    <select name="employee_id" class="form-select form-select-sm" style="border-radius:8px;font-size:13px;padding:8px 12px;">
+                        <option value="">{{ __('— كل الموظفين —') }}</option>
+                        @foreach($employees as $emp)
+                            <option value="{{ $emp->id }}" {{ request('employee_id') == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- أزرار الإجراءات --}}
+                <div class="col-6 col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn-crm-primary flex-fill" style="padding:8px 14px;font-size:13px;">
+                        <i class="bi bi-funnel me-1"></i> {{ __('تصفية') }}
+                    </button>
+                    @if(request()->anyFilled(['search', 'status', 'contact_source_id', 'employee_id', 'booking_status_group']))
+                    <a href="{{ route('crm.leads.index') }}" class="btn btn-sm btn-light border rounded-3 text-muted d-flex align-items-center" title="{{ __('إعادة تعيين') }}">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Results Counter & Selection Helper Banner --}}
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 px-1">
+        <div style="font-size:12.5px;color:var(--crm-text-muted);">
+            {{ __('نتائج البحث:') }} <strong>{{ number_format($leads->total()) }}</strong> {{ __('عميل') }}
+            @if(request('booking_status_group'))
+                <span class="badge bg-light text-dark border ms-1">
+                    {{ match(request('booking_status_group')) {
+                        'active' => __('فلتر: طلبات نشطة'),
+                        'received' => __('فلتر: طلبات مستلمة'),
+                        'closed' => __('فلتر: طلبات مغلقة'),
+                        'no_orders' => __('فلتر: بدون طلبات'),
+                        default => ''
+                    } }}
+                </span>
+            @endif
+        </div>
+        <div id="selectionStatusText" class="text-success fw-bold d-none" style="font-size:12.5px;">
+            <i class="bi bi-check-all me-1"></i> <span id="selectedCountText">0</span> {{ __('عميل محدد') }}
+        </div>
+    </div>
 
     {{-- Table --}}
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="border:1px solid var(--crm-border)!important;">
-        <div class="card-header bg-white border-0 px-4 py-3" style="border-bottom:1px solid var(--crm-border)!important;">
-            <h6 class="fw-bold mb-0">{{ __('العملاء') }}</h6>
+        <div class="card-header bg-white border-0 px-4 py-3 d-flex justify-content-between align-items-center" style="border-bottom:1px solid var(--crm-border)!important;">
+            <h6 class="fw-bold mb-0 text-dark">{{ __('جدول العملاء') }}</h6>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-sm btn-light border rounded-2 d-none" id="btnSelectAllOnPage">
+                    {{ __('تحديد كل الصفحة') }}
+                </button>
+            </div>
         </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead style="background:#F8F9FC;">
                     <tr>
                         <th class="px-4 py-3 text-muted fw-bold" style="font-size:12px;width:40px;">
-                            <input type="checkbox" id="selectAllLeads" class="form-check-input">
+                            <input type="checkbox" id="selectAllLeads" class="form-check-input" title="{{ __('تحديد الكل') }}">
                         </th>
-                        <th class="px-4 py-3 text-muted fw-bold" style="font-size:12px;">{{ __('رقم العميل') }}</th>
+                        <th class="px-3 py-3 text-muted fw-bold" style="font-size:12px;">{{ __('رقم العميل') }}</th>
                         <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('اسم العميل') }}</th>
                         <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('الهاتف') }}</th>
-                        <th class="py-3 text-muted fw-bold text-center" style="font-size:12px;">{{ __('عدد الطلبات') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('نوع السيارات') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('فئة الديون') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('ميعاد طلب') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('الحالة') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('الإجراءات') }}</th>
+                        <th class="py-3 text-muted fw-bold text-center" style="font-size:12px;">{{ __('الطلبات ومسارها') }}</th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('السيارة المطلوبة') }}</th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('مصدر العميل') }}</th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('تاريخ الإضافة') }}</th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('حالة العميل') }}</th>
+                        <th class="py-3 text-muted fw-bold text-end px-4" style="font-size:12px;">{{ __('الإجراءات') }}</th>
                     </tr>
                 </thead>
                 <tbody class="border-top-0">
@@ -103,25 +236,80 @@
                         <td class="px-4">
                             <input type="checkbox" name="lead_ids[]" value="{{ $lead->id }}"
                                    class="form-check-input lead-checkbox"
+                                   data-name="{{ $lead->client_name }}"
+                                   data-phone="{{ $lead->client_phone }}"
                                    {{ $lead->client_phone ? '' : 'disabled' }}>
                         </td>
-                        <td class="px-4 fw-bold" style="font-size:13px;">#{{ $lead->id }}</td>
+                        <td class="px-3 fw-bold" style="font-size:13px;">
+                            <a href="{{ route('crm.leads.show', $lead) }}" class="text-decoration-none fw-bold" style="color:var(--crm-red);">#{{ $lead->id }}</a>
+                        </td>
                         <td>
                             <div class="fw-bold" style="font-size:13px;color:var(--crm-text);">{{ $lead->client_name }}</div>
-                        </td>
-                        <td style="font-size:13px;" dir="ltr">{{ $lead->client_phone ?? '—' }}</td>
-                        <td class="text-center fw-bold" style="font-size:13px;">{{$lead->orders()->count()}}</td>
-                        <td style="font-size:12px;color:var(--crm-text-muted);">
-                            {{ $lead->car?->name ?? '—' }}
-                            @if($lead->car)
-                            <br><small>{{ $lead->car->brand?->name }}</small>
+                            @if($lead->client_email)
+                                <div class="text-muted small" style="font-size:11px;">{{ $lead->client_email }}</div>
                             @endif
                         </td>
-                        <td>
-                            <span class="status-dot planned">{{ __('اقتصادية') }}</span>
+                        <td style="font-size:13px;">
+                            @if($lead->client_phone)
+                                <div class="d-flex align-items-center gap-1">
+                                    <span dir="ltr" class="fw-bold">{{ $lead->client_phone }}</span>
+                                    <a href="https://wa.me/{{ preg_replace('/\D/', '', $lead->client_phone) }}" target="_blank" class="badge text-white text-decoration-none" style="background:#25D366;font-size:10px;padding:3px 6px;" title="{{ __('مراسلة واتساب') }}">
+                                        <i class="bi bi-whatsapp"></i>
+                                    </a>
+                                </div>
+                            @else
+                                <span class="text-muted">—</span>
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            @php
+                                $ordersCount = $lead->orders_count ?? $lead->orders->count();
+                                $hasActiveOrder = $lead->orders->whereIn('status', \App\Http\Controllers\CRM\LeadController::ACTIVE_BOOKING_STATUSES)->isNotEmpty();
+                                $hasReceivedOrder = $lead->orders->whereIn('status', \App\Http\Controllers\CRM\LeadController::RECEIVED_BOOKING_STATUSES)->isNotEmpty();
+                                $hasClosedOrder = $lead->orders->whereIn('status', \App\Http\Controllers\CRM\LeadController::CLOSED_BOOKING_STATUSES)->isNotEmpty();
+                            @endphp
+                            @if($ordersCount > 0)
+                                <div class="d-flex flex-column align-items-center gap-1">
+                                    <span class="badge bg-light text-dark border px-2 py-1 fw-bold" style="font-size:12px;">
+                                        {{ $ordersCount }} {{ __('طلب') }}
+                                    </span>
+                                    <div class="d-flex gap-1">
+                                        @if($hasReceivedOrder)
+                                            <span class="badge" style="background:#DCFCE7;color:#16A34A;font-size:10px;" title="{{ __('يوجد طلب مستلم') }}">
+                                                <i class="bi bi-patch-check-fill"></i> {{ __('مستلم') }}
+                                            </span>
+                                        @endif
+                                        @if($hasActiveOrder)
+                                            <span class="badge" style="background:#EFF6FF;color:#2563EB;font-size:10px;" title="{{ __('يوجد طلب نشط') }}">
+                                                <i class="bi bi-lightning-charge-fill"></i> {{ __('نشط') }}
+                                            </span>
+                                        @endif
+                                        @if($hasClosedOrder && !$hasReceivedOrder && !$hasActiveOrder)
+                                            <span class="badge" style="background:#FEF2F2;color:#DC2626;font-size:10px;" title="{{ __('طلب مغلق') }}">
+                                                <i class="bi bi-x-circle-fill"></i> {{ __('مغلق') }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            @else
+                                <span class="badge bg-light text-muted border" style="font-size:11px;">{{ __('بدون طلبات') }}</span>
+                            @endif
                         </td>
                         <td style="font-size:12px;color:var(--crm-text-muted);">
-                            {{ $lead->started_at?->format('d/m/Y') ?? '—' }}
+                            @if($lead->car)
+                                <div class="fw-bold text-dark">{{ $lead->car->brand?->name }} {{ $lead->car->name }}</div>
+                            @else
+                                <span class="text-muted">—</span>
+                            @endif
+                        </td>
+                        <td style="font-size:12px;">
+                            <span class="badge bg-light text-dark border px-2 py-1">
+                                {{ $lead->contactSource?->name ?? __('مباشر') }}
+                            </span>
+                        </td>
+                        <td style="font-size:12px;color:var(--crm-text-muted);">
+                            <div>{{ $lead->created_at?->format('d/m/Y') ?? ($lead->started_at?->format('d/m/Y') ?? '—') }}</div>
+                            <div style="font-size:11px;">{{ $lead->created_at?->diffForHumans() }}</div>
                         </td>
                         <td>
                             @php
@@ -132,30 +320,24 @@
                                     'negotiation' => 'waiting',
                                     'converted'   => 'done',
                                     'lost'        => 'late',
-                                    'in_progress' => 'planned',
-                                    'waiting'     => 'waiting',
-                                    'sold'        => 'done',
-                                    'rejected'    => 'late',
                                     default       => 'cancelled',
                                 };
                             @endphp
                             <span class="status-dot {{ $dotClass }}">{{ $lead->status_label }}</span>
                         </td>
-                        <td>
-                            <div class="d-flex gap-2 align-items-center">
-                                <a href="{{ route('crm.leads.show', $lead) }}" class="btn btn-sm btn-light rounded-2" title="{{ __('عرض') }}">
-                                    <i class="bi bi-eye" style="font-size:14px;"></i>
+                        <td class="text-end px-4">
+                            <div class="d-flex gap-1 justify-content-end align-items-center">
+                                <a href="{{ route('crm.leads.show', $lead) }}" class="btn btn-sm btn-light rounded-2 border" title="{{ __('عرض التفاصيل') }}">
+                                    <i class="bi bi-eye" style="font-size:14px;color:var(--crm-text);"></i>
                                 </a>
                                 @can('manage-leads')
-                                <a href="{{ route('crm.leads.edit', $lead) }}" class="btn btn-sm btn-light rounded-2" title="{{ __('تعديل') }}">
-                                    <i class="bi bi-pencil" style="font-size:14px;"></i>
+                                <a href="{{ route('crm.leads.edit', $lead) }}" class="btn btn-sm btn-light rounded-2 border" title="{{ __('تعديل') }}">
+                                    <i class="bi bi-pencil" style="font-size:14px;color:var(--crm-text);"></i>
                                 </a>
-                                @endcan
-                                @can('manage-leads')
-                                <form action="{{ route('crm.leads.destroy', $lead) }}" method="POST"
-                                      onsubmit="return confirm('{{ __('هل أنت متأكد؟') }}')">
+                                <form action="{{ route('crm.leads.destroy', $lead) }}" method="POST" class="m-0"
+                                      onsubmit="return confirm('{{ __('هل أنت متأكد من حذف هذا العميل؟') }}')">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-light rounded-2" title="{{ __('حذف') }}"
+                                    <button class="btn btn-sm btn-light rounded-2 border" title="{{ __('حذف') }}"
                                             style="color:var(--crm-red);">
                                         <i class="bi bi-trash" style="font-size:14px;"></i>
                                     </button>
@@ -168,7 +350,8 @@
                     <tr>
                         <td colspan="10" class="text-center text-muted py-5">
                             <i class="bi bi-person-x fs-1 d-block mb-2 opacity-25"></i>
-                            {{ __('لا يوجد عملاء حالياً') }}
+                            <div class="fw-bold">{{ __('لا يوجد عملاء يطابقون خيارات الفلتر الحالية') }}</div>
+                            <small class="text-muted">{{ __('جرب تغيير خيارات البحث أو الفلاتر بالأعلى') }}</small>
                         </td>
                     </tr>
                     @endforelse
@@ -176,8 +359,13 @@
             </table>
         </div>
         @if($leads->hasPages())
-        <div class="card-footer bg-white border-0 py-3" style="border-top:1px solid var(--crm-border)!important;">
-            {{ $leads->links() }}
+        <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center" style="border-top:1px solid var(--crm-border)!important;">
+            <div class="small text-muted">
+                {{ __('عرض') }} <strong>{{ $leads->firstItem() ?? 0 }}</strong> - <strong>{{ $leads->lastItem() ?? 0 }}</strong> {{ __('من أصل') }} <strong>{{ $leads->total() }}</strong>
+            </div>
+            <div>
+                {{ $leads->links() }}
+            </div>
         </div>
         @endif
     </div>
@@ -185,46 +373,78 @@
     {{-- WhatsApp Campaign Floating Button --}}
     <button type="button" id="btnWhatsappCampaign"
             class="btn btn-success rounded-pill shadow-lg d-none align-items-center gap-2"
-            style="position:fixed;bottom:30px;{{ app()->getLocale()=='ar'?'left':'right' }}:30px;z-index:1050;padding:12px 24px;font-size:14px;font-weight:600;">
-        <i class="bi bi-whatsapp" style="font-size:18px;"></i>
-        <span id="selectedCount">0</span> {{ __('إرسال واتساب') }}
+            style="position:fixed;bottom:30px;{{ app()->getLocale()=='ar'?'left':'right' }}:30px;z-index:1050;padding:12px 24px;font-size:14px;font-weight:700;box-shadow:0 8px 24px rgba(22,163,74,0.35)!important;">
+        <i class="bi bi-whatsapp" style="font-size:20px;"></i>
+        <span>{{ __('إرسال واتساب للمحددين') }} (<span id="selectedCount">0</span>)</span>
     </button>
 
     {{-- WhatsApp Campaign Modal --}}
     <div class="modal fade" id="whatsappCampaignModal" tabindex="-1" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow">
-                <div class="modal-header border-0 pb-0">
-                    <h6 class="modal-title fw-bold">
-                        <i class="bi bi-whatsapp text-success"></i> {{ __('حملة واتساب') }}
-                    </h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3 p-3 rounded-3" style="background:#F0FFF4;">
-                        <small class="text-muted">
-                            {{ __('سيتم إرسال الرسالة إلى') }}
-                            <strong id="modalSelectedCount">0</strong>
-                            {{ __('عميل لديهم أرقام هواتف صالحة') }}
-                        </small>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+                <div class="modal-header border-0 pb-0 px-4 pt-4" style="background:#F0FDF4;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:#DCFCE7;color:#16A34A;">
+                            <i class="bi bi-whatsapp fs-5"></i>
+                        </div>
+                        <div>
+                            <h6 class="modal-title fw-bold mb-0 text-success">{{ __('حملة رسائل واتساب الجماعية') }}</h6>
+                            <span class="text-muted" style="font-size:12px;">{{ __('استهداف العملاء برسائل مخصصة وتلقائية') }}</span>
+                        </div>
                     </div>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 py-3">
+                    {{-- Target Mode Selection --}}
+                    <div class="mb-3 p-3 rounded-3" style="background:#F8FAFC;border:1px solid var(--crm-border);">
+                        <label class="form-label fw-bold small text-dark mb-2">{{ __('تحديد الشريحة المستهدفة للإرسال:') }}</label>
+                        <div class="d-flex flex-column gap-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="targetMode" id="targetModeSelected" value="selected" checked>
+                                <label class="form-check-label" for="targetModeSelected">
+                                    <strong>{{ __('العملاء المحددين فقط في الصفحة') }}</strong>
+                                    (<span id="modalSelectedCount">0</span> {{ __('عميل') }})
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="targetMode" id="targetModeFiltered" value="filtered">
+                                <label class="form-check-label" for="targetModeFiltered">
+                                    <strong>{{ __('كافة العملاء المطابقين للفلتر الحالي') }}</strong>
+                                    ({{ $leads->total() }} {{ __('عميل عبر كافة الصفحات') }})
+                                    @if(request('booking_status_group'))
+                                        <span class="badge bg-success-subtle text-success ms-1">
+                                            {{ match(request('booking_status_group')) {
+                                                'active' => __('طلبات نشطة'),
+                                                'received' => __('طلبات مستلمة'),
+                                                'closed' => __('طلبات مغلقة'),
+                                                'no_orders' => __('بدون طلبات'),
+                                                default => ''
+                                            } }}
+                                        </span>
+                                    @endif
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
-                        <label class="form-label fw-bold">{{ __('الرسالة') }}</label>
-                        <textarea id="campaignMessage" class="form-control rounded-3" rows="5"
-                                  placeholder="{{ __('اكتب رسالتك هنا... يمكنك استخدام {name} لاسم العميل و {phone} لرقم هاتفه') }}"></textarea>
+                        <label class="form-label fw-bold small text-muted">{{ __('نص الرسالة') }} <span class="text-danger">*</span></label>
+                        <textarea id="campaignMessage" class="form-control bg-light border-0 shadow-none" rows="5" style="border-radius:10px;font-size:13.5px;line-height:1.6;"
+                                  placeholder="{{ __('اكتب نص الرسالة هنا... مثال: مرحباً أستاذ {name}، يسعدنا في زاد كابيتال التواصل معك...') }}"></textarea>
                     </div>
-                    <div class="mb-2">
-                        <small class="text-muted">
-                            <strong>{{ __('المتغيرات المتاحة:') }}</strong>
-                            <code>{name}</code> → {{ __('اسم العميل') }},
-                            <code>{phone}</code> → {{ __('رقم الهاتف') }}
-                        </small>
+
+                    <div class="p-3 rounded-3 mb-2" style="background:#FFFBEB;border:1px solid #FEF3C7;font-size:12px;color:#92400E;">
+                        <div class="fw-bold mb-1"><i class="bi bi-info-circle me-1"></i> {{ __('المتغيرات المتاحة للدمج التلقائي في الرسالة:') }}</div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <span class="badge bg-white text-dark border pointer" onclick="insertPlaceholder('{name}')" style="cursor:pointer;"><code>{name}</code> ← {{ __('اسم العميل') }}</span>
+                            <span class="badge bg-white text-dark border pointer" onclick="insertPlaceholder('{phone}')" style="cursor:pointer;"><code>{phone}</code> ← {{ __('رقم هاتف العميل') }}</span>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">{{ __('إلغاء') }}</button>
-                    <button type="button" id="btnSendCampaign" class="btn btn-success rounded-3 px-4">
-                        <i class="bi bi-send"></i> {{ __('إرسال') }}
+                <div class="modal-footer border-0 px-4 pb-4 pt-0 gap-2">
+                    <button type="button" class="btn btn-light py-2 px-3 fw-bold rounded-3 flex-fill" data-bs-dismiss="modal">{{ __('إلغاء') }}</button>
+                    <button type="button" id="btnSendCampaign" class="btn btn-success py-2 px-4 fw-bold rounded-3 flex-fill text-white">
+                        <i class="bi bi-send-fill me-1"></i> {{ __('بدء إرسال الحملة') }}
                     </button>
                 </div>
             </div>
@@ -236,106 +456,152 @@
 
 @section('scripts')
 <script>
+function insertPlaceholder(tag) {
+    const textarea = document.getElementById('campaignMessage');
+    if (!textarea) return;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    textarea.value = text.substring(0, start) + tag + text.substring(end);
+    textarea.focus();
+    textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const selectAll = document.getElementById('selectAllLeads');
     const checkboxes = document.querySelectorAll('.lead-checkbox');
     const btnCampaign = document.getElementById('btnWhatsappCampaign');
+    const btnOpenFiltered = document.getElementById('btnOpenCampaignFiltered');
     const countEl = document.getElementById('selectedCount');
     const modalCountEl = document.getElementById('modalSelectedCount');
-    const modal = new bootstrap.Modal(document.getElementById('whatsappCampaignModal'));
+    const selectionStatusText = document.getElementById('selectionStatusText');
+    const selectedCountText = document.getElementById('selectedCountText');
+    const modalEl = document.getElementById('whatsappCampaignModal');
+    const modal = new bootstrap.Modal(modalEl);
     const btnSend = document.getElementById('btnSendCampaign');
     const messageInput = document.getElementById('campaignMessage');
+    const targetModeSelected = document.getElementById('targetModeSelected');
+    const targetModeFiltered = document.getElementById('targetModeFiltered');
 
     function updateCount() {
         const checked = document.querySelectorAll('.lead-checkbox:checked').length;
         countEl.textContent = checked;
         modalCountEl.textContent = checked;
+        if (selectedCountText) selectedCountText.textContent = checked;
+
         if (checked > 0) {
             btnCampaign.classList.remove('d-none');
             btnCampaign.classList.add('d-flex');
+            if (selectionStatusText) selectionStatusText.classList.remove('d-none');
         } else {
             btnCampaign.classList.add('d-none');
             btnCampaign.classList.remove('d-flex');
+            if (selectionStatusText) selectionStatusText.classList.add('d-none');
         }
     }
 
-    selectAll.addEventListener('change', function () {
-        checkboxes.forEach(cb => {
-            if (!cb.disabled) {
-                cb.checked = selectAll.checked;
-            }
+    if (selectAll) {
+        selectAll.addEventListener('change', function () {
+            checkboxes.forEach(cb => {
+                if (!cb.disabled) {
+                    cb.checked = selectAll.checked;
+                }
+            });
+            updateCount();
         });
-        updateCount();
-    });
+    }
 
     checkboxes.forEach(cb => {
         cb.addEventListener('change', updateCount);
     });
 
-    btnCampaign.addEventListener('click', function () {
-        const checked = document.querySelectorAll('.lead-checkbox:checked').length;
-        if (checked === 0) return;
-        modal.show();
-    });
-
-    btnSend.addEventListener('click', function () {
-        const message = messageInput.value.trim();
-        if (!message) {
-            messageInput.classList.add('is-invalid');
-            return;
-        }
-        messageInput.classList.remove('is-invalid');
-
-        const leadIds = Array.from(document.querySelectorAll('.lead-checkbox:checked'))
-            .map(cb => parseInt(cb.value));
-
-        if (leadIds.length === 0) return;
-
-        btnSend.disabled = true;
-        btnSend.innerHTML = '<span class="spinner-border spinner-border-sm"></span> {{ __("جاري الإرسال...") }}';
-
-        fetch('{{ route("crm.leads.whatsapp-campaign") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                lead_ids: leadIds,
-                message: message,
-            }),
-        })
-        .then(res => res.json().then(data => ({ status: res.status, data })))
-        .then(({ status, data }) => {
-            modal.hide();
-            messageInput.value = '';
-            selectAll.checked = false;
-            checkboxes.forEach(cb => cb.checked = false);
-            updateCount();
-
-            if (status >= 200 && status < 300 && data.success) {
-                showToast(data.message, 'success');
-            } else {
-                showToast(data.message || '{{ __("حدث خطأ") }}', 'danger');
-            }
-        })
-        .catch(() => {
-            showToast('{{ __("حدث خطأ في الاتصال") }}', 'danger');
-        })
-        .finally(() => {
-            btnSend.disabled = false;
-            btnSend.innerHTML = '<i class="bi bi-send"></i> {{ __("إرسال") }}';
+    if (btnCampaign) {
+        btnCampaign.addEventListener('click', function () {
+            if (targetModeSelected) targetModeSelected.checked = true;
+            modal.show();
         });
-    });
+    }
+
+    if (btnOpenFiltered) {
+        btnOpenFiltered.addEventListener('click', function () {
+            if (targetModeFiltered) targetModeFiltered.checked = true;
+            modal.show();
+        });
+    }
+
+    if (btnSend) {
+        btnSend.addEventListener('click', function () {
+            const message = messageInput.value.trim();
+            if (!message) {
+                messageInput.classList.add('is-invalid');
+                return;
+            }
+            messageInput.classList.remove('is-invalid');
+
+            const isTargetAllFiltered = targetModeFiltered && targetModeFiltered.checked;
+            const leadIds = Array.from(document.querySelectorAll('.lead-checkbox:checked'))
+                .map(cb => parseInt(cb.value));
+
+            if (!isTargetAllFiltered && leadIds.length === 0) {
+                alert('{{ __("يرجى تحديد عميل واحد على الأقل أو اختيار إرسال للفلتر الحالي.") }}');
+                return;
+            }
+
+            btnSend.disabled = true;
+            btnSend.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> {{ __("جاري جدولة الإرسال...") }}';
+
+            const payload = {
+                message: message,
+                target_all_filtered: isTargetAllFiltered ? 1 : 0,
+                lead_ids: leadIds,
+                search: '{{ request("search") }}',
+                status: '{{ request("status") }}',
+                contact_source_id: '{{ request("contact_source_id") }}',
+                employee_id: '{{ request("employee_id") }}',
+                booking_status_group: '{{ request("booking_status_group") }}',
+                booking_status: '{{ request("booking_status") }}'
+            };
+
+            fetch('{{ route("crm.leads.whatsapp-campaign") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(res => res.json().then(data => ({ status: res.status, data })))
+            .then(({ status, data }) => {
+                modal.hide();
+                messageInput.value = '';
+                if (selectAll) selectAll.checked = false;
+                checkboxes.forEach(cb => cb.checked = false);
+                updateCount();
+
+                if (status >= 200 && status < 300 && data.success) {
+                    showToast(data.message, 'success');
+                } else {
+                    showToast(data.message || '{{ __("حدث خطأ أثناء الإرسال") }}', 'danger');
+                }
+            })
+            .catch(() => {
+                showToast('{{ __("حدث خطأ في الاتصال بالخادم") }}', 'danger');
+            })
+            .finally(() => {
+                btnSend.disabled = false;
+                btnSend.innerHTML = '<i class="bi bi-send-fill me-1"></i> {{ __("بدء إرسال الحملة") }}';
+            });
+        });
+    }
 
     function showToast(message, type) {
         const toast = document.createElement('div');
-        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-        toast.style.cssText = 'top:80px;right:20px;z-index:9999;min-width:300px;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
-        toast.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed shadow-lg rounded-3`;
+        toast.style.cssText = 'top:80px;right:20px;z-index:9999;min-width:320px;font-weight:bold;';
+        toast.innerHTML = `<i class="bi ${type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'} me-2"></i>${message}<button type="button" class="btn-close shadow-none" data-bs-dismiss="alert"></button>`;
         document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 5000);
+        setTimeout(() => toast.remove(), 6000);
     }
 });
 </script>

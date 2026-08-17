@@ -5,12 +5,17 @@ namespace App\Http\Controllers\CRM;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\BrandType;
+use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class BrandController extends Controller
 {
+    public function __construct(
+        protected ImageOptimizerService $imageOptimizer
+    ) {}
+
     public function index()
     {
         $brands = Brand::withCount('cars')->with('brandType')->latest()->paginate(20);
@@ -25,12 +30,12 @@ class BrandController extends Controller
             'name' => 'required|array',
             'name.ar' => 'required|string|max:100',
             'name.en' => 'required|string|max:100',
-            'logo' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'logo' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
             'brand_type_id' => 'nullable|exists:brand_types,id',
         ]);
         $data['slug'] = Str::slug($data['name']['en']);
         if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('brands', 'public');
+            $data['logo'] = $this->imageOptimizer->storeAndOptimize($request->file('logo'), 'brands', ['maxWidth' => 500, 'quality' => 85]);
         }
         $brand = Brand::create($data);
 
@@ -56,7 +61,7 @@ class BrandController extends Controller
             'name' => 'required|array',
             'name.ar' => 'required|string|max:100',
             'name.en' => 'required|string|max:100',
-            'logo' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'logo' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
             'is_active' => 'boolean',
             'brand_type_id' => 'nullable|exists:brand_types,id',
         ]);
@@ -65,7 +70,7 @@ class BrandController extends Controller
             if ($brand->logo) {
                 Storage::disk('public')->delete($brand->logo);
             }
-            $data['logo'] = $request->file('logo')->store('brands', 'public');
+            $data['logo'] = $this->imageOptimizer->storeAndOptimize($request->file('logo'), 'brands', ['maxWidth' => 500, 'quality' => 85]);
         }
         $brand->update($data);
 

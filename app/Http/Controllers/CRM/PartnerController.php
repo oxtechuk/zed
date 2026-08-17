@@ -4,11 +4,16 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App\Models\Partner;
+use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class PartnerController extends Controller
 {
+    public function __construct(
+        protected ImageOptimizerService $imageOptimizer
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -34,7 +39,7 @@ class PartnerController extends Controller
     {
         $request->validate([
             'name' => 'nullable|string|max:255',
-            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
             'link' => 'nullable|url',
             'sort_order' => 'nullable|integer',
         ]);
@@ -42,7 +47,7 @@ class PartnerController extends Controller
         $data = $request->except('logo');
 
         if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('partners', 'public');
+            $data['logo'] = $this->imageOptimizer->storeAndOptimize($request->file('logo'), 'partners', ['maxWidth' => 500, 'quality' => 85]);
         }
 
         Partner::create($data);
@@ -75,7 +80,7 @@ class PartnerController extends Controller
 
         $request->validate([
             'name' => 'nullable|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
             'link' => 'nullable|url',
             'sort_order' => 'nullable|integer',
         ]);
@@ -86,7 +91,7 @@ class PartnerController extends Controller
             if ($partner->logo) {
                 Storage::disk('public')->delete($partner->logo);
             }
-            $data['logo'] = $request->file('logo')->store('partners', 'public');
+            $data['logo'] = $this->imageOptimizer->storeAndOptimize($request->file('logo'), 'partners', ['maxWidth' => 500, 'quality' => 85]);
         }
 
         $partner->update($data);

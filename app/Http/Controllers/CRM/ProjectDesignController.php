@@ -4,11 +4,16 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProjectDesign;
+use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProjectDesignController extends Controller
 {
+    public function __construct(
+        protected ImageOptimizerService $imageOptimizer
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -34,7 +39,7 @@ class ProjectDesignController extends Controller
     {
         $request->validate([
             'name' => 'required|array',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5000',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
             'sort_order' => 'nullable|integer',
             'is_featured' => 'nullable|boolean',
             'color' => 'nullable|string|max:50',
@@ -51,7 +56,7 @@ class ProjectDesignController extends Controller
         $data['is_featured'] = $request->boolean('is_featured');
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('designs', 'public');
+            $data['image'] = $this->imageOptimizer->storeAndOptimize($request->file('image'), 'designs', ['maxWidth' => 1200, 'quality' => 82]);
         }
 
         ProjectDesign::create($data);
@@ -84,7 +89,7 @@ class ProjectDesignController extends Controller
 
         $request->validate([
             'name' => 'required|array',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:5000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:8192',
             'sort_order' => 'nullable|integer',
             'is_featured' => 'nullable|boolean',
             'color' => 'nullable|string|max:50',
@@ -104,7 +109,7 @@ class ProjectDesignController extends Controller
             if ($design->image) {
                 Storage::disk('public')->delete($design->image);
             }
-            $data['image'] = $request->file('image')->store('designs', 'public');
+            $data['image'] = $this->imageOptimizer->storeAndOptimize($request->file('image'), 'designs', ['maxWidth' => 1200, 'quality' => 82]);
         }
 
         $design->update($data);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\SendWhatsAppCampaignMessage;
+use App\Models\Booking;
 use App\Models\Car;
 use App\Models\ContactSource;
 use App\Models\Employee;
@@ -13,10 +14,68 @@ use Illuminate\Validation\Rule;
 
 class LeadController extends Controller
 {
+    public const ACTIVE_BOOKING_STATUSES = [
+        'new', 'contacted_no_answer', 'recontact_client', 'waiting_documents',
+        'bank_review', 'approved', 'authorized', 'pending', 'waiting_supervisor_approval',
+    ];
+
+    public const RECEIVED_BOOKING_STATUSES = [
+        'received', 'sold', 'done',
+    ];
+
+    public const CLOSED_BOOKING_STATUSES = [
+        'lost_no_answer', 'lost_no_response', 'lost_wrong_info', 'lost_offer_not_suitable',
+        'lost_client_cancelled', 'lost_cancelled_after_approval', 'lost_rejected_high_liabilities',
+        'lost_rejected_simah', 'lost_rejected_finance_terms', 'rejected', 'lost',
+    ];
+
     public function index(Request $request)
     {
-        $query = Lead::with(['contactSource', 'car.brand', 'employee'])->latest();
+        $query = Lead::with(['contactSource', 'car.brand', 'employee', 'orders.car.brand'])
+            ->withCount('orders')
+            ->latest();
 
+        $this->applyFilters($query, $request);
+
+        $leads = $query->paginate(20)->withQueryString();
+        $statuses = Lead::STATUSES;
+        $bookingStatuses = Booking::STATUSES;
+        $sources = ContactSource::activeOrdered()->get();
+        $employees = Employee::where('is_active', true)->orderBy('name')->get();
+
+        // Calculate dynamic stats for Booking Status Groups & Total
+        $totalLeadsAllCount = Lead::count();
+        $activeOrdersLeadsCount = Lead::whereHas('orders', fn ($q) => $q->whereIn('status', self::ACTIVE_BOOKING_STATUSES))->count();
+        $receivedOrdersLeadsCount = Lead::whereHas('orders', fn ($q) => $q->whereIn('status', self::RECEIVED_BOOKING_STATUSES))->count();
+        $closedOrdersLeadsCount = Lead::whereHas('orders', fn ($q) => $q->whereIn('status', self::CLOSED_BOOKING_STATUSES)->orWhere('status', 'like', 'lost_%'))->count();
+        $noOrdersLeadsCount = Lead::whereDoesntHave('orders')->count();
+
+        // Lead Statuses stats
+        $activeLeadsCount = Lead::whereIn('status', ['new', 'contacted', 'interested', 'negotiation'])->count();
+        $newLeadsCount = Lead::where('status', 'new')->count();
+        $activeLeadsRatio = $totalLeadsAllCount > 0 ? round(($activeLeadsCount / $totalLeadsAllCount) * 100) : 0;
+        $newLeadsRatio = $totalLeadsAllCount > 0 ? round(($newLeadsCount / $totalLeadsAllCount) * 100) : 0;
+
+        return view('crm.leads.index', compact(
+            'leads',
+            'statuses',
+            'bookingStatuses',
+            'sources',
+            'employees',
+            'totalLeadsAllCount',
+            'activeOrdersLeadsCount',
+            'receivedOrdersLeadsCount',
+            'closedOrdersLeadsCount',
+            'noOrdersLeadsCount',
+            'activeLeadsCount',
+            'newLeadsCount',
+            'activeLeadsRatio',
+            'newLeadsRatio'
+        ));
+    }
+
+    private function applyFilters($query, Request $request): void
+    {
         if ($request->filled('search')) {
             $s = $request->search;
             $query->where(function ($q) use ($s) {
@@ -34,30 +93,22 @@ class LeadController extends Controller
         if ($request->filled('employee_id')) {
             $query->where('assigned_to', $request->employee_id);
         }
-
-        $leads = $query->paginate(20)->withQueryString();
-        $statuses = Lead::STATUSES;
-        $sources = ContactSource::activeOrdered()->get();
-        $employees = Employee::where('is_active', true)->orderBy('name')->get();
-
-        // Calculate dynamic stats
-        $totalLeadsAllCount = Lead::count();
-        $activeLeadsCount = Lead::whereIn('status', ['new', 'contacted', 'interested', 'negotiation'])->count();
-        $newLeadsCount = Lead::where('status', 'new')->count();
-        $activeLeadsRatio = $totalLeadsAllCount > 0 ? round(($activeLeadsCount / $totalLeadsAllCount) * 100) : 0;
-        $newLeadsRatio = $totalLeadsAllCount > 0 ? round(($newLeadsCount / $totalLeadsAllCount) * 100) : 0;
-
-        return view('crm.leads.index', compact(
-            'leads',
-            'statuses',
-            'sources',
-            'employees',
-            'totalLeadsAllCount',
-            'activeLeadsCount',
-            'newLeadsCount',
-            'activeLeadsRatio',
-            'newLeadsRatio'
-        ));
+        if ($request->filled('booking_status_group')) {
+            $group = $request->booking_status_group;
+            if ($group === 'active') {
+                $query->whereHas('orders', fn ($q) => $q->whereIn('status', self::ACTIVE_BOOKING_STATUSES));
+            } elseif ($group === 'received') {
+                $query->whereHas('orders', fn ($q) => $q->whereIn('status', self::RECEIVED_BOOKING_STATUSES));
+            } elseif ($group === 'closed' || $group === 'lost') {
+                $query->whereHas('orders', fn ($q) => $q->whereIn('status', self::CLOSED_BOOKING_STATUSES)->orWhere('status', 'like', 'lost_%'));
+            } elseif ($group === 'no_orders') {
+                $query->whereDoesntHave('orders');
+            }
+        }
+        if ($request->filled('booking_status')) {
+            $bStatus = $request->booking_status;
+            $query->whereHas('orders', fn ($q) => $q->where('status', $bStatus));
+        }
     }
 
     public function create()
@@ -113,20 +164,29 @@ class LeadController extends Controller
     public function whatsappCampaign(Request $request)
     {
         $request->validate([
-            'lead_ids' => 'required|array|min:1',
-            'lead_ids.*' => 'integer|exists:leads,id',
             'message' => 'required|string|max:2000',
         ]);
 
-        $leads = Lead::whereIn('id', $request->lead_ids)
-            ->whereNotNull('client_phone')
-            ->where('client_phone', '!=', '')
-            ->get();
+        if ($request->boolean('target_all_filtered')) {
+            $query = Lead::query();
+            $this->applyFilters($query, $request);
+            $leads = $query->whereNotNull('client_phone')->where('client_phone', '!=', '')->get();
+        } else {
+            $request->validate([
+                'lead_ids' => 'required|array|min:1',
+                'lead_ids.*' => 'integer|exists:leads,id',
+            ]);
+
+            $leads = Lead::whereIn('id', $request->lead_ids)
+                ->whereNotNull('client_phone')
+                ->where('client_phone', '!=', '')
+                ->get();
+        }
 
         if ($leads->isEmpty()) {
             return response()->json([
                 'success' => false,
-                'message' => __('لا يوجد عملاء بأرقام هواتف صالحة'),
+                'message' => __('لا يوجد عملاء بأرقام هواتف صالحة للإرسال'),
             ], 422);
         }
 
@@ -140,7 +200,7 @@ class LeadController extends Controller
         return response()->json([
             'success' => true,
             'total' => $leads->count(),
-            'message' => __('تم جدولة إرسال :count رسالة واتساب', ['count' => $leads->count()]),
+            'message' => __('تم جدولة إرسال :count رسالة واتساب بنجاح', ['count' => $leads->count()]),
         ]);
     }
 

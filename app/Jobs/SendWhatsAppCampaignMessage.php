@@ -52,9 +52,9 @@ class SendWhatsAppCampaignMessage implements ShouldQueue
         $result = $whatsapp->sendWhatsApp($lead->client_phone, $message);
 
         if ($result) {
-            Log::info("WhatsApp Campaign: Message sent to lead {$this->lead->id} ({$lead->client_phone})");
+            Log::info("WhatsApp Campaign: Message sent to lead {$lead->id} ({$lead->client_phone})");
         } else {
-            Log::error("WhatsApp Campaign: Failed to send to lead {$this->lead->id} ({$lead->client_phone})");
+            Log::error("WhatsApp Campaign: Failed to send to lead {$lead->id} ({$lead->client_phone})");
             $this->fail(new \Exception("Failed to send WhatsApp to lead {$this->leadId}"));
         }
     }

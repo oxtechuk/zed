@@ -13,7 +13,7 @@ class Booking extends Model
         'car_id', 'assigned_to', 'client_name', 'client_phone', 'client_email',
         'down_payment', 'duration_years', 'interest_rate', 'monthly_installment',
         'total_price', 'purchase_price', 'authorization_price', 'expenses', 'net_commission',
-        'notes', 'status', 'source', 'last_contacted_at', 'delivered_at',
+        'delivery_note', 'notes', 'status', 'source', 'last_contacted_at', 'delivered_at',
         'booking_type', 'location', 'calculator_bank_id', 'balloon_payment', 'offer_notes',
         'pending_reason', 'follow_up_at', 'proposed_status',
     ];
@@ -263,6 +263,24 @@ class Booking extends Model
     public function getProposedStatusLabelAttribute(): ?string
     {
         return self::STATUSES[$this->proposed_status]['label'] ?? null;
+    }
+
+    public function getDeliveryNoteTextAttribute(): ?string
+    {
+        if (! empty($this->delivery_note)) {
+            return $this->delivery_note;
+        }
+
+        // Fallback for previous records: extract note from status change history
+        $note = $this->relationLoaded('notes_list')
+            ? $this->notes_list->where('type', 'status_change')->where('new_status', 'received')->last()
+            : $this->notes_list()->where('type', 'status_change')->where('new_status', 'received')->latest('id')->first();
+
+        if ($note && preg_match('/(?:ملاحظة|ملاحظات|ملحوظة):\s*(.*)/us', $note->note, $matches)) {
+            return trim($matches[1]);
+        }
+
+        return null;
     }
 
     public function scopeNew($query)

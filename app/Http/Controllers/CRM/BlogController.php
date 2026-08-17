@@ -5,12 +5,17 @@ namespace App\Http\Controllers\CRM;
 use App\Http\Controllers\Controller;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
+use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
+    public function __construct(
+        protected ImageOptimizerService $imageOptimizer
+    ) {}
+
     public function index()
     {
         $posts = BlogPost::with('employee')->latest()->paginate(15);
@@ -37,7 +42,7 @@ class BlogController extends Controller
             'content' => 'required|array',
             'content.ar' => 'required|string',
             'content.en' => 'required|string',
-            'thumbnail' => 'nullable|image|max:5120',
+            'thumbnail' => 'nullable|image|max:8192',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string|max:255',
@@ -55,7 +60,7 @@ class BlogController extends Controller
         $data['published_at'] = $data['is_published'] ? now() : null;
 
         if ($request->hasFile('thumbnail')) {
-            $data['thumbnail'] = $request->file('thumbnail')->store('blog', 'public');
+            $data['thumbnail'] = $this->imageOptimizer->storeAndOptimize($request->file('thumbnail'), 'blog', ['maxWidth' => 1200, 'quality' => 82]);
         }
 
         $post = BlogPost::create($data);
@@ -104,7 +109,7 @@ class BlogController extends Controller
             if ($blog->thumbnail) {
                 Storage::disk('public')->delete($blog->thumbnail);
             }
-            $data['thumbnail'] = $request->file('thumbnail')->store('blog', 'public');
+            $data['thumbnail'] = $this->imageOptimizer->storeAndOptimize($request->file('thumbnail'), 'blog', ['maxWidth' => 1200, 'quality' => 82]);
         }
 
         $blog->update($data);

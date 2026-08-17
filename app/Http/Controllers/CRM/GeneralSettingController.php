@@ -4,11 +4,16 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class GeneralSettingController extends Controller
 {
+    public function __construct(
+        protected ImageOptimizerService $imageOptimizer
+    ) {}
+
     public function index()
     {
         $settings = Setting::all()->pluck('value', 'key');
@@ -212,7 +217,7 @@ class GeneralSettingController extends Controller
         $files = ['site_logo', 'footer_logo', 'site_favicon', 'breadcrumb_bg', 'hero_video', 'hero_ad_1_image', 'hero_ad_2_image', 'page_loader_image', 'default_car_image'];
         foreach ($files as $fileKey) {
             if ($request->hasFile($fileKey)) {
-                $path = $request->file($fileKey)->store('settings', 'public');
+                $path = $this->imageOptimizer->storeAndOptimize($request->file($fileKey), 'settings', ['maxWidth' => 1600, 'quality' => 85]);
                 Setting::updateOrCreate(['key' => $fileKey], ['value' => $path]);
             }
         }
@@ -226,7 +231,7 @@ class GeneralSettingController extends Controller
 
         $popupImage = $existingPopupValue['image'] ?? null;
         if ($request->hasFile('popup_image')) {
-            $popupImage = $request->file('popup_image')->store('settings/popup', 'public');
+            $popupImage = $this->imageOptimizer->storeAndOptimize($request->file('popup_image'), 'settings/popup', ['maxWidth' => 1200, 'quality' => 82]);
             if (! empty($existingPopupValue['image']) && \Storage::disk('public')->exists($existingPopupValue['image'])) {
                 \Storage::disk('public')->delete($existingPopupValue['image']);
             }
@@ -251,7 +256,7 @@ class GeneralSettingController extends Controller
             }
 
             foreach ($request->file('main_gallery') as $image) {
-                $path = $image->store('settings/gallery', 'public');
+                $path = $this->imageOptimizer->storeAndOptimize($image, 'settings/gallery', ['maxWidth' => 1600, 'quality' => 82]);
                 $galleryPaths[] = $path;
             }
             Setting::updateOrCreate(['key' => 'main_gallery'], ['value' => $galleryPaths]);
@@ -283,7 +288,7 @@ class GeneralSettingController extends Controller
             if ($oldImage && \Storage::disk('public')->exists($oldImage)) {
                 \Storage::disk('public')->delete($oldImage);
             }
-            $bookingHeroData['image'] = $request->file('booking_hero_image')->store('settings/booking', 'public');
+            $bookingHeroData['image'] = $this->imageOptimizer->storeAndOptimize($request->file('booking_hero_image'), 'settings/booking', ['maxWidth' => 1920, 'quality' => 82]);
         } elseif (! isset($bookingHeroData['image'])) {
             $existingHero = Setting::where('key', 'store_booking_hero')->first();
             $bookingHeroData['image'] = is_array($existingHero?->value) ? ($existingHero->value['image'] ?? null) : null;
@@ -298,7 +303,7 @@ class GeneralSettingController extends Controller
             if ($oldCarsHeroImage && \Storage::disk('public')->exists($oldCarsHeroImage)) {
                 \Storage::disk('public')->delete($oldCarsHeroImage);
             }
-            $carsHeroData['image'] = $request->file('cars_hero_image')->store('settings/cars', 'public');
+            $carsHeroData['image'] = $this->imageOptimizer->storeAndOptimize($request->file('cars_hero_image'), 'settings/cars', ['maxWidth' => 1920, 'quality' => 82]);
         } elseif (! isset($carsHeroData['image'])) {
             $existingCarsHero = Setting::where('key', 'store_hero')->first();
             $carsHeroData['image'] = is_array($existingCarsHero?->value) ? ($existingCarsHero->value['image'] ?? null) : null;
@@ -313,7 +318,7 @@ class GeneralSettingController extends Controller
             if ($oldOffersHeroImage && \Storage::disk('public')->exists($oldOffersHeroImage)) {
                 \Storage::disk('public')->delete($oldOffersHeroImage);
             }
-            $offersHeroData['image'] = $request->file('offers_hero_image')->store('settings/offers', 'public');
+            $offersHeroData['image'] = $this->imageOptimizer->storeAndOptimize($request->file('offers_hero_image'), 'settings/offers', ['maxWidth' => 1920, 'quality' => 82]);
         } elseif (! isset($offersHeroData['image'])) {
             $existingOffersHero = Setting::where('key', 'store_offers_hero')->first();
             $offersHeroData['image'] = is_array($existingOffersHero?->value) ? ($existingOffersHero->value['image'] ?? null) : null;

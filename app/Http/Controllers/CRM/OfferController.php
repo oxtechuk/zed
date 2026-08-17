@@ -5,10 +5,16 @@ namespace App\Http\Controllers\CRM;
 use App\Http\Controllers\Controller;
 use App\Models\Car;
 use App\Models\Offer;
+use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class OfferController extends Controller
 {
+    public function __construct(
+        protected ImageOptimizerService $imageOptimizer
+    ) {}
+
     public function index()
     {
         $offers = Offer::with('car.brand')->latest()->paginate(20);
@@ -34,11 +40,11 @@ class OfferController extends Controller
             'special_installment' => 'nullable|integer|min:0',
             'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date|after:starts_at',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:8192',
         ]);
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('offers', 'public');
+            $data['image'] = $this->imageOptimizer->storeAndOptimize($request->file('image'), 'offers', ['maxWidth' => 1200, 'quality' => 82]);
         }
 
         $offer = Offer::create($data);
@@ -65,16 +71,16 @@ class OfferController extends Controller
             'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date',
             'is_active' => 'boolean',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:8192',
         ]);
         $data['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
             // Delete old image if exists
-            if ($offer->image && \Storage::disk('public')->exists($offer->image)) {
-                \Storage::disk('public')->delete($offer->image);
+            if ($offer->image && Storage::disk('public')->exists($offer->image)) {
+                Storage::disk('public')->delete($offer->image);
             }
-            $data['image'] = $request->file('image')->store('offers', 'public');
+            $data['image'] = $this->imageOptimizer->storeAndOptimize($request->file('image'), 'offers', ['maxWidth' => 1200, 'quality' => 82]);
         }
 
         $offer->update($data);

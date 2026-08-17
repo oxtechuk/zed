@@ -212,6 +212,11 @@
                             @endphp
                             <div><i class="bi bi-calendar3 me-1 text-muted"></i> {{ $deliveryDate->format('d/m/Y') }}</div>
                             <div class="text-muted" style="font-size:11px;">{{ $deliveryDate->diffForHumans() }}</div>
+                            @if($b->delivery_note_text)
+                                <div class="text-muted mt-1" style="font-size:11px;" title="{{ $b->delivery_note_text }}">
+                                    <i class="bi bi-chat-square-text me-1 text-success"></i>{{ Str::limit($b->delivery_note_text, 25) }}
+                                </div>
+                            @endif
                         </td>
                         <td class="px-4">
                             <div class="d-flex gap-1 align-items-center">
@@ -285,6 +290,13 @@
                         </div>
                     </div>
                 </div>
+
+                @if($b->delivery_note_text)
+                <div class="p-2 rounded-3 mb-2" style="background:#F0FDF4;border:1px solid #BBF7D0;font-size:11.5px;color:#166534;">
+                    <div class="fw-bold mb-1"><i class="bi bi-chat-square-text me-1"></i>{{ __('ملاحظة التسليم') }}:</div>
+                    <div class="text-dark">{{ $b->delivery_note_text }}</div>
+                </div>
+                @endif
 
                 <div class="d-flex justify-content-between align-items-center small text-muted mb-2">
                     <div><i class="bi bi-person me-1"></i> {{ $b->employee?->name ?? __('غير معين') }}</div>

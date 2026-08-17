@@ -105,7 +105,7 @@
 
                     <div class="mt-3">
                         <label class="form-label fw-bold small text-muted">{{ __('ملاحظات التسليم (اختياري)') }}</label>
-                        <textarea name="note" class="form-control bg-light border-0 shadow-none" rows="2" style="border-radius:10px; font-size:13px;" placeholder="{{ __('ملاحظات حول استلام العميل للسيارة...') }}"></textarea>
+                        <textarea name="note" id="deliveredNote" class="form-control bg-light border-0 shadow-none" rows="2" style="border-radius:10px; font-size:13px;" placeholder="{{ __('ملاحظات حول استلام العميل للسيارة...') }}"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0 px-4 pb-4 pt-0 gap-2">
@@ -183,6 +183,29 @@
             const modalEl = document.getElementById('globalDeliveredModal');
             document.getElementById('globalDeliveredForm').action = updateUrl;
             document.getElementById('globalDeliveredBookingNumber').innerText = 'طلب #' + bookingId;
+            
+            const purchaseInput = document.getElementById('deliveredPurchasePrice');
+            const authInput = document.getElementById('deliveredAuthPrice');
+            const expensesInput = document.getElementById('deliveredExpenses');
+            const netCommissionInput = document.getElementById('deliveredNetCommission');
+            const noteInput = document.getElementById('deliveredNote');
+
+            if (purchaseInput && selectEl.hasAttribute('data-purchase-price')) {
+                purchaseInput.value = selectEl.getAttribute('data-purchase-price') || '';
+            }
+            if (authInput && selectEl.hasAttribute('data-auth-price')) {
+                authInput.value = selectEl.getAttribute('data-auth-price') || '';
+            }
+            if (expensesInput && selectEl.hasAttribute('data-expenses')) {
+                expensesInput.value = selectEl.getAttribute('data-expenses') || '0';
+            }
+            if (netCommissionInput && selectEl.hasAttribute('data-net-commission')) {
+                netCommissionInput.value = selectEl.getAttribute('data-net-commission') || '';
+            }
+            if (noteInput && selectEl.hasAttribute('data-delivery-note')) {
+                noteInput.value = selectEl.getAttribute('data-delivery-note') || '';
+            }
+
             const modal = new bootstrap.Modal(modalEl);
             modal.show();
             return;
