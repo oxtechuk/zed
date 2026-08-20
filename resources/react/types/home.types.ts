@@ -179,6 +179,7 @@ export interface IHomePageData {
   promo_cards?: any[];
   finance_steps?: any[];
   featured_section?: IFeaturedSection;
+  promo_countdown_banner?: any;
   budget_ranges?: IBudgetRange[];
   homepage_stats?: IHomepageStat[];
   page_sections?: IPageSections;

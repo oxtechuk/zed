@@ -76,9 +76,6 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                   />
                 )}
 
-                {/* Dark Gradient Overlay for optimal text & button readability */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#051023]/90 via-[#051023]/60 to-transparent rtl:bg-gradient-to-l rtl:from-[#051023]/90 rtl:via-[#051023]/60" />
-
                 {/* Content Overlay Grid */}
                 <div className="relative z-10 mx-auto max-w-7xl px-6 sm:px-10 lg:px-12 w-full h-full flex flex-col justify-center items-start text-start">
                   <div className="max-w-xl">
@@ -165,11 +162,10 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                   key={idx}
                   type="button"
                   onClick={() => setCurrentSlide(idx)}
-                  className={`h-[4px] sm:h-[6px] rounded-full transition-all duration-300 cursor-pointer ${
-                    idx === currentSlide
+                  className={`h-[4px] sm:h-[6px] rounded-full transition-all duration-300 cursor-pointer ${idx === currentSlide
                       ? "w-[40px] sm:w-[65px] md:w-[90px] bg-[#EDC98E]"
                       : "w-[16px] sm:w-[24px] md:w-[32px] bg-white/40 hover:bg-white/80"
-                  }`}
+                    }`}
                   aria-label={`Slide ${idx + 1}`}
                 />
               ))}

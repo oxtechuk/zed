@@ -21,6 +21,7 @@ import BudgetCarsSkeleton from "../components/skeletons/BudgetCarsSkeleton";
 import CarFinderSkeleton from "../components/skeletons/CarFinderSkeleton";
 import BrandsCarouselSkeleton from "../components/skeletons/BrandsCarouselSkeleton";
 import CarsGridSkeleton from "../components/skeletons/CarsGridSkeleton";
+import PromoCountdownBanner from "../components/PromoCountdownBanner";
 import LazySection from "../components/LazySection";
 import { useEffect } from "react";
 
@@ -275,6 +276,13 @@ export default function Home() {
           <BrandsCarousel brands={brands} />
         )}
       </LazySection>
+
+      {/* Promotional Countdown Banner (Managed from Admin Dashboard) */}
+      {!isLoading && (data?.promo_countdown_banner || data?.featured_section) && (
+        <PromoCountdownBanner
+          banner={data?.promo_countdown_banner || data?.featured_section}
+        />
+      )}
 
       <LazySection
         fallback={

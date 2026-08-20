@@ -10,18 +10,19 @@ class HomeSection extends Model
 {
     use HasTranslations;
 
-    public $translatable = ['title', 'subtitle', 'description', 'badge', 'button_text'];
+    public $translatable = ['title', 'subtitle', 'description', 'badge', 'button_text', 'extra_tag', 'disclaimer'];
 
     protected $fillable = [
         'key', 'title', 'subtitle', 'description', 'badge',
         'button_text', 'button_url', 'image', 'background_image',
-        'is_active', 'sort_order',
+        'is_active', 'sort_order', 'countdown_end', 'extra_tag', 'disclaimer',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'image' => AsImageUrl::class,
         'background_image' => AsImageUrl::class,
+        'countdown_end' => 'datetime',
     ];
 
     public function scopeKey($query, string $key)

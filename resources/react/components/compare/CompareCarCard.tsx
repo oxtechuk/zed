@@ -75,7 +75,7 @@ export default function CompareCarCard({
         <LazyImg
           src={imageUrl}
           alt={car.name}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+          className="absolute inset-0 h-full w-full object-cover object-bottom transition-transform duration-500 hover:scale-105"
         />
 
         {/* Dark Gradient Overlay for Title Visibility */}

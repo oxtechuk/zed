@@ -56,6 +56,7 @@ final class HomeApiService
             'highlighted_cars' => ($data['highlightedCars'] ?? collect())->values(),
             'hero_slides' => $this->heroSlides($data['heroSlides'] ?? collect()),
             'featured_section' => $this->featuredBanner($homeSections->get('featured_banner')),
+            'promo_countdown_banner' => $this->featuredBanner($homeSections->get('featured_banner')),
             'homepage_stats' => $homepageStats,
             'page_sections' => $this->pageSections($homeSections),
             'finance_steps' => $this->financeSteps($data['financeSteps'] ?? collect()),
@@ -124,11 +125,17 @@ final class HomeApiService
             : ($section->image ?: $section->background_image);
 
         return [
+            'is_active' => (bool) $section->is_active,
             'title' => $section->title,
             'subtitle' => $section->subtitle,
             'description' => $section->description,
             'badge' => $section->badge,
+            'extra_tag' => $section->extra_tag,
+            'disclaimer' => $section->disclaimer,
+            'countdown_end' => $section->countdown_end?->toIso8601String(),
             'button' => ['text' => $section->button_text, 'url' => $section->button_url],
+            'button_text' => $section->button_text,
+            'button_url' => $section->button_url,
             'image' => $image,
             'background_image' => $section->background_image,
         ];

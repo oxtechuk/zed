@@ -505,7 +505,7 @@
                             </div>
                             @if($booking->car->image_url)
                             <div class="mt-3 text-center">
-                                <img src="{{ $booking->car->image_url }}" alt="{{ $booking->car->name }}" class="img-fluid rounded-3" style="max-height:180px;object-fit:cover;">
+                                <img src="{{ $booking->car->image_url }}" alt="{{ $booking->car->name }}" class="img-fluid rounded-3" style="max-height:180px;object-fit:cover;object-position:bottom;">
                             </div>
                             @endif
                             @else

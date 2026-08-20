@@ -539,7 +539,7 @@
                             </div>
                             <?php if($booking->car->image_url): ?>
                             <div class="mt-3 text-center">
-                                <img src="<?php echo e($booking->car->image_url); ?>" alt="<?php echo e($booking->car->name); ?>" class="img-fluid rounded-3" style="max-height:180px;object-fit:cover;">
+                                <img src="<?php echo e($booking->car->image_url); ?>" alt="<?php echo e($booking->car->name); ?>" class="img-fluid rounded-3" style="max-height:180px;object-fit:cover;object-position:bottom;">
                             </div>
                             <?php endif; ?>
                             <?php else: ?>

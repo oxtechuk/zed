@@ -3,7 +3,7 @@ import Skeleton from "../Skeleton";
 export default function CarCardSkeleton() {
     return (
         <article className="mx-auto w-full max-w-[355px] overflow-hidden rounded-2xl border border-[#E7E9EF] bg-white text-start">
-            <div className="relative h-[208px] overflow-hidden">
+            <div className="relative h-[240px] overflow-hidden">
                 <Skeleton className="h-full w-full rounded-none" />
             </div>
 
