@@ -48,10 +48,10 @@ export default function CarCard({
 
     const cleanType =
         type &&
-        !/^[a-z0-9]+-[a-f0-9]{4,}$/i.test(type) &&
-        !type.includes("6a7") &&
-        !type.includes("family-") &&
-        !type.includes("fs-")
+            !/^[a-z0-9]+-[a-f0-9]{4,}$/i.test(type) &&
+            !type.includes("6a7") &&
+            !type.includes("family-") &&
+            !type.includes("fs-")
             ? type
             : "";
     const displayModel = model || cleanType;
@@ -74,14 +74,13 @@ export default function CarCard({
             </div>
 
             {/* Image Area */}
-            <div className="relative h-[240px] overflow-hidden bg-[#F8FAFC]">
+            <div className="relative h-[280px] overflow-hidden bg-[#F8FAFC] flex items-center justify-center">
                 <LazyImg
                     src={image}
                     alt={`${brand} ${name}`}
                     loading={loading}
-                    className="h-full w-full object-cover object-bottom transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
                 {/* Hover / Touch "عرض الآن" Overlay Pill */}
                 <div className="absolute inset-0 bg-black/25 opacity-0 transition-all duration-300 group-hover:opacity-100 flex items-center justify-center pointer-events-none z-10">

@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useRef, FormEvent } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { getCars } from "../services/api/cars.service";
 import { submitBooking } from "../services/api/booking.service";
@@ -27,19 +28,29 @@ export function useCarRequest() {
     const direction = useLanguageStore((s) => s.direction);
     const settings = useSettingsStore((s) => s.settings);
 
-    // Cars list
-    const [cars, setCars] = useState<CarItem[]>([]);
-    const [loadingCars, setLoadingCars] = useState(true);
+    const language = useLanguageStore((s) => s.language);
+
+    // Cars list with React Query caching
+    const { data: carsData, isLoading: loadingCars } = useQuery({
+        queryKey: ["car-request-cars", language],
+        queryFn: () => getCars({ per_page: 100 }),
+        staleTime: 5 * 60 * 1000,
+    });
+    const cars = useMemo(() => carsData?.data || [], [carsData]);
+
+    // Banks list with React Query caching
+    const { data: banksData, isLoading: loadingBanks } = useQuery({
+        queryKey: ["car-request-banks"],
+        queryFn: getBanks,
+        staleTime: 10 * 60 * 1000,
+    });
+    const banks = useMemo(() => (Array.isArray(banksData) ? banksData : []), [banksData]);
 
     // Selected Car & Options
     const [selectedCarId, setSelectedCarId] = useState<number>(0);
     const [selectedColor, setSelectedColor] = useState<string>("أبيض");
     const [term, setTerm] = useState<number>(60);
     const [customCarName, setCustomCarName] = useState<string>("");
-
-    // Banks list & selection
-    const [banks, setBanks] = useState<any[]>([]);
-    const [loadingBanks, setLoadingBanks] = useState(true);
     const [selectedBankId, setSelectedBankId] = useState<number | null>(null);
 
     // Form State
@@ -81,52 +92,35 @@ export function useCarRequest() {
         };
     }, []);
 
-    // Load cars and parse URL params on mount
+    // Sync URL params when cars are available
     useEffect(() => {
-        getCars()
-            .then((res) => {
-                setCars(res.data);
-                setLoadingCars(false);
+        if (cars.length === 0) return;
 
-                const carIdParam = searchParams.get("car_id") || searchParams.get("carId");
-                if (carIdParam) {
-                    const parsedId = parseInt(carIdParam, 10);
-                    if (res.data.some((c) => c.id === parsedId)) {
-                        setSelectedCarId(parsedId);
-                    }
-                } else if (res.data.length > 0) {
-                    setSelectedCarId(res.data[0].id);
-                }
+        const carIdParam = searchParams.get("car_id") || searchParams.get("carId");
+        if (carIdParam) {
+            const parsedId = parseInt(carIdParam, 10);
+            if (cars.some((c) => c.id === parsedId)) {
+                setSelectedCarId(parsedId);
+            } else {
+                setSelectedCarId(cars[0].id);
+            }
+        } else if (selectedCarId === 0) {
+            setSelectedCarId(cars[0].id);
+        }
 
-                const termParam = searchParams.get("term");
-                if (termParam) {
-                    const parsedTerm = parseInt(termParam, 10);
-                    if ([12, 24, 36, 48, 60, 72, 84].includes(parsedTerm)) {
-                        setTerm(parsedTerm);
-                    }
-                }
+        const termParam = searchParams.get("term");
+        if (termParam) {
+            const parsedTerm = parseInt(termParam, 10);
+            if ([12, 24, 36, 48, 60, 72, 84].includes(parsedTerm)) {
+                setTerm(parsedTerm);
+            }
+        }
 
-                const colorParam = searchParams.get("color");
-                if (colorParam && colorParam.trim() !== "") {
-                    setSelectedColor(decodeURIComponent(colorParam.trim()));
-                }
-            })
-            .catch(() => {
-                setLoadingCars(false);
-            });
-    }, [searchParams]);
-
-    // Load banks on mount
-    useEffect(() => {
-        getBanks()
-            .then((res) => {
-                setBanks(res);
-                setLoadingBanks(false);
-            })
-            .catch(() => {
-                setLoadingBanks(false);
-            });
-    }, []);
+        const colorParam = searchParams.get("color");
+        if (colorParam && colorParam.trim() !== "") {
+            setSelectedColor(decodeURIComponent(colorParam.trim()));
+        }
+    }, [cars, searchParams]);
 
     // Active car object
     const activeCar = useMemo(() => {

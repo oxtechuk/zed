@@ -70,10 +70,10 @@ export default function PromoCountdownBanner({ banner }: IPromoCountdownBannerPr
     const formatNum = (n: number) => String(n).padStart(2, "0");
 
     return (
-        <section className="w-full py-4 sm:py-6" dir={direction}>
+        <section className="w-full py-5 sm:py-8" dir={direction}>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div
-                    className="relative overflow-hidden rounded-2xl sm:rounded-[24px] text-white shadow-xl transition-all duration-300 hover:shadow-2xl"
+                    className="relative overflow-hidden rounded-2xl sm:rounded-[28px] text-white shadow-2xl transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
                     style={{
                         background: customBg
                             ? `url(${customBg}) center/cover no-repeat`
@@ -81,28 +81,28 @@ export default function PromoCountdownBanner({ banner }: IPromoCountdownBannerPr
                     }}
                 >
                     {/* Decorative Background Lighting & Star Glow */}
-                    <div className="absolute -top-24 -start-24 w-72 h-72 bg-[#EDC98E]/15 rounded-full blur-3xl pointer-events-none" />
-                    <div className="absolute -bottom-24 -end-24 w-72 h-72 bg-[#ED8EB7]/15 rounded-full blur-3xl pointer-events-none" />
-                    <div className="absolute inset-0 bg-radial from-white/[0.03] to-transparent pointer-events-none" />
+                    <div className="absolute -top-24 -start-24 w-80 h-80 bg-[#EDC98E]/15 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute -bottom-24 -end-24 w-80 h-80 bg-[#ED8EB7]/15 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute inset-0 bg-radial from-white/[0.04] to-transparent pointer-events-none" />
 
                     {/* Content Grid */}
-                    <div className="relative z-10 p-5 sm:p-7 md:p-8 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
+                    <div className="relative z-10 p-6 sm:p-9 md:p-12 lg:p-14 min-h-[180px] sm:min-h-[210px] md:min-h-[230px] flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
                         
                         {/* 1. Left Section (RTL): Lantern / Icon & Ramadan Special Offers Title */}
-                        <div className="flex items-center gap-3.5 sm:gap-4 shrink-0 text-start w-full lg:w-auto justify-center lg:justify-start">
+                        <div className="flex items-center gap-4 sm:gap-5 shrink-0 text-start w-full lg:w-auto justify-center lg:justify-start">
                             {customImage ? (
                                 <img
                                     src={customImage}
                                     alt={sideTitle}
-                                    className="h-14 sm:h-18 w-auto object-contain shrink-0 drop-shadow-md"
+                                    className="h-16 sm:h-20 md:h-24 w-auto object-contain shrink-0 drop-shadow-lg"
                                 />
                             ) : (
                                 <div className="relative flex items-center justify-center shrink-0">
                                     {/* Golden Glow Backdrop */}
-                                    <div className="absolute w-12 h-12 bg-[#FDE047]/25 rounded-full blur-md" />
+                                    <div className="absolute w-16 h-16 bg-[#FDE047]/25 rounded-full blur-lg" />
                                     {/* Lantern & Crescent Moon SVG Graphic */}
                                     <svg
-                                        className="w-11 h-14 sm:w-13 sm:h-16 relative z-10 drop-shadow-[0_0_12px_rgba(251,191,36,0.5)]"
+                                        className="w-12 h-16 sm:w-16 sm:h-20 relative z-10 drop-shadow-[0_0_15px_rgba(251,191,36,0.6)]"
                                         viewBox="0 0 64 80"
                                         fill="none"
                                         xmlns="http://www.w3.org/2000/svg"
@@ -138,11 +138,11 @@ export default function PromoCountdownBanner({ banner }: IPromoCountdownBannerPr
 
                             <div>
                                 {miniTag && (
-                                    <span className="block text-[12px] sm:text-[13px] font-bold text-[#FDE047] tracking-wider mb-0.5 opacity-90">
+                                    <span className="block text-[13px] sm:text-[14px] md:text-[15px] font-bold text-[#FDE047] tracking-wider mb-1 opacity-95">
                                         {miniTag}
                                     </span>
                                 )}
-                                <h2 className="text-[19px] sm:text-[23px] md:text-[25px] font-black leading-tight bg-gradient-to-r from-[#FFF] via-[#FDE047] to-[#FBBF24] bg-clip-text text-transparent drop-shadow-sm">
+                                <h2 className="text-[21px] sm:text-[26px] md:text-[30px] font-black leading-tight bg-gradient-to-r from-[#FFF] via-[#FDE047] to-[#FBBF24] bg-clip-text text-transparent drop-shadow-md">
                                     {sideTitle}
                                 </h2>
                             </div>
@@ -150,47 +150,47 @@ export default function PromoCountdownBanner({ banner }: IPromoCountdownBannerPr
 
                         {/* 2. Middle Section: Countdown Timer */}
                         <div className="flex flex-col items-center justify-center shrink-0">
-                            <span className="text-[12px] sm:text-[13px] font-bold text-white/80 mb-2">
+                            <span className="text-[13px] sm:text-[14px] font-bold text-white/85 mb-2.5">
                                 {t("banner.endsIn", { defaultValue: "ينتهي العرض خلال" })}
                             </span>
                             
-                            <div className="flex items-center gap-2 sm:gap-2.5">
+                            <div className="flex items-center gap-2.5 sm:gap-3">
                                 {/* Days */}
-                                <div className="flex flex-col items-center justify-center w-[52px] sm:w-[60px] h-[54px] sm:h-[62px] rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-md border border-white/15 shadow-inner">
-                                    <span className="text-[20px] sm:text-[24px] font-black leading-none text-white tracking-tight">
+                                <div className="flex flex-col items-center justify-center w-[58px] sm:w-[68px] md:w-[76px] h-[62px] sm:h-[72px] md:h-[80px] rounded-xl sm:rounded-2xl bg-black/45 backdrop-blur-md border border-white/20 shadow-xl">
+                                    <span className="text-[22px] sm:text-[28px] md:text-[32px] font-black leading-none text-white tracking-tight">
                                         {formatNum(timeLeft.days)}
                                     </span>
-                                    <span className="text-[10px] sm:text-[11px] font-semibold text-white/70 mt-1">
+                                    <span className="text-[11px] sm:text-[12px] font-semibold text-white/75 mt-1.5">
                                         {t("banner.days", { defaultValue: "يوم" })}
                                     </span>
                                 </div>
 
                                 {/* Hours */}
-                                <div className="flex flex-col items-center justify-center w-[52px] sm:w-[60px] h-[54px] sm:h-[62px] rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-md border border-white/15 shadow-inner">
-                                    <span className="text-[20px] sm:text-[24px] font-black leading-none text-white tracking-tight">
+                                <div className="flex flex-col items-center justify-center w-[58px] sm:w-[68px] md:w-[76px] h-[62px] sm:h-[72px] md:h-[80px] rounded-xl sm:rounded-2xl bg-black/45 backdrop-blur-md border border-white/20 shadow-xl">
+                                    <span className="text-[22px] sm:text-[28px] md:text-[32px] font-black leading-none text-white tracking-tight">
                                         {formatNum(timeLeft.hours)}
                                     </span>
-                                    <span className="text-[10px] sm:text-[11px] font-semibold text-white/70 mt-1">
+                                    <span className="text-[11px] sm:text-[12px] font-semibold text-white/75 mt-1.5">
                                         {t("banner.hours", { defaultValue: "ساعة" })}
                                     </span>
                                 </div>
 
                                 {/* Minutes */}
-                                <div className="flex flex-col items-center justify-center w-[52px] sm:w-[60px] h-[54px] sm:h-[62px] rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-md border border-white/15 shadow-inner">
-                                    <span className="text-[20px] sm:text-[24px] font-black leading-none text-white tracking-tight">
+                                <div className="flex flex-col items-center justify-center w-[58px] sm:w-[68px] md:w-[76px] h-[62px] sm:h-[72px] md:h-[80px] rounded-xl sm:rounded-2xl bg-black/45 backdrop-blur-md border border-white/20 shadow-xl">
+                                    <span className="text-[22px] sm:text-[28px] md:text-[32px] font-black leading-none text-white tracking-tight">
                                         {formatNum(timeLeft.minutes)}
                                     </span>
-                                    <span className="text-[10px] sm:text-[11px] font-semibold text-white/70 mt-1">
+                                    <span className="text-[11px] sm:text-[12px] font-semibold text-white/75 mt-1.5">
                                         {t("banner.minutes", { defaultValue: "دقيقة" })}
                                     </span>
                                 </div>
 
                                 {/* Seconds */}
-                                <div className="flex flex-col items-center justify-center w-[52px] sm:w-[60px] h-[54px] sm:h-[62px] rounded-xl sm:rounded-2xl bg-black/40 backdrop-blur-md border border-white/15 shadow-inner">
-                                    <span className="text-[20px] sm:text-[24px] font-black leading-none text-[#FDE047] tracking-tight">
+                                <div className="flex flex-col items-center justify-center w-[58px] sm:w-[68px] md:w-[76px] h-[62px] sm:h-[72px] md:h-[80px] rounded-xl sm:rounded-2xl bg-black/45 backdrop-blur-md border border-white/20 shadow-xl">
+                                    <span className="text-[22px] sm:text-[28px] md:text-[32px] font-black leading-none text-[#FDE047] tracking-tight">
                                         {formatNum(timeLeft.seconds)}
                                     </span>
-                                    <span className="text-[10px] sm:text-[11px] font-semibold text-white/70 mt-1">
+                                    <span className="text-[11px] sm:text-[12px] font-semibold text-white/75 mt-1.5">
                                         {t("banner.seconds", { defaultValue: "ثانية" })}
                                     </span>
                                 </div>
@@ -198,16 +198,16 @@ export default function PromoCountdownBanner({ banner }: IPromoCountdownBannerPr
                         </div>
 
                         {/* 3. Right Section (RTL): Badge + Main Headline + CTA Button + Disclaimer */}
-                        <div className="flex flex-col items-center lg:items-end text-center lg:text-end shrink-0 max-w-md">
+                        <div className="flex flex-col items-center lg:items-end text-center lg:text-end shrink-0 max-w-lg">
                             {/* Badge */}
                             {badgeText && (
-                                <span className="inline-block px-3 py-0.5 mb-2 rounded-full text-[11px] font-black bg-[#DC2626] text-white shadow-xs">
+                                <span className="inline-block px-3.5 py-1 mb-2.5 rounded-full text-[11px] sm:text-[12px] font-black bg-[#DC2626] text-white shadow-md">
                                     {badgeText}
                                 </span>
                             )}
 
                             {/* Headline */}
-                            <h3 className="text-[17px] sm:text-[20px] md:text-[22px] font-black text-white leading-tight drop-shadow-sm mb-3">
+                            <h3 className="text-[19px] sm:text-[23px] md:text-[26px] font-black text-white leading-snug drop-shadow-sm mb-3.5">
                                 {mainTitle}
                             </h3>
 
@@ -215,14 +215,14 @@ export default function PromoCountdownBanner({ banner }: IPromoCountdownBannerPr
                             <button
                                 type="button"
                                 onClick={() => navigate(targetUrl)}
-                                className="h-10 px-6 sm:px-8 rounded-full bg-[#EDC98E] hover:bg-[#F5D8A4] active:scale-95 text-[#16254F] text-[13px] sm:text-[14px] font-black transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap"
+                                className="h-11 sm:h-12 px-7 sm:px-9 rounded-full bg-[#EDC98E] hover:bg-[#F5D8A4] active:scale-95 text-[#16254F] text-[14px] sm:text-[15px] font-black transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
                             >
                                 <span>{buttonText}</span>
                             </button>
 
                             {/* Disclaimer */}
                             {disclaimerText && (
-                                <span className="text-[10px] sm:text-[11px] text-white/60 font-medium mt-2">
+                                <span className="text-[11px] sm:text-[12px] text-white/70 font-medium mt-2.5">
                                     {disclaimerText}
                                 </span>
                             )}
