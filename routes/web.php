@@ -369,6 +369,16 @@ Route::get('/erp/{any?}', function () {
     return redirect('/gr-manager-login', 301);
 })->where('any', '.*');
 
+// Storage direct fallback (ensures public media is accessible even if symlink is missing on server)
+Route::get('/storage/{path}', function (string $path) {
+    $filePath = storage_path('app/public/'.$path);
+    if (! file_exists($filePath)) {
+        abort(404);
+    }
+
+    return response()->file($filePath);
+})->where('path', '.*')->name('storage.fallback');
+
 // Fallback 404
 Route::fallback(function () {
     abort(404);
