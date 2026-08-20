@@ -156,6 +156,10 @@ class LeadController extends Controller
 
     public function destroy(Lead $lead)
     {
+        if (! auth('employee')->user()->isAdmin()) {
+            abort(403, __('غير مصرح لك بحذف سجلات العملاء. صلاحية الحذف مقتصرة على المشرف/المدير فقط.'));
+        }
+
         $lead->delete();
 
         return redirect()->route('crm.leads.index')->with('success', __('تم حذف السجل'));

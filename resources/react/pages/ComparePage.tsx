@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -15,15 +15,29 @@ import { formatPrice } from "../utils/format";
 export default function ComparePage() {
     const { t, i18n } = useTranslation();
     useSEO(t("pageTitles.compare"), t("comparePage.compareDescription"));
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
-    const initialSlug = searchParams.get("slug") || "";
+    const initialSlug = searchParams.get("slug") || searchParams.get("car1") || "";
+    const initialSlug2 = searchParams.get("car2") || "";
 
     const [car1Slug, setCar1Slug] = useState(initialSlug);
-    const [car2Slug, setCar2Slug] = useState("");
+    const [car2Slug, setCar2Slug] = useState(initialSlug2);
 
     const [showSearch1, setShowSearch1] = useState(!initialSlug);
     const [showSearch2, setShowSearch2] = useState(false);
+
+    useEffect(() => {
+        const slug1 = searchParams.get("slug") || searchParams.get("car1") || "";
+        const slug2 = searchParams.get("car2") || "";
+        if (slug1 && slug1 !== car1Slug) {
+            setCar1Slug(slug1);
+            setShowSearch1(false);
+        }
+        if (slug2 && slug2 !== car2Slug) {
+            setCar2Slug(slug2);
+            setShowSearch2(false);
+        }
+    }, [searchParams]);
 
     const { data: car1, isLoading: isLoading1 } = useQuery({
         queryKey: ["compare-car1", car1Slug],
@@ -46,21 +60,35 @@ export default function ComparePage() {
     const handleSelectCar1 = (slug: string) => {
         setCar1Slug(slug);
         setShowSearch1(false);
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set("slug", slug);
+        newParams.delete("car1");
+        setSearchParams(newParams, { replace: true });
     };
 
     const handleRemoveCar1 = () => {
         setCar1Slug("");
         setShowSearch1(true);
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete("slug");
+        newParams.delete("car1");
+        setSearchParams(newParams, { replace: true });
     };
 
     const handleSelectCar2 = (slug: string) => {
         setCar2Slug(slug);
         setShowSearch2(false);
+        const newParams = new URLSearchParams(searchParams);
+        newParams.set("car2", slug);
+        setSearchParams(newParams, { replace: true });
     };
 
     const handleRemoveCar2 = () => {
         setCar2Slug("");
         setShowSearch2(true);
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete("car2");
+        setSearchParams(newParams, { replace: true });
     };
 
     return (

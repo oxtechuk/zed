@@ -99,10 +99,10 @@
                     <?php endif; ?>
 
                     
-                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:150px;">
-                        <option value=""><?php echo e(__('المصدر — الكل')); ?></option>
-                        <option value="booking" <?php echo e(request('source')==='booking'?'selected':''); ?>><?php echo e(__('طلبات عادية')); ?></option>
-                        <option value="calculator" <?php echo e(request('source')==='calculator'?'selected':''); ?>><?php echo e(__('عملاء حاسبة فقط')); ?></option>
+                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
+                        <option value=""><?php echo e(__('المصدر والنوع — الكل')); ?></option>
+                        <option value="cars" <?php echo e(request('source')==='cars'?'selected':''); ?>>🚗 <?php echo e(__('طلبات السيارات (حجز وشراء)')); ?></option>
+                        <option value="calculator" <?php echo e(request('source')==='calculator'?'selected':''); ?>>🧮 <?php echo e(__('عملاء حاسبة التمويل')); ?></option>
                     </select>
 
                     
@@ -217,6 +217,12 @@
                             ?>
                             <div><i class="bi bi-calendar3 me-1 text-muted"></i> <?php echo e($deliveryDate->format('d/m/Y')); ?></div>
                             <div class="text-muted" style="font-size:11px;"><?php echo e($deliveryDate->diffForHumans()); ?></div>
+                            <?php if($b->delivery_note_text): ?>
+                                <div class="text-muted mt-1" style="font-size:11px;" title="<?php echo e($b->delivery_note_text); ?>">
+                                    <i class="bi bi-chat-square-text me-1 text-success"></i><?php echo e(Str::limit($b->delivery_note_text, 25)); ?>
+
+                                </div>
+                            <?php endif; ?>
                         </td>
                         <td class="px-4">
                             <div class="d-flex gap-1 align-items-center">
@@ -229,7 +235,7 @@
                                 <a href="https://wa.me/<?php echo e($b->client_phone); ?>" target="_blank" class="btn btn-sm btn-light rounded-2 border" title="<?php echo e(__('واتساب')); ?>" style="color:#25D366;">
                                     <i class="bi bi-whatsapp" style="font-size:14px;"></i>
                                 </a>
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage-bookings')): ?>
+                                <?php if($isAdmin): ?>
                                 <form action="<?php echo e(route('crm.bookings.destroy', $b)); ?>" method="POST" class="m-0"
                                       onsubmit="return confirm('<?php echo e(__('هل تريد حذف هذا الطلب نهائياً؟')); ?>')">
                                     <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
@@ -291,6 +297,13 @@
                         </div>
                     </div>
                 </div>
+
+                <?php if($b->delivery_note_text): ?>
+                <div class="p-2 rounded-3 mb-2" style="background:#F0FDF4;border:1px solid #BBF7D0;font-size:11.5px;color:#166534;">
+                    <div class="fw-bold mb-1"><i class="bi bi-chat-square-text me-1"></i><?php echo e(__('ملاحظة التسليم')); ?>:</div>
+                    <div class="text-dark"><?php echo e($b->delivery_note_text); ?></div>
+                </div>
+                <?php endif; ?>
 
                 <div class="d-flex justify-content-between align-items-center small text-muted mb-2">
                     <div><i class="bi bi-person me-1"></i> <?php echo e($b->employee?->name ?? __('غير معين')); ?></div>

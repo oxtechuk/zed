@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Api\Store;
 
-use App\Models\Partner;
-use App\Models\Testimonial;
 use App\Services\Cache\AboutCacheService;
 
 final class AboutApiService
@@ -16,8 +14,8 @@ final class AboutApiService
 
     public function about(): array
     {
-        $testimonials = Testimonial::where('is_visible', true)->get();
-        $partners = Partner::orderBy('sort_order')->get();
+        $testimonials = $this->cache->rememberTestimonials();
+        $partners = $this->cache->rememberPartners();
         $mainGallery = $this->cache->rememberMainGallery();
 
         $locale = app()->getLocale();

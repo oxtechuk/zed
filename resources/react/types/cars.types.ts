@@ -65,6 +65,7 @@ export interface ICarDetails {
   current_price: number;
   year: string;
   is_current_year: boolean;
+  model?: string;
   type: string;
   colors: ICarColorWithImage[];
   specs: Record<string, string | null>;

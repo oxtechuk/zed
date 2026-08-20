@@ -6,11 +6,12 @@ import {
   useState,
 } from "react";
 
-type LazyImgStatus = "pending" | "revealed";
+type LazyImgStatus = "idle" | "loading" | "revealed";
 
 export interface ILazyImgProps extends ImgHTMLAttributes<HTMLImageElement> {
   skeletonClassName?: string;
   containerClassName?: string;
+  rootMargin?: string;
 }
 
 export default function LazyImg({
@@ -22,18 +23,54 @@ export default function LazyImg({
   onError,
   skeletonClassName = "",
   loading = "lazy",
+  rootMargin = "250px",
   ...rest
 }: ILazyImgProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
-  const [status, setStatus] = useState<LazyImgStatus>("pending");
+  const [inView, setInView] = useState(() => loading === "eager");
+  const [status, setStatus] = useState<LazyImgStatus>(() => (loading === "eager" ? "loading" : "idle"));
 
   useEffect(() => {
-    setStatus("pending");
+    if (loading === "eager") {
+      setInView(true);
+      setStatus("loading");
+      return;
+    }
+
+    if (inView) return;
+    const el = containerRef.current;
+    if (!el) return;
+
+    if (typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      setStatus("loading");
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          setStatus("loading");
+          observer.disconnect();
+        }
+      },
+      { rootMargin, threshold: 0.01 }
+    );
+
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [loading, inView, rootMargin]);
+
+  useEffect(() => {
+    if (!inView || !src) return;
     const el = imgRef.current;
     if (el && el.complete && el.naturalWidth > 0) {
       setStatus("revealed");
     }
-  }, [src]);
+  }, [src, inView]);
 
   const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
     setStatus("revealed");
@@ -45,21 +82,26 @@ export default function LazyImg({
     onError?.(event);
   };
 
-  const isPending = status === "pending";
+  const isPending = status !== "revealed";
 
   return (
-    <div className={`relative overflow-hidden ${containerClassName} ${isPending ? `lazy-img-skeleton ${skeletonClassName}` : ""}`}>
-      <img
-        {...rest}
-        ref={imgRef}
-        src={src}
-        loading={loading}
-        decoding="async"
-        onLoad={handleLoad}
-        onError={handleError}
-        className={`${className} transition-opacity duration-300 ${status === "revealed" ? "opacity-100" : "opacity-0"}`}
-        style={style}
-      />
+    <div
+      ref={containerRef}
+      className={`relative overflow-hidden ${containerClassName} ${isPending ? `lazy-img-skeleton ${skeletonClassName}` : ""}`}
+    >
+      {inView && (
+        <img
+          {...rest}
+          ref={imgRef}
+          src={src}
+          loading={loading}
+          decoding="async"
+          onLoad={handleLoad}
+          onError={handleError}
+          className={`${className} transition-opacity duration-500 ${status === "revealed" ? "opacity-100" : "opacity-0"}`}
+          style={style}
+        />
+      )}
     </div>
   );
 }

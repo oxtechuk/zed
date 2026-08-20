@@ -5,9 +5,7 @@ import { APP_IMAGES, getImageUrl } from "../constants/app-images";
 import HomeHero from "../components/HomeHero";
 import CarFinder from "../components/CarFinder";
 import FeaturedCarsSection from "../components/FeaturedCarsSection";
-import FinanceSolutionsSection from "../components/FinanceSolutionsSection";
 import BrandsSection from "../components/BrandsSection";
-import FeaturedBanner from "../components/FeaturedBanner";
 import BudgetCarsSection from "../components/BudgetCarsSection";
 import { getHomePageData, getCars } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
@@ -18,7 +16,12 @@ import { formatPrice } from "../utils/format";
 import { useSEO } from "../utils/useSEO";
 import type { IBrandCardProps } from "../interfaces/IBrandCardProps";
 import BrandsCarousel from "../components/BrandsCarousel";
-import HomePageSkeleton from "../components/skeletons/HomePageSkeleton";
+import HeroSkeleton from "../components/skeletons/HeroSkeleton";
+import BudgetCarsSkeleton from "../components/skeletons/BudgetCarsSkeleton";
+import CarFinderSkeleton from "../components/skeletons/CarFinderSkeleton";
+import BrandsCarouselSkeleton from "../components/skeletons/BrandsCarouselSkeleton";
+import CarsGridSkeleton from "../components/skeletons/CarsGridSkeleton";
+import LazySection from "../components/LazySection";
 import { useEffect } from "react";
 
 const SPEC_KEY_MAP: Record<string, string> = {
@@ -52,6 +55,7 @@ function mapCarToCardProps(car: ICarItem): ICarCardProps | null {
       name: car.name ?? "",
       year: String(car.year ?? ""),
       type: car.type ?? "",
+      model: car.model ?? "",
       slug,
       fuelType: getSpecValue(car.specs, "Fuel Type") || car.fuel_type || "",
       transmission:
@@ -210,75 +214,115 @@ export default function Home() {
     [data, activeRangeValue],
   );
 
-  if (isLoading) {
-    return <HomePageSkeleton />;
-  }
-
   return (
     <>
-      <HomeHero
-        slides={data?.hero_slides || []}
-        promoCards={data?.promo_cards || []}
-      />
-
-      <CarFinder
-        onSearch={handleCarFinderSearch}
-        onReset={handleCarFinderReset}
-        brands={filterBrands}
-        types={filterTypes}
-        categories={filterCategories}
-        years={filterYears}
-        filterTitle={data?.page_sections?.filter?.title?.trim()}
-      />
-
-      <BrandsCarousel  brands={brands}/>
- 
-      <FeaturedCarsSection
-        titleBlue={data?.page_sections?.featured_cars?.title?.trim() || t("featuredCars.titleBlue")}
-        titleOrange={data?.page_sections?.featured_cars?.badge?.trim() || ""}
-        description=""
-        buttonText={data?.page_sections?.featured_cars?.button_text?.trim() || t("featuredCars.buttonText")}
-        buttonTo="/cars"
-        cars={filters ? filteredCarCards : featuredCars}
-        itemsPerPage={filters ? 4 : undefined}
-        emptyMessage={filters ? t("featuredCars.noCars") : undefined}
-      />
-
-      <FeaturedBanner banner={data?.featured_section} />
-
-      {offerCarCards.length > 0 && (
-        <FeaturedCarsSection
-          titleBlue={data?.page_sections?.offers?.title?.trim() || t("offers.alsoTitle")}
-          titleOrange=""
-          description=""
-          buttonText={data?.page_sections?.offers?.button_text?.trim() || t("offers.buttonText")}
-          buttonTo={data?.page_sections?.offers?.button_url || "/offers"}
-          cars={offerCarCards}
-        />
+      {isLoading ? (
+        <HeroSkeleton />
+      ) : (
+        <HomeHero slides={data?.hero_slides || []} />
       )}
 
-      <BudgetCarsSection
-        titleBlue={data?.page_sections?.budget?.title?.trim() || t("budgetCars.titleBlue")}
-        titleOrange=""
-        description={data?.page_sections?.budget?.description?.trim() || t("budgetCars.description")}
-        buttonText={data?.page_sections?.budget?.button_text?.trim() || t("budgetCars.buttonText")}
-        buttonTo={data?.page_sections?.budget?.button_url || "/cars"}
-        cars={activeBudgetCars}
-        ranges={budgetRangeItems}
-        activeRange={activeRangeValue}
-        onRangeChange={setActiveBudgetRange}
-      />
+      <LazySection
+        fallback={<BudgetCarsSkeleton />}
+        rootMargin="200px"
+        minHeight={520}
+      >
+        {isLoading ? (
+          <BudgetCarsSkeleton />
+        ) : (
+          <BudgetCarsSection
+            titleBlue={data?.page_sections?.budget?.title?.trim() || t("budgetCars.titleBlue")}
+            titleOrange=""
+            description={data?.page_sections?.budget?.description?.trim() || t("budgetCars.description")}
+            buttonText={data?.page_sections?.budget?.button_text?.trim() || t("budgetCars.buttonText")}
+            buttonTo={data?.page_sections?.budget?.button_url || "/cars"}
+            cars={activeBudgetCars}
+            ranges={budgetRangeItems}
+            activeRange={activeRangeValue}
+            onRangeChange={setActiveBudgetRange}
+          />
+        )}
+      </LazySection>
 
-      <FinanceSolutionsSection
-        titleBlue=""
-        titleOrange={data?.page_sections?.finance?.title?.trim() || t("financeSolutions.titleOrange")}
-        description=""
-        buttonText=""
-        buttonTo=""
-        stats={[]}
-        features={[]}
-        steps={data?.finance_steps || []}
-      />
+      <LazySection
+        fallback={<CarFinderSkeleton />}
+        rootMargin="200px"
+        minHeight={120}
+      >
+        {isLoading ? (
+          <CarFinderSkeleton />
+        ) : (
+          <CarFinder
+            onSearch={handleCarFinderSearch}
+            onReset={handleCarFinderReset}
+            brands={filterBrands}
+            types={filterTypes}
+            categories={filterCategories}
+            years={filterYears}
+            filterTitle={data?.page_sections?.filter?.title?.trim()}
+          />
+        )}
+      </LazySection>
+
+      <LazySection
+        fallback={<BrandsCarouselSkeleton />}
+        rootMargin="250px"
+        minHeight={120}
+      >
+        {isLoading ? (
+          <BrandsCarouselSkeleton />
+        ) : (
+          <BrandsCarousel brands={brands} />
+        )}
+      </LazySection>
+
+      <LazySection
+        fallback={
+          <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+            <CarsGridSkeleton />
+          </section>
+        }
+        rootMargin="250px"
+        minHeight={450}
+      >
+        {isLoading ? (
+          <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+            <CarsGridSkeleton />
+          </section>
+        ) : (
+          <FeaturedCarsSection
+            titleBlue={data?.page_sections?.featured_cars?.title?.trim() || t("featuredCars.titleBlue")}
+            titleOrange={data?.page_sections?.featured_cars?.badge?.trim() || ""}
+            description=""
+            buttonText={data?.page_sections?.featured_cars?.button_text?.trim() || t("featuredCars.buttonText")}
+            buttonTo="/cars"
+            cars={filters ? filteredCarCards : featuredCars}
+            itemsPerPage={filters ? 4 : undefined}
+            emptyMessage={filters ? t("featuredCars.noCars") : undefined}
+          />
+        )}
+      </LazySection>
+
+      {!isLoading && offerCarCards.length > 0 && (
+        <LazySection
+          fallback={
+            <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+              <CarsGridSkeleton />
+            </section>
+          }
+          rootMargin="250px"
+          minHeight={450}
+        >
+          <FeaturedCarsSection
+            titleBlue={data?.page_sections?.offers?.title?.trim() || t("offers.alsoTitle")}
+            titleOrange=""
+            description=""
+            buttonText={data?.page_sections?.offers?.button_text?.trim() || t("offers.buttonText")}
+            buttonTo={data?.page_sections?.offers?.button_url || "/offers"}
+            cars={offerCarCards}
+          />
+        </LazySection>
+      )}
     </>
   );
 }

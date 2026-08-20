@@ -27,6 +27,10 @@ class CalculatorLeadController extends Controller
 
     public function destroy(CalculatorLead $calculatorLead)
     {
+        if (! auth('employee')->user()->isAdmin()) {
+            abort(403, __('غير مصرح لك بحذف عملاء الحاسبة. صلاحية الحذف مقتصرة على المشرف/المدير فقط.'));
+        }
+
         $calculatorLead->delete();
 
         return back()->with('success', __('تم حذف السجل بنجاح'));

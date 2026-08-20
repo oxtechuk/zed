@@ -49,9 +49,15 @@ class BookingController extends Controller
         }
 
         $stats = [
+            'total' => (clone $scopedQuery)->count(),
+            'car_requests' => (clone $scopedQuery)->where(function ($q) {
+                $q->where('source', '!=', 'calculator')->orWhereNull('source');
+            })->count(),
+            'calculator_leads' => (clone $scopedQuery)->where(function ($q) {
+                $q->where('source', 'calculator')->orWhereNotNull('calculator_bank_id');
+            })->count(),
             'pending_review' => (clone $scopedQuery)->whereIn('status', ['new', 'contacted_no_answer', 'recontact_client'])->count(),
             'under_bank' => (clone $scopedQuery)->whereIn('status', ['waiting_documents', 'bank_review', 'approved', 'authorized'])->count(),
-            'total' => (clone $scopedQuery)->count(),
         ];
 
         // Pending supervisor approvals (admin only)
@@ -80,12 +86,24 @@ class BookingController extends Controller
             $query->whereDate('created_at', $request->date);
         }
 
-        // Source filter
+        // Source / Type filter
         if ($request->filled('source')) {
             if ($request->source === 'calculator') {
-                $query->whereNotNull('calculator_lead_id');
-            } elseif ($request->source === 'booking') {
-                $query->whereNull('calculator_lead_id');
+                $query->where(function ($q) {
+                    $q->where('source', 'calculator')
+                        ->orWhereNotNull('calculator_bank_id');
+                });
+            } elseif ($request->source === 'cars' || $request->source === 'booking') {
+                $query->where(function ($q) {
+                    $q->where('source', '!=', 'calculator')
+                        ->orWhereNull('source');
+                });
+            } elseif ($request->source === 'test_drive') {
+                $query->where('booking_type', 'test_drive');
+            } elseif ($request->source === 'purchase') {
+                $query->where('booking_type', 'purchase');
+            } elseif ($request->source === 'crm_manual') {
+                $query->where('source', 'like', '%CRM%');
             }
         }
 
@@ -184,12 +202,24 @@ class BookingController extends Controller
             }
         }
 
-        // Source filter
+        // Source / Type filter
         if ($request->filled('source')) {
             if ($request->source === 'calculator') {
-                $query->whereNotNull('calculator_lead_id');
-            } elseif ($request->source === 'booking') {
-                $query->whereNull('calculator_lead_id');
+                $query->where(function ($q) {
+                    $q->where('source', 'calculator')
+                        ->orWhereNotNull('calculator_bank_id');
+                });
+            } elseif ($request->source === 'cars' || $request->source === 'booking') {
+                $query->where(function ($q) {
+                    $q->where('source', '!=', 'calculator')
+                        ->orWhereNull('source');
+                });
+            } elseif ($request->source === 'test_drive') {
+                $query->where('booking_type', 'test_drive');
+            } elseif ($request->source === 'purchase') {
+                $query->where('booking_type', 'purchase');
+            } elseif ($request->source === 'crm_manual') {
+                $query->where('source', 'like', '%CRM%');
             }
         }
 
@@ -318,12 +348,24 @@ class BookingController extends Controller
             });
         }
 
-        // Source filter
+        // Source / Type filter
         if ($request->filled('source')) {
             if ($request->source === 'calculator') {
-                $query->whereNotNull('calculator_lead_id');
-            } elseif ($request->source === 'booking') {
-                $query->whereNull('calculator_lead_id');
+                $query->where(function ($q) {
+                    $q->where('source', 'calculator')
+                        ->orWhereNotNull('calculator_bank_id');
+                });
+            } elseif ($request->source === 'cars' || $request->source === 'booking') {
+                $query->where(function ($q) {
+                    $q->where('source', '!=', 'calculator')
+                        ->orWhereNull('source');
+                });
+            } elseif ($request->source === 'test_drive') {
+                $query->where('booking_type', 'test_drive');
+            } elseif ($request->source === 'purchase') {
+                $query->where('booking_type', 'purchase');
+            } elseif ($request->source === 'crm_manual') {
+                $query->where('source', 'like', '%CRM%');
             }
         }
 
@@ -427,12 +469,24 @@ class BookingController extends Controller
             $query->whereDate('updated_at', $request->date);
         }
 
-        // Filtering by source
+        // Filtering by source / type
         if ($request->filled('source')) {
             if ($request->source === 'calculator') {
-                $query->whereNotNull('calculator_lead_id');
-            } elseif ($request->source === 'booking') {
-                $query->whereNull('calculator_lead_id');
+                $query->where(function ($q) {
+                    $q->where('source', 'calculator')
+                        ->orWhereNotNull('calculator_bank_id');
+                });
+            } elseif ($request->source === 'cars' || $request->source === 'booking') {
+                $query->where(function ($q) {
+                    $q->where('source', '!=', 'calculator')
+                        ->orWhereNull('source');
+                });
+            } elseif ($request->source === 'test_drive') {
+                $query->where('booking_type', 'test_drive');
+            } elseif ($request->source === 'purchase') {
+                $query->where('booking_type', 'purchase');
+            } elseif ($request->source === 'crm_manual') {
+                $query->where('source', 'like', '%CRM%');
             }
         }
 
@@ -518,13 +572,22 @@ class BookingController extends Controller
     {
         $data = $request->validate([
             'calculator_bank_id' => 'nullable|exists:calculator_banks,id',
+            'total_price' => 'nullable|numeric|min:0',
+            'purchase_price' => 'nullable|numeric|min:0',
+            'authorization_price' => 'nullable|numeric|min:0',
+            'expenses' => 'nullable|numeric|min:0',
+            'net_commission' => 'nullable|numeric',
+            'down_payment' => 'nullable|numeric|min:0',
+            'duration_years' => 'nullable|integer|min:1|max:10',
+            'monthly_installment' => 'nullable|numeric|min:0',
             'balloon_payment' => 'nullable|numeric|min:0',
             'offer_notes' => 'nullable|string|max:2000',
+            'delivery_note' => 'nullable|string|max:2000',
         ]);
 
         $booking->update($data);
 
-        return back()->with('success', 'تم تحديث تفاصيل العرض بنجاح');
+        return back()->with('success', 'تم تحديث تفاصيل العرض والبيانات المالية بنجاح');
     }
 
     public function updateStatus(Request $request, Booking $booking)
@@ -547,6 +610,8 @@ class BookingController extends Controller
                 'authorization_price' => 'nullable|numeric|min:0',
                 'expenses' => 'nullable|numeric|min:0',
                 'net_commission' => 'nullable|numeric',
+                'down_payment' => 'nullable|numeric|min:0',
+                'monthly_installment' => 'nullable|numeric|min:0',
                 'note' => 'nullable|string|max:2000',
             ]);
 
@@ -554,6 +619,8 @@ class BookingController extends Controller
             $authPrice = $request->filled('authorization_price') ? (float) $request->authorization_price : null;
             $expenses = $request->filled('expenses') ? (float) $request->expenses : null;
             $netCommission = $request->filled('net_commission') ? (float) $request->net_commission : null;
+            $downPayment = $request->filled('down_payment') ? (float) $request->down_payment : $booking->down_payment;
+            $monthlyInstallment = $request->filled('monthly_installment') ? (float) $request->monthly_installment : $booking->monthly_installment;
             $deliveryNote = $request->filled('note') ? trim($request->note) : ($booking->delivery_note ?? null);
 
             $booking->update([
@@ -562,6 +629,8 @@ class BookingController extends Controller
                 'authorization_price' => $authPrice,
                 'expenses' => $expenses,
                 'net_commission' => $netCommission,
+                'down_payment' => $downPayment,
+                'monthly_installment' => $monthlyInstallment,
                 'delivery_note' => $deliveryNote,
                 'delivered_at' => $booking->delivered_at ?? now(),
                 'pending_reason' => null,
@@ -574,9 +643,11 @@ class BookingController extends Controller
                 .'- سعر شراء السيارة: '.($purchasePrice !== null ? number_format($purchasePrice, 2).' ر.س' : '—')."\n"
                 .'- سعر تعميد السيارة: '.($authPrice !== null ? number_format($authPrice, 2).' ر.س' : '—')."\n"
                 .'- المصروفات: '.($expenses !== null ? number_format($expenses, 2).' ر.س' : '—')."\n"
-                .'- صافي عمولة الشركة: '.($netCommission !== null ? number_format($netCommission, 2).' ر.س' : '—');
+                .'- صافي عمولة الشركة: '.($netCommission !== null ? number_format($netCommission, 2).' ر.س' : '—')."\n"
+                .'- القسط الشهري: '.($monthlyInstallment > 0 ? number_format($monthlyInstallment, 2).' ر.س' : '—')."\n"
+                .'- الدفعة الأولى: '.($downPayment > 0 ? number_format($downPayment, 2).' ر.س' : '—');
             if ($request->filled('note')) {
-                $noteDetails .= "\nملاحظة: ".$request->note;
+                $noteDetails .= "\nملاحظة التسليم: ".$request->note;
             }
 
             BookingNote::create([
@@ -806,16 +877,21 @@ class BookingController extends Controller
 
     public function assign(Request $request, Booking $booking)
     {
+        $employee = auth('employee')->user();
+        if (! $employee->isAdmin()) {
+            abort(403, __('غير مصرح لك بإعادة إسناد أو تحويل الطلب. الصلاحية مقتصرة على المشرف/المدير فقط.'));
+        }
+
         $request->validate(['employee_id' => 'required|exists:employees,id']);
         $booking->update(['assigned_to' => $request->employee_id]);
 
         // Notify the assigned employee
-        $employee = Employee::find($request->employee_id);
-        if ($employee) {
-            $employee->notify(new NewBookingNotification($booking, __('طلب جديد'), __('تم تعيين طلب جديد لك للعميل').' '.$booking->client_name));
+        $assignedEmployee = Employee::find($request->employee_id);
+        if ($assignedEmployee) {
+            $assignedEmployee->notify(new NewBookingNotification($booking, __('طلب جديد'), __('تم تعيين طلب جديد لك للعميل').' '.$booking->client_name));
         }
 
-        return back()->with('success', 'تم توزيع الطلب على الموظف');
+        return back()->with('success', 'تم توزيع الطلب على الموظف بنجاح');
     }
 
     public function addNote(Request $request, Booking $booking)
@@ -863,8 +939,13 @@ class BookingController extends Controller
 
     public function destroy(Booking $booking)
     {
+        $employee = auth('employee')->user();
+        if (! $employee->isAdmin()) {
+            abort(403, __('غير مصرح لك بحذف الطلبات. صلاحية الحذف مقتصرة على المشرف/المدير فقط.'));
+        }
+
         $booking->delete();
 
-        return redirect()->route('crm.bookings.index')->with('success', 'تم حذف الطلب');
+        return redirect()->route('crm.bookings.index')->with('success', 'تم حذف الطلب بنجاح');
     }
 }

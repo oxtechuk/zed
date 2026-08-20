@@ -12,11 +12,40 @@ final class CompareApiService
 {
     public function compare(array $slugs): array
     {
+        $slugs = array_values(array_filter(array_unique($slugs)));
+        if (count($slugs) < 2) {
+            return [];
+        }
+
+        $query = Car::with([
+            'brand',
+            'category',
+            'images',
+            'specifications',
+            'features_list',
+            'activeOffers',
+        ])->where('is_active', true);
+
+        $query->where(function ($q) use ($slugs) {
+            foreach ($slugs as $slug) {
+                $q->orWhere(function ($sub) use ($slug) {
+                    SlugResolver::applyCarSlug($sub, $slug);
+                });
+            }
+        });
+
+        $matchedCars = $query->get();
+
         $cars = [];
         foreach ($slugs as $slug) {
-            $car = $this->loadCar($slug);
-            if ($car) {
-                $cars[] = $car;
+            $matched = $matchedCars->first(function (Car $car) use ($slug) {
+                return $car->slug === $slug
+                    || $car->getTranslation('slug', 'ar', false) === $slug
+                    || $car->getTranslation('slug', 'en', false) === $slug
+                    || (string) $car->id === (string) $slug;
+            });
+            if ($matched) {
+                $cars[] = $matched;
             }
         }
 
@@ -28,23 +57,6 @@ final class CompareApiService
             'cars' => CarResource::collection($cars)->resolve(),
             'sections' => $this->buildSections($cars),
         ];
-    }
-
-    private function loadCar(string $slug): ?Car
-    {
-        $query = Car::with([
-            'brand',
-            'category',
-            'images',
-            'specifications',
-            'features_list',
-            'activeOffers',
-        ])
-            ->where('is_active', true);
-
-        SlugResolver::applyCarSlug($query, $slug);
-
-        return $query->first();
     }
 
     private function buildSections(array $cars): array

@@ -53,7 +53,7 @@ final class CarApiService
             throw new ModelNotFoundException('Car not found');
         }
 
-        $car->increment('views');
+        $car->incrementQuietly('views');
 
         $relatedCars = Car::with(['brand', 'category', 'images', 'activeOffers'])
             ->where('brand_id', $car->brand_id)
@@ -67,7 +67,7 @@ final class CarApiService
 
     public function search(string $query): Collection
     {
-        return Car::with(['brand', 'category', 'images'])
+        return Car::with(['brand', 'category', 'images', 'activeOffers'])
             ->where('is_active', true)
             ->where(function ($q) use ($query) {
                 $q->where('name->ar', 'LIKE', "%{$query}%")
@@ -100,12 +100,21 @@ final class CarApiService
 
     public function listMeta(): array
     {
-        $featuredOffer = Offer::active()
-            ->with(['cars' => fn ($q) => $q->where('is_active', true)->limit(3)])
-            ->first();
+        $featuredOffer = $this->cache->remember('offers.featured_offer', function () {
+            return Offer::active()
+                ->with(['cars.brand', 'cars.images', 'cars.activeOffers'])
+                ->first();
+        }, 3600);
 
-        $totalCars = Car::where('is_active', true)->count();
-        $totalBrands = Brand::where('is_active', true)->count();
+        $counts = $this->cache->remember('cars.meta.counts', function () {
+            return [
+                'totalCars' => Car::where('is_active', true)->count(),
+                'totalBrands' => Brand::where('is_active', true)->count(),
+            ];
+        }, 3600);
+
+        $totalCars = $counts['totalCars'] ?? 0;
+        $totalBrands = $counts['totalBrands'] ?? 0;
 
         $hero = $this->cache->rememberHeroSetting('store_hero');
 

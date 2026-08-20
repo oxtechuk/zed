@@ -39,25 +39,50 @@
 
     {{-- Stat Cards --}}
     <div class="row g-3 mb-4">
-        <div class="col-6 col-xl-4">
-            <div class="crm-stat-new">
-                <div class="stat-icon red"><i class="bi bi-clock"></i></div>
+        <div class="col-6 col-xl-2 col-md-4">
+            <a href="{{ route('crm.bookings.index') }}" class="text-decoration-none d-block h-100">
+                <div class="crm-stat-new h-100 {{ !request('source') ? 'border-primary' : '' }}" style="background:#fff;">
+                    <span class="stat-badge blue">{{ __('الكل') }}</span>
+                    <div class="stat-icon blue"><i class="bi bi-layers-fill"></i></div>
+                    <div class="stat-lbl">{{ __('إجمالي الطلبات النشطة') }}</div>
+                    <div class="stat-val">{{ number_format($stats['total']) }}</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-xl-2 col-md-4">
+            <a href="{{ route('crm.bookings.index', array_merge(request()->query(), ['source' => 'cars'])) }}" class="text-decoration-none d-block h-100">
+                <div class="crm-stat-new h-100 {{ request('source') === 'cars' ? 'border-primary' : '' }}" style="background: linear-gradient(135deg, #FFF, #EFF6FF);">
+                    <span class="stat-badge blue">{{ __('سيارات') }}</span>
+                    <div class="stat-icon blue" style="background:#DBEAFE;color:#1D4ED8;"><i class="bi bi-car-front-fill"></i></div>
+                    <div class="stat-lbl">{{ __('طلبات السيارات') }}</div>
+                    <div class="stat-val" style="color:#1D4ED8;">{{ number_format($stats['car_requests']) }}</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-xl-3 col-md-4">
+            <a href="{{ route('crm.bookings.index', array_merge(request()->query(), ['source' => 'calculator'])) }}" class="text-decoration-none d-block h-100">
+                <div class="crm-stat-new h-100 {{ request('source') === 'calculator' ? 'border-primary' : '' }}" style="background: linear-gradient(135deg, #FFF, #FAF5FF);">
+                    <span class="stat-badge orange" style="background:#F3E8FF;color:#7C3AED;">{{ __('حاسبة') }}</span>
+                    <div class="stat-icon purple" style="background:#EDE9FE;color:#7C3AED;"><i class="bi bi-calculator-fill"></i></div>
+                    <div class="stat-lbl">{{ __('عملاء حاسبة التمويل') }}</div>
+                    <div class="stat-val" style="color:#7C3AED;">{{ number_format($stats['calculator_leads']) }}</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-xl-2 col-md-6">
+            <div class="crm-stat-new h-100">
+                <span class="stat-badge orange">{{ __('متابعة') }}</span>
+                <div class="stat-icon orange"><i class="bi bi-telephone-inbound-fill"></i></div>
                 <div class="stat-lbl">{{ __('بانتظار التواصل والمراجعة') }}</div>
-                <div class="stat-val">{{ number_format($stats['pending_review']) }}</div>
+                <div class="stat-val text-warning">{{ number_format($stats['pending_review']) }}</div>
             </div>
         </div>
-        <div class="col-6 col-xl-4">
-            <div class="crm-stat-new">
-                <div class="stat-icon blue"><i class="bi bi-bank"></i></div>
+        <div class="col-12 col-xl-3 col-md-6">
+            <div class="crm-stat-new h-100" style="background: linear-gradient(135deg, #FFF, #F0FDF4);">
+                <span class="stat-badge green">{{ __('بنوك') }}</span>
+                <div class="stat-icon green"><i class="bi bi-bank2"></i></div>
                 <div class="stat-lbl">{{ __('تحت الدراسة والتعميد') }}</div>
-                <div class="stat-val">{{ number_format($stats['under_bank']) }}</div>
-            </div>
-        </div>
-        <div class="col-6 col-xl-4">
-            <div class="crm-stat-new">
-                <div class="stat-icon purple"><i class="bi bi-person-lines-fill"></i></div>
-                <div class="stat-lbl">{{ __('إجمالي الطلبات النشطة') }}</div>
-                <div class="stat-val">{{ number_format($stats['total']) }}</div>
+                <div class="stat-val text-success">{{ number_format($stats['under_bank']) }}</div>
             </div>
         </div>
     </div>
@@ -85,19 +110,22 @@
                     {{-- فلتر الشهر --}}
                     <div style="position:relative;">
                         <input type="month" name="month" value="{{ request('month') }}"
-                               style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif; min-width: 150px;"
-                               onchange="this.form.submit()" title="{{ __('تصفية بالشهر') }}">
+                                style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif; min-width: 150px;"
+                                onchange="this.form.submit()" title="{{ __('تصفية بالشهر') }}">
                     </div>
 
-                    {{-- مصدر الطلب --}}
-                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:150px;">
-                        <option value="">{{ __('المصدر — الكل') }}</option>
-                        <option value="booking" {{ request('source')==='booking'?'selected':'' }}>{{ __('طلبات عادية') }}</option>
-                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>{{ __('عملاء حاسبة فقط') }}</option>
+                    {{-- مصدر ونوع الطلب --}}
+                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
+                        <option value="">{{ __('المصدر والنوع — الكل') }}</option>
+                        <option value="cars" {{ request('source')==='cars'?'selected':'' }}>🚗 {{ __('طلبات السيارات (حجز وشراء)') }}</option>
+                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>🧮 {{ __('عملاء حاسبة التمويل') }}</option>
+                        <option value="test_drive" {{ request('source')==='test_drive'?'selected':'' }}>⏱️ {{ __('طلبات تجربة القيادة') }}</option>
+                        <option value="purchase" {{ request('source')==='purchase'?'selected':'' }}>💳 {{ __('طلبات الشراء النقدي') }}</option>
+                        <option value="crm_manual" {{ request('source')==='crm_manual'?'selected':'' }}>📋 {{ __('طلبات داخلية (CRM)') }}</option>
                     </select>
 
                     {{-- الحالة النشطة --}}
-                    <select name="status" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:160px;">
+                    <select name="status" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:160px;" onchange="this.form.submit()">
                         <option value="">{{ __('الحالة — جميع الحالات النشطة') }}</option>
                         @foreach($statuses as $key => $s)
                         <option value="{{ $key }}" {{ request('status')===$key?'selected':'' }}>{{ $s['label'] }}</option>
@@ -105,7 +133,7 @@
                     </select>
 
                     {{-- الترتيب --}}
-                    <select name="sort" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:150px;">
+                    <select name="sort" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:150px;" onchange="this.form.submit()">
                         <option value="newest" {{ request('sort','newest')==='newest'?'selected':'' }}>{{ __('الأحدث أولاً') }}</option>
                         <option value="oldest" {{ request('sort','newest')==='oldest'?'selected':'' }}>{{ __('الأقدم أولاً') }}</option>
                     </select>
@@ -143,6 +171,7 @@
                     <tr>
                         <th class="px-4 py-3 text-muted" style="font-size:12px;font-weight:700;">#</th>
                         <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;">{{ __('العميل') }}</th>
+                        <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;">{{ __('النوع / المصدر') }}</th>
                         <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;">{{ __('السيارة') }}</th>
                         <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;">{{ __('المندوب') }}</th>
                         <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;">{{ __('سبب الإغلاق المقترح') }}</th>
@@ -158,6 +187,17 @@
                         <td class="px-3 py-3">
                             <div class="fw-bold" style="font-size:13px;">{{ $pa->client_name }}</div>
                             <div style="font-size:12px;color:var(--crm-text-muted);" dir="ltr">{{ $pa->client_phone }}</div>
+                        </td>
+                        <td class="px-3 py-3">
+                            @if($pa->source === 'calculator' || $pa->calculator_bank_id)
+                                <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 11px; padding: 3px 7px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-calculator me-1"></i>{{ __('حاسبة تمويل') }}
+                                </span>
+                            @else
+                                <span class="badge" style="background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-size: 11px; padding: 3px 7px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-car-front me-1"></i>{{ __('طلب سيارة') }}
+                                </span>
+                            @endif
                         </td>
                         <td class="px-3 py-3" style="font-size:13px;">
                             {{ $pa->car?->brand?->name }} {{ $pa->car?->name ?? '—' }}
@@ -190,14 +230,16 @@
                                         data-bs-toggle="modal" data-bs-target="#rejectModal{{ $pa->id }}">
                                     <i class="bi bi-arrow-counterclockwise me-1"></i>{{ __('إعادة للمندوب') }}
                                 </button>
-                                {{-- حذف --}}
+                                {{-- حذف للأدمن فقط --}}
+                                @if($isAdmin)
                                 <form action="{{ route('crm.bookings.destroy', $pa) }}" method="POST" class="m-0"
                                       onsubmit="return confirm('{{ __('هل تريد حذف هذا الطلب نهائياً؟') }}')">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-light border fw-bold rounded-2" style="font-size:12px;color:var(--crm-red);padding:5px 10px;">
+                                    <button type="submit" class="btn btn-sm btn-light border fw-bold rounded-2" style="font-size:12px;color:var(--crm-red);padding:5px 10px;" title="{{ __('حذف') }}">
                                         <i class="bi bi-trash" style="font-size:13px;"></i>
                                     </button>
                                 </form>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -246,7 +288,7 @@
     {{-- Active Bookings Table --}}
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="border:1px solid var(--crm-border)!important;">
         <div class="card-header bg-white border-0 px-4 py-3 d-flex justify-content-between align-items-center" style="border-bottom:1px solid var(--crm-border)!important;">
-            <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-lightning-charge-fill me-1 text-primary"></i> {{ __('قائمة الطلبات النشطة') }}</h6>
+            <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-lightning-charge-fill me-1 text-primary"></i> {{ __('قائمة كافة الطلبات النشطة') }}</h6>
             <span style="font-size:12px;color:var(--crm-text-muted);">{{ __('إجمالي الطلبات') }}: <strong>{{ $bookings->total() }}</strong></span>
         </div>
 
@@ -257,9 +299,10 @@
                     <tr>
                         <th class="px-4 py-3 text-muted fw-bold" style="font-size:12px;">#</th>
                         <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('رقم الطلب') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('البيانات / التحديث') }}</th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('النوع والمصدر') }}</th>
                         <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('العميل') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('السيارة') }}</th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('السيارة / التمويل') }}</th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('الموظف المسند') }}</th>
                         <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('حالة الطلب') }}</th>
                         <th class="py-3 text-muted fw-bold px-4" style="font-size:12px;">{{ __('تحكم') }}</th>
                     </tr>
@@ -272,36 +315,64 @@
                         </td>
                         <td class="fw-bold" style="font-size:13px;">
                             <a href="{{ route('crm.bookings.show', $b) }}" class="text-decoration-none fw-bold" style="color:var(--crm-red);">#{{ $b->id }}</a>
+                            <div class="text-muted small" style="font-size:11px;font-weight:normal;">{{ $b->created_at->diffForHumans() }}</div>
                         </td>
                         <td>
-                            <div style="font-size: 12px; line-height: 1.8;">
-                                <div><span class="text-muted">{{ __('إنشاء :') }}</span> <strong class="text-dark">{{ $b->created_at->diffForHumans() }}</strong></div>
-                                <div><span class="text-muted">{{ __('الموظف :') }}</span> <strong class="text-dark">{{ $b->employee?->name ?: __('غير معين') }}</strong></div>
-                                <div class="mt-1">
-                                    <span class="text-muted">{{ __('المصدر :') }}</span>
-                                    @if($b->source === 'calculator')
-                                        <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
-                                            <i class="bi bi-calculator me-1"></i>{{ __('عملاء حاسبة') }}
-                                        </span>
-                                    @else
-                                        <span class="badge" style="background-color: #EBF5FF; color: #1E40AF; border: 1px solid #BFDBFE; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
-                                            <i class="bi bi-file-earmark-text me-1"></i>{{ __('طلب عادي') }}
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
+                            @if($b->source === 'calculator' || $b->calculator_bank_id)
+                                <span class="badge d-inline-flex align-items-center gap-1 mb-1" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-calculator"></i> {{ __('عميل حاسبة تمويل') }}
+                                </span>
+                                @if($b->financingBank)
+                                    <div class="small text-muted" style="font-size:11px;"><i class="bi bi-bank me-1"></i>{{ $b->financingBank->name }}</div>
+                                @endif
+                            @elseif($b->booking_type === 'test_drive')
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-speedometer2"></i> {{ __('تجربة قيادة') }}
+                                </span>
+                            @elseif($b->booking_type === 'purchase')
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-cash-stack"></i> {{ __('شراء سيارة') }}
+                                </span>
+                            @elseif($b->source === 'CRM (يدوي)')
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #F8FAFC; color: #475569; border: 1px solid #E2E8F0; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-pencil-square"></i> {{ __('طلب يدوي') }}
+                                </span>
+                            @else
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-car-front"></i> {{ __('طلب سيارة') }}
+                                </span>
+                            @endif
                         </td>
                         <td>
                             <div class="fw-bold text-dark" style="font-size:13px;">{{ $b->client_name }}</div>
-                            <a href="tel:{{ $b->client_phone }}" class="text-decoration-none small text-muted" dir="ltr">{{ $b->client_phone }}</a>
+                            <div class="d-flex align-items-center gap-1 mt-1">
+                                <a href="tel:{{ $b->client_phone }}" class="text-decoration-none small text-muted" dir="ltr">{{ $b->client_phone }}</a>
+                                <a href="https://wa.me/{{ preg_replace('/\D/', '', $b->client_phone) }}" target="_blank" class="text-success small ms-1" title="{{ __('واتساب') }}">
+                                    <i class="bi bi-whatsapp"></i>
+                                </a>
+                            </div>
                         </td>
                         <td>
-                            <div style="font-size: 12px; line-height: 1.8;">
-                                <div><span class="text-muted">{{ __('الماركة :') }}</span> <strong class="text-dark">{{ $b->car?->brand?->name ?? '—' }}</strong></div>
-                                <div><span class="text-muted">{{ __('الموديل :') }}</span> <strong class="text-dark">{{ $b->car?->name ?? '—' }}</strong></div>
-                                @if($b->car?->year)
-                                <div><span class="text-muted">{{ __('سنة الصنع :') }}</span> <strong class="text-dark">{{ $b->car->year }}</strong></div>
+                            @if($b->car)
+                            <div style="font-size: 12px; line-height: 1.6;">
+                                <div class="fw-bold text-dark">{{ $b->car->brand?->name }} {{ $b->car->name }}</div>
+                                @if($b->car->year)
+                                <div class="text-muted">{{ __('سنة:') }} {{ $b->car->year }}</div>
                                 @endif
+                                @if($b->total_price > 0)
+                                <div class="text-muted small">{{ number_format($b->total_price) }} {{ __('ر.س') }}</div>
+                                @endif
+                            </div>
+                            @else
+                            <div class="text-muted small">—</div>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-1">
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-secondary" style="width:26px;height:26px;font-size:11px;">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <span class="fw-bold text-dark small" style="font-size:12px;">{{ $b->employee?->name ?: __('غير معين') }}</span>
                             </div>
                         </td>
                         <td>
@@ -334,32 +405,30 @@
                         </td>
                         <td class="px-4">
                             <div class="d-flex gap-1 align-items-center">
-                                <a href="{{ route('crm.bookings.show', $b) }}" class="btn btn-sm btn-light rounded-2 border" title="{{ __('عرض وتعديل') }}">
-                                    <i class="bi bi-pencil" style="font-size:14px;color:var(--crm-text);"></i>
-                                </a>
-                                <a href="{{ route('crm.bookings.show', $b) }}" class="btn btn-sm btn-light rounded-2 border" title="{{ __('عرض التفاصيل') }}">
+                                <a href="{{ route('crm.bookings.show', $b) }}" class="btn btn-sm btn-light rounded-2 border" title="{{ __('عرض وتعديل التفاصيل') }}">
                                     <i class="bi bi-eye" style="font-size:14px;color:var(--crm-text);"></i>
                                 </a>
-                                <a href="https://wa.me/{{ $b->client_phone }}" target="_blank" class="btn btn-sm btn-light rounded-2 border" title="{{ __('واتساب') }}" style="color:#25D366;">
+                                <a href="https://wa.me/{{ preg_replace('/\D/', '', $b->client_phone) }}" target="_blank" class="btn btn-sm btn-light rounded-2 border" title="{{ __('مراسلة واتساب') }}" style="color:#25D366;">
                                     <i class="bi bi-whatsapp" style="font-size:14px;"></i>
                                 </a>
-                                @can('manage-bookings')
+                                {{-- الحذف متاح للأدمن فقط --}}
+                                @if($isAdmin)
                                 <form action="{{ route('crm.bookings.destroy', $b) }}" method="POST" class="m-0"
-                                      onsubmit="return confirm('{{ __('هل تريد حذف هذا الطلب؟') }}')">
+                                      onsubmit="return confirm('{{ __('هل تريد حذف هذا الطلب نهائياً؟') }}')">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-light rounded-2 border" style="color:var(--crm-red);" title="{{ __('حذف') }}">
+                                    <button type="submit" class="btn btn-sm btn-light rounded-2 border" style="color:var(--crm-red);" title="{{ __('حذف الطلب') }}">
                                         <i class="bi bi-trash" style="font-size:14px;"></i>
                                     </button>
                                 </form>
-                                @endcan
+                                @endif
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-5">
+                        <td colspan="8" class="text-center text-muted py-5">
                             <i class="bi bi-inbox fs-1 d-block mb-2 opacity-25"></i>
-                            <div class="fw-bold">{{ __('لا توجد طلبات نشطة حالياً') }}</div>
+                            <div class="fw-bold">{{ __('لا توجد طلبات نشطة حالياً مطابقة للشروط') }}</div>
                         </td>
                     </tr>
                     @endforelse
@@ -373,14 +442,24 @@
             <div class="mb-3 p-3 rounded-3 shadow-sm border" style="background:#fff;">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <div>
-                        <a href="{{ route('crm.bookings.show', $b) }}" class="fw-bold text-decoration-none" style="color:var(--crm-red);font-size:14px;">#{{ $b->id }}</a>
-                        <div class="fw-bold mt-1" style="font-size:14px;color:var(--crm-text);">
-                            {{ $b->client_name }}
-                            @if($b->source === 'calculator')
-                                <span class="badge ms-1" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
-                                    <i class="bi bi-calculator me-1"></i>{{ __('حاسبة') }}
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <a href="{{ route('crm.bookings.show', $b) }}" class="fw-bold text-decoration-none" style="color:var(--crm-red);font-size:14px;">#{{ $b->id }}</a>
+                            @if($b->source === 'calculator' || $b->calculator_bank_id)
+                                <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
+                                    <i class="bi bi-calculator me-1"></i>{{ __('حاسبة تمويل') }}
+                                </span>
+                            @elseif($b->booking_type === 'test_drive')
+                                <span class="badge" style="background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
+                                    <i class="bi bi-speedometer2 me-1"></i>{{ __('تجربة قيادة') }}
+                                </span>
+                            @else
+                                <span class="badge" style="background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
+                                    <i class="bi bi-car-front me-1"></i>{{ __('طلب سيارة') }}
                                 </span>
                             @endif
+                        </div>
+                        <div class="fw-bold mt-1" style="font-size:14px;color:var(--crm-text);">
+                            {{ $b->client_name }}
                         </div>
                         <div style="font-size:12px;color:var(--crm-text-muted);" dir="ltr">{{ $b->client_phone }}</div>
                     </div>
@@ -427,9 +506,18 @@
                     <a href="{{ route('crm.bookings.show', $b) }}" class="btn btn-sm btn-light rounded-2 flex-fill text-center" style="font-size:12px;">
                         <i class="bi bi-eye"></i> {{ __('عرض') }}
                     </a>
-                    <a href="https://wa.me/{{ $b->client_phone }}" target="_blank" class="btn btn-sm btn-light rounded-2 flex-fill text-center" style="font-size:12px;color:#25D366;">
+                    <a href="https://wa.me/{{ preg_replace('/\D/', '', $b->client_phone) }}" target="_blank" class="btn btn-sm btn-light rounded-2 flex-fill text-center" style="font-size:12px;color:#25D366;">
                         <i class="bi bi-whatsapp"></i> {{ __('واتساب') }}
                     </a>
+                    @if($isAdmin)
+                    <form action="{{ route('crm.bookings.destroy', $b) }}" method="POST" class="m-0"
+                          onsubmit="return confirm('{{ __('هل تريد حذف هذا الطلب؟') }}')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-light rounded-2 border text-danger" title="{{ __('حذف') }}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                    @endif
                 </div>
             </div>
             @empty

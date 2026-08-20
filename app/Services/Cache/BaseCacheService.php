@@ -13,9 +13,23 @@ class BaseCacheService
 
     protected const TTL_LONG = 86400;
 
-    protected function remember(string $key, callable $callback, int $ttl = self::TTL_DEFAULT): mixed
+    protected static array $runtimeCache = [];
+
+    public function remember(string $key, callable $callback, int $ttl = self::TTL_DEFAULT): mixed
     {
-        return Cache::remember($key, $ttl, $callback);
+        if (array_key_exists($key, self::$runtimeCache)) {
+            return self::$runtimeCache[$key];
+        }
+
+        $value = Cache::remember($key, $ttl, $callback);
+        self::$runtimeCache[$key] = $value;
+
+        return $value;
+    }
+
+    public static function flushRuntimeCache(): void
+    {
+        self::$runtimeCache = [];
     }
 
     public function rememberSettings(): mixed

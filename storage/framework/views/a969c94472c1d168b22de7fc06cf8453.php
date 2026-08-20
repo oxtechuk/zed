@@ -99,10 +99,11 @@
                     </select>
 
                     
-                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:150px;">
-                        <option value=""><?php echo e(__('المصدر — الكل')); ?></option>
-                        <option value="booking" <?php echo e(request('source')==='booking'?'selected':''); ?>><?php echo e(__('طلبات عادية')); ?></option>
-                        <option value="calculator" <?php echo e(request('source')==='calculator'?'selected':''); ?>><?php echo e(__('عملاء حاسبة فقط')); ?></option>
+                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
+                        <option value=""><?php echo e(__('المصدر والنوع — الكل')); ?></option>
+                        <option value="cars" <?php echo e(request('source')==='cars'?'selected':''); ?>>🚗 <?php echo e(__('طلبات السيارات (حجز وشراء)')); ?></option>
+                        <option value="calculator" <?php echo e(request('source')==='calculator'?'selected':''); ?>>🧮 <?php echo e(__('عملاء حاسبة التمويل')); ?></option>
+                        <option value="test_drive" <?php echo e(request('source')==='test_drive'?'selected':''); ?>>⏱️ <?php echo e(__('طلبات تجربة القيادة')); ?></option>
                     </select>
 
                     
@@ -245,7 +246,7 @@
                                 <a href="https://wa.me/<?php echo e($b->client_phone); ?>" target="_blank" class="btn btn-sm btn-light rounded-2 border" title="<?php echo e(__('واتساب')); ?>" style="color:#25D366;">
                                     <i class="bi bi-whatsapp" style="font-size:14px;"></i>
                                 </a>
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage-bookings')): ?>
+                                <?php if($isAdmin): ?>
                                 <form action="<?php echo e(route('crm.bookings.destroy', $b)); ?>" method="POST" class="m-0"
                                       onsubmit="return confirm('<?php echo e(__('هل تريد حذف هذا الطلب نهائياً؟')); ?>')">
                                     <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>

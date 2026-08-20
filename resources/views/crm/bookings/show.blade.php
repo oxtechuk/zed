@@ -418,10 +418,10 @@
                                 <span style="font-size:13px;font-weight:700;color:var(--crm-text);">{{ $booking->employee->name ?? __('غير معين') }}</span>
                             </div>
 
-                            {{-- تعيين مسؤول المبيعات --}}
-                            @can('manage-bookings')
+                            {{-- تعيين مسؤول المبيعات (للأدمن والمشرف فقط) --}}
+                            @if(auth('employee')->user()->isAdmin())
                             <div class="mt-3 p-3 rounded-3" style="background:#F8F9FC;border:1px solid var(--crm-border);">
-                                <label style="font-size:12px;font-weight:700;margin-bottom:8px;display:block;">{{ __('إسناد المسؤول') }}</label>
+                                <label style="font-size:12px;font-weight:700;margin-bottom:8px;display:block;">{{ __('إسناد / تحويل الموظف المسؤول (أدمن)') }}</label>
                                 <form action="{{ route('crm.bookings.assign', $booking) }}" method="POST" class="d-flex align-items-center gap-2 w-100">
                                     @csrf @method('PATCH')
                                     <select name="employee_id" class="form-select form-select-sm border-0 shadow-none" style="background:#fff;border-radius:8px;font-size:13px;font-weight:700;">
@@ -435,13 +435,15 @@
                                     </button>
                                 </form>
                             </div>
+                            @endif
 
                             {{-- تغيير الحالة --}}
+                            @can('manage-bookings')
                             <div class="mt-3 p-3 rounded-3" style="background:#F8F9FC;border:1px solid var(--crm-border);">
                                 <label style="font-size:12px;font-weight:700;margin-bottom:8px;display:block;">{{ __('تغيير حالة الطلب') }}</label>
                                 <form action="{{ route('crm.bookings.status', $booking) }}" method="POST" class="d-flex align-items-center gap-2 w-100" id="bookingStatusForm">
                                     @csrf @method('PATCH')
-                                    <select name="status" id="bookingStatusSelect" class="form-select form-select-sm border-0 shadow-none" style="background:#fff;border-radius:8px;font-size:13px;font-weight:700;" {{ ($booking->status === 'waiting_supervisor_approval' && ! auth('employee')->user()->isAdmin()) ? 'disabled' : '' }} data-current-status="{{ $booking->status }}" data-purchase-price="{{ $booking->purchase_price }}" data-auth-price="{{ $booking->authorization_price }}" data-expenses="{{ $booking->expenses ?? 0 }}" data-net-commission="{{ $booking->net_commission }}" data-delivery-note="{{ $booking->delivery_note_text }}">
+                                    <select name="status" id="bookingStatusSelect" class="form-select form-select-sm border-0 shadow-none" style="background:#fff;border-radius:8px;font-size:13px;font-weight:700;" {{ ($booking->status === 'waiting_supervisor_approval' && ! auth('employee')->user()->isAdmin()) ? 'disabled' : '' }} data-current-status="{{ $booking->status }}" data-purchase-price="{{ $booking->purchase_price }}" data-auth-price="{{ $booking->authorization_price }}" data-expenses="{{ $booking->expenses ?? 0 }}" data-net-commission="{{ $booking->net_commission }}" data-down-payment="{{ $booking->down_payment }}" data-monthly-installment="{{ $booking->monthly_installment }}" data-delivery-note="{{ $booking->delivery_note_text }}">
                                         <optgroup label="{{ __('الحالات الأساسية (Active)') }}">
                                             @foreach($statuses as $key => $s)
                                                 @if($s['group'] === 'active')
@@ -480,59 +482,54 @@
                                 <span style="font-size:13px;font-weight:700;">#{{ $booking->car->id }}</span>
                             </div>
                             <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid var(--crm-border);">
-                                <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('نوع السيارة') }}</span>
-                                <span style="font-size:13px;font-weight:700;">{{ $booking->car->brand->name ?? '' }} {{ $booking->car->name }}</span>
+                                <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('الماركة') }}</span>
+                                <span style="font-size:13px;font-weight:700;">{{ $booking->car->brand->name ?? '—' }}</span>
                             </div>
                             <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid var(--crm-border);">
-                                <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('اللون المطلوب') }}</span>
-                                <span style="font-size:13px;font-weight:700;">{{ $booking->car->color ?? __('غير محدد') }}</span>
+                                <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('الموديل') }}</span>
+                                <span style="font-size:13px;font-weight:700;">{{ $booking->car->name }}</span>
                             </div>
                             <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid var(--crm-border);">
-                                <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('سعر السيارة') }}</span>
-                                <span style="font-size:13px;font-weight:700;">{{ number_format($booking->car->cash_price) }} {!! __('ريال') !!}</span>
+                                <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('سنة الصنع') }}</span>
+                                <span style="font-size:13px;font-weight:700;">{{ $booking->car->year }}</span>
                             </div>
-                            @else
-                            <div class="text-center text-muted py-3" style="font-size:13px;">{{ __('لا توجد سيارة مرتبطة بالطلب') }}</div>
+                            <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid var(--crm-border);">
+                                <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('نوع الهيكل') }}</span>
+                                <span style="font-size:13px;font-weight:700;">{{ $booking->car->type }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid var(--crm-border);">
+                                <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('سعر السيارة النقدي') }}</span>
+                                <span style="font-size:13px;font-weight:700;color:var(--crm-orange-dark);">
+                                    {{ number_format($booking->car->cash_price ?? $booking->total_price) }} {!! __('ريال') !!}
+                                </span>
+                            </div>
+                            @if($booking->car->image_url)
+                            <div class="mt-3 text-center">
+                                <img src="{{ $booking->car->image_url }}" alt="{{ $booking->car->name }}" class="img-fluid rounded-3" style="max-height:180px;object-fit:cover;">
+                            </div>
                             @endif
-                            <div class="d-flex justify-content-between py-2 mt-2">
-                                <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('جهة التمويل') }}</span>
-                                <span style="font-size:13px;font-weight:700;">{{ $booking->financingBank->name ?? __('غير محددة') }}</span>
-                            </div>
+                            @else
+                            <div class="text-center text-muted py-4">{{ __('لم يتم تحديد سيارة لهذا الطلب') }}</div>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- المستندات والتصاريح --}}
-            <div class="card border-0 shadow-sm rounded-4" style="border:1px solid var(--crm-border)!important;">
-                <div class="card-header bg-white border-0 px-4 pt-4 pb-3" style="border-bottom:1px solid var(--crm-border)!important;">
-                    <h6 class="fw-bold mb-0">{{ __('المستندات والتصاريح') }}</h6>
+            {{-- المستندات المرفقة --}}
+            <div class="card border-0 shadow-sm rounded-4 mb-3" style="border:1px solid var(--crm-border)!important;">
+                <div class="card-header bg-white border-0 px-4 pt-4 pb-3 d-flex justify-content-between align-items-center" style="border-bottom:1px solid var(--crm-border)!important;">
+                    <h6 class="fw-bold mb-0">{{ __('المستندات المرفقة') }}</h6>
+                    @can('manage-bookings')
+                    <button class="btn-crm-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadDocModal" style="padding:6px 14px;font-size:12px;">
+                        <i class="bi bi-upload me-1"></i> {{ __('رفع مستند جديد') }}
+                    </button>
+                    @endcan
                 </div>
-                <div class="card-body p-4">
-                    <form action="{{ route('crm.bookings.documents.store', $booking) }}" method="POST" enctype="multipart/form-data" class="mb-4 p-3 rounded-3" style="background:#F8F9FC;border:1px solid var(--crm-border);">
-                        @csrf
-                        <div class="row g-2 align-items-end">
-                            <div class="col-md-5">
-                                <label class="fw-bold mb-1" style="font-size:12px;">{{ __('اسم المستند (اختياري)') }}</label>
-                                <input type="text" name="title" class="form-control form-control-sm" placeholder="{{ __('مثال: الهوية الوطنية، تصريح المرور...') }}" style="border-radius:8px;font-size:13px;padding:8px 12px;">
-                            </div>
-                            <div class="col-md-5">
-                                <label class="fw-bold mb-1" style="font-size:12px;">{{ __('الملف') }}</label>
-                                <input type="file" name="file" class="form-control form-control-sm" required style="border-radius:8px;font-size:13px;padding:8px 12px;">
-                            </div>
-                            <div class="col-md-2">
-                                @can('manage-bookings')
-                                <button type="submit" class="btn-crm-primary w-100" style="padding:8px 16px;">
-                                    <i class="bi bi-upload"></i> {{ __('رفع') }}
-                                </button>
-                                @endcan
-                            </div>
-                        </div>
-                    </form>
-
+                <div class="card-body p-0">
                     @if($booking->documents && $booking->documents->count() > 0)
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" style="border:1px solid var(--crm-border);border-radius:8px;overflow:hidden;">
+                        <table class="table table-hover align-middle mb-0">
                             <thead style="background:#F8F9FC;">
                                 <tr>
                                     <th class="py-2 px-3 text-muted fw-bold" style="font-size:12px;border-bottom:1px solid var(--crm-border);">{{ __('المستند') }}</th>
@@ -584,31 +581,149 @@
                         </table>
                     </div>
                     @else
-                    <div class="text-center py-4 opacity-50">
-                        <i class="bi bi-folder-x fs-1 d-block mb-2"></i>
-                        <p class="mb-0 small">{{ __('لا توجد مستندات مرفوعة بعد') }}</p>
+                    <div class="text-center text-muted py-4 small">
+                        <i class="bi bi-folder2-open fs-2 d-block mb-1 opacity-25"></i>
+                        {{ __('لا توجد مستندات مرفقة بهذا الطلب حالياً.') }}
                     </div>
                     @endif
                 </div>
             </div>
         </div>
 
-        {{-- ===== Tab 2: تفاصيل العرض ===== --}}
+        {{-- ===== Tab 2: تفاصيل العرض والبيانات المالية ===== --}}
         <div class="tab-pane fade" id="tab-offer">
-            <div class="card border-0 shadow-sm rounded-4 mb-3" style="border:1px solid var(--crm-border)!important;">
-                <div class="card-header bg-white border-0 px-4 pt-4 pb-3" style="border-bottom:1px solid var(--crm-border)!important;">
-                    <h6 class="fw-bold mb-0">{{ __('تفاصيل العرض') }}</h6>
+
+            {{-- في حال تم التسليم أو تسجيل بيانات الشراء والتعميد الفعلي --}}
+            @if($booking->status === 'received' || $booking->purchase_price !== null || $booking->authorization_price !== null || $booking->net_commission !== null || $booking->delivered_at)
+            <div class="card border-0 shadow-sm rounded-4 mb-3" style="border: 2px solid #BBF7D0 !important; background: #F0FDF4;">
+                <div class="card-header border-0 px-4 pt-4 pb-3" style="background: transparent; border-bottom: 1px solid #BBF7D0 !important;">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:#DCFCE7;color:#16A34A;">
+                                <i class="bi bi-patch-check-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0 text-success" style="font-size:16px;">{{ __('البيانات المالية للتسليم الفعلي والعمولة') }}</h6>
+                                <span class="text-muted" style="font-size:12px;">{{ __('تم تأكيد واستلام السيارة وتوثيق العمليات المالية أدناه') }}</span>
+                            </div>
+                        </div>
+                        @if($booking->delivered_at)
+                        <span class="badge bg-success py-2 px-3 fw-bold" style="font-size:12px;">
+                            <i class="bi bi-calendar3 me-1"></i> {{ __('تاريخ التسليم:') }} {{ $booking->delivered_at->format('d/m/Y • H:i') }}
+                        </span>
+                        @endif
+                    </div>
                 </div>
                 <div class="card-body px-4 py-3">
-                    @php
-                        $commission = $booking->monthly_installment * 0.035;
-                        $delivery   = 125;
-                        $total      = $booking->monthly_installment + $commission + $delivery;
-                    @endphp
+                    <div class="row g-3">
+                        {{-- سعر شراء السيارة --}}
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-white rounded-3 border" style="border-color:#DCFCE7!important;">
+                                <div class="text-muted small mb-1" style="font-size:12px;">{{ __('سعر شراء السيارة') }}</div>
+                                <div class="fw-bold text-dark" style="font-size:16px;">
+                                    {{ $booking->purchase_price ? number_format($booking->purchase_price, 2) : '—' }} <small class="text-muted" style="font-size:11px;">ر.س</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- سعر تعميد السيارة --}}
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-white rounded-3 border" style="border-color:#DCFCE7!important;">
+                                <div class="text-muted small mb-1" style="font-size:12px;">{{ __('سعر تعميد السيارة') }}</div>
+                                <div class="fw-bold text-dark" style="font-size:16px;">
+                                    {{ $booking->authorization_price ? number_format($booking->authorization_price, 2) : '—' }} <small class="text-muted" style="font-size:11px;">ر.س</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- المصروفات --}}
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-white rounded-3 border" style="border-color:#DCFCE7!important;">
+                                <div class="text-muted small mb-1" style="font-size:12px;">{{ __('المصروفات الإضافية') }}</div>
+                                <div class="fw-bold text-danger" style="font-size:16px;">
+                                    {{ $booking->expenses ? number_format($booking->expenses, 2) : '0.00' }} <small class="text-muted" style="font-size:11px;">ر.س</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- صافي عمولة الشركة --}}
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 rounded-3 text-white" style="background: linear-gradient(135deg, #16A34A, #15803D); box-shadow: 0 4px 12px rgba(22,163,74,0.25);">
+                                <div class="small mb-1 text-white-50" style="font-size:12px;">{{ __('صافي عمولة الشركة') }}</div>
+                                <div class="fw-bold" style="font-size:18px;">
+                                    {{ $booking->net_commission !== null ? number_format($booking->net_commission, 2) : '—' }} <small class="text-white-50" style="font-size:11px;">ر.س</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- القسط الشهري --}}
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-white rounded-3 border" style="border-color:#DCFCE7!important;">
+                                <div class="text-muted small mb-1" style="font-size:12px;">{{ __('القسط الشهري الفعلي') }}</div>
+                                <div class="fw-bold text-primary" style="font-size:16px;">
+                                    {{ $booking->monthly_installment ? number_format($booking->monthly_installment, 2) : '—' }} <small class="text-muted" style="font-size:11px;">ر.س</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- الدفعة الأولى --}}
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-white rounded-3 border" style="border-color:#DCFCE7!important;">
+                                <div class="text-muted small mb-1" style="font-size:12px;">{{ __('الدفعة الأولى الفعلية') }}</div>
+                                <div class="fw-bold text-dark" style="font-size:16px;">
+                                    {{ $booking->down_payment ? number_format($booking->down_payment, 2) : '0.00' }} <small class="text-muted" style="font-size:11px;">ر.س</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- الدفعة الأخيرة --}}
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-white rounded-3 border" style="border-color:#DCFCE7!important;">
+                                <div class="text-muted small mb-1" style="font-size:12px;">{{ __('الدفعة الأخيرة (البالون)') }}</div>
+                                <div class="fw-bold text-dark" style="font-size:16px;">
+                                    {{ $booking->balloon_payment ? number_format($booking->balloon_payment, 2) : '—' }} <small class="text-muted" style="font-size:11px;">ر.س</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- جهة التمويل ومدة التمويل --}}
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-white rounded-3 border" style="border-color:#DCFCE7!important;">
+                                <div class="text-muted small mb-1" style="font-size:12px;">{{ __('جهة التمويل والمدة') }}</div>
+                                <div class="fw-bold text-dark" style="font-size:14px;">
+                                    {{ $booking->financingBank->name ?? __('غير محدد') }}
+                                    @if($booking->duration_years)
+                                        <span class="badge bg-light text-secondary border ms-1" style="font-size:11px;">{{ $booking->duration_years }} {{ __('سنوات') }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        @if(!empty($booking->delivery_note_text))
+                        <div class="col-12">
+                            <div class="p-3 bg-white rounded-3 border" style="border-color:#DCFCE7!important;">
+                                <div class="fw-bold text-success mb-1" style="font-size:12px;">
+                                    <i class="bi bi-chat-left-quote me-1"></i> {{ __('ملاحظات التسليم والاستلام:') }}
+                                </div>
+                                <div style="font-size:13px;color:#166534;white-space:pre-wrap;line-height:1.6;">{{ $booking->delivery_note_text }}</div>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            {{-- بطاقة تفاصيل العرض الأساسية --}}
+            <div class="card border-0 shadow-sm rounded-4 mb-3" style="border:1px solid var(--crm-border)!important;">
+                <div class="card-header bg-white border-0 px-4 pt-4 pb-3" style="border-bottom:1px solid var(--crm-border)!important;">
+                    <h6 class="fw-bold mb-0">{{ __('تفاصيل العرض التقديري') }}</h6>
+                </div>
+                <div class="card-body px-4 py-3">
                     <div class="row g-0">
                         <div class="col-6 col-md-4 py-2" style="border-bottom:1px solid var(--crm-border);">
                             <div style="font-size:12px;color:var(--crm-text-muted);margin-bottom:4px;">{{ __('سعر السيارة') }}</div>
-                            <div style="font-size:14px;font-weight:800;">{{ number_format($booking->car->cash_price ?? $booking->total_price) }} {!! __('ريال') !!}</div>
+                            <div style="font-size:14px;font-weight:800;">{{ number_format($booking->total_price ?: ($booking->car->cash_price ?? 0)) }} {!! __('ريال') !!}</div>
                         </div>
                         <div class="col-6 col-md-4 py-2" style="border-bottom:1px solid var(--crm-border);">
                             <div style="font-size:12px;color:var(--crm-text-muted);margin-bottom:4px;">{{ __('الدفعة الأولى') }}</div>
@@ -632,23 +747,8 @@
                         </div>
                     </div>
 
-                    <div class="row g-0 mt-2">
-                        <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid var(--crm-border);">
-                            <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('عمولة البنك') }} (3.5%)</span>
-                            <span style="font-size:13px;font-weight:700;">{{ number_format($commission) }} {!! __('ريال') !!}</span>
-                        </div>
-                        <div class="d-flex justify-content-between py-2" style="border-bottom:1px solid var(--crm-border);">
-                            <span style="font-size:13px;color:var(--crm-text-muted);">{{ __('رسوم التوصيل') }}</span>
-                            <span style="font-size:13px;font-weight:700;">{{ number_format($delivery) }} {!! __('ريال') !!}</span>
-                        </div>
-                        <div class="d-flex justify-content-between py-3">
-                            <span style="font-size:14px;font-weight:800;color:var(--crm-text);">{{ __('الإجمالي') }}</span>
-                            <span style="font-size:14px;font-weight:900;color:var(--crm-orange-dark);">{{ number_format($total) }} {!! __('ريال') !!}</span>
-                        </div>
-                    </div>
-
                     @if($booking->offer_notes)
-                    <div class="mt-2 p-3 rounded-3" style="background:#F8F9FC;border:1px solid var(--crm-border);">
+                    <div class="mt-3 p-3 rounded-3" style="background:#F8F9FC;border:1px solid var(--crm-border);">
                         <div style="font-size:12px;color:var(--crm-text-muted);margin-bottom:4px;">{{ __('تفاصيل العرض المرسل للعميل') }}</div>
                         <div style="font-size:13px;font-weight:600;white-space:pre-line;">{{ $booking->offer_notes }}</div>
                     </div>
@@ -656,20 +756,76 @@
                 </div>
             </div>
 
-            {{-- تعديل العرض --}}
+            {{-- تعديل تفاصيل العرض والبيانات المالية --}}
             @can('manage-bookings')
             <div class="card border-0 shadow-sm rounded-4" style="border:1px solid var(--crm-border)!important;">
                 <div class="card-header bg-white border-0 px-4 pt-4 pb-3" style="border-bottom:1px solid var(--crm-border)!important;">
-                    <h6 class="fw-bold mb-0">{{ __('تعديل تفاصيل العرض') }}</h6>
+                    <h6 class="fw-bold mb-0"><i class="bi bi-pencil-square me-1 text-primary"></i> {{ __('تعديل تفاصيل العرض والبيانات المالية') }}</h6>
                 </div>
                 <div class="card-body px-4 py-3">
-                    <form action="{{ route('crm.bookings.offer', $booking) }}" method="POST">
+                    <form action="{{ route('crm.bookings.offer', $booking) }}" method="POST" id="editOfferForm">
                         @csrf @method('PATCH')
+                        
                         <div class="row g-3">
-                            <div class="col-md-4">
-                                <label class="form-label fw-bold" style="font-size:12px;">{{ __('جهة التمويل') }}</label>
+                            {{-- سعر شراء السيارة --}}
+                            <div class="col-md-3 col-6">
+                                <label class="form-label fw-bold small text-muted">{{ __('سعر شراء السيارة (ر.س)') }}</label>
+                                <input type="number" step="0.01" min="0" name="purchase_price" id="offerPurchasePrice" value="{{ $booking->purchase_price }}" class="form-control form-control-sm" style="border-radius:8px;">
+                            </div>
+
+                            {{-- سعر تعميد السيارة --}}
+                            <div class="col-md-3 col-6">
+                                <label class="form-label fw-bold small text-muted">{{ __('سعر تعميد السيارة (ر.س)') }}</label>
+                                <input type="number" step="0.01" min="0" name="authorization_price" id="offerAuthPrice" value="{{ $booking->authorization_price }}" class="form-control form-control-sm" style="border-radius:8px;">
+                            </div>
+
+                            {{-- المصروفات --}}
+                            <div class="col-md-3 col-6">
+                                <label class="form-label fw-bold small text-muted">{{ __('المصروفات (ر.س)') }}</label>
+                                <input type="number" step="0.01" min="0" name="expenses" id="offerExpenses" value="{{ $booking->expenses ?? 0 }}" class="form-control form-control-sm" style="border-radius:8px;">
+                            </div>
+
+                            {{-- صافي عمولة الشركة --}}
+                            <div class="col-md-3 col-6">
+                                <label class="form-label fw-bold small text-muted">{{ __('صافي عمولة الشركة (ر.س)') }}</label>
+                                <input type="number" step="0.01" name="net_commission" id="offerNetCommission" value="{{ $booking->net_commission }}" class="form-control form-control-sm fw-bold text-success" style="border-radius:8px;">
+                            </div>
+
+                            {{-- سعر السيارة الإجمالي --}}
+                            <div class="col-md-3 col-6">
+                                <label class="form-label fw-bold small text-muted">{{ __('سعر السيارة الإجمالي (ر.س)') }}</label>
+                                <input type="number" step="0.01" min="0" name="total_price" value="{{ $booking->total_price }}" class="form-control form-control-sm" style="border-radius:8px;">
+                            </div>
+
+                            {{-- الدفعة الأولى --}}
+                            <div class="col-md-3 col-6">
+                                <label class="form-label fw-bold small text-muted">{{ __('الدفعة الأولى (ر.س)') }}</label>
+                                <input type="number" step="0.01" min="0" name="down_payment" value="{{ $booking->down_payment }}" class="form-control form-control-sm" style="border-radius:8px;">
+                            </div>
+
+                            {{-- القسط الشهري --}}
+                            <div class="col-md-3 col-6">
+                                <label class="form-label fw-bold small text-muted">{{ __('القسط الشهري (ر.س)') }}</label>
+                                <input type="number" step="0.01" min="0" name="monthly_installment" value="{{ $booking->monthly_installment }}" class="form-control form-control-sm" style="border-radius:8px;">
+                            </div>
+
+                            {{-- الدفعة الأخيرة --}}
+                            <div class="col-md-3 col-6">
+                                <label class="form-label fw-bold small text-muted">{{ __('الدفعة الأخيرة (ر.س)') }}</label>
+                                <input type="number" step="0.01" min="0" name="balloon_payment" value="{{ $booking->balloon_payment }}" class="form-control form-control-sm" style="border-radius:8px;">
+                            </div>
+
+                            {{-- مدة التمويل --}}
+                            <div class="col-md-4 col-6">
+                                <label class="form-label fw-bold small text-muted">{{ __('مدة التمويل (بالسنوات)') }}</label>
+                                <input type="number" name="duration_years" min="1" max="10" value="{{ $booking->duration_years ?? 5 }}" class="form-control form-control-sm" style="border-radius:8px;">
+                            </div>
+
+                            {{-- جهة التمويل --}}
+                            <div class="col-md-4 col-6">
+                                <label class="form-label fw-bold small text-muted">{{ __('جهة التمويل / البنك') }}</label>
                                 <select name="calculator_bank_id" class="form-select form-select-sm" style="border-radius:8px;">
-                                    <option value="">{{ __('— اختر —') }}</option>
+                                    <option value="">{{ __('— اختر جهة التمويل —') }}</option>
                                     @foreach($calculatorBanks as $bank)
                                     <option value="{{ $bank->id }}" {{ $booking->calculator_bank_id == $bank->id ? 'selected' : '' }}>{{ $bank->name }}</option>
                                     @endforeach
@@ -1091,6 +1247,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 handleBookingStatusSelectChange(statusSelect, {{ $booking->id }}, '{{ route('crm.bookings.status', $booking) }}', isAdmin);
             }
+        });
+    }
+
+    // Auto calculate commission on edit offer form
+    const offerPurchaseInp = document.getElementById('offerPurchasePrice');
+    const offerAuthInp = document.getElementById('offerAuthPrice');
+    const offerExpensesInp = document.getElementById('offerExpenses');
+    const offerNetCommissionInp = document.getElementById('offerNetCommission');
+
+    function calculateOfferCommission() {
+        if (!offerPurchaseInp || !offerAuthInp || !offerExpensesInp || !offerNetCommissionInp) return;
+        const authVal = parseFloat(offerAuthInp.value) || 0;
+        const purchaseVal = parseFloat(offerPurchaseInp.value) || 0;
+        const expensesVal = parseFloat(offerExpensesInp.value) || 0;
+
+        if (authVal > 0 || purchaseVal > 0) {
+            offerNetCommissionInp.value = (authVal - purchaseVal - expensesVal).toFixed(2);
+        }
+    }
+
+    if (offerPurchaseInp && offerAuthInp && offerExpensesInp) {
+        [offerPurchaseInp, offerAuthInp, offerExpensesInp].forEach(inp => {
+            inp.addEventListener('input', calculateOfferCommission);
         });
     }
 });

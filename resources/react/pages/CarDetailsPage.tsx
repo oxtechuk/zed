@@ -39,6 +39,7 @@ function mapRelatedCar(car: ICarItem): ICarCardProps | null {
       name: car.name ?? "",
       year: String(car.year ?? ""),
       type: car.type ?? "",
+      model: car.model ?? "",
       slug,
       fuelType: specValue(car, "fuel", "fuel_type"),
       transmission: specValue(car, "gearbox", "transmission"),
@@ -148,6 +149,7 @@ export default function CarDetailsPage() {
       </script>
       <CarDetailsHero
         id={car.id}
+        slug={car.slug || slug}
         title={car.name}
         description={car.description}
         mainImage={car.main_image}
@@ -166,6 +168,7 @@ export default function CarDetailsPage() {
         seats={car.specs?.seats || undefined}
         horsepower={car.specs?.hp || car.specs?.power || undefined}
         type={car.type || undefined}
+        model={car.model || undefined}
         year={car.year || undefined}
         brandName={car.brand?.name || undefined}
       />

@@ -104,11 +104,11 @@
                                onchange="this.form.submit()" title="{{ __('تصفية بشهر الإغلاق') }}">
                     </div>
 
-                    {{-- مصدر الطلب --}}
-                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:150px;">
-                        <option value="">{{ __('المصدر — الكل') }}</option>
-                        <option value="booking" {{ request('source')==='booking'?'selected':'' }}>{{ __('طلبات عادية') }}</option>
-                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>{{ __('عملاء حاسبة فقط') }}</option>
+                    {{-- مصدر ونوع الطلب --}}
+                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
+                        <option value="">{{ __('المصدر والنوع — الكل') }}</option>
+                        <option value="cars" {{ request('source')==='cars'?'selected':'' }}>🚗 {{ __('طلبات السيارات (حجز وشراء)') }}</option>
+                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>🧮 {{ __('عملاء حاسبة التمويل') }}</option>
                     </select>
 
                     {{-- الترتيب --}}

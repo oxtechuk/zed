@@ -21,6 +21,7 @@ class CarMiniResource extends JsonResource
             'savings' => max(0, $this->cash_price - $this->current_price),
             'min_installment' => $this->min_installment,
             'min_down_payment' => $this->min_down_payment,
+            'model' => $this->model,
             'type' => $this->type,
             'year' => $this->year,
             'specs' => $this->specs,

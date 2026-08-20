@@ -12,32 +12,59 @@ use App\Notifications\NewLeadNotification;
 class BookingAssignmentService
 {
     /**
+     * Fetch all active eligible sales representatives.
+     */
+    public function getEligibleSalesReps()
+    {
+        $reps = Employee::where('is_active', true)
+            ->where(function ($q) {
+                $q->whereIn('role', ['sales', 'sales-rep', 'sales_rep', 'employee'])
+                    ->orWhereHas('roles', function ($rq) {
+                        $rq->whereIn('name', ['sales', 'sales-rep', 'sales_rep', 'employee']);
+                    });
+            })
+            ->where('role', '!=', 'admin')
+            ->orderBy('id')
+            ->get();
+
+        if ($reps->isEmpty()) {
+            $reps = Employee::where('is_active', true)
+                ->where('role', '!=', 'admin')
+                ->orderBy('id')
+                ->get();
+        }
+
+        if ($reps->isEmpty()) {
+            $reps = Employee::where('is_active', true)->orderBy('id')->get();
+        }
+
+        return $reps;
+    }
+
+    /**
      * Automatically assigns a booking to a sales representative using Round-Robin.
      *
      * @return void
      */
     public function autoAssign(Booking $booking)
     {
-        // 1. Check if auto assignment is enabled in settings
+        // 1. Check if auto assignment is enabled in settings (default true)
         $settings = Setting::all()->pluck('value', 'key');
-        $isEnabled = isset($settings['auto_assign_bookings']) && $settings['auto_assign_bookings'] == '1';
+        $isEnabled = ! isset($settings['auto_assign_bookings']) || $settings['auto_assign_bookings'] == '1';
 
         if (! $isEnabled) {
             return;
         }
 
         // 2. Fetch all active sales representatives
-        $salesReps = Employee::whereIn('role', ['sales', 'sales-rep'])
-            ->where('is_active', true)
-            ->orderBy('id')
-            ->get();
+        $salesReps = $this->getEligibleSalesReps();
 
         if ($salesReps->isEmpty()) {
             return;
         }
 
         // 3. Find the last assigned representative across both Booking and Lead models
-        $lastAssignedRepId = $this->getLastAssignedRepId();
+        $lastAssignedRepId = $this->getLastAssignedRepId($salesReps->pluck('id')->toArray());
 
         $assignedRep = null;
 
@@ -63,8 +90,10 @@ class BookingAssignmentService
             // 5. Notify the assigned representative
             $assignedRep->notify(new NewBookingNotification(
                 $booking,
-                __('طلب جديد'),
-                __('تم تعيين طلب جديد لك للعميل').' '.$booking->client_name
+                $booking->source === 'calculator' ? __('طلب عميل حاسبة جديد') : __('طلب سيارة جديد'),
+                $booking->source === 'calculator'
+                    ? __('تم تعيين عميل حاسبة تمويل جديد لك:').' '.$booking->client_name
+                    : __('تم تعيين طلب جديد لك للعميل').' '.$booking->client_name
             ));
         }
     }
@@ -76,26 +105,23 @@ class BookingAssignmentService
      */
     public function autoAssignLead(Lead $lead)
     {
-        // 1. Check if auto assignment is enabled in settings
+        // 1. Check if auto assignment is enabled in settings (default true)
         $settings = Setting::all()->pluck('value', 'key');
-        $isEnabled = isset($settings['auto_assign_bookings']) && $settings['auto_assign_bookings'] == '1';
+        $isEnabled = ! isset($settings['auto_assign_bookings']) || $settings['auto_assign_bookings'] == '1';
 
         if (! $isEnabled) {
             return;
         }
 
         // 2. Fetch all active sales representatives
-        $salesReps = Employee::whereIn('role', ['sales', 'sales-rep'])
-            ->where('is_active', true)
-            ->orderBy('id')
-            ->get();
+        $salesReps = $this->getEligibleSalesReps();
 
         if ($salesReps->isEmpty()) {
             return;
         }
 
         // 3. Find the last assigned representative across both Booking and Lead models
-        $lastAssignedRepId = $this->getLastAssignedRepId();
+        $lastAssignedRepId = $this->getLastAssignedRepId($salesReps->pluck('id')->toArray());
 
         $assignedRep = null;
 
@@ -130,21 +156,18 @@ class BookingAssignmentService
     /**
      * Finds the most recently assigned sales representative's ID across both Booking and Lead models.
      */
-    private function getLastAssignedRepId(): ?int
+    private function getLastAssignedRepId(array $eligibleIds = []): ?int
     {
-        $lastBooking = Booking::whereNotNull('assigned_to')
-            ->whereHas('employee', function ($q) {
-                $q->whereIn('role', ['sales', 'sales-rep']);
-            })
-            ->latest('id')
-            ->first();
+        $bookingQuery = Booking::whereNotNull('assigned_to');
+        $leadQuery = Lead::whereNotNull('assigned_to');
 
-        $lastLead = Lead::whereNotNull('assigned_to')
-            ->whereHas('employee', function ($q) {
-                $q->whereIn('role', ['sales', 'sales-rep']);
-            })
-            ->latest('id')
-            ->first();
+        if (! empty($eligibleIds)) {
+            $bookingQuery->whereIn('assigned_to', $eligibleIds);
+            $leadQuery->whereIn('assigned_to', $eligibleIds);
+        }
+
+        $lastBooking = $bookingQuery->latest('id')->first();
+        $lastLead = $leadQuery->latest('id')->first();
 
         if ($lastBooking && $lastLead) {
             return $lastBooking->created_at->gt($lastLead->created_at)

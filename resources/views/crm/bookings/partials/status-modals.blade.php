@@ -101,6 +101,24 @@
                                 <span class="input-group-text bg-light border-0 text-muted" style="font-size:11px;border-radius:0 8px 8px 0;">ر.س</span>
                             </div>
                         </div>
+
+                        {{-- 5. الدفعة الأولى --}}
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-muted">{{ __('الدفعة الأولى') }}</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" step="0.01" min="0" name="down_payment" id="deliveredDownPayment" class="form-control bg-light border-0 shadow-none" style="border-radius:8px 0 0 8px; font-size:13px;" placeholder="0.00">
+                                <span class="input-group-text bg-light border-0 text-muted" style="font-size:11px;border-radius:0 8px 8px 0;">ر.س</span>
+                            </div>
+                        </div>
+
+                        {{-- 6. القسط الشهري --}}
+                        <div class="col-6">
+                            <label class="form-label fw-bold small text-muted">{{ __('القسط الشهري') }}</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" step="0.01" min="0" name="monthly_installment" id="deliveredMonthlyInstallment" class="form-control bg-light border-0 shadow-none" style="border-radius:8px 0 0 8px; font-size:13px;" placeholder="0.00">
+                                <span class="input-group-text bg-light border-0 text-muted" style="font-size:11px;border-radius:0 8px 8px 0;">ر.س</span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mt-3">
@@ -188,6 +206,8 @@
             const authInput = document.getElementById('deliveredAuthPrice');
             const expensesInput = document.getElementById('deliveredExpenses');
             const netCommissionInput = document.getElementById('deliveredNetCommission');
+            const downPaymentInput = document.getElementById('deliveredDownPayment');
+            const monthlyInstallmentInput = document.getElementById('deliveredMonthlyInstallment');
             const noteInput = document.getElementById('deliveredNote');
 
             if (purchaseInput && selectEl.hasAttribute('data-purchase-price')) {
@@ -201,6 +221,12 @@
             }
             if (netCommissionInput && selectEl.hasAttribute('data-net-commission')) {
                 netCommissionInput.value = selectEl.getAttribute('data-net-commission') || '';
+            }
+            if (downPaymentInput && selectEl.hasAttribute('data-down-payment')) {
+                downPaymentInput.value = selectEl.getAttribute('data-down-payment') || '';
+            }
+            if (monthlyInstallmentInput && selectEl.hasAttribute('data-monthly-installment')) {
+                monthlyInstallmentInput.value = selectEl.getAttribute('data-monthly-installment') || '';
             }
             if (noteInput && selectEl.hasAttribute('data-delivery-note')) {
                 noteInput.value = selectEl.getAttribute('data-delivery-note') || '';

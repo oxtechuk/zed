@@ -10,7 +10,6 @@ use App\Models\FinanceStep;
 use App\Models\HeroSlide;
 use App\Models\HomeSection;
 use App\Models\Offer;
-use App\Models\PromoCard;
 use App\Services\Cache\HomeCacheService;
 use Illuminate\Support\Collection;
 
@@ -54,7 +53,6 @@ final class HomeApiService
             'filter_horsepowers' => ($data['filterHorsepowers'] ?? collect())->values(),
             'filter_highlights' => ($data['filterHighlights'] ?? collect())->values(),
             'filter_brand_types' => ($data['filterBrandTypes'] ?? collect())->values(),
-            'promo_cards' => $this->promoCards($data['promoCards'] ?? collect()),
             'highlighted_cars' => ($data['highlightedCars'] ?? collect())->values(),
             'hero_slides' => $this->heroSlides($data['heroSlides'] ?? collect()),
             'featured_section' => $this->featuredBanner($homeSections->get('featured_banner')),
@@ -88,18 +86,6 @@ final class HomeApiService
             'button_url' => $slide->button_url,
             'button_text' => $slide->button_text,
             'badge' => $slide->badge,
-        ])->values()->all();
-    }
-
-    private function promoCards(Collection $cards): array
-    {
-        return $cards->map(fn (PromoCard $card): array => [
-            'type' => $card->type,
-            'title' => $card->title,
-            'subtitle' => $card->subtitle,
-            'image' => $card->image,
-            'button' => ['text' => $card->button_text, 'url' => $card->button_url],
-            'badge' => $card->badge,
         ])->values()->all();
     }
 

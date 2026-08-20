@@ -2,6 +2,9 @@
 
 namespace App\Services\Cache;
 
+use App\Models\Partner;
+use App\Models\Testimonial;
+
 class AboutCacheService extends BaseCacheService
 {
     public function rememberMainGallery(): array
@@ -36,5 +39,19 @@ class AboutCacheService extends BaseCacheService
         $raw = $this->rememberSetting('about_branches', []);
 
         return is_array($raw) ? $raw : (json_decode((string) $raw, true) ?: []);
+    }
+
+    public function rememberTestimonials(): array
+    {
+        return $this->remember('about.testimonials', function () {
+            return Testimonial::where('is_visible', true)->get()->toArray();
+        }, self::TTL_LONG);
+    }
+
+    public function rememberPartners(): array
+    {
+        return $this->remember('about.partners', function () {
+            return Partner::orderBy('sort_order')->get()->toArray();
+        }, self::TTL_LONG);
     }
 }

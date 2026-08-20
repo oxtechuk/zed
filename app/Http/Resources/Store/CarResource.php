@@ -28,6 +28,7 @@ class CarResource extends JsonResource
             'min_down_payment' => $this->min_down_payment,
             'year' => $this->year,
             'is_current_year' => now()->format('Y') == $this->year,
+            'model' => $this->model,
             'type' => $this->type,
             'colors' => $this->colors,
             'specs' => $this->specs,

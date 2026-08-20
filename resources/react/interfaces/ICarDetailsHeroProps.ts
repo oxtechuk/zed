@@ -6,6 +6,7 @@ export interface ICarColor {
 
 export interface ICarDetailsHeroProps {
   id?: number;
+  slug?: string;
   title: string;
   description: string;
   images: string[];
@@ -24,6 +25,7 @@ export interface ICarDetailsHeroProps {
   seats?: string;
   horsepower?: string;
   type?: string;
+  model?: string;
   year?: string;
   brandName?: string;
   featuresList?: any[];

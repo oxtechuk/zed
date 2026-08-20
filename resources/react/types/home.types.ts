@@ -49,6 +49,7 @@ export interface ICarItem {
   min_installment: number;
   current_price: number;
   year: number | string;
+  model?: string;
   type: string;
   transmission?: string;
   fuel_type?: string;

@@ -14,7 +14,6 @@ use App\Models\HeroSlide;
 use App\Models\HomeSection;
 use App\Models\Offer;
 use App\Models\Partner;
-use App\Models\PromoCard;
 use App\Models\Testimonial;
 use Illuminate\Support\Facades\Cache;
 
@@ -23,7 +22,7 @@ class HomeCacheService extends BaseCacheService
     public function rememberHomeData(): array
     {
         $result = $this->remember('home.data', function () {
-            $featuredCars = Car::with(['brand', 'images'])
+            $featuredCars = Car::with(['brand', 'images', 'activeOffers'])
                 ->where('is_featured', true)
                 ->where('is_active', true)
                 ->latest()
@@ -56,7 +55,7 @@ class HomeCacheService extends BaseCacheService
                 ->withCount(['cars' => fn ($q) => $q->where('is_active', true)])
                 ->orderBy('name')
                 ->get();
-            $filterCategories = CarCategory::orderBy('name')->get();
+            $filterCategories = CarCategory::where('is_active', true)->orderBy('name')->get();
             $filterTypes = CarType::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
             $filterYears = Car::where('is_active', true)
                 ->select('year')
@@ -65,8 +64,6 @@ class HomeCacheService extends BaseCacheService
                 ->get()
                 ->map(fn ($car) => ['year' => $car->year])
                 ->values();
-
-            $filterBrandTypes = BrandType::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
 
             $filterBrandTypes = BrandType::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
 
@@ -117,7 +114,6 @@ class HomeCacheService extends BaseCacheService
             })->values();
 
             $homeSections = HomeSection::query()->get()->keyBy('key');
-            $promoCards = PromoCard::query()->activeOrdered()->get();
             $financeSteps = FinanceStep::query()->activeOrdered()->get();
 
             $budgetRanges = BudgetRange::query()->activeOrdered()->get()->map(function (BudgetRange $range): array {
@@ -132,7 +128,7 @@ class HomeCacheService extends BaseCacheService
 
                 return [
                     'range' => $range,
-                    'cars' => Car::with(['brand', 'images'])
+                    'cars' => Car::with(['brand', 'images', 'activeOffers'])
                         ->where('is_active', true)
                         ->when($maxPrice !== null, fn ($q) => $q->where('cash_price', '<=', $maxPrice))
                         ->latest()
@@ -141,7 +137,7 @@ class HomeCacheService extends BaseCacheService
                 ];
             });
 
-            $highlightedCars = Car::with(['brand', 'images'])
+            $highlightedCars = Car::with(['brand', 'images', 'activeOffers'])
                 ->where('is_highlighted', '!=', 'none')
                 ->where('is_active', true)
                 ->latest()
@@ -165,7 +161,7 @@ class HomeCacheService extends BaseCacheService
                 'filterBrands', 'filterCategories', 'filterTypes', 'filterYears',
                 'filterBrandTypes', 'filterPrices', 'filterFuels', 'filterHorsepowers', 'highlightCounts',
                 'highlightedCars', 'heroSlides',
-                'homeSections', 'promoCards', 'financeSteps', 'budgetRanges',
+                'homeSections', 'financeSteps', 'budgetRanges',
             );
         });
 

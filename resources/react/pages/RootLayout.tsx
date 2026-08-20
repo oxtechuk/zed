@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useLanguageStore } from "../store/language.store";
@@ -19,18 +20,24 @@ import AnalyticsTracker from "../components/AnalyticsTracker";
 export default function RootLayout() {
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguageStore();
-  const { loaded, settings, setSettings, setLoading } = useSettingsStore();
+  const { loaded, settings, setSettings } = useSettingsStore();
+
+  const { data: fetchedSettings } = useQuery({
+    queryKey: ["settings", language],
+    queryFn: getSettings,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    if (fetchedSettings) {
+      setSettings(fetchedSettings);
+    }
+  }, [fetchedSettings, setSettings]);
 
   const handleLanguageToggle = () => {
     const nextLang = language === "ar" ? "en" : "ar";
     setLanguage(nextLang);
   };
-
-  useEffect(() => {
-    if (loaded) return;
-    setLoading(true);
-    getSettings().then(setSettings).catch(() => setLoading(false));
-  }, []);
 
   useEffect(() => {
     if (!loaded || !settings?.favicon) return;

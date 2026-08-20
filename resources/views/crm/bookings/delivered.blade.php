@@ -95,11 +95,11 @@
                     </a>
                     @endif
 
-                    {{-- مصدر الطلب --}}
-                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:150px;">
-                        <option value="">{{ __('المصدر — الكل') }}</option>
-                        <option value="booking" {{ request('source')==='booking'?'selected':'' }}>{{ __('طلبات عادية') }}</option>
-                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>{{ __('عملاء حاسبة فقط') }}</option>
+                    {{-- مصدر ونوع الطلب --}}
+                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
+                        <option value="">{{ __('المصدر والنوع — الكل') }}</option>
+                        <option value="cars" {{ request('source')==='cars'?'selected':'' }}>🚗 {{ __('طلبات السيارات (حجز وشراء)') }}</option>
+                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>🧮 {{ __('عملاء حاسبة التمويل') }}</option>
                     </select>
 
                     {{-- الترتيب --}}
@@ -229,7 +229,7 @@
                                 <a href="https://wa.me/{{ $b->client_phone }}" target="_blank" class="btn btn-sm btn-light rounded-2 border" title="{{ __('واتساب') }}" style="color:#25D366;">
                                     <i class="bi bi-whatsapp" style="font-size:14px;"></i>
                                 </a>
-                                @can('manage-bookings')
+                                @if($isAdmin)
                                 <form action="{{ route('crm.bookings.destroy', $b) }}" method="POST" class="m-0"
                                       onsubmit="return confirm('{{ __('هل تريد حذف هذا الطلب نهائياً؟') }}')">
                                     @csrf @method('DELETE')
@@ -237,7 +237,7 @@
                                         <i class="bi bi-trash" style="font-size:14px;"></i>
                                     </button>
                                 </form>
-                                @endcan
+                                @endif
                             </div>
                         </td>
                     </tr>

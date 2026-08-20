@@ -157,17 +157,16 @@ class Car extends Model
             return $this->images->first()->image_path;
         }
 
-        $defaultImage = Setting::where('key', 'default_car_image')->value('value');
-        if ($defaultImage) {
-            return Storage::disk('public')->url($defaultImage);
-        }
-
         return null;
     }
 
     public function getActiveOfferAttribute()
     {
-        return $this->activeOffers->first();
+        if ($this->relationLoaded('activeOffers')) {
+            return $this->activeOffers->first();
+        }
+
+        return null;
     }
 
     public function getCurrentPriceAttribute()

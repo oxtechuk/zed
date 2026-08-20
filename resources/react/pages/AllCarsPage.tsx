@@ -48,6 +48,7 @@ function mapCarToCardProps(car: ICarItem): ICarCardProps | null {
       name: car.name ?? "",
       year: String(car.year ?? ""),
       type: car.type ?? "",
+      model: car.model ?? "",
       slug,
       fuelType: getSpecValue(car.specs, "Fuel Type") || car.fuel_type || "",
       transmission:

@@ -42,25 +42,50 @@
 
     
     <div class="row g-3 mb-4">
-        <div class="col-6 col-xl-4">
-            <div class="crm-stat-new">
-                <div class="stat-icon red"><i class="bi bi-clock"></i></div>
+        <div class="col-6 col-xl-2 col-md-4">
+            <a href="<?php echo e(route('crm.bookings.index')); ?>" class="text-decoration-none d-block h-100">
+                <div class="crm-stat-new h-100 <?php echo e(!request('source') ? 'border-primary' : ''); ?>" style="background:#fff;">
+                    <span class="stat-badge blue"><?php echo e(__('الكل')); ?></span>
+                    <div class="stat-icon blue"><i class="bi bi-layers-fill"></i></div>
+                    <div class="stat-lbl"><?php echo e(__('إجمالي الطلبات النشطة')); ?></div>
+                    <div class="stat-val"><?php echo e(number_format($stats['total'])); ?></div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-xl-2 col-md-4">
+            <a href="<?php echo e(route('crm.bookings.index', array_merge(request()->query(), ['source' => 'cars']))); ?>" class="text-decoration-none d-block h-100">
+                <div class="crm-stat-new h-100 <?php echo e(request('source') === 'cars' ? 'border-primary' : ''); ?>" style="background: linear-gradient(135deg, #FFF, #EFF6FF);">
+                    <span class="stat-badge blue"><?php echo e(__('سيارات')); ?></span>
+                    <div class="stat-icon blue" style="background:#DBEAFE;color:#1D4ED8;"><i class="bi bi-car-front-fill"></i></div>
+                    <div class="stat-lbl"><?php echo e(__('طلبات السيارات')); ?></div>
+                    <div class="stat-val" style="color:#1D4ED8;"><?php echo e(number_format($stats['car_requests'])); ?></div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-xl-3 col-md-4">
+            <a href="<?php echo e(route('crm.bookings.index', array_merge(request()->query(), ['source' => 'calculator']))); ?>" class="text-decoration-none d-block h-100">
+                <div class="crm-stat-new h-100 <?php echo e(request('source') === 'calculator' ? 'border-primary' : ''); ?>" style="background: linear-gradient(135deg, #FFF, #FAF5FF);">
+                    <span class="stat-badge orange" style="background:#F3E8FF;color:#7C3AED;"><?php echo e(__('حاسبة')); ?></span>
+                    <div class="stat-icon purple" style="background:#EDE9FE;color:#7C3AED;"><i class="bi bi-calculator-fill"></i></div>
+                    <div class="stat-lbl"><?php echo e(__('عملاء حاسبة التمويل')); ?></div>
+                    <div class="stat-val" style="color:#7C3AED;"><?php echo e(number_format($stats['calculator_leads'])); ?></div>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-xl-2 col-md-6">
+            <div class="crm-stat-new h-100">
+                <span class="stat-badge orange"><?php echo e(__('متابعة')); ?></span>
+                <div class="stat-icon orange"><i class="bi bi-telephone-inbound-fill"></i></div>
                 <div class="stat-lbl"><?php echo e(__('بانتظار التواصل والمراجعة')); ?></div>
-                <div class="stat-val"><?php echo e(number_format($stats['pending_review'])); ?></div>
+                <div class="stat-val text-warning"><?php echo e(number_format($stats['pending_review'])); ?></div>
             </div>
         </div>
-        <div class="col-6 col-xl-4">
-            <div class="crm-stat-new">
-                <div class="stat-icon blue"><i class="bi bi-bank"></i></div>
+        <div class="col-12 col-xl-3 col-md-6">
+            <div class="crm-stat-new h-100" style="background: linear-gradient(135deg, #FFF, #F0FDF4);">
+                <span class="stat-badge green"><?php echo e(__('بنوك')); ?></span>
+                <div class="stat-icon green"><i class="bi bi-bank2"></i></div>
                 <div class="stat-lbl"><?php echo e(__('تحت الدراسة والتعميد')); ?></div>
-                <div class="stat-val"><?php echo e(number_format($stats['under_bank'])); ?></div>
-            </div>
-        </div>
-        <div class="col-6 col-xl-4">
-            <div class="crm-stat-new">
-                <div class="stat-icon purple"><i class="bi bi-person-lines-fill"></i></div>
-                <div class="stat-lbl"><?php echo e(__('إجمالي الطلبات النشطة')); ?></div>
-                <div class="stat-val"><?php echo e(number_format($stats['total'])); ?></div>
+                <div class="stat-val text-success"><?php echo e(number_format($stats['under_bank'])); ?></div>
             </div>
         </div>
     </div>
@@ -89,19 +114,22 @@
                     
                     <div style="position:relative;">
                         <input type="month" name="month" value="<?php echo e(request('month')); ?>"
-                               style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif; min-width: 150px;"
-                               onchange="this.form.submit()" title="<?php echo e(__('تصفية بالشهر')); ?>">
+                                style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif; min-width: 150px;"
+                                onchange="this.form.submit()" title="<?php echo e(__('تصفية بالشهر')); ?>">
                     </div>
 
                     
-                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:150px;">
-                        <option value=""><?php echo e(__('المصدر — الكل')); ?></option>
-                        <option value="booking" <?php echo e(request('source')==='booking'?'selected':''); ?>><?php echo e(__('طلبات عادية')); ?></option>
-                        <option value="calculator" <?php echo e(request('source')==='calculator'?'selected':''); ?>><?php echo e(__('عملاء حاسبة فقط')); ?></option>
+                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
+                        <option value=""><?php echo e(__('المصدر والنوع — الكل')); ?></option>
+                        <option value="cars" <?php echo e(request('source')==='cars'?'selected':''); ?>>🚗 <?php echo e(__('طلبات السيارات (حجز وشراء)')); ?></option>
+                        <option value="calculator" <?php echo e(request('source')==='calculator'?'selected':''); ?>>🧮 <?php echo e(__('عملاء حاسبة التمويل')); ?></option>
+                        <option value="test_drive" <?php echo e(request('source')==='test_drive'?'selected':''); ?>>⏱️ <?php echo e(__('طلبات تجربة القيادة')); ?></option>
+                        <option value="purchase" <?php echo e(request('source')==='purchase'?'selected':''); ?>>💳 <?php echo e(__('طلبات الشراء النقدي')); ?></option>
+                        <option value="crm_manual" <?php echo e(request('source')==='crm_manual'?'selected':''); ?>>📋 <?php echo e(__('طلبات داخلية (CRM)')); ?></option>
                     </select>
 
                     
-                    <select name="status" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:160px;">
+                    <select name="status" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:160px;" onchange="this.form.submit()">
                         <option value=""><?php echo e(__('الحالة — جميع الحالات النشطة')); ?></option>
                         <?php $__currentLoopData = $statuses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <option value="<?php echo e($key); ?>" <?php echo e(request('status')===$key?'selected':''); ?>><?php echo e($s['label']); ?></option>
@@ -109,7 +137,7 @@
                     </select>
 
                     
-                    <select name="sort" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:150px;">
+                    <select name="sort" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:150px;" onchange="this.form.submit()">
                         <option value="newest" <?php echo e(request('sort','newest')==='newest'?'selected':''); ?>><?php echo e(__('الأحدث أولاً')); ?></option>
                         <option value="oldest" <?php echo e(request('sort','newest')==='oldest'?'selected':''); ?>><?php echo e(__('الأقدم أولاً')); ?></option>
                     </select>
@@ -147,6 +175,7 @@
                     <tr>
                         <th class="px-4 py-3 text-muted" style="font-size:12px;font-weight:700;">#</th>
                         <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;"><?php echo e(__('العميل')); ?></th>
+                        <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;"><?php echo e(__('النوع / المصدر')); ?></th>
                         <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;"><?php echo e(__('السيارة')); ?></th>
                         <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;"><?php echo e(__('المندوب')); ?></th>
                         <th class="px-3 py-3 text-muted" style="font-size:12px;font-weight:700;"><?php echo e(__('سبب الإغلاق المقترح')); ?></th>
@@ -162,6 +191,19 @@
                         <td class="px-3 py-3">
                             <div class="fw-bold" style="font-size:13px;"><?php echo e($pa->client_name); ?></div>
                             <div style="font-size:12px;color:var(--crm-text-muted);" dir="ltr"><?php echo e($pa->client_phone); ?></div>
+                        </td>
+                        <td class="px-3 py-3">
+                            <?php if($pa->source === 'calculator' || $pa->calculator_bank_id): ?>
+                                <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 11px; padding: 3px 7px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-calculator me-1"></i><?php echo e(__('حاسبة تمويل')); ?>
+
+                                </span>
+                            <?php else: ?>
+                                <span class="badge" style="background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-size: 11px; padding: 3px 7px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-car-front me-1"></i><?php echo e(__('طلب سيارة')); ?>
+
+                                </span>
+                            <?php endif; ?>
                         </td>
                         <td class="px-3 py-3" style="font-size:13px;">
                             <?php echo e($pa->car?->brand?->name); ?> <?php echo e($pa->car?->name ?? '—'); ?>
@@ -200,13 +242,15 @@
 
                                 </button>
                                 
+                                <?php if($isAdmin): ?>
                                 <form action="<?php echo e(route('crm.bookings.destroy', $pa)); ?>" method="POST" class="m-0"
                                       onsubmit="return confirm('<?php echo e(__('هل تريد حذف هذا الطلب نهائياً؟')); ?>')">
                                     <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
-                                    <button type="submit" class="btn btn-sm btn-light border fw-bold rounded-2" style="font-size:12px;color:var(--crm-red);padding:5px 10px;">
+                                    <button type="submit" class="btn btn-sm btn-light border fw-bold rounded-2" style="font-size:12px;color:var(--crm-red);padding:5px 10px;" title="<?php echo e(__('حذف')); ?>">
                                         <i class="bi bi-trash" style="font-size:13px;"></i>
                                     </button>
                                 </form>
+                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>
@@ -255,7 +299,7 @@
     
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="border:1px solid var(--crm-border)!important;">
         <div class="card-header bg-white border-0 px-4 py-3 d-flex justify-content-between align-items-center" style="border-bottom:1px solid var(--crm-border)!important;">
-            <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-lightning-charge-fill me-1 text-primary"></i> <?php echo e(__('قائمة الطلبات النشطة')); ?></h6>
+            <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-lightning-charge-fill me-1 text-primary"></i> <?php echo e(__('قائمة كافة الطلبات النشطة')); ?></h6>
             <span style="font-size:12px;color:var(--crm-text-muted);"><?php echo e(__('إجمالي الطلبات')); ?>: <strong><?php echo e($bookings->total()); ?></strong></span>
         </div>
 
@@ -266,9 +310,10 @@
                     <tr>
                         <th class="px-4 py-3 text-muted fw-bold" style="font-size:12px;">#</th>
                         <th class="py-3 text-muted fw-bold" style="font-size:12px;"><?php echo e(__('رقم الطلب')); ?></th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;"><?php echo e(__('البيانات / التحديث')); ?></th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;"><?php echo e(__('النوع والمصدر')); ?></th>
                         <th class="py-3 text-muted fw-bold" style="font-size:12px;"><?php echo e(__('العميل')); ?></th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;"><?php echo e(__('السيارة')); ?></th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;"><?php echo e(__('السيارة / التمويل')); ?></th>
+                        <th class="py-3 text-muted fw-bold" style="font-size:12px;"><?php echo e(__('الموظف المسند')); ?></th>
                         <th class="py-3 text-muted fw-bold" style="font-size:12px;"><?php echo e(__('حالة الطلب')); ?></th>
                         <th class="py-3 text-muted fw-bold px-4" style="font-size:12px;"><?php echo e(__('تحكم')); ?></th>
                     </tr>
@@ -282,38 +327,69 @@
                         </td>
                         <td class="fw-bold" style="font-size:13px;">
                             <a href="<?php echo e(route('crm.bookings.show', $b)); ?>" class="text-decoration-none fw-bold" style="color:var(--crm-red);">#<?php echo e($b->id); ?></a>
+                            <div class="text-muted small" style="font-size:11px;font-weight:normal;"><?php echo e($b->created_at->diffForHumans()); ?></div>
                         </td>
                         <td>
-                            <div style="font-size: 12px; line-height: 1.8;">
-                                <div><span class="text-muted"><?php echo e(__('إنشاء :')); ?></span> <strong class="text-dark"><?php echo e($b->created_at->diffForHumans()); ?></strong></div>
-                                <div><span class="text-muted"><?php echo e(__('الموظف :')); ?></span> <strong class="text-dark"><?php echo e($b->employee?->name ?: __('غير معين')); ?></strong></div>
-                                <div class="mt-1">
-                                    <span class="text-muted"><?php echo e(__('المصدر :')); ?></span>
-                                    <?php if($b->source === 'calculator'): ?>
-                                        <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
-                                            <i class="bi bi-calculator me-1"></i><?php echo e(__('عملاء حاسبة')); ?>
+                            <?php if($b->source === 'calculator' || $b->calculator_bank_id): ?>
+                                <span class="badge d-inline-flex align-items-center gap-1 mb-1" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-calculator"></i> <?php echo e(__('عميل حاسبة تمويل')); ?>
 
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="badge" style="background-color: #EBF5FF; color: #1E40AF; border: 1px solid #BFDBFE; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
-                                            <i class="bi bi-file-earmark-text me-1"></i><?php echo e(__('طلب عادي')); ?>
+                                </span>
+                                <?php if($b->financingBank): ?>
+                                    <div class="small text-muted" style="font-size:11px;"><i class="bi bi-bank me-1"></i><?php echo e($b->financingBank->name); ?></div>
+                                <?php endif; ?>
+                            <?php elseif($b->booking_type === 'test_drive'): ?>
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-speedometer2"></i> <?php echo e(__('تجربة قيادة')); ?>
 
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
+                                </span>
+                            <?php elseif($b->booking_type === 'purchase'): ?>
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-cash-stack"></i> <?php echo e(__('شراء سيارة')); ?>
+
+                                </span>
+                            <?php elseif($b->source === 'CRM (يدوي)'): ?>
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #F8FAFC; color: #475569; border: 1px solid #E2E8F0; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-pencil-square"></i> <?php echo e(__('طلب يدوي')); ?>
+
+                                </span>
+                            <?php else: ?>
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
+                                    <i class="bi bi-car-front"></i> <?php echo e(__('طلب سيارة')); ?>
+
+                                </span>
+                            <?php endif; ?>
                         </td>
                         <td>
                             <div class="fw-bold text-dark" style="font-size:13px;"><?php echo e($b->client_name); ?></div>
-                            <a href="tel:<?php echo e($b->client_phone); ?>" class="text-decoration-none small text-muted" dir="ltr"><?php echo e($b->client_phone); ?></a>
+                            <div class="d-flex align-items-center gap-1 mt-1">
+                                <a href="tel:<?php echo e($b->client_phone); ?>" class="text-decoration-none small text-muted" dir="ltr"><?php echo e($b->client_phone); ?></a>
+                                <a href="https://wa.me/<?php echo e(preg_replace('/\D/', '', $b->client_phone)); ?>" target="_blank" class="text-success small ms-1" title="<?php echo e(__('واتساب')); ?>">
+                                    <i class="bi bi-whatsapp"></i>
+                                </a>
+                            </div>
                         </td>
                         <td>
-                            <div style="font-size: 12px; line-height: 1.8;">
-                                <div><span class="text-muted"><?php echo e(__('الماركة :')); ?></span> <strong class="text-dark"><?php echo e($b->car?->brand?->name ?? '—'); ?></strong></div>
-                                <div><span class="text-muted"><?php echo e(__('الموديل :')); ?></span> <strong class="text-dark"><?php echo e($b->car?->name ?? '—'); ?></strong></div>
-                                <?php if($b->car?->year): ?>
-                                <div><span class="text-muted"><?php echo e(__('سنة الصنع :')); ?></span> <strong class="text-dark"><?php echo e($b->car->year); ?></strong></div>
+                            <?php if($b->car): ?>
+                            <div style="font-size: 12px; line-height: 1.6;">
+                                <div class="fw-bold text-dark"><?php echo e($b->car->brand?->name); ?> <?php echo e($b->car->name); ?></div>
+                                <?php if($b->car->year): ?>
+                                <div class="text-muted"><?php echo e(__('سنة:')); ?> <?php echo e($b->car->year); ?></div>
                                 <?php endif; ?>
+                                <?php if($b->total_price > 0): ?>
+                                <div class="text-muted small"><?php echo e(number_format($b->total_price)); ?> <?php echo e(__('ر.س')); ?></div>
+                                <?php endif; ?>
+                            </div>
+                            <?php else: ?>
+                            <div class="text-muted small">—</div>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-1">
+                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-secondary" style="width:26px;height:26px;font-size:11px;">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                <span class="fw-bold text-dark small" style="font-size:12px;"><?php echo e($b->employee?->name ?: __('غير معين')); ?></span>
                             </div>
                         </td>
                         <td>
@@ -346,20 +422,18 @@
                         </td>
                         <td class="px-4">
                             <div class="d-flex gap-1 align-items-center">
-                                <a href="<?php echo e(route('crm.bookings.show', $b)); ?>" class="btn btn-sm btn-light rounded-2 border" title="<?php echo e(__('عرض وتعديل')); ?>">
-                                    <i class="bi bi-pencil" style="font-size:14px;color:var(--crm-text);"></i>
-                                </a>
-                                <a href="<?php echo e(route('crm.bookings.show', $b)); ?>" class="btn btn-sm btn-light rounded-2 border" title="<?php echo e(__('عرض التفاصيل')); ?>">
+                                <a href="<?php echo e(route('crm.bookings.show', $b)); ?>" class="btn btn-sm btn-light rounded-2 border" title="<?php echo e(__('عرض وتعديل التفاصيل')); ?>">
                                     <i class="bi bi-eye" style="font-size:14px;color:var(--crm-text);"></i>
                                 </a>
-                                <a href="https://wa.me/<?php echo e($b->client_phone); ?>" target="_blank" class="btn btn-sm btn-light rounded-2 border" title="<?php echo e(__('واتساب')); ?>" style="color:#25D366;">
+                                <a href="https://wa.me/<?php echo e(preg_replace('/\D/', '', $b->client_phone)); ?>" target="_blank" class="btn btn-sm btn-light rounded-2 border" title="<?php echo e(__('مراسلة واتساب')); ?>" style="color:#25D366;">
                                     <i class="bi bi-whatsapp" style="font-size:14px;"></i>
                                 </a>
-                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage-bookings')): ?>
+                                
+                                <?php if($isAdmin): ?>
                                 <form action="<?php echo e(route('crm.bookings.destroy', $b)); ?>" method="POST" class="m-0"
-                                      onsubmit="return confirm('<?php echo e(__('هل تريد حذف هذا الطلب؟')); ?>')">
+                                      onsubmit="return confirm('<?php echo e(__('هل تريد حذف هذا الطلب نهائياً؟')); ?>')">
                                     <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
-                                    <button class="btn btn-sm btn-light rounded-2 border" style="color:var(--crm-red);" title="<?php echo e(__('حذف')); ?>">
+                                    <button type="submit" class="btn btn-sm btn-light rounded-2 border" style="color:var(--crm-red);" title="<?php echo e(__('حذف الطلب')); ?>">
                                         <i class="bi bi-trash" style="font-size:14px;"></i>
                                     </button>
                                 </form>
@@ -369,9 +443,9 @@
                     </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-5">
+                        <td colspan="8" class="text-center text-muted py-5">
                             <i class="bi bi-inbox fs-1 d-block mb-2 opacity-25"></i>
-                            <div class="fw-bold"><?php echo e(__('لا توجد طلبات نشطة حالياً')); ?></div>
+                            <div class="fw-bold"><?php echo e(__('لا توجد طلبات نشطة حالياً مطابقة للشروط')); ?></div>
                         </td>
                     </tr>
                     <?php endif; ?>
@@ -385,16 +459,28 @@
             <div class="mb-3 p-3 rounded-3 shadow-sm border" style="background:#fff;">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                     <div>
-                        <a href="<?php echo e(route('crm.bookings.show', $b)); ?>" class="fw-bold text-decoration-none" style="color:var(--crm-red);font-size:14px;">#<?php echo e($b->id); ?></a>
-                        <div class="fw-bold mt-1" style="font-size:14px;color:var(--crm-text);">
-                            <?php echo e($b->client_name); ?>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <a href="<?php echo e(route('crm.bookings.show', $b)); ?>" class="fw-bold text-decoration-none" style="color:var(--crm-red);font-size:14px;">#<?php echo e($b->id); ?></a>
+                            <?php if($b->source === 'calculator' || $b->calculator_bank_id): ?>
+                                <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
+                                    <i class="bi bi-calculator me-1"></i><?php echo e(__('حاسبة تمويل')); ?>
 
-                            <?php if($b->source === 'calculator'): ?>
-                                <span class="badge ms-1" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
-                                    <i class="bi bi-calculator me-1"></i><?php echo e(__('حاسبة')); ?>
+                                </span>
+                            <?php elseif($b->booking_type === 'test_drive'): ?>
+                                <span class="badge" style="background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
+                                    <i class="bi bi-speedometer2 me-1"></i><?php echo e(__('تجربة قيادة')); ?>
+
+                                </span>
+                            <?php else: ?>
+                                <span class="badge" style="background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
+                                    <i class="bi bi-car-front me-1"></i><?php echo e(__('طلب سيارة')); ?>
 
                                 </span>
                             <?php endif; ?>
+                        </div>
+                        <div class="fw-bold mt-1" style="font-size:14px;color:var(--crm-text);">
+                            <?php echo e($b->client_name); ?>
+
                         </div>
                         <div style="font-size:12px;color:var(--crm-text-muted);" dir="ltr"><?php echo e($b->client_phone); ?></div>
                     </div>
@@ -442,10 +528,19 @@
                         <i class="bi bi-eye"></i> <?php echo e(__('عرض')); ?>
 
                     </a>
-                    <a href="https://wa.me/<?php echo e($b->client_phone); ?>" target="_blank" class="btn btn-sm btn-light rounded-2 flex-fill text-center" style="font-size:12px;color:#25D366;">
+                    <a href="https://wa.me/<?php echo e(preg_replace('/\D/', '', $b->client_phone)); ?>" target="_blank" class="btn btn-sm btn-light rounded-2 flex-fill text-center" style="font-size:12px;color:#25D366;">
                         <i class="bi bi-whatsapp"></i> <?php echo e(__('واتساب')); ?>
 
                     </a>
+                    <?php if($isAdmin): ?>
+                    <form action="<?php echo e(route('crm.bookings.destroy', $b)); ?>" method="POST" class="m-0"
+                          onsubmit="return confirm('<?php echo e(__('هل تريد حذف هذا الطلب؟')); ?>')">
+                        <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
+                        <button type="submit" class="btn btn-sm btn-light rounded-2 border text-danger" title="<?php echo e(__('حذف')); ?>">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>

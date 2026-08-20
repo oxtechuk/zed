@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import {
     ArrowLeft,
     ArrowRight,
@@ -18,6 +19,7 @@ import type {
 
 export default function CarDetailsHero({
     id,
+    slug,
     title,
     description,
     images,
@@ -31,6 +33,7 @@ export default function CarDetailsHero({
     seats,
     horsepower,
     type,
+    model,
     year,
     brandName,
 }: ICarDetailsHeroProps) {
@@ -198,10 +201,10 @@ export default function CarDetailsHero({
                                         {brandName} · {year}
                                     </p>
 
-                                    {/* Category Badge */}
-                                    {type && (
+                                    {/* Model Badge */}
+                                    {(model || (type && !/^[a-z0-9]+-[a-f0-9]{8,}$/i.test(type))) && (
                                         <span className="inline-block bg-[#F1F5F9] text-[#64748B] text-[12px] font-bold px-3.5 py-1.5 rounded-full">
-                                            {type}
+                                            {model || type}
                                         </span>
                                     )}
                                 </div>
@@ -359,8 +362,8 @@ export default function CarDetailsHero({
                             </div>
 
                             {/* Compare Card */}
-                            <a
-                                href={`/compare?car1=${encodeURIComponent(title)}`}
+                            <Link
+                                to={`/compare?slug=${encodeURIComponent(slug || "")}`}
                                 className="mt-4 flex items-center justify-between rounded-2xl bg-[#F9EEDC] p-4 border border-[#E7E9EF] text-[#16254F] transition-all duration-300 hover:scale-[1.01] hover:shadow-xs group"
                             >
                                 <div className="flex items-center gap-3">
@@ -399,7 +402,7 @@ export default function CarDetailsHero({
                                         className="text-[#16254F] transition-transform duration-300 group-hover:translate-x-1"
                                     />
                                 )}
-                            </a>
+                            </Link>
                             {/* Disclaimer */}
                             <div className="mt-4 rounded-2xl border border-[#16254F]/20 bg-[#16254F]/[0.08] p-4">
                                 <p className="text-start text-[12px] leading-relaxed text-[#16254F]/70 font-normal">

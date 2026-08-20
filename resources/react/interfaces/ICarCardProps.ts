@@ -7,6 +7,7 @@ export interface ICarCardProps {
   name: string;
   year: string | number;
   type: string;
+  model?: string;
   fuelType: string;
   transmission: string;
   seats: string;
