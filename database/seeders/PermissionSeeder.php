@@ -48,6 +48,7 @@ class PermissionSeeder extends Seeder
                 'manage-home-sections',
                 'manage-hero-slides',
                 'manage-promo-cards',
+                'manage-promo-banners',
                 'manage-finance-steps',
                 'manage-budget-ranges',
             ])->delete();
@@ -85,6 +86,7 @@ class PermissionSeeder extends Seeder
             'manage-home-sections',
             'manage-hero-slides',
             'manage-promo-cards',
+            'manage-promo-banners',
             'manage-finance-steps',
             'manage-budget-ranges',
         ];

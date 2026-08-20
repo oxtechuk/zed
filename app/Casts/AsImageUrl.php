@@ -11,29 +11,24 @@ final class AsImageUrl implements CastsAttributes
 {
     public function get(Model $model, string $key, mixed $value, array $attributes): ?string
     {
-        if ($value === null) {
+        if ($value === null || $value === '') {
             return null;
         }
-        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://') || $this->isWebRequest()) {
+
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
             return $value;
         }
 
-        return asset('storage/'.ltrim($value, '/'));
+        $cleanPath = ltrim($value, '/');
+        if (str_starts_with($cleanPath, 'storage/')) {
+            return asset($cleanPath);
+        }
+
+        return asset('storage/'.$cleanPath);
     }
 
     public function set(Model $model, string $key, mixed $value, array $attributes): mixed
     {
         return $value;
-    }
-
-    private function isWebRequest(): bool
-    {
-        $accept = request()->header('Accept', '');
-
-        if (empty($accept)) {
-            return true;
-        }
-
-        return ! str_contains($accept, 'application/json');
     }
 }

@@ -99,6 +99,7 @@ use App\Http\Controllers\CRM\OfferController;
 use App\Http\Controllers\CRM\PartnerController;
 use App\Http\Controllers\CRM\ProfileController;
 use App\Http\Controllers\CRM\ProjectDesignController;
+use App\Http\Controllers\CRM\PromoBannerController;
 use App\Http\Controllers\CRM\PromoCardController;
 use App\Http\Controllers\CRM\ReportController;
 use App\Http\Controllers\CRM\RoleController;
@@ -337,6 +338,9 @@ Route::prefix('crm')->name('crm.')->middleware(['auth:employee', 'guard.employee
         });
         Route::middleware('permission:manage-promo-cards')->group(function () {
             Route::resource('promo-cards', PromoCardController::class)->except(['create', 'show', 'edit']);
+        });
+        Route::middleware('permission:manage-promo-banners')->group(function () {
+            Route::resource('promo-banners', PromoBannerController::class)->except(['create', 'show', 'edit']);
         });
         Route::middleware('permission:manage-finance-steps')->group(function () {
             Route::resource('finance-steps', FinanceStepController::class)->except(['create', 'show', 'edit']);

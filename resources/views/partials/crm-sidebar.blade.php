@@ -309,8 +309,8 @@
 
         {{-- ● المحتوى والإعدادات --}}
         @php
-            $contentOpen = $groupActive(['crm.blog','crm.blog-categories','crm.settings.designs','crm.settings.partners','crm.settings.testimonials','crm.settings.faqs','crm.translations','crm.settings.home-sections','crm.settings.hero-slides','crm.settings.promo-cards','crm.settings.finance-steps','crm.settings.budget-ranges']);
-            $canContent = $currentUser->hasAnyPermission(['manage-blog','manage-designs','manage-partners','manage-testimonials','manage-faqs','manage-translations','manage-home-sections','manage-hero-slides','manage-promo-cards','manage-finance-steps','manage-budget-ranges']);
+            $contentOpen = $groupActive(['crm.blog','crm.blog-categories','crm.settings.designs','crm.settings.partners','crm.settings.testimonials','crm.settings.faqs','crm.translations','crm.settings.home-sections','crm.settings.hero-slides','crm.settings.promo-cards','crm.settings.promo-banners','crm.settings.finance-steps','crm.settings.budget-ranges']);
+            $canContent = $currentUser->hasAnyPermission(['manage-blog','manage-designs','manage-partners','manage-testimonials','manage-faqs','manage-translations','manage-home-sections','manage-hero-slides','manage-promo-cards','manage-promo-banners','manage-finance-steps','manage-budget-ranges']);
         @endphp
         @if($canContent)
         <div class="crm-nav-section">
@@ -388,6 +388,14 @@
                     <a href="{{ route('crm.settings.promo-cards.index') }}"
                        class="crm-sub-link {{ str_starts_with($r,'crm.settings.promo-cards') ? 'active' : '' }}">
                         <i class="bi bi-grid-3x3-gap"></i> {{ __('البطاقات الترويجية') }}
+                    </a>
+                </li>
+                @endcan
+                @can('manage-promo-banners')
+                <li>
+                    <a href="{{ route('crm.settings.promo-banners.index') }}"
+                       class="crm-sub-link {{ str_starts_with($r,'crm.settings.promo-banners') ? 'active' : '' }}">
+                        <i class="bi bi-image-fill"></i> {{ __('البانرات الترويجية') }}
                     </a>
                 </li>
                 @endcan
