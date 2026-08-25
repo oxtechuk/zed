@@ -5,8 +5,9 @@ import { useLanguageStore } from "../store/language.store";
 import { useSettingsStore } from "../store/settings.store";
 import { mobileNavItems } from "../constants/navigation";
 import { APP_IMAGES, getImageUrl } from "../constants/app-images";
-import { X, Info, Phone, Newspaper, Languages, MapPin } from "lucide-react";
+import { X, Info, Phone, Newspaper, Languages, MapPin, Mail } from "lucide-react";
 import LazyImg from "./LazyImg";
+import { getSocialIcon } from "../utils/social-icons";
 
 const menuLinks = [
   { labelKey: "nav.about", to: "/about", icon: Info },
@@ -120,8 +121,8 @@ export default function MobileBottomNav() {
         <div className="flex h-full flex-col">
           <div className="flex items-center justify-between px-5 pt-5 pb-3">
             <LazyImg
-              src={getImageUrl(settings?.logo ?? null) || APP_IMAGES.LOGO}
-              alt="Zed Capital"
+              src={getImageUrl(settings?.header_logo ?? settings?.logo ?? null) || APP_IMAGES.LOGO}
+              alt={settings?.site_name || "Zed Capital"}
               className="h-20 w-auto object-contain"
             />
             <button
@@ -156,11 +157,34 @@ export default function MobileBottomNav() {
               })}
             </div>
 
-            <div className="mt-6 border-t border-[#D9DEE7] pt-4 flex flex-col gap-1">
-              <span className="flex items-center gap-3 rounded-xl px-4 py-3.5 text-[15px] font-bold leading-none text-[#07111F]">
-                <MapPin size={20} strokeWidth={2} />
-                {t("topbar.locationValue")}
-              </span>
+            <div className="mt-6 border-t border-[#D9DEE7] pt-4 flex flex-col gap-2">
+              {(settings?.contact?.address || t("topbar.locationValue")) && (
+                <div className="flex items-start gap-3 rounded-xl px-4 py-2.5 text-[14px] font-medium leading-snug text-[#07111F]">
+                  <MapPin size={18} strokeWidth={2} className="mt-0.5 shrink-0 text-[#EDC98E]" />
+                  <span>{settings?.contact?.address || t("topbar.locationValue")}</span>
+                </div>
+              )}
+
+              {settings?.contact?.phone && (
+                <a
+                  href={`tel:${settings.contact.phone.replace(/[^\d+]/g, "")}`}
+                  className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[14px] font-medium leading-none text-[#07111F] transition hover:bg-[#F0F2F5]"
+                >
+                  <Phone size={18} strokeWidth={2} className="shrink-0 text-[#EDC98E]" />
+                  <span dir="ltr">{settings.contact.phone}</span>
+                </a>
+              )}
+
+              {settings?.contact?.email && (
+                <a
+                  href={`mailto:${settings.contact.email}`}
+                  className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[14px] font-medium leading-none text-[#07111F] transition hover:bg-[#F0F2F5]"
+                >
+                  <Mail size={18} strokeWidth={2} className="shrink-0 text-[#EDC98E]" />
+                  <span className="truncate">{settings.contact.email}</span>
+                </a>
+              )}
+
               <button
                 type="button"
                 onClick={() => {
@@ -170,13 +194,39 @@ export default function MobileBottomNav() {
                 }}
                 className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-[15px] font-bold leading-none text-[#07111F] transition hover:bg-[#F0F2F5]"
               >
-                <Languages size={20} strokeWidth={2} />
+                <Languages size={18} strokeWidth={2} className="shrink-0 text-[#EDC98E]" />
                 {t("topbar.language")}
               </button>
             </div>
+
+            {settings?.social_media && settings.social_media.length > 0 && (
+              <div className="mt-6 border-t border-[#D9DEE7] pt-4">
+                <p className="px-4 text-[12px] font-bold text-slate-400 mb-3">
+                  {t("footer.followUs", { defaultValue: "تابعنا على" })}
+                </p>
+                <div className="flex items-center gap-3 px-4 flex-wrap">
+                  {settings.social_media.map((social, idx) => {
+                    if (!social.link) return null;
+                    return (
+                      <a
+                        key={idx}
+                        href={social.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F0F2F5] text-[#16254F] transition hover:bg-[#EDC98E]"
+                        aria-label={social.icon || `Social ${idx + 1}`}
+                      >
+                        {getSocialIcon(social.icon)}
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </>
   );
 }
+
