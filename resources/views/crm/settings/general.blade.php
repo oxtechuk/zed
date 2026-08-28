@@ -180,6 +180,17 @@
                                         </div>
                                         <input type="file" name="default_car_image" class="form-control bg-light border-0" accept="image/*">
                                     </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold small text-muted d-block mb-2">{{ __('أيقونة زر طلب سيارة العائم (SVG/Logo)') }}</label>
+                                        <div class="upload-preview rounded-3 mb-2 bg-dark d-flex align-items-center justify-content-center p-2">
+                                            @if(isset($settings['request_car_icon']))
+                                                <img src="{{ asset('storage/' . $settings['request_car_icon']) }}" alt="Request Car Icon" class="img-fluid" style="max-height:50px;">
+                                            @else
+                                                <i class="bi bi-stars fs-2 text-warning opacity-50"></i>
+                                            @endif
+                                        </div>
+                                        <input type="file" name="request_car_icon" class="form-control bg-light border-0" accept="image/*,.svg">
+                                    </div>
                                     <div class="col-12">
                                         <div class="p-3 bg-info-subtle rounded-3 small text-info">
                                             <i class="bi bi-info-circle-fill me-1"></i>

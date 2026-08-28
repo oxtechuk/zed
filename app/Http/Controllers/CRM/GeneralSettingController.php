@@ -214,7 +214,7 @@ class GeneralSettingController extends Controller
         Setting::updateOrCreate(['key' => 'about_branches'], ['value' => $aboutBranches]);
 
         // Handle File Uploads (Only if new files are uploaded)
-        $files = ['site_logo', 'footer_logo', 'site_favicon', 'breadcrumb_bg', 'hero_video', 'hero_ad_1_image', 'hero_ad_2_image', 'page_loader_image', 'default_car_image'];
+        $files = ['site_logo', 'footer_logo', 'site_favicon', 'breadcrumb_bg', 'hero_video', 'hero_ad_1_image', 'hero_ad_2_image', 'page_loader_image', 'default_car_image', 'request_car_icon'];
         foreach ($files as $fileKey) {
             if ($request->hasFile($fileKey)) {
                 $path = $this->imageOptimizer->storeAndOptimize($request->file($fileKey), 'settings', ['maxWidth' => 1600, 'quality' => 85]);

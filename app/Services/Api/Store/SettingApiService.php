@@ -23,6 +23,7 @@ final class SettingApiService
         'hero_ad_1_image', 'hero_ad_2_image', 'page_loader_image',
         'store_img_hero_mask', 'store_img_hero_card_1', 'store_img_hero_card_3',
         'store_img_business_1', 'store_img_offer_banner_left',
+        'request_car_icon',
     ];
 
     private const ARRAY_IMAGE_KEYS = [
@@ -62,6 +63,7 @@ final class SettingApiService
             'header_logo' => $this->resolveUrl($settings->get('site_logo')),
             'footer_logo' => $this->resolveUrl($settings->get('footer_logo')),
             'favicon' => $this->resolveUrl($settings->get('site_favicon')),
+            'request_car_icon' => $this->resolveUrl($settings->get('request_car_icon')),
             'site_name' => $siteName,
             'footer_text' => $footerText,
             'contact' => [
