@@ -14,6 +14,8 @@
             <i class="bi bi-plus-lg me-1"></i> {{ __('إضافة شريحة') }}
         </button>
         @endcan
+    </div>
+
     <div class="alert alert-white bg-white border shadow-sm rounded-4 p-3 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div class="d-flex align-items-center gap-3">
             <div class="bg-primary-subtle text-primary p-2.5 rounded-3 d-flex align-items-center justify-content-center">
