@@ -10,6 +10,7 @@ use App\Models\CalculatorLead;
 use App\Models\Car;
 use App\Models\Employee;
 use App\Notifications\NewBookingNotification;
+use App\Services\AttributionHelper;
 use App\Services\BookingAssignmentService;
 use App\Services\TwilioOtpService;
 use Illuminate\Database\Eloquent\Collection;
@@ -28,7 +29,7 @@ final class CalculatorApiService
         $clickId = $data['click_id'] ?? null;
 
         $channel = $data['marketing_channel']
-            ?? \App\Services\AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, 'Calculator');
+            ?? AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, 'Calculator');
 
         $lead = CalculatorLead::create([
             'name' => $data['name'],
