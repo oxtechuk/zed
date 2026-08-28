@@ -1,6 +1,7 @@
 import axios from "axios";
 import { API_BASE_URL, API_TIMEOUT } from "../../constants/axios.constants";
 import { useLanguageStore } from "../../store/language.store";
+import { getAttributionPayload } from "../attribution";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -23,6 +24,14 @@ api.interceptors.request.use(
     const token = sessionStorage.getItem("access_token");
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    if (config.method === "post" && config.data && typeof config.data === "object" && !(config.data instanceof FormData)) {
+      const attribution = getAttributionPayload();
+      config.data = {
+        ...attribution,
+        ...config.data,
+      };
     }
 
     return config;

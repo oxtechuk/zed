@@ -13,9 +13,10 @@ class Booking extends Model
         'car_id', 'assigned_to', 'client_name', 'client_phone', 'client_email',
         'down_payment', 'duration_years', 'interest_rate', 'monthly_installment',
         'total_price', 'purchase_price', 'authorization_price', 'expenses', 'net_commission',
-        'delivery_note', 'notes', 'status', 'source', 'last_contacted_at', 'delivered_at',
-        'booking_type', 'location', 'calculator_bank_id', 'balloon_payment', 'offer_notes',
-        'pending_reason', 'follow_up_at', 'proposed_status',
+        'delivery_note', 'notes', 'status', 'source', 'utm_source', 'utm_medium', 'utm_campaign',
+        'utm_content', 'utm_term', 'referrer', 'click_id', 'marketing_channel',
+        'last_contacted_at', 'delivered_at', 'booking_type', 'location', 'calculator_bank_id',
+        'balloon_payment', 'offer_notes', 'pending_reason', 'follow_up_at', 'proposed_status',
     ];
 
     protected $casts = [

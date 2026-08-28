@@ -17,6 +17,14 @@ final class ContactApiService
             ['is_active' => true]
         );
 
+        $utmSource = $data['utm_source'] ?? null;
+        $utmMedium = $data['utm_medium'] ?? null;
+        $referrer = $data['referrer'] ?? null;
+        $clickId = $data['click_id'] ?? null;
+
+        $channel = $data['marketing_channel']
+            ?? \App\Services\AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, 'Contact Form');
+
         $lead = Lead::create([
             'client_name' => $data['name'],
             'client_phone' => $data['phone'],
@@ -27,6 +35,14 @@ final class ContactApiService
             'contact_source_id' => $source->id,
             'status' => 'new',
             'started_at' => now(),
+            'utm_source' => $utmSource,
+            'utm_medium' => $utmMedium,
+            'utm_campaign' => $data['utm_campaign'] ?? null,
+            'utm_content' => $data['utm_content'] ?? null,
+            'utm_term' => $data['utm_term'] ?? null,
+            'referrer' => $referrer,
+            'click_id' => $clickId,
+            'marketing_channel' => $channel,
         ]);
 
         app(BookingAssignmentService::class)->autoAssignLead($lead);

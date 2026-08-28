@@ -32,6 +32,14 @@ final class BookingRequest extends ApiBaseRequest
             'has_traffic_violations' => ['nullable', 'boolean'],
             'preferred_color' => ['nullable', 'string', 'max:100'],
             'monthly_installment' => ['nullable', 'numeric', 'min:0'],
+            'utm_source' => ['nullable', 'string', 'max:100'],
+            'utm_medium' => ['nullable', 'string', 'max:100'],
+            'utm_campaign' => ['nullable', 'string', 'max:191'],
+            'utm_content' => ['nullable', 'string', 'max:191'],
+            'utm_term' => ['nullable', 'string', 'max:191'],
+            'referrer' => ['nullable', 'string', 'max:1000'],
+            'click_id' => ['nullable', 'string', 'max:191'],
+            'marketing_channel' => ['nullable', 'string', 'max:100'],
         ];
     }
 

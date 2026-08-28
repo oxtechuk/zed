@@ -24,6 +24,14 @@ final class BookingData
         public readonly ?string $client_email = null,
         public readonly ?string $notes = null,
         public readonly ?int $calculator_bank_id = null,
+        public readonly ?string $utm_source = null,
+        public readonly ?string $utm_medium = null,
+        public readonly ?string $utm_campaign = null,
+        public readonly ?string $utm_content = null,
+        public readonly ?string $utm_term = null,
+        public readonly ?string $referrer = null,
+        public readonly ?string $click_id = null,
+        public readonly ?string $marketing_channel = null,
     ) {}
 
     public static function fromRequest(array $validated, float $cashPrice): self
@@ -41,6 +49,15 @@ final class BookingData
         $calculator = new InstallmentCalculator;
         $monthly = $calculator->calculate($principal, $totalMonths, $interestRate);
 
+        $utmSource = $validated['utm_source'] ?? null;
+        $utmMedium = $validated['utm_medium'] ?? null;
+        $referrer = $validated['referrer'] ?? null;
+        $clickId = $validated['click_id'] ?? null;
+        $source = $validated['source'] ?? 'api';
+
+        $channel = $validated['marketing_channel']
+            ?? \App\Services\AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, $source);
+
         return new self(
             car_id: (int) $validated['car_id'],
             client_name: $validated['client_name'],
@@ -55,6 +72,14 @@ final class BookingData
             client_email: $validated['client_email'] ?? null,
             notes: $validated['notes'] ?? null,
             calculator_bank_id: isset($validated['calculator_bank_id']) ? (int) $validated['calculator_bank_id'] : null,
+            utm_source: $utmSource,
+            utm_medium: $utmMedium,
+            utm_campaign: $validated['utm_campaign'] ?? null,
+            utm_content: $validated['utm_content'] ?? null,
+            utm_term: $validated['utm_term'] ?? null,
+            referrer: $referrer,
+            click_id: $clickId,
+            marketing_channel: $channel,
         );
     }
 
@@ -76,6 +101,14 @@ final class BookingData
             'client_email' => $this->client_email,
             'notes' => $this->notes,
             'calculator_bank_id' => $this->calculator_bank_id,
+            'utm_source' => $this->utm_source,
+            'utm_medium' => $this->utm_medium,
+            'utm_campaign' => $this->utm_campaign,
+            'utm_content' => $this->utm_content,
+            'utm_term' => $this->utm_term,
+            'referrer' => $this->referrer,
+            'click_id' => $this->click_id,
+            'marketing_channel' => $this->marketing_channel,
         ];
     }
 }

@@ -296,14 +296,38 @@
         </div>
         @endif
 
-        {{-- ● التقارير --}}
+        {{-- ● التقارير والتحليلات --}}
         @can('manage-reports')
+        @php
+            $reportsOpen = $groupActive(['crm.reports.bookings', 'crm.reports.sources', 'crm.reports.monthly']);
+        @endphp
         <div class="crm-nav-section">
-            <a href="{{ route('crm.reports.bookings') }}"
-               class="crm-nav-link {{ str_starts_with($r,'crm.reports') ? 'active' : '' }}">
+            <button class="crm-nav-link crm-group-toggle {{ $reportsOpen ? 'active' : '' }}"
+                    onclick="toggleGroup('g-reports')">
                 <i class="bi bi-graph-up-arrow"></i>
-                <span>{{ __('التقارير') }}</span>
-            </a>
+                <span>{{ __('التقارير والتحليلات') }}</span>
+                <i class="bi bi-chevron-{{ $reportsOpen ? 'up' : 'down' }} crm-chevron"></i>
+            </button>
+            <ul id="g-reports" class="crm-sub-list {{ $reportsOpen ? 'open' : '' }}">
+                <li>
+                    <a href="{{ route('crm.reports.sources') }}"
+                       class="crm-sub-link {{ $r === 'crm.reports.sources' ? 'active' : '' }}">
+                        <i class="bi bi-bullseye text-primary"></i> {{ __('مصادر العملاء والحملات') }}
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('crm.reports.bookings') }}"
+                       class="crm-sub-link {{ $r === 'crm.reports.bookings' ? 'active' : '' }}">
+                        <i class="bi bi-wallet2"></i> {{ __('التقرير الشامل والمبيعات') }}
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('crm.reports.monthly') }}"
+                       class="crm-sub-link {{ $r === 'crm.reports.monthly' ? 'active' : '' }}">
+                        <i class="bi bi-calendar-range"></i> {{ __('التقرير الشهري') }}
+                    </a>
+                </li>
+            </ul>
         </div>
         @endcan
 
