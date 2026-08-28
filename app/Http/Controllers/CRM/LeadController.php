@@ -31,14 +31,17 @@ class LeadController extends Controller
 
     public function index(Request $request)
     {
-        $query = Lead::with(['contactSource', 'car.brand', 'employee', 'orders.car.brand'])
-            ->withCount('orders')
-            ->latest();
+        $isAdmin = auth('employee')->user()?->isAdmin() ?? true;
+        $activeStatuses = ['new', 'contacted_no_answer', 'recontact_client', 'waiting_documents', 'bank_review', 'approved', 'authorized'];
 
-        $this->applyFilters($query, $request);
+        $query = Lead::with(['contactSource', 'car.brand', 'employee', 'orders.car.brand'])
+            ->withCount('orders');
+
+        $this->applyFilters($query, $request, $isAdmin);
 
         $leads = $query->paginate(20)->withQueryString();
-        $statuses = Lead::STATUSES;
+        $statuses = collect(Booking::STATUSES)->only($activeStatuses)->toArray();
+        $leadStatuses = Lead::STATUSES;
         $bookingStatuses = Booking::STATUSES;
         $sources = ContactSource::activeOrdered()->get();
         $employees = Employee::where('is_active', true)->orderBy('name')->get();
@@ -59,9 +62,11 @@ class LeadController extends Controller
         return view('crm.leads.index', compact(
             'leads',
             'statuses',
+            'leadStatuses',
             'bookingStatuses',
             'sources',
             'employees',
+            'isAdmin',
             'totalLeadsAllCount',
             'activeOrdersLeadsCount',
             'receivedOrdersLeadsCount',
@@ -74,25 +79,68 @@ class LeadController extends Controller
         ));
     }
 
-    private function applyFilters($query, Request $request): void
+    private function applyFilters($query, Request $request, bool $isAdmin = true): void
     {
-        if ($request->filled('search')) {
-            $s = $request->search;
-            $query->where(function ($q) use ($s) {
-                $q->where('client_name', 'like', "%{$s}%")
-                    ->orWhere('client_phone', 'like', "%{$s}%")
-                    ->orWhere('client_email', 'like', "%{$s}%");
+        // 1. Employee Filter
+        if (! $isAdmin) {
+            $query->where('assigned_to', auth()->id());
+        } elseif ($request->filled('employee_id')) {
+            $query->where('assigned_to', $request->employee_id);
+        }
+
+        // 2. Month Filter
+        if ($request->filled('month')) {
+            $parts = explode('-', $request->month);
+            if (count($parts) === 2) {
+                $query->whereYear('created_at', $parts[0])->whereMonth('created_at', $parts[1]);
+            }
+        } elseif ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+
+        // 3. Source & Type Filter
+        if ($request->filled('source')) {
+            if ($request->source === 'calculator') {
+                $query->where(function ($q) {
+                    $q->whereHas('orders', function ($oq) {
+                        $oq->where('source', 'calculator')->orWhereNotNull('calculator_bank_id');
+                    })->orWhereHas('contactSource', function ($sq) {
+                        $sq->where('name', 'like', '%حاسبة%')->orWhere('name', 'like', '%calculator%');
+                    });
+                });
+            } elseif ($request->source === 'cars' || $request->source === 'booking') {
+                $query->where(function ($q) {
+                    $q->whereHas('orders', function ($oq) {
+                        $oq->where('source', '!=', 'calculator')->orWhereNull('source');
+                    })->orWhereNotNull('car_id');
+                });
+            } elseif ($request->source === 'crm_manual') {
+                $query->where(function ($q) {
+                    $q->where('subject', 'like', '%CRM%')
+                        ->orWhereHas('orders', function ($oq) {
+                            $oq->where('source', 'like', '%CRM%');
+                        });
+                });
+            }
+        }
+
+        // 4. Status Filter (Active / Booking / Lead Status)
+        if ($request->filled('status')) {
+            $status = $request->status;
+            $query->where(function ($q) use ($status) {
+                $q->where('status', $status)
+                    ->orWhereHas('orders', function ($oq) use ($status) {
+                        $oq->where('status', $status);
+                    });
             });
         }
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
+
+        // 5. Contact Source Filter
         if ($request->filled('contact_source_id')) {
             $query->where('contact_source_id', $request->contact_source_id);
         }
-        if ($request->filled('employee_id')) {
-            $query->where('assigned_to', $request->employee_id);
-        }
+
+        // 6. Booking Status Group Tabs
         if ($request->filled('booking_status_group')) {
             $group = $request->booking_status_group;
             if ($group === 'active') {
@@ -105,9 +153,28 @@ class LeadController extends Controller
                 $query->whereDoesntHave('orders');
             }
         }
+
         if ($request->filled('booking_status')) {
             $bStatus = $request->booking_status;
             $query->whereHas('orders', fn ($q) => $q->where('status', $bStatus));
+        }
+
+        // 7. Search
+        if ($request->filled('search')) {
+            $s = trim($request->search);
+            $query->where(function ($q) use ($s) {
+                $q->where('client_name', 'like', "%{$s}%")
+                    ->orWhere('client_phone', 'like', "%{$s}%")
+                    ->orWhere('client_email', 'like', "%{$s}%");
+            });
+        }
+
+        // 8. Sorting
+        $sort = $request->input('sort', 'newest');
+        if ($sort === 'oldest') {
+            $query->oldest();
+        } else {
+            $query->latest();
         }
     }
 

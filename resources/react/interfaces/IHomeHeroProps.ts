@@ -3,8 +3,9 @@ export interface IHomeHeroSlide {
   title: string;
   subtitle: string;
   description: string;
-  image: string;
-  image_mobile: string;
+  image?: string;
+  image_desktop?: string;
+  image_mobile?: string;
   button_url: string;
   button_text: string;
   badge?: string;

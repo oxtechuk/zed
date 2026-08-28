@@ -4,14 +4,17 @@
 
         {{-- الصورة --}}
         <div class="col-12">
-            <label class="form-label fw-bold">{{ __('صورة البانر') }} {{ $b ? '' : '*' }}</label>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label fw-bold mb-0">{{ __('صورة البانر الترويجي') }} {{ $b ? '' : '*' }}</label>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">1600 × 400 px</span>
+            </div>
+            <p class="text-muted small mb-2">{{ __('المقاس الموصى به: 1600×400 بكسل (أو 1200×350 px) — نسبة عريضة مع هوامش أمان للنصوص.') }}</p>
             @if($b?->image)
-                <div class="rounded-3 overflow-hidden mb-2 position-relative" style="max-height:160px;">
+                <div class="rounded-3 overflow-hidden mb-2 position-relative border" style="max-height:160px;">
                     <img src="{{ $b->image }}" class="w-100 h-100 object-fit-cover rounded-3">
                 </div>
             @endif
             <input type="file" name="image" class="form-control bg-light border-0" accept="image/*" {{ $b ? '' : 'required' }}>
-            <small class="text-muted">{{ __('يُفضَّل عرض 1600px أو أعلى') }}</small>
         </div>
 
         {{-- العنوان --}}

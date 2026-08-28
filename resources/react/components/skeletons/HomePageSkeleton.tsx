@@ -22,31 +22,6 @@ export default function HomePageSkeleton() {
                 </div>
             </section>
 
-            {/* CarFinder */}
-            <section className="w-full bg-[#F8F4FD] py-10">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <Skeleton className="mx-auto mb-8 h-8 w-56 md:w-72" />
-
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-                        <Skeleton className="h-[52px] flex-1 rounded-2xl" />
-
-                        <div className="flex shrink-0 items-center gap-3">
-                            <Skeleton className="h-[52px] w-28 rounded-2xl" />
-                            <Skeleton className="h-[52px] w-28 rounded-2xl" />
-                        </div>
-                    </div>
-
-                    <div className="mt-6 grid grid-cols-1 gap-4 rounded-2xl border border-[#E7E9EF] bg-white p-6 shadow-sm sm:grid-cols-2 lg:grid-cols-4">
-                        {Array.from({ length: 4 }).map((_, index) => (
-                            <div key={index}>
-                                <Skeleton className="mb-2 h-3 w-16" />
-                                <Skeleton className="h-[48px] rounded-[12px]" />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
             {/* Brands Carousel */}
             <section className="w-full overflow-hidden border-y border-[#E5E7EB] py-6">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

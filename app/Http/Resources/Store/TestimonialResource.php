@@ -17,6 +17,7 @@ class TestimonialResource extends JsonResource
             'image' => $this->image,
             'review_image' => $this->review_image,
             'review_video' => $this->review_video,
+            'type' => $this->type ?? ($this->review_video ? 'video' : 'text'),
             'rating' => $this->rating,
         ];
     }

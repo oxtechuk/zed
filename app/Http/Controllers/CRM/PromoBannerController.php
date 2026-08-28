@@ -55,6 +55,7 @@ class PromoBannerController extends Controller
         }
 
         PromoBanner::create($data);
+        $this->homeCache->forgetHome();
         $this->homeCache->forgetSection('promo_banners');
 
         return back()->with('success', __('تمت إضافة البانر الترويجي بنجاح'));
@@ -77,6 +78,7 @@ class PromoBannerController extends Controller
         }
 
         $promoBanner->update($data);
+        $this->homeCache->forgetHome();
         $this->homeCache->forgetSection('promo_banners');
 
         return back()->with('success', __('تم تعديل البانر الترويجي بنجاح'));
@@ -89,6 +91,7 @@ class PromoBannerController extends Controller
         }
 
         $promoBanner->delete();
+        $this->homeCache->forgetHome();
         $this->homeCache->forgetSection('promo_banners');
 
         return back()->with('success', __('تم حذف البانر الترويجي بنجاح'));

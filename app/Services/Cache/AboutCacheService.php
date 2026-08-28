@@ -41,17 +41,19 @@ class AboutCacheService extends BaseCacheService
         return is_array($raw) ? $raw : (json_decode((string) $raw, true) ?: []);
     }
 
-    public function rememberTestimonials(): array
+    public function rememberTestimonials()
     {
-        return $this->remember('about.testimonials', function () {
-            return Testimonial::where('is_visible', true)->get()->toArray();
-        }, self::TTL_LONG);
+        return Testimonial::where('is_visible', true)->latest()->get();
     }
 
-    public function rememberPartners(): array
+    public function rememberPartners()
     {
-        return $this->remember('about.partners', function () {
-            return Partner::orderBy('sort_order')->get()->toArray();
-        }, self::TTL_LONG);
+        return Partner::orderBy('sort_order')->get();
+    }
+
+    public function forgetAbout(): void
+    {
+        $this->forget('about.testimonials');
+        $this->forget('about.partners');
     }
 }

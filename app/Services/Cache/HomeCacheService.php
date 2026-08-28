@@ -117,23 +117,40 @@ class HomeCacheService extends BaseCacheService
             $financeSteps = FinanceStep::query()->activeOrdered()->get();
 
             $budgetRanges = BudgetRange::query()->activeOrdered()->get()->map(function (BudgetRange $range): array {
-                $maxPrice = null;
-                if ($range->min == 3000 && $range->max == 5000) {
-                    $maxPrice = 120000;
-                } elseif ($range->min == 5000 && $range->max == 7000) {
-                    $maxPrice = 150000;
-                } elseif ($range->min == 7000 && $range->max == 10000) {
-                    $maxPrice = 200000;
-                }
+                $minSalary = (int) $range->min;
+                $maxSalary = $range->max !== null ? (int) $range->max : null;
+
+                // Dynamic installment capacity based on SAMA debt-burden ratio (~30-40% of salary)
+                $minInst = $minSalary > 3000 ? (int) round($minSalary * 0.30) : null;
+                $maxInst = $maxSalary !== null ? (int) round($maxSalary * 0.38) : null;
+
+                // Dynamic cash price estimation based on salary (~22-26x salary)
+                $minPrice = $minSalary > 3000 ? (int) round($minSalary * 22) : null;
+                $maxPrice = $maxSalary !== null ? (int) round($maxSalary * 26) : null;
+
+                $cars = Car::with(['brand', 'images', 'activeOffers'])
+                    ->where('is_active', true)
+                    ->where(function ($q) use ($minInst, $maxInst, $minPrice, $maxPrice) {
+                        $q->where(function ($sq) use ($minInst, $maxInst) {
+                            $sq->whereNotNull('min_installment')
+                                ->where('min_installment', '>', 0)
+                                ->when($minInst !== null, fn ($iq) => $iq->where('min_installment', '>=', $minInst))
+                                ->when($maxInst !== null, fn ($iq) => $iq->where('min_installment', '<=', $maxInst));
+                        })->orWhere(function ($sq) use ($minPrice, $maxPrice) {
+                            $sq->where(function ($z) {
+                                $z->whereNull('min_installment')->orWhere('min_installment', '<=', 0);
+                            })
+                                ->when($minPrice !== null, fn ($pq) => $pq->where('cash_price', '>=', $minPrice))
+                                ->when($maxPrice !== null, fn ($pq) => $pq->where('cash_price', '<=', $maxPrice));
+                        });
+                    })
+                    ->latest()
+                    ->limit(8)
+                    ->get();
 
                 return [
                     'range' => $range,
-                    'cars' => Car::with(['brand', 'images', 'activeOffers'])
-                        ->where('is_active', true)
-                        ->when($maxPrice !== null, fn ($q) => $q->where('cash_price', '<=', $maxPrice))
-                        ->latest()
-                        ->limit(8)
-                        ->get(),
+                    'cars' => $cars,
                 ];
             });
 

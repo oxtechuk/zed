@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { CalendarDays, Car, Gauge, Search, Tag } from "lucide-react";
 import Select from "./Select";
 import type { ICarFinderProps } from "../interfaces/ICarFinderProps";
+import { getApiBaseUrl } from "../constants/axios.constants";
 
 function getLocalizedName(
     name: string | Record<string, string> | undefined,
@@ -41,7 +42,8 @@ export default function CarFinder({
             return;
         }
         setIsLoadingModels(true);
-        fetch(`/api/store/brands/${brandId}/models`)
+        const apiBase = getApiBaseUrl().replace(/\/+$/, "");
+        fetch(`${apiBase}/store/brands/${brandId}/models`)
             .then((res) => res.json())
             .then((res) => {
                 if (res.success && Array.isArray(res.data)) {

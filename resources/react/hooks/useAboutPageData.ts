@@ -118,16 +118,16 @@ export function useAboutPageData() {
       rating: item.rating,
       reviewImage: getImageUrl(item.review_image) || undefined,
       reviewVideo: getImageUrl(item.review_video) || undefined,
-      type: item.type || "text",
+      type: item.type || (item.review_video ? "video" : "text"),
     }));
   }, [aboutData]);
 
   const mediaTestimonials = useMemo(() => {
-    return testimonials.filter((t) => t.type === "video");
+    return testimonials.filter((t) => t.type === "video" || Boolean(t.reviewVideo));
   }, [testimonials]);
 
   const textTestimonials = useMemo(() => {
-    return testimonials.filter((t) => t.type === "text");
+    return testimonials.filter((t) => t.type === "text" || !t.reviewVideo);
   }, [testimonials]);
 
   return {

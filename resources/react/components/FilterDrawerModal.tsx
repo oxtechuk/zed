@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import type { IFilterDrawerModalProps } from "../interfaces/IFilterDrawerModalProps";
 import type { FilterValues } from "../types/cars.types";
 import { DEFAULT_FILTER_VALUES } from "../types/cars.types";
@@ -132,13 +132,16 @@ export default function FilterDrawerModal({
   const toggleBrand = (id: number) => {
     const updated = { ...local, brandId: local.brandId === id ? null : id };
     setLocal(updated);
-    onApply(updated);
   };
 
   const updateField = <K extends keyof FilterValues>(key: K, value: FilterValues[K]) => {
     const updated = { ...local, [key]: value };
     setLocal(updated);
-    onApply(updated);
+  };
+
+  const handleApply = () => {
+    onApply(local);
+    onClose();
   };
 
   const handleReset = () => {
@@ -162,18 +165,33 @@ export default function FilterDrawerModal({
         dir={i18n.dir()}
         className={`lg:hidden fixed top-0 z-50 h-full w-full max-w-sm bg-white shadow-2xl transition-transform duration-300 ease-in-out flex flex-col ${isRTL ? "right-0" : "left-0"} ${isOpen ? "translate-x-0" : isRTL ? "translate-x-full" : "-translate-x-full"}`}
       >
-        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 shrink-0">
           <h2 className="text-[15px] font-black text-[#16254F]">{t("carFinder.resetButton", { defaultValue: "الفلاتر" })}</h2>
-          <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100">
+          <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 cursor-pointer">
             <X size={18} />
           </button>
         </div>
+
         <div className="flex-1 overflow-y-auto divide-y divide-gray-100">
           <FilterContent {...contentProps} />
         </div>
-        <div className="border-t border-gray-100 px-5 py-4">
-          <button type="button" onClick={handleReset} className="w-full text-[13px] font-black text-[#16254F] underline underline-offset-2 hover:text-[#EDC98E] transition-colors">
-            {t("carsSidebarFilter.resetFilters", { defaultValue: "إعادة ضبط الفلاتر" })}
+
+        {/* Mobile Actions Footer */}
+        <div className="border-t border-gray-100 bg-white p-4 shrink-0 flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={handleApply}
+            className="flex-1 h-[46px] rounded-xl bg-[#16254F] text-white text-[14px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(22,37,79,0.2)] hover:bg-[#0F1E36] active:scale-98 transition-all cursor-pointer"
+          >
+            <Search size={16} />
+            <span>{t("carFinder.searchButton", { defaultValue: "بحث" })}</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="h-[46px] px-4 rounded-xl border border-gray-200 bg-gray-50 text-[#64748B] hover:text-[#16254F] hover:bg-gray-100 text-[13px] font-bold active:scale-98 transition-all cursor-pointer shrink-0"
+          >
+            {t("carsSidebarFilter.resetFilters", { defaultValue: "إعادة ضبط" })}
           </button>
         </div>
       </div>
@@ -182,20 +200,32 @@ export default function FilterDrawerModal({
       {isOpen && (
         <div
           dir={i18n.dir()}
-          className="hidden lg:flex fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-4rem)] max-w-7xl max-h-[60vh] flex-col rounded-2xl bg-white shadow-2xl overflow-hidden"
+          className="hidden lg:flex fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-4rem)] max-w-7xl max-h-[65vh] flex-col rounded-2xl bg-white shadow-2xl overflow-hidden"
         >
           <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 shrink-0">
             <h2 className="text-[15px] font-black text-[#16254F]">{t("carFinder.resetButton", { defaultValue: "الفلاتر" })}</h2>
-            <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100">
+            <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 cursor-pointer">
               <X size={18} />
             </button>
           </div>
           <div className="flex-1 overflow-y-auto grid grid-cols-3 divide-x divide-x-reverse divide-gray-100">
             <FilterContent {...contentProps} />
           </div>
-          <div className="border-t border-gray-100 px-6 py-4 shrink-0">
-            <button type="button" onClick={handleReset} className="text-[13px] font-black text-[#16254F] underline underline-offset-2 hover:text-[#EDC98E] transition-colors">
+          <div className="border-t border-gray-100 bg-white px-6 py-4 shrink-0 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={handleReset}
+              className="text-[13px] font-bold text-[#64748B] hover:text-[#16254F] underline underline-offset-2 transition-colors cursor-pointer"
+            >
               {t("carsSidebarFilter.resetFilters", { defaultValue: "إعادة ضبط الفلاتر" })}
+            </button>
+            <button
+              type="button"
+              onClick={handleApply}
+              className="h-[44px] px-8 rounded-xl bg-[#16254F] text-white text-[14px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(22,37,79,0.2)] hover:bg-[#0F1E36] active:scale-98 transition-all cursor-pointer"
+            >
+              <Search size={16} />
+              <span>{t("carFinder.searchButton", { defaultValue: "بحث" })}</span>
             </button>
           </div>
         </div>

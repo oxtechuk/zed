@@ -117,69 +117,72 @@
         </div>
     </div>
 
-    {{-- Advanced Filters Bar --}}
-    <div class="card border-0 shadow-sm rounded-4 mb-3" style="border:1px solid var(--crm-border)!important;">
-        <div class="card-body p-3">
-            <form method="GET" action="{{ route('crm.leads.index') }}" id="leadFilterForm" class="row g-2 align-items-center">
-                @if(request('booking_status_group'))
-                    <input type="hidden" name="booking_status_group" value="{{ request('booking_status_group') }}">
-                @endif
+    {{-- Filter Bar (مطابق تماماً لفلتر الطلبات) --}}
+    <form method="GET" action="{{ route('crm.leads.index') }}" id="leadFilterForm">
+        @if(request('booking_status_group'))
+            <input type="hidden" name="booking_status_group" value="{{ request('booking_status_group') }}">
+        @endif
+        <div class="card border-0 shadow-sm rounded-3 mb-4" style="border:1px solid var(--crm-border)!important;">
+            <div class="card-body p-3">
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    
+                    {{-- فلتر الموظف (للإدارة يظهر كافة الموظفين المسجلين) --}}
+                    @if($isAdmin)
+                    <div style="min-width:180px;">
+                        <select name="employee_id" class="form-select form-select-sm" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;" onchange="this.form.submit()">
+                            <option value="">{{ __('الموظف — جميع الموظفين') }}</option>
+                            @foreach($employees as $emp)
+                                <option value="{{ $emp->id }}" {{ request('employee_id') == $emp->id ? 'selected' : '' }}>
+                                    {{ $emp->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
 
-                {{-- البحث --}}
-                <div class="col-12 col-md-3">
+                    {{-- فلتر الشهر --}}
                     <div style="position:relative;">
+                        <input type="month" name="month" value="{{ request('month') }}"
+                                style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif; min-width: 150px;"
+                                onchange="this.form.submit()" title="{{ __('تصفية بالشهر') }}">
+                    </div>
+
+                    {{-- مصدر ونوع الطلب --}}
+                    <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
+                        <option value="">{{ __('المصدر والنوع — الكل') }}</option>
+                        <option value="cars" {{ request('source')==='cars'?'selected':'' }}>🚗 {{ __('طلبات السيارات (حجز وشراء)') }}</option>
+                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>🧮 {{ __('عملاء حاسبة التمويل') }}</option>
+                        <option value="crm_manual" {{ request('source')==='crm_manual'?'selected':'' }}>📋 {{ __('طلبات داخلية (CRM)') }}</option>
+                    </select>
+
+                    {{-- الحالة النشطة --}}
+                    <select name="status" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:160px;" onchange="this.form.submit()">
+                        <option value="">{{ __('الحالة — جميع الحالات النشطة') }}</option>
+                        @foreach($statuses as $key => $s)
+                        <option value="{{ $key }}" {{ request('status')===$key?'selected':'' }}>{{ $s['label'] }}</option>
+                        @endforeach
+                    </select>
+
+                    {{-- الترتيب --}}
+                    <select name="sort" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:150px;" onchange="this.form.submit()">
+                        <option value="newest" {{ request('sort','newest')==='newest'?'selected':'' }}>{{ __('الأحدث أولاً') }}</option>
+                        <option value="oldest" {{ request('sort','newest')==='oldest'?'selected':'' }}>{{ __('الأقدم أولاً') }}</option>
+                    </select>
+
+                    {{-- Search --}}
+                    <div style="position:relative;flex:1;min-width:180px;">
                         <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="{{ __('بحث بالاسم، الجوال، البريد...') }}"
-                            class="form-control form-control-sm"
-                            style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 36px 8px 14px;font-size:13px;">
+                               placeholder="{{ __('بحث بالاسم أو الهاتف...') }}"
+                               style="width:100%;border:1px solid var(--crm-border);border-radius:8px;padding:8px 36px 8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;">
                         <i class="bi bi-search" style="position:absolute;{{ app()->getLocale()=='ar'?'left':'right' }}:12px;top:50%;transform:translateY(-50%);color:var(--crm-text-muted);"></i>
                     </div>
-                </div>
 
-                {{-- فلتر حالة العميل --}}
-                <div class="col-6 col-md-2">
-                    <select name="status" class="form-select form-select-sm" style="border-radius:8px;font-size:13px;padding:8px 12px;">
-                        <option value="">{{ __('— كل حالات العملاء —') }}</option>
-                        @foreach($statuses as $key => $s)
-                            <option value="{{ $key }}" {{ request('status') === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
-                        @endforeach
-                    </select>
+                    <button type="submit" class="btn-crm-primary" style="padding:8px 20px;">{{ __('تصفية') }}</button>
+                    <a href="{{ route('crm.leads.index') }}" class="fw-bold text-decoration-none" style="font-size:13px;color:var(--crm-red);">{{ __('حذف الفلاتر') }}</a>
                 </div>
-
-                {{-- فلتر مصدر التواصل --}}
-                <div class="col-6 col-md-2">
-                    <select name="contact_source_id" class="form-select form-select-sm" style="border-radius:8px;font-size:13px;padding:8px 12px;">
-                        <option value="">{{ __('— كل المصادر —') }}</option>
-                        @foreach($sources as $src)
-                            <option value="{{ $src->id }}" {{ request('contact_source_id') == $src->id ? 'selected' : '' }}>{{ $src->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- فلتر الموظف المسؤول --}}
-                <div class="col-6 col-md-2">
-                    <select name="employee_id" class="form-select form-select-sm" style="border-radius:8px;font-size:13px;padding:8px 12px;">
-                        <option value="">{{ __('— كل الموظفين —') }}</option>
-                        @foreach($employees as $emp)
-                            <option value="{{ $emp->id }}" {{ request('employee_id') == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- أزرار الإجراءات --}}
-                <div class="col-6 col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn-crm-primary flex-fill" style="padding:8px 14px;font-size:13px;">
-                        <i class="bi bi-funnel me-1"></i> {{ __('تصفية') }}
-                    </button>
-                    @if(request()->anyFilled(['search', 'status', 'contact_source_id', 'employee_id', 'booking_status_group']))
-                    <a href="{{ route('crm.leads.index') }}" class="btn btn-sm btn-light border rounded-3 text-muted d-flex align-items-center" title="{{ __('إعادة تعيين') }}">
-                        <i class="bi bi-x-lg"></i>
-                    </a>
-                    @endif
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+    </form>
 
     {{-- Results Counter & Selection Helper Banner --}}
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 px-1">

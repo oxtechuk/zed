@@ -6,13 +6,14 @@ import { useSettingsStore } from "../store/settings.store";
 export default function TopBar({
   phone: propPhone,
   email: propEmail,
-  location,
+  location: propLocation,
   onLanguageToggle,
 }: ITopBarProps) {
   const { t, i18n } = useTranslation();
   const settings = useSettingsStore((s) => s.settings);
   const phone = settings?.contact?.phone || propPhone;
   const email = settings?.contact?.email || propEmail;
+  const location = settings?.contact?.address || propLocation;
 
   return (
     <div className="hidden md:block w-full bg-[#051023] text-white text-xs py-2 border-b border-white/10">

@@ -103,6 +103,10 @@ export default function BudgetCarsSection({
     return () => clearInterval(id);
   }, [isPaused, totalSlides]);
 
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [activeRange, cars.length]);
+
   if (!cars.length) return null;
 
   return (
@@ -114,9 +118,9 @@ export default function BudgetCarsSection({
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <div className="mb-8 sm:mb-10 flex flex-col gap-4 sm:gap-5 md:flex-row md:items-end md:justify-between">
           <div className={isRTL ? "text-right" : "text-left"}>
-            <h2 className="text-[26px] font-bold leading-tight md:text-[40px]">
+            <h2 className="text-[24px] font-bold leading-tight sm:text-[28px] md:text-[40px]">
               <span className="text-[var(--brand-primary-color)]">
                 {titleBlue}
               </span>{" "}
@@ -125,14 +129,14 @@ export default function BudgetCarsSection({
               </span>
             </h2>
 
-            <p className="mt-4 max-w-2xl text-[14px] leading-6 text-[#667085] md:text-[16px] md:leading-7">
+            <p className="mt-2 sm:mt-4 max-w-2xl text-[13px] leading-6 text-[#667085] sm:text-[15px] md:text-[16px] md:leading-7">
               {description}
             </p>
           </div>
 
           {/* Slider Navigation Arrows in Header */}
           {totalSlides > 1 && (
-            <div dir="ltr" className="flex items-center gap-6">
+            <div dir="ltr" className="flex items-center gap-3 sm:gap-6 self-end md:self-auto">
               <SlideArrow
                 direction="prev"
                 onClick={isRTL ? nextSlide : prevSlide}
@@ -147,75 +151,77 @@ export default function BudgetCarsSection({
           )}
         </div>
 
-        {/* Budget Filters */}
-        <div className="mb-9 flex flex-wrap items-center justify-center gap-3">
-          {/* "All" Filter Button */}
-          <button
-            type="button"
-            onClick={() => onRangeChange?.("all")}
-            className={`flex h-[46px] items-center justify-center rounded-full border px-6 text-[14px] font-bold transition-all duration-300 ${
-              activeRange === "all" || !activeRange
-                ? "border-[#16254F] bg-[#16254F] text-white shadow-[0_4px_12px_rgba(22,37,79,0.15)]"
-                : "border-[#E5E7EB] bg-white text-[#4F5A6B] hover:border-gray-300 hover:text-[#16254F]"
-            }`}
-          >
-            {t("allCarsFilterBar.all") || "الكل"}
-          </button>
+        {/* Budget Filters - Modern responsive horizontal scroll on mobile, flex wrap on desktop */}
+        <div className="mb-8 sm:mb-10 w-full overflow-hidden">
+          <div className="flex flex-nowrap items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar scroll-smooth py-1.5 px-4 -mx-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:justify-center">
+            {/* "All" Filter Button */}
+            <button
+              type="button"
+              onClick={() => onRangeChange?.("all")}
+              className={`shrink-0 flex h-[40px] sm:h-[46px] items-center justify-center rounded-full border px-5 sm:px-6 text-[13px] sm:text-[14px] font-bold transition-all duration-200 active:scale-95 whitespace-nowrap cursor-pointer ${
+                activeRange === "all" || !activeRange
+                  ? "border-[#16254F] bg-[#16254F] text-white shadow-[0_4px_14px_rgba(22,37,79,0.22)] ring-2 ring-[#16254F]/20"
+                  : "border-[#E5E7EB] bg-white text-[#4F5A6B] hover:border-gray-300 hover:text-[#16254F] hover:bg-gray-50/50"
+              }`}
+            >
+              {t("allCarsFilterBar.all") || "الكل"}
+            </button>
 
-          {resolvedRanges.map((range) => {
-            const isActive = range.value === activeRange;
+            {resolvedRanges.map((range) => {
+              const isActive = range.value === activeRange;
 
-            // Render label helper using formatPrice
-            const renderRangeLabel = (rangeItem: IBudgetRange) => {
-              const label = rangeItem.label || "";
-              const color = isActive ? "#FFFFFF" : "var(--brand-primary-color)";
-              // If label contains plain number or range min-max, convert numbers to formatPrice
-              const cleaned = label.replace(/ر\.س|SAR|﷼/g, "").trim();
-              const num = parseInt(cleaned.replace(/,/g, ""), 10);
-              if (!isNaN(num) && cleaned === String(num)) {
-                return formatPrice(num, color);
-              }
-              
-              // For custom strings like "من 3,000 إلى 5,000 ريال", replace "ريال"/"SAR"/"﷼" with Riyal icon
-              const parts = label.split(/(ريال|SAR|﷼)/);
+              // Render label helper using formatPrice
+              const renderRangeLabel = (rangeItem: IBudgetRange) => {
+                const label = rangeItem.label || "";
+                const color = isActive ? "#FFFFFF" : "var(--brand-primary-color)";
+                // If label contains plain number or range min-max, convert numbers to formatPrice
+                const cleaned = label.replace(/ر\.س|SAR|﷼/g, "").trim();
+                const num = parseInt(cleaned.replace(/,/g, ""), 10);
+                if (!isNaN(num) && cleaned === String(num)) {
+                  return formatPrice(num, color);
+                }
+                
+                // For custom strings like "من 3,000 إلى 5,000 ريال", replace "ريال"/"SAR"/"﷼" with Riyal icon
+                const parts = label.split(/(ريال|SAR|﷼)/);
+                return (
+                  <span className="inline-flex items-center gap-1">
+                    {parts.map((part, index) => {
+                      if (part === "ريال" || part === "SAR" || part === "﷼") {
+                        return (
+                          <span
+                            key={index}
+                            aria-label="ريال"
+                            className="inline-block h-[13px] w-[13px] sm:h-[14px] sm:w-[14px] align-middle"
+                            style={{
+                              backgroundColor: color,
+                              WebkitMask: `url(${APP_IMAGES.RIYAL}) center / contain no-repeat`,
+                              mask: `url(${APP_IMAGES.RIYAL}) center / contain no-repeat`,
+                            }}
+                          />
+                        );
+                      }
+                      return <span key={index}>{part}</span>;
+                    })}
+                  </span>
+                );
+              };
+
               return (
-                <span className="inline-flex items-center gap-1">
-                  {parts.map((part, index) => {
-                    if (part === "ريال" || part === "SAR" || part === "﷼") {
-                      return (
-                        <span
-                          key={index}
-                          aria-label="ريال"
-                          className="inline-block h-[14px] w-[14px] align-middle"
-                          style={{
-                            backgroundColor: color,
-                            WebkitMask: `url(${APP_IMAGES.RIYAL}) center / contain no-repeat`,
-                            mask: `url(${APP_IMAGES.RIYAL}) center / contain no-repeat`,
-                          }}
-                        />
-                      );
-                    }
-                    return <span key={index}>{part}</span>;
-                  })}
-                </span>
+                <button
+                  key={range.value}
+                  type="button"
+                  onClick={() => onRangeChange?.(range.value)}
+                  className={`shrink-0 flex h-[40px] sm:h-[46px] items-center justify-center rounded-full border px-4 sm:px-6 text-[13px] sm:text-[14px] font-bold transition-all duration-200 active:scale-95 whitespace-nowrap cursor-pointer ${
+                    isActive
+                      ? "border-[#16254F] bg-[#16254F] text-white shadow-[0_4px_14px_rgba(22,37,79,0.22)] ring-2 ring-[#16254F]/20"
+                      : "border-[#E5E7EB] bg-white text-[#4F5A6B] hover:border-gray-300 hover:text-[#16254F] hover:bg-gray-50/50"
+                  }`}
+                >
+                  {renderRangeLabel(range)}
+                </button>
               );
-            };
-
-            return (
-              <button
-                key={range.value}
-                type="button"
-                onClick={() => onRangeChange?.(range.value)}
-                className={`flex h-[46px] items-center justify-center rounded-full border px-6 text-[14px] font-bold transition-all duration-300 ${
-                  isActive
-                    ? "border-[#16254F] bg-[#16254F] text-white shadow-[0_4px_12px_rgba(22,37,79,0.15)]"
-                    : "border-[#E5E7EB] bg-white text-[#4F5A6B] hover:border-gray-300 hover:text-[#16254F]"
-                }`}
-              >
-                {renderRangeLabel(range)}
-              </button>
-            );
-          })}
+            })}
+          </div>
         </div>
 
         {/* Carousel */}

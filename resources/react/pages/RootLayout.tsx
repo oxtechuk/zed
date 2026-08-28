@@ -69,7 +69,7 @@ export default function RootLayout() {
         <TopBar
           phone={settings?.contact?.phone || t("topbar.phone", { defaultValue: "920000000" })}
           email={settings?.contact?.email || t("topbar.email", { defaultValue: "info@zedcapital.sa" })}
-          location={t("topbar.location", { defaultValue: "الرياض، المملكة العربية السعودية" })}
+          location={settings?.contact?.address || t("topbar.location", { defaultValue: "الرياض، المملكة العربية السعودية" })}
           onLanguageToggle={handleLanguageToggle}
         />
         <Header

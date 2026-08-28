@@ -82,6 +82,7 @@ final class HomeApiService
             'subtitle' => $slide->subtitle,
             'description' => $slide->description,
             'image' => $slide->image_desktop,
+            'image_desktop' => $slide->image_desktop,
             'image_mobile' => $slide->image_mobile,
             'link' => $slide->button_url, // kept for backward compatibility with existing consumers
             'button_url' => $slide->button_url,

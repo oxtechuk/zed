@@ -3,22 +3,19 @@ import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { APP_IMAGES, getImageUrl } from "../constants/app-images";
 import HomeHero from "../components/HomeHero";
-import CarFinder from "../components/CarFinder";
 import FeaturedCarsSection from "../components/FeaturedCarsSection";
 import BrandsSection from "../components/BrandsSection";
 import BudgetCarsSection from "../components/BudgetCarsSection";
-import { getHomePageData, getCars } from "../services/api";
+import { getHomePageData } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
 import type { ICarItem, IBrandInfo } from "../types/home.types";
 import type { ICarCardProps } from "../interfaces/ICarCardProps";
-import type { CarFinderValues } from "../interfaces/ICarFinderProps";
 import { formatPrice } from "../utils/format";
 import { useSEO } from "../utils/useSEO";
 import type { IBrandCardProps } from "../interfaces/IBrandCardProps";
 import BrandsCarousel from "../components/BrandsCarousel";
 import HeroSkeleton from "../components/skeletons/HeroSkeleton";
 import BudgetCarsSkeleton from "../components/skeletons/BudgetCarsSkeleton";
-import CarFinderSkeleton from "../components/skeletons/CarFinderSkeleton";
 import BrandsCarouselSkeleton from "../components/skeletons/BrandsCarouselSkeleton";
 import CarsGridSkeleton from "../components/skeletons/CarsGridSkeleton";
 import PromoCountdownBanner from "../components/PromoCountdownBanner";
@@ -95,36 +92,12 @@ export default function Home() {
   const { t } = useTranslation();
   useSEO(t("nav.home"), t("hero.description"));
   const language = useLanguageStore((s) => s.language);
-  const [filters, setFilters] = useState<CarFinderValues | null>(null);
   const [activeBudgetRange, setActiveBudgetRange] = useState("all");
 
   const { data, isLoading } = useQuery({
     queryKey: ["home-data", language],
     queryFn: getHomePageData,
   });
-
-  const { data: filteredData } = useQuery({
-    queryKey: ["filtered-cars", filters, language],
-    queryFn: () =>
-      getCars({
-        ...(filters!.brandId && { brands: [Number(filters!.brandId)] }),
-        ...(filters!.modelId && { model_id: Number(filters!.modelId) }),
-        ...(filters!.typeId && { type: Number(filters!.typeId) }),
-        ...(filters!.categoryId && { category_id: Number(filters!.categoryId) }),
-        ...(filters!.year && { year: filters!.year }),
-        ...(filters!.search && { search: filters!.search, q: filters!.search }),
-        per_page: 12,
-      }),
-    enabled: !!filters,
-  });
-
-  const handleCarFinderSearch = (values: CarFinderValues) => {
-    setFilters(values);
-  };
-
-  const handleCarFinderReset = () => {
-    setFilters(null);
-  };
 
   const featuredCars = useMemo(
     () =>
@@ -137,17 +110,6 @@ export default function Home() {
     () => (data?.brands ?? []).map(mapBrandToCardProps),
     [data?.brands],
   );
-  const filteredCarCards = useMemo(
-    () =>
-      (filteredData?.data ?? [])
-        .map(mapCarToCardProps)
-        .filter(Boolean) as ICarCardProps[],
-    [filteredData],
-  );
-  const filterBrands = data?.filter_brands ?? [];
-  const filterTypes = data?.filter_types ?? [];
-  const filterCategories = data?.filter_categories ?? [];
-  const filterYears = data?.filter_years ?? [];
 
   const offerCarCards = useMemo(
     () =>
@@ -246,26 +208,6 @@ export default function Home() {
       </LazySection>
 
       <LazySection
-        fallback={<CarFinderSkeleton />}
-        rootMargin="200px"
-        minHeight={120}
-      >
-        {isLoading ? (
-          <CarFinderSkeleton />
-        ) : (
-          <CarFinder
-            onSearch={handleCarFinderSearch}
-            onReset={handleCarFinderReset}
-            brands={filterBrands}
-            types={filterTypes}
-            categories={filterCategories}
-            years={filterYears}
-            filterTitle={data?.page_sections?.filter?.title?.trim()}
-          />
-        )}
-      </LazySection>
-
-      <LazySection
         fallback={<BrandsCarouselSkeleton />}
         rootMargin="250px"
         minHeight={120}
@@ -304,9 +246,7 @@ export default function Home() {
             description=""
             buttonText={data?.page_sections?.featured_cars?.button_text?.trim() || t("featuredCars.buttonText")}
             buttonTo="/cars"
-            cars={filters ? filteredCarCards : featuredCars}
-            itemsPerPage={filters ? 4 : undefined}
-            emptyMessage={filters ? t("featuredCars.noCars") : undefined}
+            cars={featuredCars}
           />
         )}
       </LazySection>

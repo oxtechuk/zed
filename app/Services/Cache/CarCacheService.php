@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\BrandType;
 use App\Models\Car;
 use App\Models\CarCategory;
+use App\Models\CarModel;
 use App\Models\CarType;
 use Illuminate\Support\Facades\Cache;
 
@@ -15,6 +16,12 @@ class CarCacheService extends BaseCacheService
     {
         $result = $this->remember('cars.filters', function () {
             $brands = Brand::whereHas('cars', fn ($q) => $q->where('is_active', true))
+                ->withCount(['cars' => fn ($q) => $q->where('is_active', true)])
+                ->orderBy('name')
+                ->get();
+
+            $models = CarModel::where('is_active', true)
+                ->whereHas('cars', fn ($q) => $q->where('is_active', true))
                 ->withCount(['cars' => fn ($q) => $q->where('is_active', true)])
                 ->orderBy('name')
                 ->get();
@@ -82,7 +89,7 @@ class CarCacheService extends BaseCacheService
                 ->pluck('count', 'is_highlighted')
                 ->all();
 
-            return compact('brands', 'years', 'types', 'categories', 'brandTypes', 'prices', 'fuels', 'horsepowerBrackets', 'highlightCounts');
+            return compact('brands', 'models', 'years', 'types', 'categories', 'brandTypes', 'prices', 'fuels', 'horsepowerBrackets', 'highlightCounts');
         }, self::TTL_LONG);
 
         $locale = app()->getLocale();

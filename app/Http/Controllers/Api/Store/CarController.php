@@ -8,6 +8,7 @@ use App\Http\Resources\Store\BrandResource;
 use App\Http\Resources\Store\BrandTypeResource;
 use App\Http\Resources\Store\CarCategoryResource;
 use App\Http\Resources\Store\CarMiniResource;
+use App\Http\Resources\Store\CarModelResource;
 use App\Http\Resources\Store\CarResource;
 use App\Http\Resources\Store\CarTypeResource;
 use App\Http\Resources\Store\HomeOfferResource;
@@ -42,6 +43,7 @@ final class CarController extends ApiBaseController
             'total_cars' => $result['totalCars'],
             'total_brands' => $result['totalBrands'],
             'filter_brands' => BrandResource::collection($result['filterBrands'])->resolve(),
+            'filter_models' => CarModelResource::collection($result['filterModels'] ?? collect())->resolve(),
             'filter_types' => CarTypeResource::collection($result['filterTypes'])->resolve(),
             'filter_categories' => CarCategoryResource::collection($result['filterCategories'])->resolve(),
             'filter_brand_types' => BrandTypeResource::collection($result['filterBrandTypes'])->resolve(),

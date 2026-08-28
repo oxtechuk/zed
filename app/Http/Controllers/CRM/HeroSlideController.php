@@ -57,6 +57,7 @@ class HeroSlideController extends Controller
         }
 
         HeroSlide::create($data);
+        $this->homeCache->forgetHome();
         $this->homeCache->forgetSection('hero');
 
         return back()->with('success', __('تمت إضافة الشريحة بنجاح'));
@@ -81,6 +82,7 @@ class HeroSlideController extends Controller
         }
 
         $heroSlide->update($data);
+        $this->homeCache->forgetHome();
         $this->homeCache->forgetSection('hero');
 
         return back()->with('success', __('تم تعديل الشريحة بنجاح'));
@@ -96,6 +98,7 @@ class HeroSlideController extends Controller
         }
 
         $heroSlide->delete();
+        $this->homeCache->forgetHome();
         $this->homeCache->forgetSection('hero');
 
         return back()->with('success', __('تم حذف الشريحة بنجاح'));

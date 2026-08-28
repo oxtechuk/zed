@@ -92,7 +92,6 @@
                             </div>
                             <div class="col-md-3 col-6">
                                 <label class="form-label fw-bold small text-muted">{{ __('عنوان المناسبة (Side Title) — عربي') }}</label>
-                                <input type="text" name="subtitle[ar]" class="form-control bg-light border-0 shadow-none" placeholder="{{ __('مثال: رمضان الاستثنائية') }}" value="{{ $section->getTranslation('subtitle', 'ar', false) }}">
                             </div>
                             <div class="col-md-3 col-6">
                                 <label class="form-label fw-bold small text-muted">{{ __('عنوان المناسبة — إنجليزي') }}</label>
@@ -125,7 +124,11 @@
 
                             {{-- صورة أو أيقونة العرض الجانبية --}}
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-muted d-block mb-2">{{ __('صورة / أيقونة العرض الجانبية (اختياري - مثل فانوس رمضان)') }}</label>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label fw-bold small text-muted mb-0">{{ __('صورة / أيقونة العرض الجانبية (اختياري)') }}</label>
+                                    <span class="badge bg-light text-muted border">400 × 400 px</span>
+                                </div>
+                                <p class="text-muted small mb-2">{{ __('المقاس الموصى به: 400×400 بكسل بخلفية شفافة PNG.') }}</p>
                                 @if($section->image)
                                     <div class="mb-2 rounded-3 overflow-hidden bg-dark p-2 d-inline-block" style="max-height:80px;"><img src="{{ $section->image }}" class="img-fluid" style="max-height:60px;"></div>
                                 @endif
@@ -134,9 +137,13 @@
 
                             {{-- صورة الخلفية المخصصة --}}
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-muted d-block mb-2">{{ __('صورة خلفية مخصصة للبانر (اختياري)') }}</label>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label fw-bold small text-muted mb-0">{{ __('صورة خلفية مخصصة للبانر (اختياري)') }}</label>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">1920 × 450 px</span>
+                                </div>
+                                <p class="text-muted small mb-2">{{ __('المقاس الموصى به: 1920×450 بكسل (أبعاد عريضة تغطي خلفية البانر).') }}</p>
                                 @if($section->background_image)
-                                    <div class="mb-2 rounded-3 overflow-hidden bg-light" style="max-height:80px;"><img src="{{ $section->background_image }}" class="img-fluid w-100 object-fit-cover" style="max-height:80px;"></div>
+                                    <div class="mb-2 rounded-3 overflow-hidden bg-light border" style="max-height:80px;"><img src="{{ $section->background_image }}" class="img-fluid w-100 object-fit-cover" style="max-height:80px;"></div>
                                 @endif
                                 <input type="file" name="background_image" class="form-control bg-light border-0 shadow-none" accept="image/*">
                             </div>

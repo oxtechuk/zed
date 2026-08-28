@@ -4,6 +4,8 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App\Models\Testimonial;
+use App\Services\Cache\AboutCacheService;
+use App\Services\Cache\HomeCacheService;
 use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -11,7 +13,9 @@ use Illuminate\Support\Facades\Storage;
 class TestimonialController extends Controller
 {
     public function __construct(
-        protected ImageOptimizerService $imageOptimizer
+        protected ImageOptimizerService $imageOptimizer,
+        protected AboutCacheService $aboutCache,
+        protected HomeCacheService $homeCache,
     ) {}
 
     public function index()
@@ -62,6 +66,8 @@ class TestimonialController extends Controller
         }
 
         Testimonial::create($data);
+        $this->aboutCache->forgetAbout();
+        $this->homeCache->forgetHome();
 
         return redirect()->route('crm.settings.testimonials.index')->with('success', __('تم إضافة التوصية بنجاح'));
     }
@@ -127,6 +133,8 @@ class TestimonialController extends Controller
         }
 
         $testimonial->update($data);
+        $this->aboutCache->forgetAbout();
+        $this->homeCache->forgetHome();
 
         return redirect()->route('crm.settings.testimonials.index')->with('success', __('تم تعديل التوصية بنجاح'));
     }
@@ -151,6 +159,8 @@ class TestimonialController extends Controller
         }
 
         $testimonial->delete();
+        $this->aboutCache->forgetAbout();
+        $this->homeCache->forgetHome();
 
         return back()->with('success', __('تم حذف التوصية بنجاح'));
     }

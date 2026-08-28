@@ -54,9 +54,12 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
           }}
         >
           {slides.map((slide, idx) => {
-            const targetImage =
-              isMobile && slide.image_mobile ? slide.image_mobile : slide.image;
-            const bgImg = getImageUrl(targetImage);
+            const desktopRaw = slide.image_desktop || slide.image;
+            const desktopImg = desktopRaw ? getImageUrl(desktopRaw) : null;
+            const mobileImg = slide.image_mobile
+              ? getImageUrl(slide.image_mobile)
+              : null;
+            const mainImg = desktopImg || mobileImg;
 
             return (
               <div
@@ -64,16 +67,21 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                 className="relative h-full w-full shrink-0 flex items-center justify-between text-white overflow-hidden bg-[#051023]"
                 dir={direction}
               >
-                {/* Background Image */}
-                {bgImg && (
-                  <img
-                    src={bgImg}
-                    alt={slide.title || "Hero Banner"}
-                    loading={idx === 0 ? "eager" : "lazy"}
-                    fetchPriority={idx === 0 ? "high" : "auto"}
-                    decoding="async"
-                    className="absolute inset-0 h-full w-full object-cover object-center pointer-events-none"
-                  />
+                {/* Background Responsive Banner Image (Desktop & Mobile) */}
+                {mainImg && (
+                  <picture className="absolute inset-0 h-full w-full pointer-events-none">
+                    {mobileImg && (
+                      <source media="(max-width: 639px)" srcSet={mobileImg} />
+                    )}
+                    <img
+                      src={mainImg}
+                      alt={slide.title || "Hero Banner"}
+                      loading={idx === 0 ? "eager" : "lazy"}
+                      fetchPriority={idx === 0 ? "high" : "auto"}
+                      decoding="async"
+                      className="h-full w-full object-cover object-center"
+                    />
+                  </picture>
                 )}
 
                 {/* Content Overlay Grid */}

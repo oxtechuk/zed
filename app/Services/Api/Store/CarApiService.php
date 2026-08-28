@@ -147,6 +147,7 @@ final class CarApiService
             'totalCars' => $totalCars,
             'totalBrands' => $totalBrands,
             'filterBrands' => $filters['brands'],
+            'filterModels' => $filters['models'] ?? [],
             'filterTypes' => $filters['types'],
             'filterCategories' => $filters['categories'],
             'filterBrandTypes' => $filters['brandTypes'],

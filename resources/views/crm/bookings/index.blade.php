@@ -119,8 +119,6 @@
                         <option value="">{{ __('المصدر والنوع — الكل') }}</option>
                         <option value="cars" {{ request('source')==='cars'?'selected':'' }}>🚗 {{ __('طلبات السيارات (حجز وشراء)') }}</option>
                         <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>🧮 {{ __('عملاء حاسبة التمويل') }}</option>
-                        <option value="test_drive" {{ request('source')==='test_drive'?'selected':'' }}>⏱️ {{ __('طلبات تجربة القيادة') }}</option>
-                        <option value="purchase" {{ request('source')==='purchase'?'selected':'' }}>💳 {{ __('طلبات الشراء النقدي') }}</option>
                         <option value="crm_manual" {{ request('source')==='crm_manual'?'selected':'' }}>📋 {{ __('طلبات داخلية (CRM)') }}</option>
                     </select>
 

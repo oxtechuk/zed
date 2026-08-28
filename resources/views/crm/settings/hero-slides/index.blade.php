@@ -14,6 +14,22 @@
             <i class="bi bi-plus-lg me-1"></i> {{ __('إضافة شريحة') }}
         </button>
         @endcan
+    <div class="alert alert-white bg-white border shadow-sm rounded-4 p-3 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-primary-subtle text-primary p-2.5 rounded-3 d-flex align-items-center justify-content-center">
+                <i class="bi bi-aspect-ratio fs-4"></i>
+            </div>
+            <div>
+                <h6 class="fw-bold mb-1 text-dark">{{ __('أبعاد ومقاسات البانرات الموصى بها') }}</h6>
+                <div class="d-flex gap-3 flex-wrap small text-muted">
+                    <span><i class="bi bi-laptop text-primary me-1"></i> {{ __('بانر الديسكتوب:') }} <strong class="text-dark">1920 × 540 px</strong></span>
+                    <span><i class="bi bi-phone text-dark me-1"></i> {{ __('بانر الموبايل:') }} <strong class="text-dark">768 × 420 px</strong></span>
+                </div>
+            </div>
+        </div>
+        <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill small">
+            <i class="bi bi-shield-check text-success me-1"></i> {{ __('الصور تُضغط وتُحسّن تلقائياً لسرعة التحميل') }}
+        </span>
     </div>
 
     @if ($errors->any())
@@ -27,8 +43,22 @@
         @forelse($slides as $slide)
         <div class="col-12 col-md-6">
             <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
-                <div class="ratio ratio-16x9 bg-light">
-                    <img src="{{ $slide->image_desktop }}" class="w-100 h-100 object-fit-cover">
+                <div class="ratio ratio-16x9 bg-light position-relative">
+                    <img src="{{ $slide->image_desktop }}" class="w-100 h-100 object-fit-cover" alt="Desktop Banner">
+                    <div class="position-absolute top-0 start-0 m-2 d-flex gap-1">
+                        <span class="badge bg-dark bg-opacity-75 text-white shadow-xs">
+                            <i class="bi bi-laptop me-1"></i> {{ __('ديسكتوب') }}
+                        </span>
+                        @if($slide->image_mobile)
+                        <span class="badge bg-primary text-white shadow-xs">
+                            <i class="bi bi-phone me-1"></i> {{ __('موبايل مخصص') }}
+                        </span>
+                        @else
+                        <span class="badge bg-secondary bg-opacity-75 text-white shadow-xs">
+                            <i class="bi bi-phone me-1"></i> {{ __('موبايل: افتراضي') }}
+                        </span>
+                        @endif
+                    </div>
                 </div>
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start mb-2">

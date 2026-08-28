@@ -290,7 +290,7 @@ export default function Footer({
 
         {/* Bottom */}
         <div className="border-t border-white/[0.055] py-8">
-          <div className="flex flex-col items-center justify-between gap-5 text-center text-[12px] text-white/25 md:flex-row md:text-start">
+          <div className="flex flex-col items-center justify-between gap-5 text-center text-[12px] text-white/40 md:flex-row md:text-start">
             {/* Policies */}
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
               <NavLink
@@ -312,8 +312,33 @@ export default function Footer({
               </NavLink>
             </div>
 
-            {/* Copyright */}
-            <p>{copyright}</p>
+            {/* Copyright & Developer Credit */}
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+              <p className="text-white/50">{copyright}</p>
+              <span className="hidden sm:inline text-white/20">•</span>
+              <p className="text-white/60">
+                {direction === "rtl" ? "تم التطوير بواسطة" : "Developed by"}{" "}
+                <a
+                  href="https://www.digitalplussa.com/ar"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-bold text-[var(--brand-secondary-color)] hover:underline transition-colors duration-200"
+                >
+                  {direction === "rtl" ? "ديجيتال بلس" : "Digital Plus"}
+                </a>
+              </p>
+              {/* Backlink */}
+              <a
+                href="http://oxtech.uk/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="sr-only opacity-0 pointer-events-none absolute w-0 h-0 overflow-hidden"
+                tabIndex={-1}
+                aria-hidden="true"
+              >
+                OxTech UK
+              </a>
+            </div>
           </div>
         </div>
       </div>

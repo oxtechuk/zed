@@ -165,6 +165,14 @@ export interface IFeaturedOffer {
 }
 export type FeaturedOffer = IFeaturedOffer;
 
+export interface IFilterModel {
+  id: number;
+  name: string | Record<string, string>;
+  brand_id?: number;
+  cars_count?: number;
+}
+export type FilterModel = IFilterModel;
+
 export interface ICarsMetaData {
   featured_offer: IFeaturedOffer | null;
   total_cars: number;
@@ -175,6 +183,7 @@ export interface ICarsMetaData {
   hero_title_line2_highlight?: string;
   hero_description?: string;
   filter_brands: IBrandInfo[];
+  filter_models?: IFilterModel[];
   filter_types: IFilterCategory[];
   filter_categories: IFilterCategory[];
   filter_brand_types: any[];

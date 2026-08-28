@@ -160,6 +160,14 @@ export default function AllCarsPage() {
     : 2000000;
   const totalCarsCount = carsResponse?.meta?.total ?? 0;
 
+  const handleModelFilter = (modelId: number | null) => {
+    setFilters((prev) => ({
+      ...prev,
+      modelId: prev.modelId === modelId ? null : modelId,
+    }));
+    setCurrentPage(1);
+  };
+
   const handleTypeFilter = (value: string) => {
     setFilters((prev) => ({ ...prev, type: value }));
     setCurrentPage(1);
@@ -233,7 +241,7 @@ export default function AllCarsPage() {
                 <button
                   type="button"
                   onClick={() => setShowSortDropdown(!showSortDropdown)}
-                  className="flex h-[46px] items-center gap-2 rounded-2xl border border-[#E7E9EF] bg-white px-5 text-[14px] font-extrabold text-[#16254F] transition hover:border-[#16254F] active:scale-95"
+                  className="flex h-[46px] items-center gap-2 rounded-2xl border border-[#E7E9EF] bg-white px-5 text-[14px] font-extrabold text-[#16254F] transition hover:border-[#16254F] active:scale-95 cursor-pointer"
                 >
                   <span>
                     {sortingOptions.find((opt) => opt.value === sortBy)?.label || t("allCarsPage.sortBy", { defaultValue: "ترتيب حسب" })}
@@ -253,7 +261,7 @@ export default function AllCarsPage() {
                           key={opt.value}
                           type="button"
                           onClick={() => handleSortSelect(opt.value)}
-                          className={`w-full rounded-lg px-4 py-2.5 text-[13px] font-extrabold transition-colors block text-start ${
+                          className={`w-full rounded-lg px-4 py-2.5 text-[13px] font-extrabold transition-colors block text-start cursor-pointer ${
                             opt.value === sortBy
                               ? "bg-[#16254F] text-white"
                               : "text-[#374151] hover:bg-gray-50"
@@ -271,7 +279,7 @@ export default function AllCarsPage() {
               <button
                 type="button"
                 onClick={() => setShowFilterModal(true)}
-                className="relative flex h-[46px] items-center gap-2 rounded-2xl bg-[#16254F] px-5 text-[14px] font-extrabold text-white transition hover:bg-[#0F1E36] active:scale-95"
+                className="relative flex h-[46px] items-center gap-2 rounded-2xl bg-[#16254F] px-5 text-[14px] font-extrabold text-white transition hover:bg-[#0F1E36] active:scale-95 cursor-pointer"
               >
                 <SlidersHorizontal size={16} />
                 <span>{t("carFinder.resetButton", { defaultValue: "الفلاتر" })}</span>
@@ -285,28 +293,44 @@ export default function AllCarsPage() {
 
           </div>
 
-          {/* Row 2: Category capsules tabs */}
+          {/* Row 2: Car Model capsules tabs */}
           <div className="mt-4 pt-4 border-t border-gray-100 text-start">
-            <div className="flex flex-nowrap gap-2 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
-              {[{ id: null, name: t("allCarsFilterBar.all", { defaultValue: "الكل" }), slug: "all" }, ...(metaData?.filter_types ?? [])].map((filter) => {
-                const value = filter.slug === "all" ? "all" : filter.slug;
-                const label = typeof filter.name === "object" ? Object.values(filter.name)[0] : filter.name;
-                const isActive = value === filters.type;
-                return (
-                  <button
-                    key={filter.slug}
-                    type="button"
-                    onClick={() => handleTypeFilter(value)}
-                    className={`h-[36px] shrink-0 rounded-full px-5 text-[13px] font-extrabold transition-all duration-300 ${
-                      isActive
-                        ? "bg-[#16254F] text-white scale-105 shadow-xs"
-                        : "border border-[#E7E9EF] bg-white text-[#667085] hover:bg-[#16254F] hover:text-white hover:border-[#16254F]"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
+            <div className="flex flex-nowrap gap-2 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 pb-1 no-scrollbar scroll-smooth">
+              <button
+                type="button"
+                onClick={() => handleModelFilter(null)}
+                className={`h-[36px] shrink-0 rounded-full px-5 text-[13px] font-extrabold transition-all duration-200 active:scale-95 cursor-pointer whitespace-nowrap ${
+                  filters.modelId === null
+                    ? "bg-[#16254F] text-white scale-105 shadow-xs ring-2 ring-[#16254F]/20"
+                    : "border border-[#E7E9EF] bg-white text-[#667085] hover:bg-[#16254F] hover:text-white hover:border-[#16254F]"
+                }`}
+              >
+                {t("allCarsFilterBar.all", { defaultValue: "الكل" })}
+              </button>
+
+              {(metaData?.filter_models ?? [])
+                .filter((m) => !filters.brandId || m.brand_id === filters.brandId)
+                .map((model) => {
+                  const label =
+                    typeof model.name === "object"
+                      ? (model.name[i18n.language] || Object.values(model.name)[0])
+                      : model.name;
+                  const isActive = filters.modelId === model.id;
+                  return (
+                    <button
+                      key={model.id}
+                      type="button"
+                      onClick={() => handleModelFilter(model.id)}
+                      className={`h-[36px] shrink-0 rounded-full px-5 text-[13px] font-extrabold transition-all duration-200 active:scale-95 cursor-pointer whitespace-nowrap ${
+                        isActive
+                          ? "bg-[#16254F] text-white scale-105 shadow-xs ring-2 ring-[#16254F]/20"
+                          : "border border-[#E7E9EF] bg-white text-[#667085] hover:bg-[#16254F] hover:text-white hover:border-[#16254F]"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
             </div>
           </div>
 
