@@ -183,7 +183,7 @@
                             <a href="{{ route('crm.bookings.show', $pa) }}" class="fw-bold text-decoration-none" style="color:var(--crm-red);">#{{ $pa->id }}</a>
                         </td>
                         <td class="px-3 py-3">
-                            <div class="fw-bold" style="font-size:13px;">{{ $pa->client_name }}</div>
+                            <a href="{{ route('crm.bookings.show', $pa) }}" class="fw-bold text-decoration-none text-dark d-block hover-primary" style="font-size:13px;">{{ $pa->client_name }}</a>
                             <div style="font-size:12px;color:var(--crm-text-muted);" dir="ltr">{{ $pa->client_phone }}</div>
                         </td>
                         <td class="px-3 py-3">
@@ -213,7 +213,11 @@
                             @endif
                         </td>
                         <td class="px-3 py-3">
-                            <div class="d-flex gap-2 flex-wrap">
+                            <div class="d-flex gap-2 flex-wrap align-items-center">
+                                {{-- عرض تفاصيل الطلب --}}
+                                <a href="{{ route('crm.bookings.show', $pa) }}" class="btn btn-sm btn-light border fw-bold rounded-2" style="font-size:12px;padding:5px 12px;color:var(--crm-text);" title="{{ __('عرض وتعديل تفاصيل الطلب') }}">
+                                    <i class="bi bi-eye me-1 text-primary"></i>{{ __('عرض الطلب') }}
+                                </a>
                                 {{-- موافقة --}}
                                 <form action="{{ route('crm.bookings.approve', $pa) }}" method="POST" class="m-0"
                                       onsubmit="return confirm('{{ __('هل تريد الموافقة على إغلاق هذا الطلب؟') }}')">
@@ -253,7 +257,7 @@
                                     @csrf @method('PATCH')
                                     <div class="modal-body">
                                         <div class="mb-3">
-                                            <label class="form-label fw-bold" style="font-size:13px;">{{ __('إعادة إلى مرحلة') }}</label>
+                                             <label class="form-label fw-bold" style="font-size:13px;">{{ __('إعادة إلى مرحلة') }}</label>
                                             <select name="status" class="form-select form-select-sm" required>
                                                 @foreach(\App\Models\Booking::STATUSES as $key => $s)
                                                     @if(($s['group'] ?? '') === 'active' && !($s['is_close'] ?? false) && $key !== 'waiting_supervisor_approval')
@@ -279,6 +283,76 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+
+        {{-- Mobile Cards for Pending Approvals --}}
+        <div class="d-md-none p-3">
+            @foreach($pendingApprovals as $pa)
+            <div class="mb-3 p-3 rounded-3 shadow-sm border" style="background:#fff; border-color: #FCA5A5 !important;">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <a href="{{ route('crm.bookings.show', $pa) }}" class="fw-bold text-decoration-none" style="color:var(--crm-red);font-size:14px;">#{{ $pa->id }}</a>
+                            @if($pa->source === 'calculator' || $pa->calculator_bank_id)
+                                <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
+                                    <i class="bi bi-calculator me-1"></i>{{ __('حاسبة تمويل') }}
+                                </span>
+                            @else
+                                <span class="badge" style="background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
+                                    <i class="bi bi-car-front me-1"></i>{{ __('طلب سيارة') }}
+                                </span>
+                            @endif
+                        </div>
+                        <a href="{{ route('crm.bookings.show', $pa) }}" class="fw-bold text-dark text-decoration-none d-block mt-1" style="font-size:14px;">{{ $pa->client_name }}</a>
+                        <div class="small text-muted" dir="ltr">{{ $pa->client_phone }}</div>
+                    </div>
+                </div>
+
+                <div class="p-2.5 rounded-2 mb-2.5" style="background:#FEF2F2; font-size:12px;">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">{{ __('السيارة') }}:</span>
+                        <span class="fw-semibold">{{ $pa->car?->brand?->name }} {{ $pa->car?->name ?? '—' }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">{{ __('المندوب') }}:</span>
+                        <span class="fw-semibold">{{ $pa->employee?->name ?? '—' }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">{{ __('السبب المقترح') }}:</span>
+                        <span class="badge" style="background:#FEE2E2;color:#DC2626;font-size:11px;font-weight:700;border:1px solid #FCA5A5;">
+                            {{ \App\Models\Booking::STATUSES[$pa->proposed_status]['label'] ?? '—' }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap align-items-center pt-2 border-top">
+                    <a href="{{ route('crm.bookings.show', $pa) }}" class="btn btn-sm btn-light border fw-bold rounded-2 flex-grow-1" style="font-size:12px;padding:6px 12px;">
+                        <i class="bi bi-eye me-1 text-primary"></i>{{ __('عرض الطلب') }}
+                    </a>
+                    <form action="{{ route('crm.bookings.approve', $pa) }}" method="POST" class="m-0"
+                          onsubmit="return confirm('{{ __('هل تريد الموافقة على إغلاق هذا الطلب؟') }}')">
+                        @csrf @method('PATCH')
+                        <button type="submit" class="btn btn-sm btn-success fw-bold rounded-2" style="font-size:12px;padding:6px 12px;">
+                            <i class="bi bi-check-lg me-1"></i>{{ __('موافقة') }}
+                        </button>
+                    </form>
+                    <button type="button" class="btn btn-sm fw-bold rounded-2"
+                            style="font-size:12px;padding:6px 12px;background:#FEE2E2;color:#DC2626;border:1px solid #FCA5A5;"
+                            data-bs-toggle="modal" data-bs-target="#rejectModal{{ $pa->id }}">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>{{ __('إعادة') }}
+                    </button>
+                    @if($isAdmin)
+                    <form action="{{ route('crm.bookings.destroy', $pa) }}" method="POST" class="m-0"
+                          onsubmit="return confirm('{{ __('هل تريد حذف هذا الطلب نهائياً؟') }}')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-light border fw-bold rounded-2" style="font-size:12px;color:var(--crm-red);padding:6px 10px;" title="{{ __('حذف') }}">
+                            <i class="bi bi-trash" style="font-size:13px;"></i>
+                        </button>
+                    </form>
+                    @endif
+                </div>
+            </div>
+            @endforeach
         </div>
     </div>
     @endif
