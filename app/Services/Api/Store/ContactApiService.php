@@ -6,6 +6,7 @@ namespace App\Services\Api\Store;
 
 use App\Models\ContactSource;
 use App\Models\Lead;
+use App\Services\AttributionHelper;
 use App\Services\BookingAssignmentService;
 
 final class ContactApiService
@@ -23,7 +24,7 @@ final class ContactApiService
         $clickId = $data['click_id'] ?? null;
 
         $channel = $data['marketing_channel']
-            ?? \App\Services\AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, 'Contact Form');
+            ?? AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, 'Contact Form');
 
         $lead = Lead::create([
             'client_name' => $data['name'],

@@ -15,6 +15,7 @@ import Footer from "../components/Footer";
 import MobileBottomNav from "../components/MobileBottomNav";
 import ScrollToTop from "../components/ScrollToTop";
 import WhatsAppWidget from "../components/WhatsAppWidget";
+import RequestCarWidget from "../components/RequestCarWidget";
 import AnalyticsTracker from "../components/AnalyticsTracker";
 
 export default function RootLayout() {
@@ -121,6 +122,7 @@ export default function RootLayout() {
       </div>
 
       <MobileBottomNav />
+      <RequestCarWidget />
       <WhatsAppWidget />
     </div>
   );

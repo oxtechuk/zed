@@ -4,9 +4,9 @@ namespace App\Http\Controllers\CRM;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
-use App\Models\ContactSource;
 use App\Models\Lead;
 use App\Models\Setting;
+use App\Services\AttributionHelper;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -194,7 +194,7 @@ class ReportController extends Controller
         $mediumsMap = [];
 
         foreach ($bookings as $b) {
-            $channel = $b->marketing_channel ?: \App\Services\AttributionHelper::resolveChannel($b->utm_source, $b->utm_medium, $b->referrer, $b->click_id, $b->source);
+            $channel = $b->marketing_channel ?: AttributionHelper::resolveChannel($b->utm_source, $b->utm_medium, $b->referrer, $b->click_id, $b->source);
 
             if (isset($platforms[$channel])) {
                 $platforms[$channel]['bookings_count']++;
@@ -249,7 +249,7 @@ class ReportController extends Controller
         }
 
         foreach ($leads as $l) {
-            $channel = $l->marketing_channel ?: \App\Services\AttributionHelper::resolveChannel($l->utm_source, $l->utm_medium, $l->referrer, $l->click_id, 'Contact Form');
+            $channel = $l->marketing_channel ?: AttributionHelper::resolveChannel($l->utm_source, $l->utm_medium, $l->referrer, $l->click_id, 'Contact Form');
 
             if (isset($platforms[$channel])) {
                 $platforms[$channel]['leads_count']++;

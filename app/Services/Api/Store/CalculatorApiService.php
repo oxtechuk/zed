@@ -22,6 +22,14 @@ final class CalculatorApiService
         $carIds = $data['car_ids'] ?? [];
         $primaryCarId = $carIds[0] ?? null;
 
+        $utmSource = $data['utm_source'] ?? null;
+        $utmMedium = $data['utm_medium'] ?? null;
+        $referrer = $data['referrer'] ?? null;
+        $clickId = $data['click_id'] ?? null;
+
+        $channel = $data['marketing_channel']
+            ?? \App\Services\AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, 'Calculator');
+
         $lead = CalculatorLead::create([
             'name' => $data['name'],
             'phone' => $data['phone'],
@@ -45,10 +53,24 @@ final class CalculatorApiService
                 'car_ids' => $carIds,
                 'preferred_color' => $data['preferred_color'] ?? null,
                 'notes' => $data['notes'] ?? null,
+                'utm_source' => $utmSource,
+                'utm_medium' => $utmMedium,
+                'utm_campaign' => $data['utm_campaign'] ?? null,
+                'click_id' => $clickId,
+                'marketing_channel' => $channel,
             ],
         ]);
 
-        $this->createBookingForLead($lead, $primaryCarId, $data['email'] ?? null, $data['notes'] ?? null);
+        $this->createBookingForLead($lead, $primaryCarId, $data['email'] ?? null, $data['notes'] ?? null, [
+            'utm_source' => $utmSource,
+            'utm_medium' => $utmMedium,
+            'utm_campaign' => $data['utm_campaign'] ?? null,
+            'utm_content' => $data['utm_content'] ?? null,
+            'utm_term' => $data['utm_term'] ?? null,
+            'referrer' => $referrer,
+            'click_id' => $clickId,
+            'marketing_channel' => $channel,
+        ]);
 
         return $lead;
     }
@@ -90,7 +112,7 @@ final class CalculatorApiService
         return $lead;
     }
 
-    private function createBookingForLead(CalculatorLead $lead, ?int $carId = null, ?string $email = null, ?string $notes = null): void
+    private function createBookingForLead(CalculatorLead $lead, ?int $carId = null, ?string $email = null, ?string $notes = null, array $attribution = []): void
     {
         $downPayment = (float) ($lead->details['down_payment'] ?? 0);
         $periodMonths = (int) ($lead->details['period_months'] ?? 60);
@@ -109,6 +131,14 @@ final class CalculatorApiService
             'down_payment' => $downPayment,
             'duration_years' => $durationYears,
             'monthly_installment' => (float) ($lead->details['monthly_installment'] ?? 0),
+            'utm_source' => $attribution['utm_source'] ?? null,
+            'utm_medium' => $attribution['utm_medium'] ?? null,
+            'utm_campaign' => $attribution['utm_campaign'] ?? null,
+            'utm_content' => $attribution['utm_content'] ?? null,
+            'utm_term' => $attribution['utm_term'] ?? null,
+            'referrer' => $attribution['referrer'] ?? null,
+            'click_id' => $attribution['click_id'] ?? null,
+            'marketing_channel' => $attribution['marketing_channel'] ?? null,
         ]);
 
         try {

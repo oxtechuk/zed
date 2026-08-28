@@ -208,7 +208,7 @@ export function CarDropdownSelector({
                                     </div>
                                     <div className="flex flex-col flex-1 overflow-hidden">
                                         <span className={`text-[13px] font-extrabold ${selectedCarId === 9999 ? "text-[#EDC98E]" : "text-[#0F172A]"}`}>
-                                            {t("carRequest.summary.carNotFound", "السيارة غير موجودة؟ قدّم طلبك")}
+                                            {t("carRequest.summary.carNotFound", "طلب سيارة مخصص لك")}
                                         </span>
                                         <span className={`text-[11px] font-bold ${selectedCarId === 9999 ? "text-white/60" : "text-gray-500"}`}>
                                             {t("carRequest.summary.carNotFoundDesc", "أدخل مواصفات سيارتك وسنقوم بتوفيرها")}

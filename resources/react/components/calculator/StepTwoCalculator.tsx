@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { calculateFinance, getBanks, submitCalculatorLead } from "../../services/api";
@@ -30,53 +30,51 @@ export default function StepTwoCalculator({
     const [calcResult, setCalcResult] = useState<ICalculateData | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Load active banks on mount
+    // Auto-capture lead upon reaching Step 3
+    const autoCapturedRef = useRef(false);
+
+    // Fetch active banks on mount
     useEffect(() => {
         getBanks()
-            .then((loadedBanks) => {
-                if (Array.isArray(loadedBanks) && loadedBanks.length > 0) {
-                    setBanks(loadedBanks);
-                    setSelectedBankId((prev) => prev ?? loadedBanks[0].id);
+            .then((data) => {
+                setBanks(data);
+                if (data.length > 0 && !selectedBankId) {
+                    setSelectedBankId(data[0].id);
                 }
             })
-            .catch(() => {});
+            .catch(() => {
+                setBanks([]);
+            });
     }, []);
 
-    const carPrice = selectedCar.price || 0;
-    const minDownPayment = 0;
-    const maxDownPayment = Math.round(carPrice * 0.5);
-
-    const downPaymentPercent = carPrice > 0
-        ? Math.min(100, Math.max(0, Math.round((downPayment * 100) / carPrice)))
-        : 0;
-
-    // Instant client-side fallback calculation to prevent zero-state glitch
+    // Get selected bank rate
     const selectedBank = banks.find((b) => b.id === selectedBankId);
-    const annualRate = calcResult?.annual_rate ?? selectedBank?.annual_rate ?? 4.5;
-    
+    const annualRate = selectedBank
+        ? parseFloat(selectedBank.annual_rate)
+        : parseFloat(settings?.calculator_default_interest_rate || "4.5");
+
+    const carPrice = selectedCar?.price || 0;
+    const downPaymentPercent = carPrice > 0 ? (downPayment / carPrice) * 100 : 0;
+
+    // Client-side fallback calculation
     const clientCalc = useMemo(() => {
         const loan = Math.max(0, carPrice - downPayment);
         const monthlyRate = annualRate / 12 / 100;
         let monthly = 0;
-
         if (monthlyRate > 0 && term > 0) {
             const compounded = Math.pow(1 + monthlyRate, term);
             const denom = compounded - 1;
-            monthly = denom > 0
-                ? Math.round((loan * (monthlyRate * compounded)) / denom)
-                : Math.round(loan / term);
+            monthly = denom > 0 ? (loan * (monthlyRate * compounded)) / denom : loan / term;
         } else if (term > 0) {
-            monthly = Math.round(loan / term);
+            monthly = loan / term;
         }
-
         const total = monthly * term;
-        const interest = Math.max(0, total - loan);
-
+        const interest = total - loan;
         return {
-            loanAmount: loan,
-            monthlyPayment: monthly,
-            totalPayment: total,
-            totalInterest: interest,
+            loanAmount: Math.round(loan),
+            monthlyPayment: Math.round(monthly),
+            totalPayment: Math.round(total),
+            totalInterest: Math.max(0, Math.round(interest)),
         };
     }, [carPrice, downPayment, annualRate, term]);
 
@@ -104,6 +102,44 @@ export default function StepTwoCalculator({
     const loanAmount = calcResult?.loan_amount ?? clientCalc.loanAmount;
     const totalPayment = calcResult?.total_payment ?? clientCalc.totalPayment;
     const totalInterest = calcResult?.total_interest ?? clientCalc.totalInterest;
+
+    // Auto-capture lead upon reaching Step 3 (even before clicking submit)
+    useEffect(() => {
+        if (!personalInfo || !personalInfo.fullName || !personalInfo.phone || autoCapturedRef.current) return;
+
+        autoCapturedRef.current = true;
+
+        submitCalculatorLead({
+            name: personalInfo.fullName,
+            phone: personalInfo.phone,
+            city: personalInfo.city,
+            purpose: "شراء",
+            salary: Number(salary),
+            monthly_obligations: Number(personalInfo.obligations),
+            car_ids: carId ? [carId] : [],
+            notes: `[تسجيل تلقائي عند الوصول لحاسبة التمويل] اللون: ${selectedColor} | الراتب: ${salary} | الدفعة: ${downPayment}`,
+            preferred_bank_id: selectedBankId,
+            monthly_installment: monthlyPayment,
+            down_payment: downPayment,
+            period_months: term,
+            preferred_color: selectedColor,
+            employer_type: personalInfo.employerType,
+            has_mortgage_loan: personalInfo.hasMortgageLoan,
+            has_personal_loan: personalInfo.hasPersonalLoan,
+            has_traffic_violations: personalInfo.hasTrafficViolations,
+            has_simah_default: personalInfo.hasSimahDefault,
+        })
+            .then(() => {
+                trackCalculatorLead({
+                    carName: selectedCar ? `${selectedCar.brand || ''} ${selectedCar.name}`.trim() : undefined,
+                    salary: Number(salary),
+                    monthlyInstallment: monthlyPayment,
+                });
+            })
+            .catch((err) => {
+                console.debug("Background calculator lead auto-capture:", err);
+            });
+    }, [personalInfo, carId]);
 
     const handleSubmitLead = async () => {
         setIsSubmitting(true);

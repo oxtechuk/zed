@@ -32,6 +32,12 @@ class BaseCacheService
         self::$runtimeCache = [];
     }
 
+    public function forget(string $key): void
+    {
+        unset(self::$runtimeCache[$key]);
+        Cache::forget($key);
+    }
+
     public function rememberSettings(): mixed
     {
         return $this->remember('settings.all', function () {

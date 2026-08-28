@@ -32,6 +32,14 @@ final class CalculatorLeadRequest extends ApiBaseRequest
             'car_ids.*' => ['integer', 'exists:cars,id'],
             'preferred_color' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string', 'max:500'],
+            'utm_source' => ['nullable', 'string', 'max:100'],
+            'utm_medium' => ['nullable', 'string', 'max:100'],
+            'utm_campaign' => ['nullable', 'string', 'max:191'],
+            'utm_content' => ['nullable', 'string', 'max:191'],
+            'utm_term' => ['nullable', 'string', 'max:191'],
+            'referrer' => ['nullable', 'string', 'max:1000'],
+            'click_id' => ['nullable', 'string', 'max:191'],
+            'marketing_channel' => ['nullable', 'string', 'max:100'],
         ];
     }
 

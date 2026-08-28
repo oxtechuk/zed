@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Api\Store\Data;
 
 use App\Services\Api\Store\Helpers\InstallmentCalculator;
+use App\Services\AttributionHelper;
 
 final class BookingData
 {
@@ -56,7 +57,7 @@ final class BookingData
         $source = $validated['source'] ?? 'api';
 
         $channel = $validated['marketing_channel']
-            ?? \App\Services\AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, $source);
+            ?? AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, $source);
 
         return new self(
             car_id: (int) $validated['car_id'],
