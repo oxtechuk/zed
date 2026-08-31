@@ -156,14 +156,14 @@ export default function FilterDrawerModal({
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 z-50 bg-black/40 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`fixed inset-0 z-[90] bg-black/50 backdrop-blur-xs transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         onClick={onClose}
       />
 
       {/* Mobile: side drawer */}
       <div
         dir={i18n.dir()}
-        className={`lg:hidden fixed top-0 z-50 h-full w-full max-w-sm bg-white shadow-2xl transition-transform duration-300 ease-in-out flex flex-col ${isRTL ? "right-0" : "left-0"} ${isOpen ? "translate-x-0" : isRTL ? "translate-x-full" : "-translate-x-full"}`}
+        className={`lg:hidden fixed top-0 z-[100] h-full w-full max-w-sm bg-white shadow-2xl transition-transform duration-300 ease-in-out flex flex-col ${isRTL ? "right-0" : "left-0"} ${isOpen ? "translate-x-0" : isRTL ? "translate-x-full" : "-translate-x-full"}`}
       >
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 shrink-0">
           <h2 className="text-[15px] font-black text-[#16254F]">{t("carFinder.resetButton", { defaultValue: "الفلاتر" })}</h2>
@@ -172,16 +172,16 @@ export default function FilterDrawerModal({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto divide-y divide-gray-100">
+        <div className="flex-1 overflow-y-auto divide-y divide-gray-100 pb-2">
           <FilterContent {...contentProps} />
         </div>
 
-        {/* Mobile Actions Footer */}
-        <div className="border-t border-gray-100 bg-white p-4 shrink-0 flex items-center gap-2.5">
+        {/* Mobile Actions Footer - Elevated with extra bottom padding */}
+        <div className="border-t border-gray-100 bg-white p-4 pb-10 sm:pb-5 shrink-0 flex items-center gap-2.5 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
           <button
             type="button"
             onClick={handleApply}
-            className="flex-1 h-[46px] rounded-xl bg-[#16254F] text-white text-[14px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(22,37,79,0.2)] hover:bg-[#0F1E36] active:scale-98 transition-all cursor-pointer"
+            className="flex-1 h-[48px] rounded-xl bg-[#16254F] text-white text-[14px] font-bold flex items-center justify-center gap-2 shadow-[0_4px_12px_rgba(22,37,79,0.2)] hover:bg-[#0F1E36] active:scale-98 transition-all cursor-pointer"
           >
             <Search size={16} />
             <span>{t("carFinder.searchButton", { defaultValue: "بحث" })}</span>
@@ -189,7 +189,7 @@ export default function FilterDrawerModal({
           <button
             type="button"
             onClick={handleReset}
-            className="h-[46px] px-4 rounded-xl border border-gray-200 bg-gray-50 text-[#64748B] hover:text-[#16254F] hover:bg-gray-100 text-[13px] font-bold active:scale-98 transition-all cursor-pointer shrink-0"
+            className="h-[48px] px-4 rounded-xl border border-gray-200 bg-gray-50 text-[#64748B] hover:text-[#16254F] hover:bg-gray-100 text-[13px] font-bold active:scale-98 transition-all cursor-pointer shrink-0"
           >
             {t("carsSidebarFilter.resetFilters", { defaultValue: "إعادة ضبط" })}
           </button>
@@ -200,7 +200,7 @@ export default function FilterDrawerModal({
       {isOpen && (
         <div
           dir={i18n.dir()}
-          className="hidden lg:flex fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-4rem)] max-w-7xl max-h-[65vh] flex-col rounded-2xl bg-white shadow-2xl overflow-hidden"
+          className="hidden lg:flex fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] w-[calc(100%-4rem)] max-w-7xl max-h-[65vh] flex-col rounded-2xl bg-white shadow-2xl overflow-hidden"
         >
           <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 shrink-0">
             <h2 className="text-[15px] font-black text-[#16254F]">{t("carFinder.resetButton", { defaultValue: "الفلاتر" })}</h2>

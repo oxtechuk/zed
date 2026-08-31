@@ -53,11 +53,10 @@ export function CarDropdownSelector({
                     type="button"
                     disabled={loadingCars}
                     onClick={() => setIsCarDropdownOpen((prev) => !prev)}
-                    className={`${inputClasses} flex items-center justify-between gap-3 text-start cursor-pointer border transition-all ${
-                        isCarDropdownOpen
-                            ? "border-[#0F172A] bg-white ring-2 ring-[#0F172A]/10"
-                            : "border-[#E2E8F0] bg-[#F8FAFC]"
-                    }`}
+                    className={`${inputClasses} flex items-center justify-between gap-3 text-start cursor-pointer border transition-all ${isCarDropdownOpen
+                        ? "border-[#0F172A] bg-white ring-2 ring-[#0F172A]/10"
+                        : "border-[#E2E8F0] bg-[#F8FAFC]"
+                        }`}
                 >
                     {loadingCars ? (
                         <span className="text-gray-400">
@@ -93,9 +92,8 @@ export function CarDropdownSelector({
                     )}
                     <ChevronDown
                         size={18}
-                        className={`shrink-0 text-[#8A8F99] transition-transform duration-200 ${
-                            isCarDropdownOpen ? "rotate-180 text-[#0F172A]" : ""
-                        }`}
+                        className={`shrink-0 text-[#8A8F99] transition-transform duration-200 ${isCarDropdownOpen ? "rotate-180 text-[#0F172A]" : ""
+                            }`}
                     />
                 </button>
 
@@ -127,11 +125,10 @@ export function CarDropdownSelector({
                                                 setIsCarDropdownOpen(false);
                                                 setSearchTerm("");
                                             }}
-                                            className={`flex w-full items-center gap-3 rounded-xl p-2.5 text-start transition-colors ${
-                                                isSelected
-                                                    ? "bg-[#0F172A] text-white"
-                                                    : "hover:bg-[#F1F5F9] text-[#0F172A]"
-                                            }`}
+                                            className={`flex w-full items-center gap-3 rounded-xl p-2.5 text-start transition-colors ${isSelected
+                                                ? "bg-[#0F172A] text-white"
+                                                : "hover:bg-[#F1F5F9] text-[#0F172A]"
+                                                }`}
                                         >
                                             <img
                                                 src={
@@ -139,28 +136,25 @@ export function CarDropdownSelector({
                                                     APP_IMAGES.CAR_PLACEHOLDER
                                                 }
                                                 alt={car.name}
-                                                className={`h-10 w-14 object-contain rounded-lg p-1 shrink-0 ${
-                                                    isSelected
-                                                        ? "bg-white/10 border border-white/20"
-                                                        : "bg-gray-50 border border-gray-200"
-                                                }`}
+                                                className={`h-10 w-14 object-contain rounded-lg p-1 shrink-0 ${isSelected
+                                                    ? "bg-white/10 border border-white/20"
+                                                    : "bg-gray-50 border border-gray-200"
+                                                    }`}
                                             />
                                             <div className="flex flex-col flex-1 overflow-hidden">
                                                 <span
-                                                    className={`text-[14px] font-extrabold truncate ${
-                                                        isSelected
-                                                            ? "text-white"
-                                                            : "text-[#0F172A]"
-                                                    }`}
+                                                    className={`text-[14px] font-extrabold truncate ${isSelected
+                                                        ? "text-white"
+                                                        : "text-[#0F172A]"
+                                                        }`}
                                                 >
                                                     {car.brand?.name} {car.name}
                                                 </span>
                                                 <span
-                                                    className={`text-[12px] font-bold ${
-                                                        isSelected
-                                                            ? "text-white/70"
-                                                            : "text-gray-400"
-                                                    }`}
+                                                    className={`text-[12px] font-bold ${isSelected
+                                                        ? "text-white/70"
+                                                        : "text-gray-400"
+                                                        }`}
                                                 >
                                                     {t("carRequest.summary.modelYear", "موديل {{year}}", { year: car.year })}
                                                 </span>
@@ -193,17 +187,15 @@ export function CarDropdownSelector({
                                         setIsCarDropdownOpen(false);
                                         setSearchTerm("");
                                     }}
-                                    className={`flex w-full items-center gap-3 rounded-xl p-2.5 text-start transition-all border ${
-                                        selectedCarId === 9999
-                                            ? "bg-[#0F172A] text-white border-transparent shadow-sm"
-                                            : "bg-[#0F172A]/5 hover:bg-[#0F172A]/10 text-[#0F172A] border-[#0F172A]/10"
-                                    }`}
+                                    className={`flex w-full items-center gap-3 rounded-xl p-2.5 text-start transition-all border ${selectedCarId === 9999
+                                        ? "bg-[#0F172A] text-white border-transparent shadow-sm"
+                                        : "bg-[#0F172A]/5 hover:bg-[#0F172A]/10 text-[#0F172A] border-[#0F172A]/10"
+                                        }`}
                                 >
-                                    <div className={`h-10 w-14 rounded-lg shrink-0 flex items-center justify-center border transition-all ${
-                                        selectedCarId === 9999
-                                            ? "bg-white/10 border-white/20 text-[#EDC98E]"
-                                            : "bg-white border-[#0F172A]/10 text-[#0F172A]"
-                                    }`}>
+                                    <div className={`h-10 w-14 rounded-lg shrink-0 flex items-center justify-center border transition-all ${selectedCarId === 9999
+                                        ? "bg-white/10 border-white/20 text-[#EDC98E]"
+                                        : "bg-white border-[#0F172A]/10 text-[#0F172A]"
+                                        }`}>
                                         <Plus size={18} className="stroke-[3]" />
                                     </div>
                                     <div className="flex flex-col flex-1 overflow-hidden">
@@ -211,7 +203,7 @@ export function CarDropdownSelector({
                                             {t("carRequest.summary.carNotFound", "طلب سيارة مخصص لك")}
                                         </span>
                                         <span className={`text-[11px] font-bold ${selectedCarId === 9999 ? "text-white/60" : "text-gray-500"}`}>
-                                            {t("carRequest.summary.carNotFoundDesc", "أدخل مواصفات سيارتك وسنقوم بتوفيرها")}
+                                            {t("carRequest.summary.carNotFoundDesc", "نوع سيارتك ")}
                                         </span>
                                     </div>
                                     {selectedCarId === 9999 && (
