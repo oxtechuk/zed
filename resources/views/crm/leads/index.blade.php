@@ -155,12 +155,44 @@
                         <option value="crm_manual" {{ request('source')==='crm_manual'?'selected':'' }}>📋 {{ __('طلبات داخلية (CRM)') }}</option>
                     </select>
 
-                    {{-- الحالة النشطة --}}
-                    <select name="status" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:160px;" onchange="this.form.submit()">
-                        <option value="">{{ __('الحالة — جميع الحالات النشطة') }}</option>
-                        @foreach($statuses as $key => $s)
-                        <option value="{{ $key }}" {{ request('status')===$key?'selected':'' }}>{{ $s['label'] }}</option>
-                        @endforeach
+                    {{-- فلتر الحالة (يتكيف تلقائياً مع التبويب المختار: مغلقة / نشطة / مستلمة / الكل) --}}
+                    @php
+                        $group = request('booking_status_group');
+                    @endphp
+                    <select name="status" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
+                        @if($group === 'closed')
+                            <option value="">{{ __('الحالة — جميع الحالات المغلقة') }}</option>
+                            @foreach($closedBookingStatuses as $key => $s)
+                                <option value="{{ $key }}" {{ request('status') === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                            @endforeach
+                        @elseif($group === 'received')
+                            <option value="">{{ __('الحالة — جميع الحالات المستلمة') }}</option>
+                            @foreach($receivedBookingStatuses as $key => $s)
+                                <option value="{{ $key }}" {{ request('status') === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                            @endforeach
+                        @elseif($group === 'active')
+                            <option value="">{{ __('الحالة — جميع الحالات النشطة') }}</option>
+                            @foreach($activeBookingStatuses as $key => $s)
+                                <option value="{{ $key }}" {{ request('status') === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                            @endforeach
+                        @else
+                            <option value="">{{ __('الحالة — جميع الحالات') }}</option>
+                            <optgroup label="{{ __('الحالات الأساسية والنشطة') }}">
+                                @foreach($activeBookingStatuses as $key => $s)
+                                    <option value="{{ $key }}" {{ request('status') === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="{{ __('الحالات المستلمة والناجحة') }}">
+                                @foreach($receivedBookingStatuses as $key => $s)
+                                    <option value="{{ $key }}" {{ request('status') === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                                @endforeach
+                            </optgroup>
+                            <optgroup label="{{ __('الحالات المغلقة والخاسرة') }}">
+                                @foreach($closedBookingStatuses as $key => $s)
+                                    <option value="{{ $key }}" {{ request('status') === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
+                                @endforeach
+                            </optgroup>
+                        @endif
                     </select>
 
                     {{-- الترتيب --}}

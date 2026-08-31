@@ -41,6 +41,9 @@ class LeadController extends Controller
 
         $leads = $query->paginate(20)->withQueryString();
         $statuses = collect(Booking::STATUSES)->only($activeStatuses)->toArray();
+        $activeBookingStatuses = collect(Booking::STATUSES)->filter(fn ($s, $k) => in_array($k, self::ACTIVE_BOOKING_STATUSES))->toArray();
+        $receivedBookingStatuses = collect(Booking::STATUSES)->filter(fn ($s, $k) => in_array($k, self::RECEIVED_BOOKING_STATUSES))->toArray();
+        $closedBookingStatuses = collect(Booking::STATUSES)->filter(fn ($s, $k) => in_array($k, self::CLOSED_BOOKING_STATUSES) || str_starts_with($k, 'lost_'))->toArray();
         $leadStatuses = Lead::STATUSES;
         $bookingStatuses = Booking::STATUSES;
         $sources = ContactSource::activeOrdered()->get();
@@ -62,6 +65,9 @@ class LeadController extends Controller
         return view('crm.leads.index', compact(
             'leads',
             'statuses',
+            'activeBookingStatuses',
+            'receivedBookingStatuses',
+            'closedBookingStatuses',
             'leadStatuses',
             'bookingStatuses',
             'sources',
