@@ -99,13 +99,9 @@ export function useCarRequest() {
         const carIdParam = searchParams.get("car_id") || searchParams.get("carId");
         if (carIdParam) {
             const parsedId = parseInt(carIdParam, 10);
-            if (cars.some((c) => c.id === parsedId)) {
+            if (cars.some((c) => c.id === parsedId) || parsedId === 9999) {
                 setSelectedCarId(parsedId);
-            } else {
-                setSelectedCarId(cars[0].id);
             }
-        } else if (selectedCarId === 0) {
-            setSelectedCarId(cars[0].id);
         }
 
         const termParam = searchParams.get("term");

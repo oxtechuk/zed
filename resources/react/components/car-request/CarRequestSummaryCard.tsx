@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus } from "lucide-react";
+import { Plus, Car, Sparkles } from "lucide-react";
 import { getImageUrl, APP_IMAGES } from "../../constants/app-images";
 import { formatPrice } from "../../utils/format";
 import { CarDropdownSelector } from "./CarDropdownSelector";
@@ -126,20 +126,34 @@ export function CarRequestSummaryCard({
                         </p>
 
                         {/* Colors Selector */}
-                        <CarColorPicker
-                            carColors={carColors}
-                            selectedColor={selectedColor}
-                            onSelectColor={onSelectColor}
-                        />
+                        {carColors.length > 0 && (
+                            <CarColorPicker
+                                carColors={carColors}
+                                selectedColor={selectedColor}
+                                onSelectColor={onSelectColor}
+                            />
+                        )}
                     </div>
-                ) : null}
+                ) : (
+                    <div className="border-2 border-dashed border-[#E2E8F0] rounded-2xl p-6 bg-[#F8FAFC] flex flex-col items-center justify-center text-center animate-in fade-in duration-200">
+                        <div className="w-12 h-12 rounded-2xl bg-white border border-gray-200 shadow-sm flex items-center justify-center text-[#0F172A] mb-3">
+                            <Car size={24} className="text-[#8A8F99] stroke-[1.75]" />
+                        </div>
+                        <h4 className="text-[15px] font-black text-[#0F172A] mb-1">
+                            {t("carRequest.summary.noCarSelectedTitle", "لم يتم اختيار سيارة بعد")}
+                        </h4>
+                        <p className="text-[12px] text-gray-400 font-bold max-w-[240px] leading-relaxed">
+                            {t("carRequest.summary.noCarSelectedDesc", "يرجى اختيار السيارة المطلوبة من القائمة أعلاه لعرض التفاصيل وحساب القسط التقديري")}
+                        </p>
+                    </div>
+                )}
 
                 {/* Finance Term Selector */}
                 <CarTermSelector term={term} onChangeTerm={onChangeTerm} />
 
                 {/* Price and Installment box */}
-                {activeCar && (
-                    <div className="rounded-2xl bg-[#0F172A] p-5 text-white relative overflow-hidden text-start">
+                {activeCar ? (
+                    <div className="rounded-2xl bg-[#0F172A] p-5 text-white relative overflow-hidden text-start animate-in fade-in duration-200">
                         <div className="absolute top-0 end-0 w-24 h-24 bg-[#EDC98E]/5 blur-2xl rounded-full" />
 
                         <div className="flex justify-between items-center border-b border-white/5 pb-3 mb-3">
@@ -179,6 +193,23 @@ export function CarRequestSummaryCard({
                                   )
                             }
                         </p>
+                    </div>
+                ) : (
+                    <div className="rounded-2xl bg-gradient-to-br from-[#0F172A] to-[#1E293B] p-5 text-white relative overflow-hidden text-start shadow-sm animate-in fade-in duration-200">
+                        <div className="absolute top-0 end-0 w-24 h-24 bg-[#EDC98E]/5 blur-2xl rounded-full" />
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-[#EDC98E] shrink-0">
+                                <Sparkles size={20} />
+                            </div>
+                            <div>
+                                <h4 className="text-[14px] font-black text-white">
+                                    {t("carRequest.summary.calcNoticeTitle", "حساب القسط والتمويل")}
+                                </h4>
+                                <p className="text-[11px] text-white/60 font-semibold mt-0.5">
+                                    {t("carRequest.summary.calcNoticeDesc", "اختر سيارتك لتحديد سعرها وحساب القسط الشهري التقديري.")}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>

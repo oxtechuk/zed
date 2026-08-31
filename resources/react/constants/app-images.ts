@@ -10,12 +10,9 @@ export const getAssetBase = (): string => {
 export function getImageUrl(path: string | null): string {
   if (!path) return "";
   
-  // Prefer webp version for optimized delivery
-  const webpCandidate = path.replace(/\.(png|jpg|jpeg)$/i, ".webp");
-  
-  if (webpCandidate.startsWith("http://") || webpCandidate.startsWith("https://")) {
+  if (path.startsWith("http://") || path.startsWith("https://")) {
     try {
-      const url = new URL(webpCandidate);
+      const url = new URL(path);
       const storageIdx = url.pathname.indexOf("/storage/");
       if (storageIdx !== -1) {
         return `${getAssetBase()}${url.pathname.substring(storageIdx + 1)}`;
@@ -23,9 +20,9 @@ export function getImageUrl(path: string | null): string {
     } catch {
       // ignore invalid URLs
     }
-    return webpCandidate.replace(/([^:]\/)\//g, "$1");
+    return path.replace(/([^:]\/)\//g, "$1");
   }
-  const cleanPath = webpCandidate.startsWith("/") ? webpCandidate.slice(1) : webpCandidate;
+  const cleanPath = path.startsWith("/") ? path.slice(1) : path;
   if (cleanPath.startsWith("storage/")) {
     return `${getAssetBase()}${cleanPath}`;
   }

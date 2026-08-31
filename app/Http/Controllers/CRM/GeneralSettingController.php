@@ -310,19 +310,35 @@ class GeneralSettingController extends Controller
         }
         Setting::updateOrCreate(['key' => 'store_hero'], ['value' => $carsHeroData]);
 
-        // Handle Offers Page Hero
+        // Handle Offers Page Hero / Featured Banner
         $offersHeroData = $request->input('store_offers_hero', []);
+        $existingOffersHero = Setting::where('key', 'store_offers_hero')->first();
+        $existingOffersValue = is_array($existingOffersHero?->value)
+            ? $existingOffersHero->value
+            : (json_decode((string) $existingOffersHero?->value, true) ?: []);
+
+        // Desktop Image
         if ($request->hasFile('offers_hero_image')) {
-            $existingOffersHero = Setting::where('key', 'store_offers_hero')->first();
-            $oldOffersHeroImage = is_array($existingOffersHero?->value) ? ($existingOffersHero->value['image'] ?? null) : null;
+            $oldOffersHeroImage = $existingOffersValue['image'] ?? null;
             if ($oldOffersHeroImage && \Storage::disk('public')->exists($oldOffersHeroImage)) {
                 \Storage::disk('public')->delete($oldOffersHeroImage);
             }
-            $offersHeroData['image'] = $this->imageOptimizer->storeAndOptimize($request->file('offers_hero_image'), 'settings/offers', ['maxWidth' => 1920, 'quality' => 82]);
+            $offersHeroData['image'] = $this->imageOptimizer->storeAndOptimize($request->file('offers_hero_image'), 'settings/offers', ['maxWidth' => 1920, 'quality' => 85]);
         } elseif (! isset($offersHeroData['image'])) {
-            $existingOffersHero = Setting::where('key', 'store_offers_hero')->first();
-            $offersHeroData['image'] = is_array($existingOffersHero?->value) ? ($existingOffersHero->value['image'] ?? null) : null;
+            $offersHeroData['image'] = $existingOffersValue['image'] ?? null;
         }
+
+        // Mobile Image
+        if ($request->hasFile('offers_hero_image_mobile')) {
+            $oldOffersMobileImage = $existingOffersValue['image_mobile'] ?? null;
+            if ($oldOffersMobileImage && \Storage::disk('public')->exists($oldOffersMobileImage)) {
+                \Storage::disk('public')->delete($oldOffersMobileImage);
+            }
+            $offersHeroData['image_mobile'] = $this->imageOptimizer->storeAndOptimize($request->file('offers_hero_image_mobile'), 'settings/offers', ['maxWidth' => 1080, 'quality' => 85]);
+        } elseif (! isset($offersHeroData['image_mobile'])) {
+            $offersHeroData['image_mobile'] = $existingOffersValue['image_mobile'] ?? null;
+        }
+
         Setting::updateOrCreate(['key' => 'store_offers_hero'], ['value' => $offersHeroData]);
 
         // Handle Booking Steps

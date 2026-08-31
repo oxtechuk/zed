@@ -57,6 +57,7 @@ export default function OffersPage() {
       />
 
       <OffersGridSection
+        hero={hero}
         offers={offers}
         activeCategory={activeCategory}
         onCategoryChange={setActiveCategory}

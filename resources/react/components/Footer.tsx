@@ -64,60 +64,41 @@ export default function Footer({
   const socialLinks =
     settings?.social_media?.length
       ? settings.social_media.map(
-          (social) => ({
-            name:
-              social.link ??
-              social.icon ??
-              "",
-            icon:
-              social.icon ??
-              "",
-            url:
-              social.link ??
-              "",
-          }),
-        )
+        (social) => ({
+          name:
+            social.link ??
+            social.icon ??
+            "",
+          icon:
+            social.icon ??
+            "",
+          url:
+            social.link ??
+            "",
+        }),
+      )
       : propSocialLinks;
 
   const serviceLinks: FooterLink[] = [
     {
-      label: t(
-        "footer.services.finance",
-        {
-          defaultValue:
-            "تمويل السيارات",
-        },
-      ),
+      label: t("footer.services.calculator", {
+        defaultValue: "حاسبة التمويل",
+      }),
       to: "/finance-calculator",
     },
     {
-      label: t(
-        "footer.services.cash",
-        {
-          defaultValue: "شراء نقدي",
-        },
-      ),
-      to: "/cars",
+      label: t("footer.services.financeRequest", {
+        defaultValue: "طلب تمويل",
+      }),
+      to: "/request-car",
     },
     {
-      label: t(
-        "footer.services.booking",
-        {
-          defaultValue:
-            "حجز السيارات",
-        },
-      ),
-      to: "/contact",
+      label: t("footer.services.custom", {
+        defaultValue: "طلب سيارة مخصصة",
+      }),
+      to: "/request-car?car_id=9999",
     },
-    {
-      label: t(
-        "footer.services.custom",
-        {
-          defaultValue: "طلب مخصص",
-        },
-      ),
-      to: "/contact",
-    },
+
   ];
 
   return (

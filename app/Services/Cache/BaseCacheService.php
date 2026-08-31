@@ -61,6 +61,7 @@ class BaseCacheService
                 'title' => '',
                 'subtitle' => '',
                 'image' => null,
+                'image_mobile' => null,
             ];
         }, self::TTL_LONG);
 
@@ -70,6 +71,11 @@ class BaseCacheService
             'title' => $this->localizeHeroField($hero['title'] ?? '', $locale),
             'subtitle' => $this->localizeHeroField($hero['subtitle'] ?? '', $locale),
             'image' => $this->resolveHeroImage($hero['image'] ?? null),
+            'image_mobile' => $this->resolveHeroImage($hero['image_mobile'] ?? null),
+            'tag' => $this->localizeHeroField($hero['tag'] ?? '', $locale),
+            'button_text' => $this->localizeHeroField($hero['button_text'] ?? '', $locale),
+            'button_url' => $hero['button_url'] ?? '',
+            'ends_at' => $hero['ends_at'] ?? '',
         ];
     }
 

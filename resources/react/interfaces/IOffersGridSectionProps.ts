@@ -14,4 +14,5 @@ export interface IOffersGridSectionProps {
   loadMoreText?: string;
   hasMore?: boolean;
   onLoadMore?: () => void;
+  hero?: any;
 }

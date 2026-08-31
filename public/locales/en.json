@@ -173,7 +173,15 @@
     "emailLabel": "Email Us",
     "phoneLabel": "Call Us",
     "privacyPolicy": "Privacy Policy",
-    "termsAndConditions": "Terms & Conditions"
+    "termsAndConditions": "Terms & Conditions",
+    "services": {
+      "title": "Services",
+      "calculator": "Finance Calculator",
+      "financeRequest": "Finance Request",
+      "custom": "Custom Car Request",
+      "cash": "Cash Purchase",
+      "booking": "Car Booking"
+    }
   },
   "brandsSection": {
     "titleBlue": "Choose Your Favorite Brand",
@@ -1089,6 +1097,10 @@
         "months": "{{term}} Months",
         "carPrice": "Car Price",
         "estimatedInstallment": "Estimated Installment",
+        "noCarSelectedTitle": "No Car Selected Yet",
+        "noCarSelectedDesc": "Please select a car from the list above to view details and calculate estimated installment",
+        "calcNoticeTitle": "Installment & Financing",
+        "calcNoticeDesc": "Select a car to see its price and calculate estimated monthly installment.",
         "disclaimer": "* Numbers are estimates based on a 4.5% interest rate. Final financing is subject to credit evaluation."
       },
       "toasts": {

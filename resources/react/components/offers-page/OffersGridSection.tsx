@@ -12,6 +12,7 @@ export default function OffersGridSection({
   loadMoreText,
   hasMore,
   onLoadMore,
+  hero,
 }: IOffersGridSectionProps) {
   const { i18n, t } = useTranslation();
 
@@ -35,7 +36,7 @@ export default function OffersGridSection({
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Featured Banner */}
         {showFeatured && (
-          <FeaturedOfferBanner {...(featuredOffer || {})} />
+          <FeaturedOfferBanner hero={hero} {...(featuredOffer || {})} />
         )}
 
         {/* Categories Tabs Filter */}

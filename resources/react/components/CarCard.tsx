@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ArrowUpRight, Users } from "lucide-react";
 import type { ICarCardProps } from "../interfaces/ICarCardProps";
+import { APP_IMAGES } from "../constants/app-images";
 import LazyImg from "./LazyImg";
 
 export type { ICarCardProps as CarCardProps };
@@ -79,6 +80,7 @@ export default function CarCard({
                     src={image}
                     alt={`${brand} ${name}`}
                     loading={loading}
+                    fallbackSrc={APP_IMAGES.CAR_PLACEHOLDER}
                     className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
                 />
 

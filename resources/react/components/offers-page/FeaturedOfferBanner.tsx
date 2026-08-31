@@ -9,6 +9,7 @@ export default function FeaturedOfferBanner(props: Partial<IFeaturedOfferBannerP
   const {
     id = 1,
     image,
+    image_mobile,
     background_image,
     title,
     description,
@@ -17,10 +18,13 @@ export default function FeaturedOfferBanner(props: Partial<IFeaturedOfferBannerP
     ends_at,
     button_text,
     button_url,
+    hero,
   } = props;
 
   const { t, i18n } = useTranslation();
-  const { days, hours, minutes, seconds } = useCountdown(ends_at);
+
+  const rawEndsAt = hero?.ends_at || ends_at;
+  const { days, hours, minutes, seconds } = useCountdown(rawEndsAt);
 
   const tagNames: Record<string, string> = {
     popular: t("offersPage.grid.categories.popular", { defaultValue: "الشائعة" }),
@@ -29,13 +33,15 @@ export default function FeaturedOfferBanner(props: Partial<IFeaturedOfferBannerP
     limited: t("offersPage.grid.categories.limited", { defaultValue: "محدود" }),
   };
 
-  const activeTag = tag || badge;
+  const activeTag = hero?.tag || tag || badge;
   const tagLabel = activeTag
     ? tagNames[activeTag] || activeTag
     : t("offersPage.grid.categories.limited", { defaultValue: "محدود" });
 
-  const displayTitle = title || t("offersPage.featured.title", { defaultValue: "عرض رمضان الاستثنائي" });
-  const displayDesc = description || t("offersPage.featured.description", { defaultValue: "تمويل بدون أرباح لأول 6 أشهر" });
+  const displayTitle = hero?.title || title || t("offersPage.featured.title", { defaultValue: "عرض رمضان الاستثنائي" });
+  const displayDesc = hero?.subtitle || description || t("offersPage.featured.description", { defaultValue: "تمويل بدون أرباح لأول 6 أشهر" });
+  const displayButtonText = hero?.button_text || button_text || t("offersPage.hero.primaryButton", { defaultValue: "اطلع على العرض" });
+  const displayButtonUrl = hero?.button_url || button_url || `/cars?offerId=${id}`;
 
   const countdownParts = [
     {
@@ -56,21 +62,31 @@ export default function FeaturedOfferBanner(props: Partial<IFeaturedOfferBannerP
     },
   ];
 
-  const rawImage = image || background_image;
-  const bgImageUrl = rawImage ? getImageUrl(rawImage) : APP_IMAGES.OFFERS_SECTION_BG;
+  const desktopImageRaw = hero?.image || image || background_image;
+  const mobileImageRaw = hero?.image_mobile || image_mobile || desktopImageRaw;
+
+  const desktopBgUrl = desktopImageRaw ? getImageUrl(desktopImageRaw) : APP_IMAGES.OFFERS_SECTION_BG;
+  const mobileBgUrl = mobileImageRaw ? getImageUrl(mobileImageRaw) : desktopBgUrl;
 
   return (
     <div
       dir={i18n.dir()}
-      className="relative w-full rounded-[24px] sm:rounded-[32px] text-white overflow-hidden shadow-2xl mb-10 select-none bg-[#0B1736] min-h-[240px] sm:min-h-[270px] flex items-center"
-      style={{
-        backgroundImage: `url("${bgImageUrl}")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      className="relative w-full rounded-[24px] sm:rounded-[32px] text-white overflow-hidden shadow-2xl mb-10 select-none bg-[#0B1736] min-h-[250px] sm:min-h-[280px] flex items-center"
     >
-      {/* Dark Navy Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0B1736]/90 via-[#0B1736]/65 to-[#0B1736]/30 pointer-events-none" />
+      {/* Desktop Background */}
+      <div
+        className="hidden md:block absolute inset-0 bg-cover bg-center transition-all duration-500"
+        style={{ backgroundImage: `url("${desktopBgUrl}")` }}
+      />
+
+      {/* Mobile Background */}
+      <div
+        className="block md:hidden absolute inset-0 bg-cover bg-center transition-all duration-500"
+        style={{ backgroundImage: `url("${mobileBgUrl}")` }}
+      />
+
+      {/* Dark Navy Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0B1736]/90 via-[#0B1736]/70 to-[#0B1736]/35 pointer-events-none" />
 
       {/* Main Inner Flex Container */}
       <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-full px-6 py-8 sm:px-10 sm:py-10 gap-8 text-start">
@@ -93,10 +109,10 @@ export default function FeaturedOfferBanner(props: Partial<IFeaturedOfferBannerP
 
           {/* CTA Button */}
           <NavLink
-            to={button_url || `/cars?offerId=${id}`}
+            to={displayButtonUrl}
             className="h-[48px] sm:h-[52px] px-8 rounded-2xl sm:rounded-[18px] bg-[#F3C77C] hover:bg-[#E2B66B] text-[14px] sm:text-[15px] font-black text-[#0B1736] transition-all duration-200 active:scale-95 shadow-md inline-flex items-center justify-center"
           >
-            {button_text || t("offersPage.hero.primaryButton", { defaultValue: "اطلع على العرض" })}
+            {displayButtonText}
           </NavLink>
         </div>
 

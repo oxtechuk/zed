@@ -643,39 +643,89 @@
                     {{-- =============================== --}}
                     {{-- TAB: هيرو صفحة العروض           --}}
                     {{-- =============================== --}}
+                    {{-- TAB: هيرو وبانر صفحة العروض    --}}
+                    {{-- =============================== --}}
                     <div class="settings-pane d-none" id="tab-offers-hero">
                         <div class="card border-0 shadow-sm rounded-4">
                             <div class="card-header bg-transparent border-0 p-4 pb-0">
-                                <h6 class="fw-bold mb-0">{{ __('هيرو صفحة العروض') }}</h6>
-                                <p class="text-muted small mb-0">{{ __('العنوان والصورة التي تظهر في أعلى صفحة العروض') }}</p>
+                                <h6 class="fw-bold mb-0">{{ __('بانر وهيرو صفحة العروض') }}</h6>
+                                <p class="text-muted small mb-0">{{ __('التحكم في صورة البانر للموقع وللجوال والنصوص والعداد التنازلي لصفحة العروض') }}</p>
                             </div>
                             <div class="card-body p-4">
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small text-muted">{{ __('العنوان — عربي') }}</label>
-                                        <input type="text" name="store_offers_hero[title][ar]" class="form-control bg-light border-0" value="{{ $offersHero['title']['ar'] ?? '' }}">
+                                        <input type="text" name="store_offers_hero[title][ar]" class="form-control bg-light border-0" value="{{ $offersHero['title']['ar'] ?? '' }}" placeholder="عرض رمضان الاستثنائي">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small text-muted">{{ __('العنوان — إنجليزي') }}</label>
-                                        <input type="text" name="store_offers_hero[title][en]" class="form-control bg-light border-0" value="{{ $offersHero['title']['en'] ?? '' }}">
+                                        <input type="text" name="store_offers_hero[title][en]" class="form-control bg-light border-0" value="{{ $offersHero['title']['en'] ?? '' }}" placeholder="Special Offers">
                                     </div>
+
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small text-muted">{{ __('الوصف — عربي') }}</label>
-                                        <textarea name="store_offers_hero[subtitle][ar]" rows="3" class="form-control bg-light border-0">{{ $offersHero['subtitle']['ar'] ?? '' }}</textarea>
+                                        <textarea name="store_offers_hero[subtitle][ar]" rows="3" class="form-control bg-light border-0" placeholder="تمويل بدون أرباح لأول 6 أشهر">{{ $offersHero['subtitle']['ar'] ?? '' }}</textarea>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small text-muted">{{ __('الوصف — إنجليزي') }}</label>
-                                        <textarea name="store_offers_hero[subtitle][en]" rows="3" class="form-control bg-light border-0">{{ $offersHero['subtitle']['en'] ?? '' }}</textarea>
+                                        <textarea name="store_offers_hero[subtitle][en]" rows="3" class="form-control bg-light border-0" placeholder="0% profit financing for the first 6 months">{{ $offersHero['subtitle']['en'] ?? '' }}</textarea>
                                     </div>
-                                    <div class="col-12">
-                                        <label class="form-label fw-semibold small text-muted d-block mb-2">{{ __('صورة الهيرو') }}</label>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small text-muted">{{ __('الشارة / التاج — عربي') }}</label>
+                                        <input type="text" name="store_offers_hero[tag][ar]" class="form-control bg-light border-0" value="{{ $offersHero['tag']['ar'] ?? '' }}" placeholder="عرض حصري / لفترة محدودة">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small text-muted">{{ __('الشارة / التاج — إنجليزي') }}</label>
+                                        <input type="text" name="store_offers_hero[tag][en]" class="form-control bg-light border-0" value="{{ $offersHero['tag']['en'] ?? '' }}" placeholder="Exclusive / Limited Time">
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold small text-muted">{{ __('نص الزر — عربي') }}</label>
+                                        <input type="text" name="store_offers_hero[button_text][ar]" class="form-control bg-light border-0" value="{{ $offersHero['button_text']['ar'] ?? '' }}" placeholder="اطلع على العرض">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold small text-muted">{{ __('نص الزر — إنجليزي') }}</label>
+                                        <input type="text" name="store_offers_hero[button_text][en]" class="form-control bg-light border-0" value="{{ $offersHero['button_text']['en'] ?? '' }}" placeholder="View Offer">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold small text-muted">{{ __('رابط الزر') }}</label>
+                                        <input type="text" name="store_offers_hero[button_url]" class="form-control bg-light border-0" dir="ltr" value="{{ $offersHero['button_url'] ?? '' }}" placeholder="/cars">
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-semibold small text-muted">{{ __('تاريخ ووقت انتهاء العرض (للعداد التنازلي)') }}</label>
+                                        <input type="datetime-local" name="store_offers_hero[ends_at]" class="form-control bg-light border-0" value="{{ !empty($offersHero['ends_at']) ? date('Y-m-d\TH:i', strtotime($offersHero['ends_at'])) : '' }}">
+                                    </div>
+
+                                    {{-- Desktop Image --}}
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small text-muted d-block mb-2">
+                                            <i class="bi bi-display me-1"></i> {{ __('صورة البانر للموقع (سطح المكتب - Desktop)') }}
+                                        </label>
                                         @if(!empty($offersHero['image']))
-                                            <div class="mb-2 rounded-3 overflow-hidden bg-light" style="max-height:120px;">
-                                                <img src="{{ asset('storage/' . $offersHero['image']) }}" class="img-fluid w-100 object-fit-cover" style="max-height:120px;">
+                                            <div class="mb-2 rounded-3 overflow-hidden bg-light border" style="height:140px;">
+                                                <img src="{{ asset('storage/' . $offersHero['image']) }}" class="img-fluid w-100 h-100 object-fit-cover">
                                             </div>
                                             <input type="hidden" name="store_offers_hero[image]" value="{{ $offersHero['image'] }}">
                                         @endif
                                         <input type="file" name="offers_hero_image" class="form-control bg-light border-0" accept="image/*">
+                                        <small class="text-muted d-block mt-1">{{ __('المقاس المقترح: 1920x600 بكسل') }}</small>
+                                    </div>
+
+                                    {{-- Mobile Image --}}
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small text-muted d-block mb-2">
+                                            <i class="bi bi-phone me-1"></i> {{ __('صورة البانر للجوال (Mobile)') }}
+                                        </label>
+                                        @if(!empty($offersHero['image_mobile']))
+                                            <div class="mb-2 rounded-3 overflow-hidden bg-light border" style="height:140px;">
+                                                <img src="{{ asset('storage/' . $offersHero['image_mobile']) }}" class="img-fluid w-100 h-100 object-fit-cover">
+                                            </div>
+                                            <input type="hidden" name="store_offers_hero[image_mobile]" value="{{ $offersHero['image_mobile'] }}">
+                                        @endif
+                                        <input type="file" name="offers_hero_image_mobile" class="form-control bg-light border-0" accept="image/*">
+                                        <small class="text-muted d-block mt-1">{{ __('المقاس المقترح: 800x600 بكسل') }}</small>
                                     </div>
                                 </div>
                             </div>

@@ -173,7 +173,15 @@
         "emailLabel": "راسلنا",
         "phoneLabel": "اتصل بنا",
         "privacyPolicy": "سياسة الخصوصية",
-        "termsAndConditions": "الشروط والأحكام"
+        "termsAndConditions": "الشروط والأحكام",
+        "services": {
+            "title": "الخدمات",
+            "calculator": "حاسبة التمويل",
+            "financeRequest": "طلب تمويل",
+            "custom": "طلب سيارة مخصصة",
+            "cash": "شراء نقدي",
+            "booking": "حجز السيارات"
+        }
     },
     "brandsSection": {
         "titleBlue": "اختر ماركتك المفضلة",
@@ -913,6 +921,10 @@
                 "months": "{{term}} شهر",
                 "carPrice": "سعر السيارة",
                 "estimatedInstallment": "القسط التقديري",
+                "noCarSelectedTitle": "لم يتم اختيار سيارة بعد",
+                "noCarSelectedDesc": "يرجى اختيار السيارة المطلوبة من القائمة أعلاه لعرض التفاصيل وحساب القسط التقديري",
+                "calcNoticeTitle": "حساب القسط والتمويل",
+                "calcNoticeDesc": "اختر سيارتك لتحديد سعرها وحساب القسط الشهري التقديري.",
                 "disclaimer": "* الأرقام تقديرية بناءً على نسبة فائدة تمويلية 4.5%. التمويل النهائي يخضع للتقييم الائتماني من الجهة الممولة."
             },
             "toasts": {

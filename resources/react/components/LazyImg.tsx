@@ -12,6 +12,7 @@ export interface ILazyImgProps extends ImgHTMLAttributes<HTMLImageElement> {
   skeletonClassName?: string;
   containerClassName?: string;
   rootMargin?: string;
+  fallbackSrc?: string;
 }
 
 export default function LazyImg({
@@ -24,12 +25,18 @@ export default function LazyImg({
   skeletonClassName = "",
   loading = "lazy",
   rootMargin = "250px",
+  fallbackSrc,
   ...rest
 }: ILazyImgProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [inView, setInView] = useState(() => loading === "eager");
   const [status, setStatus] = useState<LazyImgStatus>(() => (loading === "eager" ? "loading" : "idle"));
+  const [currentSrc, setCurrentSrc] = useState<string | undefined>(src);
+
+  useEffect(() => {
+    setCurrentSrc(src);
+  }, [src]);
 
   useEffect(() => {
     if (loading === "eager") {
@@ -65,12 +72,12 @@ export default function LazyImg({
   }, [loading, inView, rootMargin]);
 
   useEffect(() => {
-    if (!inView || !src) return;
+    if (!inView || !currentSrc) return;
     const el = imgRef.current;
     if (el && el.complete && el.naturalWidth > 0) {
       setStatus("revealed");
     }
-  }, [src, inView]);
+  }, [currentSrc, inView]);
 
   const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
     setStatus("revealed");
@@ -78,6 +85,10 @@ export default function LazyImg({
   };
 
   const handleError = (event: SyntheticEvent<HTMLImageElement>) => {
+    if (fallbackSrc && currentSrc !== fallbackSrc) {
+      setCurrentSrc(fallbackSrc);
+      return;
+    }
     setStatus("revealed");
     onError?.(event);
   };
@@ -89,11 +100,11 @@ export default function LazyImg({
       ref={containerRef}
       className={`relative overflow-hidden ${containerClassName} ${isPending ? `lazy-img-skeleton ${skeletonClassName}` : ""}`}
     >
-      {inView && (
+      {inView && currentSrc && (
         <img
           {...rest}
           ref={imgRef}
-          src={src}
+          src={currentSrc}
           loading={loading}
           decoding="async"
           onLoad={handleLoad}
