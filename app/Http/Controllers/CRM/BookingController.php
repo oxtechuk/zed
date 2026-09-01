@@ -62,13 +62,13 @@ class BookingController extends Controller
 
         // Pending supervisor approvals (admin only)
         $pendingApprovals = $isAdmin
-            ? Booking::with(['car.brand', 'employee'])
+            ? Booking::with(['car.brand', 'car.carModel', 'car.category', 'employee'])
                 ->where('status', 'waiting_supervisor_approval')
                 ->latest()
                 ->get()
             : collect();
 
-        $query = Booking::with(['car.brand', 'employee'])->whereIn('status', $activeStatuses);
+        $query = Booking::with(['car.brand', 'car.carModel', 'car.category', 'employee'])->whereIn('status', $activeStatuses);
 
         if (! $isAdmin) {
             $query->where('assigned_to', auth()->id());

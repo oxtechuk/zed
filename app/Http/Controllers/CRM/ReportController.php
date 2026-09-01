@@ -24,16 +24,17 @@ class ReportController extends Controller
 
         // 1. Financial Performance
         $financial = [
-            'total_sold' => (clone $base)->where('status', 'sold')->count(),
-            'total_down_payment' => (clone $base)->where('status', 'sold')->sum('down_payment'),
-            'total_remaining' => (clone $base)->where('status', 'sold')
+            'total_sold' => (clone $base)->whereIn('status', ['sold', 'received'])->count(),
+            'total_commission' => (clone $base)->whereIn('status', ['sold', 'received'])->sum('net_commission'),
+            'total_down_payment' => (clone $base)->whereIn('status', ['sold', 'received'])->sum('down_payment'),
+            'total_remaining' => (clone $base)->whereIn('status', ['sold', 'received'])
                 ->selectRaw('SUM(monthly_installment * (duration_years * 12)) as total')->value('total') ?? 0,
             'total_bookings' => (clone $base)->count(),
         ];
 
         // 2. Employee Performance
         $employees = (clone $base)->whereNotNull('assigned_to')
-            ->selectRaw('assigned_to, count(*) as total_bookings, sum(case when status = \'sold\' then 1 else 0 end) as total_sold')
+            ->selectRaw('assigned_to, count(*) as total_bookings, sum(case when status in (\'sold\', \'received\') then 1 else 0 end) as total_sold, sum(case when status in (\'sold\', \'received\') then net_commission else 0 end) as total_commission')
             ->groupBy('assigned_to')
             ->with('employee:id,name')
             ->get();
@@ -200,7 +201,7 @@ class ReportController extends Controller
                 $platforms[$channel]['bookings_count']++;
                 if (in_array($b->status, ['sold', 'received'])) {
                     $platforms[$channel]['sold_count']++;
-                    $platforms[$channel]['total_revenue'] += (float) ($b->total_price ?: 0);
+                    $platforms[$channel]['total_revenue'] += (float) ($b->net_commission ?: 0);
                 }
             } else {
                 if (! isset($otherChannels[$channel])) {
@@ -220,7 +221,7 @@ class ReportController extends Controller
                 $otherChannels[$channel]['bookings_count']++;
                 if (in_array($b->status, ['sold', 'received'])) {
                     $otherChannels[$channel]['sold_count']++;
-                    $otherChannels[$channel]['total_revenue'] += (float) ($b->total_price ?: 0);
+                    $otherChannels[$channel]['total_revenue'] += (float) ($b->net_commission ?: 0);
                 }
             }
 
@@ -238,7 +239,7 @@ class ReportController extends Controller
             $campaignsMap[$camp]['bookings']++;
             if (in_array($b->status, ['sold', 'received'])) {
                 $campaignsMap[$camp]['sold']++;
-                $campaignsMap[$camp]['revenue'] += (float) ($b->total_price ?: 0);
+                $campaignsMap[$camp]['revenue'] += (float) ($b->net_commission ?: 0);
             }
 
             $med = $b->utm_medium ?: ($b->utm_source ? 'general' : 'direct');
@@ -294,7 +295,7 @@ class ReportController extends Controller
         $totalBookings = $bookings->count();
         $totalInteractions = $totalLeads + $totalBookings;
         $totalSold = (clone $bookingsQuery)->whereIn('status', ['sold', 'received'])->count();
-        $totalRevenue = (clone $bookingsQuery)->whereIn('status', ['sold', 'received'])->sum('total_price');
+        $totalRevenue = (clone $bookingsQuery)->whereIn('status', ['sold', 'received'])->sum('net_commission');
 
         $recentAttributed = $bookings->take(15);
 

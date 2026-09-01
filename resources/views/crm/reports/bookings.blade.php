@@ -73,18 +73,18 @@
                     <div class="col-md-8">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="card border-0 shadow-xs rounded-4 h-100 border-bottom border-4 border-primary bg-light-subtle">
+                                <div class="card border-0 shadow-xs rounded-4 h-100 border-bottom border-4 border-success bg-light-subtle">
                                     <div class="card-body p-4 text-center">
-                                        <div class="text-muted small fw-bold mb-2 text-uppercase">{{ __('إجمالي الحجوزات') }}</div>
-                                        <div class="fs-2 fw-black text-dark">{{ number_format($financial['total_bookings']) }}</div>
+                                        <div class="text-muted small fw-bold mb-2 text-uppercase">{{ __('إجمالي صافي العمولات (الأرباح)') }}</div>
+                                        <div class="fs-2 fw-black text-success">{{ number_format($financial['total_commission'], 2) }} <span class="fs-6 text-muted">ر.س</span></div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="card border-0 shadow-xs rounded-4 h-100 border-bottom border-4 border-success bg-light-subtle">
+                                <div class="card border-0 shadow-xs rounded-4 h-100 border-bottom border-4 border-primary bg-light-subtle">
                                     <div class="card-body p-4 text-center">
-                                        <div class="text-muted small fw-bold mb-2 text-uppercase">{{ __('السيارات المباعة فعلياً') }}</div>
-                                        <div class="fs-2 fw-black text-success">{{ number_format($financial['total_sold']) }}</div>
+                                        <div class="text-muted small fw-bold mb-2 text-uppercase">{{ __('السيارات المباعة / المسلّمة') }}</div>
+                                        <div class="fs-2 fw-black text-primary">{{ number_format($financial['total_sold']) }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -92,15 +92,15 @@
                                 <div class="card border-0 shadow-xs rounded-4 h-100 border-bottom border-4 border-info bg-light-subtle">
                                     <div class="card-body p-4 text-center">
                                         <div class="text-muted small fw-bold mb-2 text-uppercase">{{ __('المقدمات المحصلة') }}</div>
-                                        <div class="fs-3 fw-bold text-dark">{{ number_format($financial['total_down_payment']) }} <span class="fs-6 text-muted">ج.م</span></div>
+                                        <div class="fs-3 fw-bold text-dark">{{ number_format($financial['total_down_payment']) }} <span class="fs-6 text-muted">ر.س</span></div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="card border-0 shadow-xs rounded-4 h-100 border-bottom border-4 border-warning bg-light-subtle">
                                     <div class="card-body p-4 text-center">
-                                        <div class="text-muted small fw-bold mb-2 text-uppercase">{{ __('قيمة الأقساط المستقبلية') }}</div>
-                                        <div class="fs-3 fw-bold text-dark">{{ number_format($financial['total_remaining']) }} <span class="fs-6 text-muted">ج.م</span></div>
+                                        <div class="text-muted small fw-bold mb-2 text-uppercase">{{ __('إجمالي طلبات الحجز') }}</div>
+                                        <div class="fs-3 fw-bold text-dark">{{ number_format($financial['total_bookings']) }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -177,6 +177,7 @@
                                         <th class="px-3 py-2 text-muted fw-bold">{{ __('الموظف') }}</th>
                                         <th class="py-2 text-muted fw-bold text-center">{{ __('الحجوزات المسندة') }}</th>
                                         <th class="py-2 text-muted fw-bold text-center">{{ __('المبيعات المغلقة') }}</th>
+                                        <th class="py-2 text-muted fw-bold text-center">{{ __('صافي العمولات') }}</th>
                                         <th class="py-2 text-muted fw-bold text-center">{{ __('نسبة الإغلاق') }}</th>
                                     </tr>
                                 </thead>
@@ -187,6 +188,7 @@
                                             <td class="px-3 fw-bold text-dark">{{ $emp->employee->name ?? __('غير محدد') }}</td>
                                             <td class="text-center"><span class="badge bg-light text-dark border px-3 py-2 rounded-pill">{{ $emp->total_bookings }}</span></td>
                                             <td class="text-center"><span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">{{ $emp->total_sold }}</span></td>
+                                            <td class="text-center fw-bold text-success">{{ number_format($emp->total_commission ?? 0, 2) }} <small>ر.س</small></td>
                                             <td class="text-center">
                                                 <div class="d-flex align-items-center justify-content-center gap-2">
                                                     <div class="progress flex-grow-1" style="height: 6px; max-width: 80px;">
@@ -197,7 +199,7 @@
                                             </td>
                                         </tr>
                                     @empty
-                                        <tr><td colspan="4" class="text-center text-muted py-4">{{ __('لا توجد بيانات') }}</td></tr>
+                                        <tr><td colspan="5" class="text-center text-muted py-4">{{ __('لا توجد بيانات') }}</td></tr>
                                     @endforelse
                                 </tbody>
                             </table>

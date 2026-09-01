@@ -44,6 +44,7 @@ class DashboardController extends Controller
                 $q->where('status', 'like', 'lost_%')->orWhere('status', 'rejected');
             })->count(),
             'completed' => (clone $baseBookings)->whereIn('status', ['received', 'sold', 'done'])->count(),
+            'total_commission' => (clone $baseBookings)->whereIn('status', ['received', 'sold', 'done'])->sum('net_commission'),
         ];
 
         $requestsQuery = clone $baseBookings;

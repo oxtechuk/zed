@@ -99,9 +99,9 @@
                     {{-- مصدر ونوع الطلب --}}
                     <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
                         <option value="">{{ __('المصدر والنوع — الكل') }}</option>
-                        <option value="cars" {{ request('source')==='cars'?'selected':'' }}>🚗 {{ __('طلبات السيارات (حجز وشراء)') }}</option>
-                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>🧮 {{ __('عملاء حاسبة التمويل') }}</option>
-                        <option value="test_drive" {{ request('source')==='test_drive'?'selected':'' }}>⏱️ {{ __('طلبات تجربة القيادة') }}</option>
+                        <option value="cars" {{ request('source')==='cars'?'selected':'' }}>{{ __('طلبات السيارات (حجز وشراء)') }}</option>
+                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>{{ __('عملاء حاسبة التمويل') }}</option>
+                        <option value="test_drive" {{ request('source')==='test_drive'?'selected':'' }}>{{ __('طلبات تجربة القيادة') }}</option>
                     </select>
 
                     {{-- الترتيب --}}
@@ -212,24 +212,24 @@
                                         style="font-size:12px;border-radius:8px;background:#F8FAFC;min-width:150px;cursor:pointer;"
                                         data-current-status="pending"
                                         onchange="handleBookingStatusSelectChange(this, {{ $b->id }}, '{{ route('crm.bookings.status', $b) }}', {{ $isAdmin ? 'true' : 'false' }})">
-                                    <option value="pending" selected>⏳ {{ __('قيد الانتظار') }}</option>
+                                    <option value="pending" selected>{{ __('قيد الانتظار') }}</option>
                                     <optgroup label="{{ __('إرجاع إلى مسار المبيعات النشط') }}">
-                                        @foreach($allStatuses as $key => $s)
-                                            @if(($s['group'] ?? '') === 'active' && !($s['is_close'] ?? false) && $key !== 'pending' && $key !== 'waiting_supervisor_approval')
-                                                <option value="{{ $key }}">⚡ {{ $s['label'] }}</option>
-                                            @endif
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="{{ __('تسليم الطلب (ناجح)') }}">
-                                        <option value="received" data-close="1">✅ {{ __('تم التسليم (تم الاستلام)') }}</option>
-                                    </optgroup>
-                                    <optgroup label="{{ __('إغلاق الحجز (خاسر)') }}">
-                                        @foreach($allStatuses as $key => $s)
-                                            @if(($s['group'] ?? '') === 'lost')
-                                                <option value="{{ $key }}" data-close="1">❌ {{ $s['label'] }}</option>
-                                            @endif
-                                        @endforeach
-                                    </optgroup>
+                                         @foreach($allStatuses as $key => $s)
+                                             @if(($s['group'] ?? '') === 'active' && !($s['is_close'] ?? false) && $key !== 'pending' && $key !== 'waiting_supervisor_approval')
+                                                 <option value="{{ $key }}">{{ $s['label'] }}</option>
+                                             @endif
+                                         @endforeach
+                                     </optgroup>
+                                     <optgroup label="{{ __('تسليم الطلب (ناجح)') }}">
+                                         <option value="received" data-close="1">{{ __('تم التسليم (تم الاستلام)') }}</option>
+                                     </optgroup>
+                                     <optgroup label="{{ __('إغلاق الحجز (خاسر)') }}">
+                                         @foreach($allStatuses as $key => $s)
+                                             @if(($s['group'] ?? '') === 'lost')
+                                                 <option value="{{ $key }}" data-close="1">{{ $s['label'] }}</option>
+                                             @endif
+                                         @endforeach
+                                     </optgroup>
                                 </select>
                             </form>
                         </td>
@@ -281,7 +281,7 @@
                         <div style="font-size:12px;color:var(--crm-text-muted);" dir="ltr">{{ $b->client_phone }}</div>
                     </div>
                     <span class="badge" style="background:#FEF3C7;color:#D97706;font-size:11px;">
-                        ⏳ {{ __('قيد الانتظار') }}
+                        <i class="bi bi-hourglass-split me-1"></i> {{ __('قيد الانتظار') }}
                     </span>
                 </div>
 
@@ -309,21 +309,21 @@
                                 style="font-size:12px;border-radius:8px;"
                                 data-current-status="pending"
                                 onchange="handleBookingStatusSelectChange(this, {{ $b->id }}, '{{ route('crm.bookings.status', $b) }}', {{ $isAdmin ? 'true' : 'false' }})">
-                            <option value="pending" selected>⏳ {{ __('قيد الانتظار') }}</option>
+                            <option value="pending" selected>{{ __('قيد الانتظار') }}</option>
                             <optgroup label="{{ __('إرجاع إلى مسار المبيعات النشط') }}">
                                 @foreach($allStatuses as $key => $s)
                                     @if(($s['group'] ?? '') === 'active' && !($s['is_close'] ?? false) && $key !== 'pending' && $key !== 'waiting_supervisor_approval')
-                                        <option value="{{ $key }}">⚡ {{ $s['label'] }}</option>
+                                        <option value="{{ $key }}">{{ $s['label'] }}</option>
                                     @endif
                                 @endforeach
                             </optgroup>
                             <optgroup label="{{ __('تسليم الطلب (ناجح)') }}">
-                                <option value="received" data-close="1">✅ {{ __('تم التسليم') }}</option>
+                                <option value="received" data-close="1">{{ __('تم التسليم') }}</option>
                             </optgroup>
                             <optgroup label="{{ __('إغلاق الحجز (خاسر)') }}">
                                 @foreach($allStatuses as $key => $s)
                                     @if(($s['group'] ?? '') === 'lost')
-                                        <option value="{{ $key }}" data-close="1">❌ {{ $s['label'] }}</option>
+                                        <option value="{{ $key }}" data-close="1">{{ $s['label'] }}</option>
                                     @endif
                                 @endforeach
                             </optgroup>

@@ -199,17 +199,17 @@
                                     <optgroup label="<?php echo e(__('إرجاع إلى مسار المبيعات النشط')); ?>">
                                         <?php $__currentLoopData = \App\Models\Booking::STATUSES; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <?php if(($s['group'] ?? '') === 'active' && !($s['is_close'] ?? false) && $key !== 'pending' && $key !== 'waiting_supervisor_approval'): ?>
-                                                <option value="<?php echo e($key); ?>">⚡ <?php echo e($s['label']); ?></option>
+                                                <option value="<?php echo e($key); ?>"><?php echo e($s['label']); ?></option>
                                             <?php endif; ?>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </optgroup>
                                     <optgroup label="<?php echo e(__('حالات أخرى')); ?>">
-                                        <option value="pending">⏳ <?php echo e(__('قيد الانتظار')); ?></option>
-                                        <option value="received" data-close="1">✅ <?php echo e(__('تم التسليم')); ?></option>
+                                        <option value="pending"><?php echo e(__('قيد الانتظار')); ?></option>
+                                        <option value="received" data-close="1"><?php echo e(__('تم التسليم')); ?></option>
                                     </optgroup>
                                     <optgroup label="<?php echo e(__('تعديل سبب الإغلاق')); ?>">
                                         <?php $__currentLoopData = $statuses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($key); ?>" <?php echo e($b->status === $key ? 'selected' : ''); ?>>❌ <?php echo e($s['label']); ?></option>
+                                            <option value="<?php echo e($key); ?>" <?php echo e($b->status === $key ? 'selected' : ''); ?>><?php echo e($s['label']); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </optgroup>
                                 </select>

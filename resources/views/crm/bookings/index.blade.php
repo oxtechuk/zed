@@ -1,6 +1,220 @@
 @extends('partials.Layouts.crm-master')
 @section('title', __('الطلبات النشطة') . ' | Zad Capital')
 
+@section('css')
+<style>
+    .crm-custom-booking-table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    .crm-custom-booking-table tr.crm-booking-row {
+        border-bottom: 1px solid #ECEEF2;
+        transition: background-color 0.15s ease;
+    }
+    .crm-custom-booking-table tr.crm-booking-row:hover {
+        background-color: #FAFAFC;
+    }
+    .booking-id-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #E6F4EA;
+        color: #137333;
+        font-weight: 700;
+        font-size: 13px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition: all 0.2s;
+    }
+    .booking-id-badge:hover {
+        background-color: #CEEAD6;
+        color: #0D652D;
+    }
+    .booking-meta-box {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        font-size: 12.5px;
+        line-height: 1.45;
+    }
+    .booking-meta-item {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        white-space: nowrap;
+    }
+    .booking-meta-key {
+        color: #1E293B;
+        font-weight: 700;
+        font-size: 12.5px;
+    }
+    .booking-meta-val {
+        color: #64748B;
+        font-size: 12.5px;
+    }
+    .badge-payment {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 20px;
+        white-space: nowrap;
+    }
+    .badge-payment.badge-unpaid {
+        background-color: #FEE2E2;
+        color: #DC2626;
+    }
+    .badge-payment.badge-paid {
+        background-color: #DCFCE7;
+        color: #16A34A;
+    }
+    .badge-payment .dot {
+        font-size: 8px;
+    }
+    .btn-action-square {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        border: 1px solid #E2E8F0;
+        background: #FFFFFF;
+        color: #475569;
+        text-decoration: none;
+        transition: all 0.15s ease;
+        padding: 0;
+    }
+    .btn-action-square:hover {
+        background: #F1F5F9;
+        color: #0F172A;
+        border-color: #CBD5E1;
+    }
+    /* Pagination styling matching the orange circular style in screenshot */
+    .crm-pagination-wrapper .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    .crm-pagination-wrapper .page-item .page-link {
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50% !important;
+        border: 1px solid #E2E8F0;
+        color: #475569;
+        font-weight: 600;
+        font-size: 13px;
+        background: #FFFFFF;
+        text-decoration: none;
+        transition: all 0.2s;
+        margin: 0;
+        padding: 0;
+    }
+    .crm-pagination-wrapper .page-item.active .page-link {
+        background-color: #EA580C !important;
+        border-color: #EA580C !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 2px 6px rgba(234, 88, 12, 0.35);
+    }
+    .crm-pagination-wrapper .page-item .page-link:hover:not(.active) {
+        background-color: #F8FAFC;
+        border-color: #CBD5E1;
+        color: #0F172A;
+    }
+    .crm-pagination-wrapper .page-item.disabled .page-link {
+        background-color: #F8FAFC;
+        border-color: #ECEEF2;
+        color: #CBD5E1;
+    }
+    /* Sleek Professional Stat Cards */
+    .stat-card-clean {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        padding: 16px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        text-decoration: none;
+    }
+    .stat-card-clean:hover {
+        border-color: #CBD5E1;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transform: translateY(-1px);
+    }
+    .stat-card-clean.active {
+        border-color: #2563EB;
+        background: #F8FAFC;
+        box-shadow: 0 0 0 1px #2563EB;
+    }
+    .stat-card-icon-box {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+    .stat-card-icon-box.blue {
+        background: #EFF6FF;
+        color: #2563EB;
+    }
+    .stat-card-icon-box.sky {
+        background: #F0F9FF;
+        color: #0284C7;
+    }
+    .stat-card-icon-box.purple {
+        background: #FAF5FF;
+        color: #9333EA;
+    }
+    .stat-card-icon-box.amber {
+        background: #FFFBEB;
+        color: #D97706;
+    }
+    .stat-card-icon-box.emerald {
+        background: #F0FDF4;
+        color: #16A34A;
+    }
+    .stat-card-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+    .stat-card-label {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #64748B;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .stat-card-value {
+        font-size: 22px;
+        font-weight: 800;
+        color: #0F172A;
+        line-height: 1.2;
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="container-fluid" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 
@@ -39,50 +253,74 @@
 
     {{-- Stat Cards --}}
     <div class="row g-3 mb-4">
+        {{-- 1. All Active --}}
         <div class="col-6 col-xl-2 col-md-4">
             <a href="{{ route('crm.bookings.index') }}" class="text-decoration-none d-block h-100">
-                <div class="crm-stat-new h-100 {{ !request('source') ? 'border-primary' : '' }}" style="background:#fff;">
-                    <span class="stat-badge blue">{{ __('الكل') }}</span>
-                    <div class="stat-icon blue"><i class="bi bi-layers-fill"></i></div>
-                    <div class="stat-lbl">{{ __('إجمالي الطلبات النشطة') }}</div>
-                    <div class="stat-val">{{ number_format($stats['total']) }}</div>
+                <div class="stat-card-clean {{ !request('source') ? 'active' : '' }}">
+                    <div class="stat-card-info">
+                        <span class="stat-card-label">{{ __('إجمالي الطلبات النشطة') }}</span>
+                        <span class="stat-card-value">{{ number_format($stats['total']) }}</span>
+                    </div>
+                    <div class="stat-card-icon-box blue">
+                        <i class="bi bi-layers-fill"></i>
+                    </div>
                 </div>
             </a>
         </div>
+
+        {{-- 2. Car Requests --}}
         <div class="col-6 col-xl-2 col-md-4">
             <a href="{{ route('crm.bookings.index', array_merge(request()->query(), ['source' => 'cars'])) }}" class="text-decoration-none d-block h-100">
-                <div class="crm-stat-new h-100 {{ request('source') === 'cars' ? 'border-primary' : '' }}" style="background: linear-gradient(135deg, #FFF, #EFF6FF);">
-                    <span class="stat-badge blue">{{ __('سيارات') }}</span>
-                    <div class="stat-icon blue" style="background:#DBEAFE;color:#1D4ED8;"><i class="bi bi-car-front-fill"></i></div>
-                    <div class="stat-lbl">{{ __('طلبات السيارات') }}</div>
-                    <div class="stat-val" style="color:#1D4ED8;">{{ number_format($stats['car_requests']) }}</div>
+                <div class="stat-card-clean {{ request('source') === 'cars' ? 'active' : '' }}">
+                    <div class="stat-card-info">
+                        <span class="stat-card-label">{{ __('طلبات السيارات') }}</span>
+                        <span class="stat-card-value" style="color: #0284C7;">{{ number_format($stats['car_requests']) }}</span>
+                    </div>
+                    <div class="stat-card-icon-box sky">
+                        <i class="bi bi-car-front-fill"></i>
+                    </div>
                 </div>
             </a>
         </div>
+
+        {{-- 3. Calculator Leads --}}
         <div class="col-6 col-xl-3 col-md-4">
             <a href="{{ route('crm.bookings.index', array_merge(request()->query(), ['source' => 'calculator'])) }}" class="text-decoration-none d-block h-100">
-                <div class="crm-stat-new h-100 {{ request('source') === 'calculator' ? 'border-primary' : '' }}" style="background: linear-gradient(135deg, #FFF, #FAF5FF);">
-                    <span class="stat-badge orange" style="background:#F3E8FF;color:#7C3AED;">{{ __('حاسبة') }}</span>
-                    <div class="stat-icon purple" style="background:#EDE9FE;color:#7C3AED;"><i class="bi bi-calculator-fill"></i></div>
-                    <div class="stat-lbl">{{ __('عملاء حاسبة التمويل') }}</div>
-                    <div class="stat-val" style="color:#7C3AED;">{{ number_format($stats['calculator_leads']) }}</div>
+                <div class="stat-card-clean {{ request('source') === 'calculator' ? 'active' : '' }}">
+                    <div class="stat-card-info">
+                        <span class="stat-card-label">{{ __('عملاء حاسبة التمويل') }}</span>
+                        <span class="stat-card-value" style="color: #7C3AED;">{{ number_format($stats['calculator_leads']) }}</span>
+                    </div>
+                    <div class="stat-card-icon-box purple">
+                        <i class="bi bi-calculator-fill"></i>
+                    </div>
                 </div>
             </a>
         </div>
+
+        {{-- 4. Pending Review --}}
         <div class="col-6 col-xl-2 col-md-6">
-            <div class="crm-stat-new h-100">
-                <span class="stat-badge orange">{{ __('متابعة') }}</span>
-                <div class="stat-icon orange"><i class="bi bi-telephone-inbound-fill"></i></div>
-                <div class="stat-lbl">{{ __('بانتظار التواصل والمراجعة') }}</div>
-                <div class="stat-val text-warning">{{ number_format($stats['pending_review']) }}</div>
+            <div class="stat-card-clean">
+                <div class="stat-card-info">
+                    <span class="stat-card-label">{{ __('بانتظار التواصل والمراجعة') }}</span>
+                    <span class="stat-card-value text-warning">{{ number_format($stats['pending_review']) }}</span>
+                </div>
+                <div class="stat-card-icon-box amber">
+                    <i class="bi bi-telephone-inbound-fill"></i>
+                </div>
             </div>
         </div>
+
+        {{-- 5. Under Bank --}}
         <div class="col-12 col-xl-3 col-md-6">
-            <div class="crm-stat-new h-100" style="background: linear-gradient(135deg, #FFF, #F0FDF4);">
-                <span class="stat-badge green">{{ __('بنوك') }}</span>
-                <div class="stat-icon green"><i class="bi bi-bank2"></i></div>
-                <div class="stat-lbl">{{ __('تحت الدراسة والتعميد') }}</div>
-                <div class="stat-val text-success">{{ number_format($stats['under_bank']) }}</div>
+            <div class="stat-card-clean">
+                <div class="stat-card-info">
+                    <span class="stat-card-label">{{ __('تحت الدراسة والتعميد') }}</span>
+                    <span class="stat-card-value text-success">{{ number_format($stats['under_bank']) }}</span>
+                </div>
+                <div class="stat-card-icon-box emerald">
+                    <i class="bi bi-bank2"></i>
+                </div>
             </div>
         </div>
     </div>
@@ -117,9 +355,9 @@
                     {{-- مصدر ونوع الطلب --}}
                     <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
                         <option value="">{{ __('المصدر والنوع — الكل') }}</option>
-                        <option value="cars" {{ request('source')==='cars'?'selected':'' }}>🚗 {{ __('طلبات السيارات (حجز وشراء)') }}</option>
-                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>🧮 {{ __('عملاء حاسبة التمويل') }}</option>
-                        <option value="crm_manual" {{ request('source')==='crm_manual'?'selected':'' }}>📋 {{ __('طلبات داخلية (CRM)') }}</option>
+                        <option value="cars" {{ request('source')==='cars'?'selected':'' }}>{{ __('طلبات السيارات (حجز وشراء)') }}</option>
+                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>{{ __('عملاء حاسبة التمويل') }}</option>
+                        <option value="crm_manual" {{ request('source')==='crm_manual'?'selected':'' }}>{{ __('طلبات داخلية (CRM)') }}</option>
                     </select>
 
                     {{-- الحالة النشطة --}}
@@ -358,138 +596,164 @@
     @endif
 
     {{-- Active Bookings Table --}}
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="border:1px solid var(--crm-border)!important;">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="border:1px solid var(--crm-border)!important;">
         <div class="card-header bg-white border-0 px-4 py-3 d-flex justify-content-between align-items-center" style="border-bottom:1px solid var(--crm-border)!important;">
             <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-lightning-charge-fill me-1 text-primary"></i> {{ __('قائمة كافة الطلبات النشطة') }}</h6>
             <span style="font-size:12px;color:var(--crm-text-muted);">{{ __('إجمالي الطلبات') }}: <strong>{{ $bookings->total() }}</strong></span>
         </div>
 
         {{-- Desktop Table --}}
-        <div class="table-responsive d-none d-md-block">
-            <table class="table table-hover align-middle mb-0">
-                <thead style="background:#F8F9FC;">
-                    <tr>
-                        <th class="px-4 py-3 text-muted fw-bold" style="font-size:12px;">#</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('رقم الطلب') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('النوع والمصدر') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('العميل') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('السيارة / التمويل') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('الموظف المسند') }}</th>
-                        <th class="py-3 text-muted fw-bold" style="font-size:12px;">{{ __('حالة الطلب') }}</th>
-                        <th class="py-3 text-muted fw-bold px-4" style="font-size:12px;">{{ __('تحكم') }}</th>
-                    </tr>
-                </thead>
+        <div class="table-responsive d-none d-lg-block">
+            <table class="table align-middle mb-0 crm-custom-booking-table">
                 <tbody class="border-top-0">
                     @forelse($bookings as $index => $b)
-                    <tr>
-                        <td class="px-4 text-muted small" style="font-size:13px;">
-                            {{ $bookings->firstItem() + $index }}
-                        </td>
-                        <td class="fw-bold" style="font-size:13px;">
-                            <a href="{{ route('crm.bookings.show', $b) }}" class="text-decoration-none fw-bold" style="color:var(--crm-red);">#{{ $b->id }}</a>
-                            <div class="text-muted small" style="font-size:11px;font-weight:normal;">{{ $b->created_at->diffForHumans() }}</div>
-                        </td>
-                        <td>
-                            @if($b->source === 'calculator' || $b->calculator_bank_id)
-                                <span class="badge d-inline-flex align-items-center gap-1 mb-1" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
-                                    <i class="bi bi-calculator"></i> {{ __('عميل حاسبة تمويل') }}
+                    @php
+                        // Calculate relative update time
+                        $updatedDiff = '—';
+                        if ($b->updated_at) {
+                            if ($b->updated_at->diffInHours(now()) < 24) {
+                                $updatedDiff = __('اقل من 24 ساعة');
+                            } else {
+                                $updatedDiff = $b->updated_at->diffForHumans();
+                            }
+                        }
+
+                        $createdDiff = $b->created_at ? $b->created_at->diffForHumans() : '—';
+                        $employeeName = $b->employee?->name ?? __('لايوجد');
+                        $sourceName = $b->source ?: ($b->calculator_bank_id ? __('حاسبة تمويل') : __('لايوجد'));
+                        $brandName = $b->car?->brand?->name ?? __('لايوجد');
+                        $modelName = $b->car?->carModel?->name ?? ($b->car?->model ?? ($b->car?->name ?? __('لايوجد')));
+                        $categoryName = $b->car?->category?->name ?? ($b->car?->type ?? __('لايوجد'));
+                        $yearVal = $b->car?->year ?? __('لايوجد');
+                        $statusLabel = $statuses[$b->status]['label'] ?? ($b->status_label ?? '—');
+                        $mainStatusGroup = match(\App\Models\Booking::STATUSES[$b->status]['group'] ?? 'active') {
+                            'active' => __('مفتوح'),
+                            'lost' => __('مغلق'),
+                            'received' => __('مكتمل'),
+                            default => __('مفتوح')
+                        };
+                        $isPaid = $b->down_payment > 0 || in_array($b->status, ['authorized', 'received']);
+                    @endphp
+                    <tr class="crm-booking-row">
+                        {{-- 1. Index & ID Badge (Far Right) --}}
+                        <td class="px-4 py-3" style="width: 140px;">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="text-muted fw-bold" style="font-size:14px; min-width: 16px;">
+                                    {{ $bookings->firstItem() + $index }}
                                 </span>
-                                @if($b->financingBank)
-                                    <div class="small text-muted" style="font-size:11px;"><i class="bi bi-bank me-1"></i>{{ $b->financingBank->name }}</div>
-                                @endif
-                            @elseif($b->booking_type === 'test_drive')
-                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
-                                    <i class="bi bi-speedometer2"></i> {{ __('تجربة قيادة') }}
-                                </span>
-                            @elseif($b->booking_type === 'purchase')
-                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
-                                    <i class="bi bi-cash-stack"></i> {{ __('شراء سيارة') }}
-                                </span>
-                            @elseif($b->source === 'CRM (يدوي)')
-                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #F8FAFC; color: #475569; border: 1px solid #E2E8F0; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
-                                    <i class="bi bi-pencil-square"></i> {{ __('طلب يدوي') }}
-                                </span>
-                            @else
-                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-size: 11px; padding: 4px 8px; border-radius: 6px; font-weight: 700;">
-                                    <i class="bi bi-car-front"></i> {{ __('طلب سيارة') }}
-                                </span>
-                            @endif
-                        </td>
-                        <td>
-                            <div class="fw-bold text-dark" style="font-size:13px;">{{ $b->client_name }}</div>
-                            <div class="d-flex align-items-center gap-1 mt-1">
-                                <a href="tel:{{ $b->client_phone }}" class="text-decoration-none small text-muted" dir="ltr">{{ $b->client_phone }}</a>
-                                <a href="https://wa.me/{{ preg_replace('/\D/', '', $b->client_phone) }}" target="_blank" class="text-success small ms-1" title="{{ __('واتساب') }}">
-                                    <i class="bi bi-whatsapp"></i>
+                                <a href="{{ route('crm.bookings.show', $b) }}" class="booking-id-badge" title="{{ __('عرض تفاصيل الطلب') }}">
+                                    {{ $b->id }}
                                 </a>
                             </div>
                         </td>
-                        <td>
-                            @if($b->car)
-                            <div style="font-size: 12px; line-height: 1.6;">
-                                <div class="fw-bold text-dark">{{ $b->car->brand?->name }} {{ $b->car->name }}</div>
-                                @if($b->car->year)
-                                <div class="text-muted">{{ __('سنة:') }} {{ $b->car->year }}</div>
-                                @endif
-                                @if($b->total_price > 0)
-                                <div class="text-muted small">{{ number_format($b->total_price) }} {{ __('ر.س') }}</div>
-                                @endif
-                            </div>
-                            @else
-                            <div class="text-muted small">—</div>
-                            @endif
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center gap-1">
-                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-secondary" style="width:26px;height:26px;font-size:11px;">
-                                    <i class="bi bi-person-fill"></i>
+
+                        {{-- 2. Meta Info (انشاء / التعديل / الموظف / المصدر) + Client Contact (Left) --}}
+                        <td class="px-3 py-3">
+                            <div class="d-flex align-items-center justify-content-between gap-3">
+                                {{-- Client Info (Left) --}}
+                                <div class="text-start" style="min-width: 130px;">
+                                    <a href="{{ route('crm.bookings.show', $b) }}" class="fw-bold text-decoration-none text-dark d-block hover-primary" style="font-size: 14px;">
+                                        {{ $b->client_name }}
+                                    </a>
+                                    <div class="d-flex align-items-center gap-1.5 mt-1">
+                                        <a href="tel:{{ $b->client_phone }}" class="fw-bold text-decoration-none" style="color: #2563EB; font-size: 13px;" dir="ltr">
+                                            {{ $b->client_phone }}
+                                        </a>
+                                        <a href="https://wa.me/{{ preg_replace('/\D/', '', $b->client_phone) }}" target="_blank" class="text-success small" title="{{ __('واتساب') }}">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </a>
+                                    </div>
                                 </div>
-                                <span class="fw-bold text-dark small" style="font-size:12px;">{{ $b->employee?->name ?: __('غير معين') }}</span>
+
+                                {{-- Meta Key-Values (Right) --}}
+                                <div class="booking-meta-box">
+                                    <div class="booking-meta-item">
+                                        <span class="booking-meta-key">{{ __('انشاء :') }}</span>
+                                        <span class="booking-meta-val" title="{{ $b->created_at?->format('Y-m-d H:i') }}">{{ $createdDiff }}</span>
+                                    </div>
+                                    <div class="booking-meta-item">
+                                        <span class="booking-meta-key">{{ __('التعديل :') }}</span>
+                                        <span class="booking-meta-val fw-bold text-dark" title="{{ $b->updated_at?->format('Y-m-d H:i') }}">{{ $updatedDiff }}</span>
+                                    </div>
+                                    <div class="booking-meta-item">
+                                        <span class="booking-meta-key">{{ __('الموظف :') }}</span>
+                                        <span class="booking-meta-val">{{ $employeeName }}</span>
+                                    </div>
+                                    <div class="booking-meta-item">
+                                        <span class="booking-meta-key">{{ __('المصدر :') }}</span>
+                                        <span class="booking-meta-val">{{ $sourceName }}</span>
+                                    </div>
+                                </div>
                             </div>
                         </td>
-                        <td>
-                            <form action="{{ route('crm.bookings.status', $b) }}" method="POST" class="m-0 d-inline-block">
-                                @csrf @method('PATCH')
-                                <select name="status" class="form-select form-select-sm border shadow-none fw-bold"
-                                        style="font-size:12px;border-radius:8px;background:#F8FAFC;min-width:160px;cursor:pointer;"
-                                        data-current-status="{{ $b->status }}"
-                                        onchange="handleBookingStatusSelectChange(this, {{ $b->id }}, '{{ route('crm.bookings.status', $b) }}', {{ $isAdmin ? 'true' : 'false' }})">
-                                    <optgroup label="{{ __('المراحل النشطة (Active)') }}">
-                                        @foreach($statuses as $key => $s)
-                                            <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>⚡ {{ $s['label'] }}</option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="{{ __('حالات خاصة / معلقة') }}">
-                                        <option value="pending">⏳ {{ __('قيد الانتظار (مع موعد متابعة)') }}</option>
-                                    </optgroup>
-                                    <optgroup label="{{ __('تسليم الطلب (ناجح)') }}">
-                                        <option value="received" data-close="1">✅ {{ __('تم التسليم (المستلمة)') }}</option>
-                                    </optgroup>
-                                    <optgroup label="{{ __('إغلاق الحجز (خاسر)') }}">
-                                        @foreach(\App\Models\Booking::STATUSES as $key => $s)
-                                            @if(($s['group'] ?? '') === 'lost')
-                                                <option value="{{ $key }}" data-close="1">❌ {{ $s['label'] }}</option>
-                                            @endif
-                                        @endforeach
-                                    </optgroup>
-                                </select>
-                            </form>
+
+                        {{-- 3. Car Specifications --}}
+                        <td class="px-3 py-3" style="min-width: 200px;">
+                            <div class="booking-meta-box">
+                                <div class="booking-meta-item">
+                                    <span class="booking-meta-key">{{ __('الماركة :') }}</span>
+                                    <span class="booking-meta-val">{{ $brandName }}</span>
+                                </div>
+                                <div class="booking-meta-item">
+                                    <span class="booking-meta-key">{{ __('موديل :') }}</span>
+                                    <span class="booking-meta-val">{{ $modelName }}</span>
+                                </div>
+                                <div class="booking-meta-item">
+                                    <span class="booking-meta-key">{{ __('الفئة :') }}</span>
+                                    <span class="booking-meta-val">{{ $categoryName }}</span>
+                                </div>
+                                <div class="booking-meta-item">
+                                    <span class="booking-meta-key">{{ __('سنة الصنع :') }}</span>
+                                    <span class="booking-meta-val">{{ $yearVal }}</span>
+                                </div>
+                            </div>
                         </td>
-                        <td class="px-4">
-                            <div class="d-flex gap-1 align-items-center">
-                                <a href="{{ route('crm.bookings.show', $b) }}" class="btn btn-sm btn-light rounded-2 border" title="{{ __('عرض وتعديل التفاصيل') }}">
-                                    <i class="bi bi-eye" style="font-size:14px;color:var(--crm-text);"></i>
+
+                        {{-- 4. Status & Payment --}}
+                        <td class="px-3 py-3" style="min-width: 250px;">
+                            <div class="d-flex align-items-center justify-content-between gap-3">
+                                {{-- Payment Pill --}}
+                                <div>
+                                    @if($isPaid)
+                                        <span class="badge-payment badge-paid">
+                                            <span class="dot">●</span> {{ __('مدفوع') }}
+                                        </span>
+                                    @else
+                                        <span class="badge-payment badge-unpaid">
+                                            <span class="dot">●</span> {{ __('غير مدفوع') }}
+                                        </span>
+                                    @endif
+                                </div>
+
+                                {{-- Status Info --}}
+                                <div class="booking-meta-box text-end">
+                                    <div class="booking-meta-item justify-content-end">
+                                        <span class="booking-meta-key">{{ __('حالة الطلب :') }}</span>
+                                        <span class="booking-meta-val fw-semibold text-dark">{{ $statusLabel }}</span>
+                                    </div>
+                                    <div class="booking-meta-item justify-content-end">
+                                        <span class="booking-meta-key">{{ __('الحالة الرئيسية :') }}</span>
+                                        <span class="booking-meta-val text-muted">{{ $mainStatusGroup }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        {{-- 5. Actions (Far Left) --}}
+                        <td class="px-4 py-3 text-start" style="width: 120px;">
+                            <div class="d-flex align-items-center justify-content-end gap-2">
+                                <a href="{{ route('crm.bookings.show', $b) }}" class="btn-action-square" title="{{ __('عرض تفاصيل الطلب') }}">
+                                    <i class="bi bi-eye"></i>
                                 </a>
-                                <a href="https://wa.me/{{ preg_replace('/\D/', '', $b->client_phone) }}" target="_blank" class="btn btn-sm btn-light rounded-2 border" title="{{ __('مراسلة واتساب') }}" style="color:#25D366;">
-                                    <i class="bi bi-whatsapp" style="font-size:14px;"></i>
+                                <a href="{{ route('crm.bookings.show', $b) }}" class="btn-action-square" title="{{ __('تعديل الطلب') }}">
+                                    <i class="bi bi-pencil-square"></i>
                                 </a>
-                                {{-- الحذف متاح للأدمن فقط --}}
                                 @if($isAdmin)
-                                <form action="{{ route('crm.bookings.destroy', $b) }}" method="POST" class="m-0"
+                                <form action="{{ route('crm.bookings.destroy', $b) }}" method="POST" class="m-0 d-inline"
                                       onsubmit="return confirm('{{ __('هل تريد حذف هذا الطلب نهائياً؟') }}')">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-light rounded-2 border" style="color:var(--crm-red);" title="{{ __('حذف الطلب') }}">
-                                        <i class="bi bi-trash" style="font-size:14px;"></i>
+                                    <button type="submit" class="btn-action-square text-danger" title="{{ __('حذف الطلب') }}">
+                                        <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
                                 @endif
@@ -498,7 +762,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center text-muted py-5">
+                        <td colspan="5" class="text-center text-muted py-5">
                             <i class="bi bi-inbox fs-1 d-block mb-2 opacity-25"></i>
                             <div class="fw-bold">{{ __('لا توجد طلبات نشطة حالياً مطابقة للشروط') }}</div>
                         </td>
@@ -508,88 +772,140 @@
             </table>
         </div>
 
-        {{-- Mobile Cards --}}
-        <div class="d-md-none p-3">
-            @forelse($bookings as $b)
-            <div class="mb-3 p-3 rounded-3 shadow-sm border" style="background:#fff;">
-                <div class="d-flex justify-content-between align-items-start mb-2">
+        {{-- Mobile / Tablet Cards --}}
+        <div class="d-lg-none p-3">
+            @forelse($bookings as $index => $b)
+            @php
+                $updatedDiff = '—';
+                if ($b->updated_at) {
+                    if ($b->updated_at->diffInHours(now()) < 24) {
+                        $updatedDiff = __('اقل من 24 ساعة');
+                    } else {
+                        $updatedDiff = $b->updated_at->diffForHumans();
+                    }
+                }
+                $createdDiff = $b->created_at ? $b->created_at->diffForHumans() : '—';
+                $employeeName = $b->employee?->name ?? __('لايوجد');
+                $sourceName = $b->source ?: ($b->calculator_bank_id ? __('حاسبة تمويل') : __('لايوجد'));
+                $brandName = $b->car?->brand?->name ?? __('لايوجد');
+                $modelName = $b->car?->carModel?->name ?? ($b->car?->model ?? ($b->car?->name ?? __('لايوجد')));
+                $categoryName = $b->car?->category?->name ?? ($b->car?->type ?? __('لايوجد'));
+                $yearVal = $b->car?->year ?? __('لايوجد');
+                $statusLabel = $statuses[$b->status]['label'] ?? ($b->status_label ?? '—');
+                $mainStatusGroup = match(\App\Models\Booking::STATUSES[$b->status]['group'] ?? 'active') {
+                    'active' => __('مفتوح'),
+                    'lost' => __('مغلق'),
+                    'received' => __('مكتمل'),
+                    default => __('مفتوح')
+                };
+                $isPaid = $b->down_payment > 0 || in_array($b->status, ['authorized', 'received']);
+            @endphp
+            <div class="mb-3 p-3 rounded-4 shadow-sm border bg-white" style="border: 1px solid #ECEEF2 !important;">
+                {{-- Header: ID + Payment + Index --}}
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-muted small fw-bold">#{{ $bookings->firstItem() + $index }}</span>
+                        <a href="{{ route('crm.bookings.show', $b) }}" class="booking-id-badge">
+                            {{ $b->id }}
+                        </a>
+                    </div>
                     <div>
-                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <a href="{{ route('crm.bookings.show', $b) }}" class="fw-bold text-decoration-none" style="color:var(--crm-red);font-size:14px;">#{{ $b->id }}</a>
-                            @if($b->source === 'calculator' || $b->calculator_bank_id)
-                                <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
-                                    <i class="bi bi-calculator me-1"></i>{{ __('حاسبة تمويل') }}
-                                </span>
-                            @elseif($b->booking_type === 'test_drive')
-                                <span class="badge" style="background-color: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
-                                    <i class="bi bi-speedometer2 me-1"></i>{{ __('تجربة قيادة') }}
-                                </span>
-                            @else
-                                <span class="badge" style="background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
-                                    <i class="bi bi-car-front me-1"></i>{{ __('طلب سيارة') }}
-                                </span>
-                            @endif
-                        </div>
-                        <div class="fw-bold mt-1" style="font-size:14px;color:var(--crm-text);">
-                            {{ $b->client_name }}
-                        </div>
-                        <div style="font-size:12px;color:var(--crm-text-muted);" dir="ltr">{{ $b->client_phone }}</div>
+                        @if($isPaid)
+                            <span class="badge-payment badge-paid">
+                                <span class="dot">●</span> {{ __('مدفوع') }}
+                            </span>
+                        @else
+                            <span class="badge-payment badge-unpaid">
+                                <span class="dot">●</span> {{ __('غير مدفوع') }}
+                            </span>
+                        @endif
                     </div>
                 </div>
 
-                {{-- Car & Employee --}}
-                <div class="d-flex justify-content-between align-items-center small text-muted mb-2 pt-2 border-top">
-                    <div><i class="bi bi-car-front me-1"></i> {{ $b->car?->brand?->name }} {{ $b->car?->name ?? '—' }}</div>
-                    <div><i class="bi bi-person me-1"></i> {{ $b->employee?->name ?? __('غير معين') }}</div>
+                {{-- Client Info --}}
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <a href="{{ route('crm.bookings.show', $b) }}" class="fw-bold text-dark text-decoration-none" style="font-size: 14px;">
+                            {{ $b->client_name }}
+                        </a>
+                        <div class="d-flex align-items-center gap-1.5 mt-0.5">
+                            <a href="tel:{{ $b->client_phone }}" class="fw-bold text-decoration-none" style="color: #2563EB; font-size: 13px;" dir="ltr">
+                                {{ $b->client_phone }}
+                            </a>
+                            <a href="https://wa.me/{{ preg_replace('/\D/', '', $b->client_phone) }}" target="_blank" class="text-success small" title="{{ __('واتساب') }}">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
-                {{-- Status Select --}}
-                <div class="mt-2">
-                    <label class="form-label small fw-bold text-muted mb-1">{{ __('الحالة:') }}</label>
-                    <form action="{{ route('crm.bookings.status', $b) }}" method="POST">
-                        @csrf @method('PATCH')
-                        <select name="status" class="form-select form-select-sm"
-                                style="font-size:12px;border-radius:8px;"
-                                data-current-status="{{ $b->status }}"
-                                onchange="handleBookingStatusSelectChange(this, {{ $b->id }}, '{{ route('crm.bookings.status', $b) }}', {{ $isAdmin ? 'true' : 'false' }})">
-                            <optgroup label="{{ __('المراحل النشطة (Active)') }}">
-                                @foreach($statuses as $key => $s)
-                                    <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>⚡ {{ $s['label'] }}</option>
-                                @endforeach
-                            </optgroup>
-                            <optgroup label="{{ __('حالات خاصة / معلقة') }}">
-                                <option value="pending">⏳ {{ __('قيد الانتظار') }}</option>
-                            </optgroup>
-                            <optgroup label="{{ __('تسليم الطلب (ناجح)') }}">
-                                <option value="received" data-close="1">✅ {{ __('تم التسليم') }}</option>
-                            </optgroup>
-                            <optgroup label="{{ __('إغلاق الحجز (خاسر)') }}">
-                                @foreach(\App\Models\Booking::STATUSES as $key => $s)
-                                    @if(($s['group'] ?? '') === 'lost')
-                                        <option value="{{ $key }}" data-close="1">❌ {{ $s['label'] }}</option>
-                                    @endif
-                                @endforeach
-                            </optgroup>
-                        </select>
-                    </form>
+                {{-- Metadata Grid --}}
+                <div class="p-2.5 rounded-3 mb-2" style="background:#F8FAFC; font-size:12px;">
+                    <div class="row g-1">
+                        <div class="col-6">
+                            <span class="text-muted">{{ __('انشاء:') }}</span>
+                            <span class="fw-semibold">{{ $createdDiff }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted">{{ __('التعديل:') }}</span>
+                            <span class="fw-bold text-dark">{{ $updatedDiff }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted">{{ __('الموظف:') }}</span>
+                            <span class="fw-semibold">{{ $employeeName }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted">{{ __('المصدر:') }}</span>
+                            <span class="fw-semibold">{{ $sourceName }}</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="d-flex gap-2 mt-3">
-                    <a href="{{ route('crm.bookings.show', $b) }}" class="btn btn-sm btn-light rounded-2 flex-fill text-center" style="font-size:12px;">
-                        <i class="bi bi-eye"></i> {{ __('عرض') }}
-                    </a>
-                    <a href="https://wa.me/{{ preg_replace('/\D/', '', $b->client_phone) }}" target="_blank" class="btn btn-sm btn-light rounded-2 flex-fill text-center" style="font-size:12px;color:#25D366;">
-                        <i class="bi bi-whatsapp"></i> {{ __('واتساب') }}
-                    </a>
-                    @if($isAdmin)
-                    <form action="{{ route('crm.bookings.destroy', $b) }}" method="POST" class="m-0"
-                          onsubmit="return confirm('{{ __('هل تريد حذف هذا الطلب؟') }}')">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-light rounded-2 border text-danger" title="{{ __('حذف') }}">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </form>
-                    @endif
+                {{-- Car Specs --}}
+                <div class="p-2.5 rounded-3 mb-2" style="background:#FFF9F5; font-size:12px; border:1px solid #FFEDD5;">
+                    <div class="row g-1">
+                        <div class="col-6">
+                            <span class="text-muted">{{ __('الماركة:') }}</span>
+                            <span class="fw-bold text-dark">{{ $brandName }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted">{{ __('موديل:') }}</span>
+                            <span class="fw-bold text-dark">{{ $modelName }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted">{{ __('الفئة:') }}</span>
+                            <span class="fw-semibold">{{ $categoryName }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted">{{ __('سنة الصنع:') }}</span>
+                            <span class="fw-semibold">{{ $yearVal }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Status & Actions --}}
+                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                    <div style="font-size:12px;">
+                        <span class="text-muted">{{ __('حالة الطلب:') }}</span>
+                        <span class="fw-bold text-dark">{{ $statusLabel }}</span>
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                        <a href="{{ route('crm.bookings.show', $b) }}" class="btn-action-square" title="{{ __('عرض') }}">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="{{ route('crm.bookings.show', $b) }}" class="btn-action-square" title="{{ __('تعديل') }}">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        @if($isAdmin)
+                        <form action="{{ route('crm.bookings.destroy', $b) }}" method="POST" class="m-0"
+                              onsubmit="return confirm('{{ __('هل تريد حذف هذا الطلب؟') }}')">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn-action-square text-danger" title="{{ __('حذف') }}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                        @endif
+                    </div>
                 </div>
             </div>
             @empty
@@ -601,8 +917,10 @@
         </div>
 
         @if($bookings->hasPages())
-        <div class="card-footer bg-white border-0 py-3" style="border-top:1px solid var(--crm-border)!important;">
-            {{ $bookings->links() }}
+        <div class="card-footer bg-white border-0 py-4 d-flex justify-content-center" style="border-top:1px solid var(--crm-border)!important;">
+            <div class="crm-pagination-wrapper">
+                {{ $bookings->links() }}
+            </div>
         </div>
         @endif
     </div>

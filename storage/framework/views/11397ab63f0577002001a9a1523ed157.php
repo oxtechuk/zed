@@ -144,6 +144,7 @@
                 <li>
                     <a href="<?php echo e(route('crm.offers.index')); ?>"
                        class="crm-sub-link <?php echo e(str_starts_with($r,'crm.offers') ? 'active' : ''); ?>">
+                        <i class="bi bi-tags"></i> <?php echo e(__('العروض')); ?>
 
                     </a>
                 </li>
@@ -320,12 +321,39 @@
 
         
         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage-reports')): ?>
+        <?php
+            $reportsOpen = $groupActive(['crm.reports.bookings', 'crm.reports.sources', 'crm.reports.monthly']);
+        ?>
         <div class="crm-nav-section">
-            <a href="<?php echo e(route('crm.reports.bookings')); ?>"
-               class="crm-nav-link <?php echo e(str_starts_with($r,'crm.reports') ? 'active' : ''); ?>">
+            <button class="crm-nav-link crm-group-toggle <?php echo e($reportsOpen ? 'active' : ''); ?>"
+                    onclick="toggleGroup('g-reports')">
                 <i class="bi bi-graph-up-arrow"></i>
-                <span><?php echo e(__('التقارير')); ?></span>
-            </a>
+                <span><?php echo e(__('التقارير والتحليلات')); ?></span>
+                <i class="bi bi-chevron-<?php echo e($reportsOpen ? 'up' : 'down'); ?> crm-chevron"></i>
+            </button>
+            <ul id="g-reports" class="crm-sub-list <?php echo e($reportsOpen ? 'open' : ''); ?>">
+                <li>
+                    <a href="<?php echo e(route('crm.reports.sources')); ?>"
+                       class="crm-sub-link <?php echo e($r === 'crm.reports.sources' ? 'active' : ''); ?>">
+                        <i class="bi bi-bullseye text-primary"></i> <?php echo e(__('مصادر العملاء والحملات')); ?>
+
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo e(route('crm.reports.bookings')); ?>"
+                       class="crm-sub-link <?php echo e($r === 'crm.reports.bookings' ? 'active' : ''); ?>">
+                        <i class="bi bi-wallet2"></i> <?php echo e(__('التقرير الشامل والمبيعات')); ?>
+
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo e(route('crm.reports.monthly')); ?>"
+                       class="crm-sub-link <?php echo e($r === 'crm.reports.monthly' ? 'active' : ''); ?>">
+                        <i class="bi bi-calendar-range"></i> <?php echo e(__('التقرير الشهري')); ?>
+
+                    </a>
+                </li>
+            </ul>
         </div>
         <?php endif; ?>
 

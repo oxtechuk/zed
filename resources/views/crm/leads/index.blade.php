@@ -150,9 +150,9 @@
                     {{-- مصدر ونوع الطلب --}}
                     <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
                         <option value="">{{ __('المصدر والنوع — الكل') }}</option>
-                        <option value="cars" {{ request('source')==='cars'?'selected':'' }}>🚗 {{ __('طلبات السيارات (حجز وشراء)') }}</option>
-                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>🧮 {{ __('عملاء حاسبة التمويل') }}</option>
-                        <option value="crm_manual" {{ request('source')==='crm_manual'?'selected':'' }}>📋 {{ __('طلبات داخلية (CRM)') }}</option>
+                        <option value="cars" {{ request('source')==='cars'?'selected':'' }}>{{ __('طلبات السيارات (حجز وشراء)') }}</option>
+                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>{{ __('عملاء حاسبة التمويل') }}</option>
+                        <option value="crm_manual" {{ request('source')==='crm_manual'?'selected':'' }}>{{ __('طلبات داخلية (CRM)') }}</option>
                     </select>
 
                     {{-- فلتر الحالة (يتكيف تلقائياً مع التبويب المختار: مغلقة / نشطة / مستلمة / الكل) --}}

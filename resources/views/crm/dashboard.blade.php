@@ -51,27 +51,32 @@
 
     {{-- ===== شريط الإحصائيات العلوي ===== --}}
     <div class="d-flex gap-3 mb-4 pb-1" style="overflow-x:auto;">
-        <a href="{{ route('crm.bookings.index') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:210px;">
+        <a href="{{ route('crm.bookings.index') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:200px;">
             <div class="stat-icon blue"><i class="bi bi-lightning-charge"></i></div>
             <div class="stat-lbl">{{ __('الطلبات النشطة (Active)') }}</div>
             <div class="stat-val text-primary">{{ number_format($stats['open']) }}</div>
         </a>
-        <a href="{{ route('crm.bookings.pending') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:210px;">
+        <a href="{{ route('crm.bookings.pending') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:200px;">
             <div class="stat-icon orange"><i class="bi bi-hourglass-split"></i></div>
             <div class="stat-lbl">{{ __('قيد الانتظار') }}</div>
             <div class="stat-val text-warning-dark">{{ number_format($stats['pending']) }}</div>
         </a>
-        <a href="{{ route('crm.bookings.delivered') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:210px;">
+        <a href="{{ route('crm.bookings.delivered') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:200px;">
             <div class="stat-icon green"><i class="bi bi-check2-circle"></i></div>
             <div class="stat-lbl">{{ __('تم التسليم (المستلمة)') }}</div>
             <div class="stat-val text-success">{{ number_format($stats['completed']) }}</div>
         </a>
-        <a href="{{ route('crm.bookings.closed') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:210px;">
+        <a href="{{ route('crm.bookings.delivered') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:230px;background:linear-gradient(135deg,#FFF,#F0FDF4);">
+            <div class="stat-icon green"><i class="bi bi-wallet2"></i></div>
+            <div class="stat-lbl">{{ __('صافي العمولات (الأرباح)') }}</div>
+            <div class="stat-val text-success" style="font-size:1.35rem;">{{ number_format($stats['total_commission'], 2) }} <small style="font-size:11px;">ر.س</small></div>
+        </a>
+        <a href="{{ route('crm.bookings.closed') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:200px;">
             <div class="stat-icon red"><i class="bi bi-folder-x"></i></div>
             <div class="stat-lbl">{{ __('الطلبات المغلقة') }}</div>
             <div class="stat-val text-danger">{{ number_format($stats['closed']) }}</div>
         </a>
-        <a href="{{ route('crm.bookings.index') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:210px;">
+        <a href="{{ route('crm.bookings.index') }}" class="crm-stat-new flex-shrink-0 text-decoration-none" style="min-width:200px;">
             <div class="stat-icon purple"><i class="bi bi-collection"></i></div>
             <div class="stat-lbl">{{ __('إجمالي الطلبات') }}</div>
             <div class="stat-val" style="color:#7C3AED;">{{ number_format($stats['total']) }}</div>

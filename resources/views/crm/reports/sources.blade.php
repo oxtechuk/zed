@@ -103,12 +103,12 @@
         <div class="col-6 col-lg-3">
             <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="background: linear-gradient(135deg, #2563EB, #1D4ED8); color:#fff;">
                 <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="small fw-bold opacity-75">{{ __('قيمة المبيعات المحققة') }}</span>
-                    <i class="bi bi-cash-stack fs-5 opacity-50"></i>
+                    <span class="small fw-bold opacity-75">{{ __('إجمالي صافي العمولات (الأرباح)') }}</span>
+                    <i class="bi bi-wallet2 fs-5 opacity-50"></i>
                 </div>
                 <div class="fs-3 fw-black">{{ number_format($totalRevenue) }} <span class="fs-6 fw-normal">ر.س</span></div>
                 <div class="small opacity-75 mt-1" style="font-size:11px;">
-                    {{ __('من كافة القنوات الإعلانية') }}
+                    {{ __('صافي الربح الفعلي المحقق') }}
                 </div>
             </div>
         </div>
@@ -184,8 +184,8 @@
 
                     {{-- Financial Value --}}
                     <div class="d-flex justify-content-between align-items-center py-2 px-2.5 bg-light rounded-3 mb-2" style="font-size: 12px;">
-                        <span class="text-muted">{{ __('قيمة المبيعات المحققة:') }}</span>
-                        <strong class="text-dark">{{ number_format($p['total_revenue']) }} ر.س</strong>
+                        <span class="text-muted">{{ __('صافي العمولات المحققة:') }}</span>
+                        <strong class="text-success">{{ number_format($p['total_revenue']) }} ر.س</strong>
                     </div>
 
                     {{-- Progress Bar for Channel Share --}}
@@ -223,7 +223,7 @@
                                 <th class="py-3 text-muted fw-bold">{{ __('المنصة') }}</th>
                                 <th class="py-3 text-muted fw-bold text-center">{{ __('الطلبات') }}</th>
                                 <th class="py-3 text-muted fw-bold text-center">{{ __('المبيعات') }}</th>
-                                <th class="py-3 text-muted fw-bold text-end px-4">{{ __('قيمة المبيعات') }}</th>
+                                <th class="py-3 text-muted fw-bold text-end px-4">{{ __('صافي العمولات المحققة') }}</th>
                             </tr>
                         </thead>
                         <tbody style="font-size:13px;">

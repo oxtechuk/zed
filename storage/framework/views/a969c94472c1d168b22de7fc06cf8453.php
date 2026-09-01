@@ -101,8 +101,9 @@
                     
                     <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
                         <option value=""><?php echo e(__('المصدر والنوع — الكل')); ?></option>
-                        <option value="cars" <?php echo e(request('source')==='cars'?'selected':''); ?>>🚗 <?php echo e(__('طلبات السيارات (حجز وشراء)')); ?></option>
-                        <option value="calculator" <?php echo e(request('source')==='calculator'?'selected':''); ?>>🧮 <?php echo e(__('عملاء حاسبة التمويل')); ?></option>
+                        <option value="cars" <?php echo e(request('source')==='cars'?'selected':''); ?>><?php echo e(__('طلبات السيارات (حجز وشراء)')); ?></option>
+                        <option value="calculator" <?php echo e(request('source')==='calculator'?'selected':''); ?>><?php echo e(__('عملاء حاسبة التمويل')); ?></option>
+                        <option value="test_drive" <?php echo e(request('source')==='test_drive'?'selected':''); ?>><?php echo e(__('طلبات تجربة القيادة')); ?></option>
                     </select>
 
                     
@@ -216,24 +217,24 @@
                                         style="font-size:12px;border-radius:8px;background:#F8FAFC;min-width:150px;cursor:pointer;"
                                         data-current-status="pending"
                                         onchange="handleBookingStatusSelectChange(this, <?php echo e($b->id); ?>, '<?php echo e(route('crm.bookings.status', $b)); ?>', <?php echo e($isAdmin ? 'true' : 'false'); ?>)">
-                                    <option value="pending" selected>⏳ <?php echo e(__('قيد الانتظار')); ?></option>
+                                    <option value="pending" selected><?php echo e(__('قيد الانتظار')); ?></option>
                                     <optgroup label="<?php echo e(__('إرجاع إلى مسار المبيعات النشط')); ?>">
-                                        <?php $__currentLoopData = $allStatuses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <?php if(($s['group'] ?? '') === 'active' && !($s['is_close'] ?? false) && $key !== 'pending' && $key !== 'waiting_supervisor_approval'): ?>
-                                                <option value="<?php echo e($key); ?>">⚡ <?php echo e($s['label']); ?></option>
-                                            <?php endif; ?>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </optgroup>
-                                    <optgroup label="<?php echo e(__('تسليم الطلب (ناجح)')); ?>">
-                                        <option value="received" data-close="1">✅ <?php echo e(__('تم التسليم (تم الاستلام)')); ?></option>
-                                    </optgroup>
-                                    <optgroup label="<?php echo e(__('إغلاق الحجز (خاسر)')); ?>">
-                                        <?php $__currentLoopData = $allStatuses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <?php if(($s['group'] ?? '') === 'lost'): ?>
-                                                <option value="<?php echo e($key); ?>" data-close="1">❌ <?php echo e($s['label']); ?></option>
-                                            <?php endif; ?>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                    </optgroup>
+                                         <?php $__currentLoopData = $allStatuses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                             <?php if(($s['group'] ?? '') === 'active' && !($s['is_close'] ?? false) && $key !== 'pending' && $key !== 'waiting_supervisor_approval'): ?>
+                                                 <option value="<?php echo e($key); ?>"><?php echo e($s['label']); ?></option>
+                                             <?php endif; ?>
+                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                     </optgroup>
+                                     <optgroup label="<?php echo e(__('تسليم الطلب (ناجح)')); ?>">
+                                         <option value="received" data-close="1"><?php echo e(__('تم التسليم (تم الاستلام)')); ?></option>
+                                     </optgroup>
+                                     <optgroup label="<?php echo e(__('إغلاق الحجز (خاسر)')); ?>">
+                                         <?php $__currentLoopData = $allStatuses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                             <?php if(($s['group'] ?? '') === 'lost'): ?>
+                                                 <option value="<?php echo e($key); ?>" data-close="1"><?php echo e($s['label']); ?></option>
+                                             <?php endif; ?>
+                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                     </optgroup>
                                 </select>
                             </form>
                         </td>
@@ -285,7 +286,7 @@
                         <div style="font-size:12px;color:var(--crm-text-muted);" dir="ltr"><?php echo e($b->client_phone); ?></div>
                     </div>
                     <span class="badge" style="background:#FEF3C7;color:#D97706;font-size:11px;">
-                        ⏳ <?php echo e(__('قيد الانتظار')); ?>
+                        <i class="bi bi-hourglass-split me-1"></i> <?php echo e(__('قيد الانتظار')); ?>
 
                     </span>
                 </div>
@@ -315,21 +316,21 @@
                                 style="font-size:12px;border-radius:8px;"
                                 data-current-status="pending"
                                 onchange="handleBookingStatusSelectChange(this, <?php echo e($b->id); ?>, '<?php echo e(route('crm.bookings.status', $b)); ?>', <?php echo e($isAdmin ? 'true' : 'false'); ?>)">
-                            <option value="pending" selected>⏳ <?php echo e(__('قيد الانتظار')); ?></option>
+                            <option value="pending" selected><?php echo e(__('قيد الانتظار')); ?></option>
                             <optgroup label="<?php echo e(__('إرجاع إلى مسار المبيعات النشط')); ?>">
                                 <?php $__currentLoopData = $allStatuses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <?php if(($s['group'] ?? '') === 'active' && !($s['is_close'] ?? false) && $key !== 'pending' && $key !== 'waiting_supervisor_approval'): ?>
-                                        <option value="<?php echo e($key); ?>">⚡ <?php echo e($s['label']); ?></option>
+                                        <option value="<?php echo e($key); ?>"><?php echo e($s['label']); ?></option>
                                     <?php endif; ?>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </optgroup>
                             <optgroup label="<?php echo e(__('تسليم الطلب (ناجح)')); ?>">
-                                <option value="received" data-close="1">✅ <?php echo e(__('تم التسليم')); ?></option>
+                                <option value="received" data-close="1"><?php echo e(__('تم التسليم')); ?></option>
                             </optgroup>
                             <optgroup label="<?php echo e(__('إغلاق الحجز (خاسر)')); ?>">
                                 <?php $__currentLoopData = $allStatuses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <?php if(($s['group'] ?? '') === 'lost'): ?>
-                                        <option value="<?php echo e($key); ?>" data-close="1">❌ <?php echo e($s['label']); ?></option>
+                                        <option value="<?php echo e($key); ?>" data-close="1"><?php echo e($s['label']); ?></option>
                                     <?php endif; ?>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </optgroup>

@@ -192,17 +192,17 @@
                                     <optgroup label="{{ __('إرجاع إلى مسار المبيعات النشط') }}">
                                         @foreach(\App\Models\Booking::STATUSES as $key => $s)
                                             @if(($s['group'] ?? '') === 'active' && !($s['is_close'] ?? false) && $key !== 'pending' && $key !== 'waiting_supervisor_approval')
-                                                <option value="{{ $key }}">⚡ {{ $s['label'] }}</option>
+                                                <option value="{{ $key }}">{{ $s['label'] }}</option>
                                             @endif
                                         @endforeach
                                     </optgroup>
                                     <optgroup label="{{ __('حالات أخرى') }}">
-                                        <option value="pending">⏳ {{ __('قيد الانتظار') }}</option>
-                                        <option value="received" data-close="1">✅ {{ __('تم التسليم') }}</option>
+                                        <option value="pending">{{ __('قيد الانتظار') }}</option>
+                                        <option value="received" data-close="1">{{ __('تم التسليم') }}</option>
                                     </optgroup>
                                     <optgroup label="{{ __('تعديل سبب الإغلاق') }}">
                                         @foreach($statuses as $key => $s)
-                                            <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>❌ {{ $s['label'] }}</option>
+                                            <option value="{{ $key }}" {{ $b->status === $key ? 'selected' : '' }}>{{ $s['label'] }}</option>
                                         @endforeach
                                     </optgroup>
                                 </select>
