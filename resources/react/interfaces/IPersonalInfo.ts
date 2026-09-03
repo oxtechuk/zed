@@ -6,4 +6,9 @@ export interface IPersonalInfo {
   salary: string;
   obligations: string;
   message: string;
+  employerType?: string;
+  hasMortgageLoan?: boolean;
+  hasPersonalLoan?: boolean;
+  hasTrafficViolations?: boolean;
+  hasSimahDefault?: boolean;
 }

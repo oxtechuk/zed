@@ -25,4 +25,5 @@ export interface ISettingsData {
   contact: IContactInfo; 
   social_media: ISocialMediaItem[];
   about_branches?: IAboutBranch[];
+  calculator_default_interest_rate?: string | number;
 }

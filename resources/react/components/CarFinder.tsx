@@ -154,8 +154,8 @@ export default function CarFinder({
 
                 {/* Filter Selects Panel */}
                 {filtersOpen && (
-                    <div class="mt-6 rounded-2xl border border-[#E7E9EF] bg-white p-6 shadow-sm">
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                    <div className="mt-6 rounded-2xl border border-[#E7E9EF] bg-white p-6 shadow-sm">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
                             {/* Brand */}
                             <div>
                                 <label className={`mb-2 block text-[12px] font-bold text-[#64748B] ${isRTL ? "text-right" : "text-left"}`}>

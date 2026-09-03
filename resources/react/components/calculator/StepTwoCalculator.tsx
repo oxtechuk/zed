@@ -50,10 +50,12 @@ export default function StepTwoCalculator({
     // Get selected bank rate
     const selectedBank = banks.find((b) => b.id === selectedBankId);
     const annualRate = selectedBank
-        ? parseFloat(selectedBank.annual_rate)
-        : parseFloat(settings?.calculator_default_interest_rate || "4.5");
+        ? Number(selectedBank.annual_rate)
+        : Number(settings?.calculator_default_interest_rate ?? 4.5);
 
     const carPrice = selectedCar?.price || 0;
+    const minDownPayment = 0;
+    const maxDownPayment = carPrice > 0 ? Math.round(carPrice * 0.5) : 100000;
     const downPaymentPercent = carPrice > 0 ? (downPayment / carPrice) * 100 : 0;
 
     // Client-side fallback calculation

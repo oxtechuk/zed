@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef, FormEvent } from "react";
+import { useEffect, useState, useMemo, useRef, type FormEvent } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
@@ -154,7 +154,7 @@ export function useCarRequest() {
                 hex: c.hex,
             }));
         }
-        return activeCar.colors.map((c) => ({
+        return activeCar.colors.map((c: { name: string; hex?: string }) => ({
             name: c.name,
             hex: c.hex || "#CCCCCC",
         }));
