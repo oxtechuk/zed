@@ -608,16 +608,9 @@
                 <tbody class="border-top-0">
                     @forelse($bookings as $index => $b)
                     @php
-                        // Calculate relative update time
-                        $updatedDiff = '—';
-                        if ($b->updated_at) {
-                            if ($b->updated_at->diffInHours(now()) < 24) {
-                                $updatedDiff = __('اقل من 24 ساعة');
-                            } else {
-                                $updatedDiff = $b->updated_at->diffForHumans();
-                            }
-                        }
-
+                        // Calculate relative update time based on latest activity
+                        $lastUpdated = $b->last_activity_at ?? $b->updated_at ?? $b->created_at;
+                        $updatedDiff = $lastUpdated ? $lastUpdated->diffForHumans() : '—';
                         $createdDiff = $b->created_at ? $b->created_at->diffForHumans() : '—';
                         $employeeName = $b->employee?->name ?? __('لايوجد');
                         $sourceName = $b->source ?: ($b->calculator_bank_id ? __('حاسبة تمويل') : __('لايوجد'));
@@ -673,7 +666,7 @@
                                     </div>
                                     <div class="booking-meta-item">
                                         <span class="booking-meta-key">{{ __('التعديل :') }}</span>
-                                        <span class="booking-meta-val fw-bold text-dark" title="{{ $b->updated_at?->format('Y-m-d H:i') }}">{{ $updatedDiff }}</span>
+                                        <span class="booking-meta-val fw-bold text-dark" title="{{ $lastUpdated?->format('Y-m-d H:i') }}">{{ $updatedDiff }}</span>
                                     </div>
                                     <div class="booking-meta-item">
                                         <span class="booking-meta-key">{{ __('الموظف :') }}</span>
@@ -776,14 +769,8 @@
         <div class="d-lg-none p-3">
             @forelse($bookings as $index => $b)
             @php
-                $updatedDiff = '—';
-                if ($b->updated_at) {
-                    if ($b->updated_at->diffInHours(now()) < 24) {
-                        $updatedDiff = __('اقل من 24 ساعة');
-                    } else {
-                        $updatedDiff = $b->updated_at->diffForHumans();
-                    }
-                }
+                $lastUpdated = $b->last_activity_at ?? $b->updated_at ?? $b->created_at;
+                $updatedDiff = $lastUpdated ? $lastUpdated->diffForHumans() : '—';
                 $createdDiff = $b->created_at ? $b->created_at->diffForHumans() : '—';
                 $employeeName = $b->employee?->name ?? __('لايوجد');
                 $sourceName = $b->source ?: ($b->calculator_bank_id ? __('حاسبة تمويل') : __('لايوجد'));
@@ -848,7 +835,7 @@
                         </div>
                         <div class="col-6">
                             <span class="text-muted">{{ __('التعديل:') }}</span>
-                            <span class="fw-bold text-dark">{{ $updatedDiff }}</span>
+                            <span class="fw-bold text-dark" title="{{ $lastUpdated?->format('Y-m-d H:i') }}">{{ $updatedDiff }}</span>
                         </div>
                         <div class="col-6">
                             <span class="text-muted">{{ __('الموظف:') }}</span>

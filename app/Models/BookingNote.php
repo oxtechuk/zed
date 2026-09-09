@@ -9,6 +9,8 @@ class BookingNote extends Model
 {
     protected $fillable = ['booking_id', 'employee_id', 'note', 'type', 'old_status', 'new_status'];
 
+    protected $touches = ['booking'];
+
     public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class);

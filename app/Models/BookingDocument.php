@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BookingDocument extends Model
 {
@@ -14,12 +15,14 @@ class BookingDocument extends Model
         'file_type',
     ];
 
-    public function booking()
+    protected $touches = ['booking'];
+
+    public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class);
     }
 
-    public function employee()
+    public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
     }

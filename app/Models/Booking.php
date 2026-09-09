@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -282,6 +283,31 @@ class Booking extends Model
         }
 
         return null;
+    }
+
+    public function getLastActivityAtAttribute(): ?Carbon
+    {
+        $dates = collect([
+            $this->updated_at,
+            $this->created_at,
+        ]);
+
+        if ($this->relationLoaded('notes_list') && $this->notes_list->isNotEmpty()) {
+            $dates->push($this->notes_list->max('created_at'));
+            $dates->push($this->notes_list->max('updated_at'));
+        }
+
+        if ($this->relationLoaded('documents') && $this->documents->isNotEmpty()) {
+            $dates->push($this->documents->max('created_at'));
+            $dates->push($this->documents->max('updated_at'));
+        }
+
+        if ($this->relationLoaded('tasks') && $this->tasks->isNotEmpty()) {
+            $dates->push($this->tasks->max('created_at'));
+            $dates->push($this->tasks->max('updated_at'));
+        }
+
+        return $dates->filter()->map(fn ($d) => $d instanceof Carbon ? $d : Carbon::parse($d))->max();
     }
 
     public function scopeNew($query)

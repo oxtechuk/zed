@@ -16,6 +16,21 @@ class Task extends Model
         'due_date' => 'date',
     ];
 
+    protected static function booted(): void
+    {
+        static::saved(function (Task $task) {
+            if ($task->booking_id) {
+                $task->booking?->touch();
+            }
+        });
+
+        static::deleted(function (Task $task) {
+            if ($task->booking_id) {
+                $task->booking?->touch();
+            }
+        });
+    }
+
     public function assignedTo(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'assigned_to');
