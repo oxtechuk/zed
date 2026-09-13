@@ -74,6 +74,40 @@
     .badge-payment .dot {
         font-size: 8px;
     }
+    .badge-ad-platform {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 8px;
+        white-space: nowrap;
+        cursor: default;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .badge-ad-platform:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    }
+    .badge-ad-platform i {
+        font-size: 13px;
+    }
+    .badge-campaign-sub {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 10px;
+        color: #64748B;
+        background: #F8FAFC;
+        border: 1px dashed #CBD5E1;
+        padding: 1px 6px;
+        border-radius: 4px;
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
     .btn-action-square {
         width: 34px;
         height: 34px;
@@ -365,6 +399,18 @@
                     </select>
 
                     
+                    <select name="platform" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:170px;" onchange="this.form.submit()">
+                        <option value=""><?php echo e(__('المنصة الإعلانية — الكل')); ?></option>
+                        <option value="snapchat" <?php echo e(request('platform')==='snapchat'?'selected':''); ?>><?php echo e(__('سناب شات (Snapchat)')); ?></option>
+                        <option value="meta" <?php echo e(request('platform')==='meta'?'selected':''); ?>><?php echo e(__('ميتا (Facebook & Instagram)')); ?></option>
+                        <option value="google_ads" <?php echo e(request('platform')==='google_ads'?'selected':''); ?>><?php echo e(__('إعلانات جوجل (Google Ads)')); ?></option>
+                        <option value="google" <?php echo e(request('platform')==='google'?'selected':''); ?>><?php echo e(__('بحث جوجل (Organic)')); ?></option>
+                        <option value="tiktok" <?php echo e(request('platform')==='tiktok'?'selected':''); ?>><?php echo e(__('تيك توك (TikTok)')); ?></option>
+                        <option value="direct" <?php echo e(request('platform')==='direct'?'selected':''); ?>><?php echo e(__('مباشر (Direct)')); ?></option>
+                        <option value="crm" <?php echo e(request('platform')==='crm'?'selected':''); ?>><?php echo e(__('CRM الداخلي')); ?></option>
+                    </select>
+
+                    
                     <select name="status" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:160px;" onchange="this.form.submit()">
                         <option value=""><?php echo e(__('الحالة — جميع الحالات النشطة')); ?></option>
                         <?php $__currentLoopData = $statuses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $s): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -626,16 +672,9 @@
                 <tbody class="border-top-0">
                     <?php $__empty_1 = true; $__currentLoopData = $bookings; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <?php
-                        // Calculate relative update time
-                        $updatedDiff = '—';
-                        if ($b->updated_at) {
-                            if ($b->updated_at->diffInHours(now()) < 24) {
-                                $updatedDiff = __('اقل من 24 ساعة');
-                            } else {
-                                $updatedDiff = $b->updated_at->diffForHumans();
-                            }
-                        }
-
+                        // Calculate relative update time based on latest activity
+                        $lastUpdated = $b->last_activity_at ?? $b->updated_at ?? $b->created_at;
+                        $updatedDiff = $lastUpdated ? $lastUpdated->diffForHumans() : '—';
                         $createdDiff = $b->created_at ? $b->created_at->diffForHumans() : '—';
                         $employeeName = $b->employee?->name ?? __('لايوجد');
                         $sourceName = $b->source ?: ($b->calculator_bank_id ? __('حاسبة تمويل') : __('لايوجد'));
@@ -651,6 +690,8 @@
                             default => __('مفتوح')
                         };
                         $isPaid = $b->down_payment > 0 || in_array($b->status, ['authorized', 'received']);
+                        $chanMeta = $b->channel_meta;
+                        $chanLabel = $b->channel_arabic_label;
                     ?>
                     <tr class="crm-booking-row">
                         
@@ -695,7 +736,7 @@
                                     </div>
                                     <div class="booking-meta-item">
                                         <span class="booking-meta-key"><?php echo e(__('التعديل :')); ?></span>
-                                        <span class="booking-meta-val fw-bold text-dark" title="<?php echo e($b->updated_at?->format('Y-m-d H:i')); ?>"><?php echo e($updatedDiff); ?></span>
+                                        <span class="booking-meta-val fw-bold text-dark" title="<?php echo e($lastUpdated?->format('Y-m-d H:i')); ?>"><?php echo e($updatedDiff); ?></span>
                                     </div>
                                     <div class="booking-meta-item">
                                         <span class="booking-meta-key"><?php echo e(__('الموظف :')); ?></span>
@@ -735,16 +776,38 @@
                         <td class="px-3 py-3" style="min-width: 250px;">
                             <div class="d-flex align-items-center justify-content-between gap-3">
                                 
-                                <div>
-                                    <?php if($isPaid): ?>
-                                        <span class="badge-payment badge-paid">
-                                            <span class="dot">●</span> <?php echo e(__('مدفوع')); ?>
+                                <div class="d-flex flex-column align-items-start gap-1">
+                                    <?php
+                                        $tooltipParts = [];
+                                        $tooltipParts[] = __('المنصة') . ': ' . $chanLabel;
+                                        if (!empty($b->utm_campaign)) {
+                                            $tooltipParts[] = __('الحملة') . ': ' . $b->utm_campaign;
+                                        }
+                                        if (!empty($b->utm_source)) {
+                                            $tooltipParts[] = 'Source: ' . $b->utm_source;
+                                        }
+                                        if (!empty($b->utm_medium)) {
+                                            $tooltipParts[] = 'Medium: ' . $b->utm_medium;
+                                        }
+                                        if (!empty($b->click_id)) {
+                                            $tooltipParts[] = 'Click ID: ' . $b->click_id;
+                                        }
+                                        if (!empty($b->referrer)) {
+                                            $tooltipParts[] = 'Referrer: ' . $b->referrer;
+                                        }
+                                        $fullTooltip = implode(' | ', $tooltipParts);
+                                    ?>
+                                    <span class="badge-ad-platform"
+                                          style="background: <?php echo e($chanMeta['bg']); ?>; color: <?php echo e($chanMeta['color']); ?>; border: 1px solid <?php echo e($chanMeta['border']); ?>;"
+                                          title="<?php echo e($fullTooltip); ?>">
+                                        <i class="bi <?php echo e($chanMeta['icon']); ?>"></i>
+                                        <span><?php echo e($chanLabel); ?></span>
+                                    </span>
 
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="badge-payment badge-unpaid">
-                                            <span class="dot">●</span> <?php echo e(__('غير مدفوع')); ?>
-
+                                    <?php if(!empty($b->utm_campaign)): ?>
+                                        <span class="badge-campaign-sub" title="<?php echo e(__('الحملة الإعلانية')); ?>: <?php echo e($b->utm_campaign); ?>">
+                                            <i class="bi bi-tag-fill"></i>
+                                            <span><?php echo e(Str::limit($b->utm_campaign, 15)); ?></span>
                                         </span>
                                     <?php endif; ?>
                                 </div>
@@ -800,14 +863,8 @@
         <div class="d-lg-none p-3">
             <?php $__empty_1 = true; $__currentLoopData = $bookings; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $b): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
             <?php
-                $updatedDiff = '—';
-                if ($b->updated_at) {
-                    if ($b->updated_at->diffInHours(now()) < 24) {
-                        $updatedDiff = __('اقل من 24 ساعة');
-                    } else {
-                        $updatedDiff = $b->updated_at->diffForHumans();
-                    }
-                }
+                $lastUpdated = $b->last_activity_at ?? $b->updated_at ?? $b->created_at;
+                $updatedDiff = $lastUpdated ? $lastUpdated->diffForHumans() : '—';
                 $createdDiff = $b->created_at ? $b->created_at->diffForHumans() : '—';
                 $employeeName = $b->employee?->name ?? __('لايوجد');
                 $sourceName = $b->source ?: ($b->calculator_bank_id ? __('حاسبة تمويل') : __('لايوجد'));
@@ -823,6 +880,20 @@
                     default => __('مفتوح')
                 };
                 $isPaid = $b->down_payment > 0 || in_array($b->status, ['authorized', 'received']);
+                $chanMeta = $b->channel_meta;
+                $chanLabel = $b->channel_arabic_label;
+                $tooltipParts = [];
+                $tooltipParts[] = __('المنصة') . ': ' . $chanLabel;
+                if (!empty($b->utm_campaign)) {
+                    $tooltipParts[] = __('الحملة') . ': ' . $b->utm_campaign;
+                }
+                if (!empty($b->utm_source)) {
+                    $tooltipParts[] = 'Source: ' . $b->utm_source;
+                }
+                if (!empty($b->click_id)) {
+                    $tooltipParts[] = 'Click ID: ' . $b->click_id;
+                }
+                $mobileTooltip = implode(' | ', $tooltipParts);
             ?>
             <div class="mb-3 p-3 rounded-4 shadow-sm border bg-white" style="border: 1px solid #ECEEF2 !important;">
                 
@@ -834,16 +905,17 @@
 
                         </a>
                     </div>
-                    <div>
-                        <?php if($isPaid): ?>
-                            <span class="badge-payment badge-paid">
-                                <span class="dot">●</span> <?php echo e(__('مدفوع')); ?>
-
-                            </span>
-                        <?php else: ?>
-                            <span class="badge-payment badge-unpaid">
-                                <span class="dot">●</span> <?php echo e(__('غير مدفوع')); ?>
-
+                    <div class="d-flex align-items-center gap-1.5 flex-wrap justify-content-end">
+                        <span class="badge-ad-platform"
+                              style="background: <?php echo e($chanMeta['bg']); ?>; color: <?php echo e($chanMeta['color']); ?>; border: 1px solid <?php echo e($chanMeta['border']); ?>; font-size: 11px; padding: 3px 8px;"
+                              title="<?php echo e($mobileTooltip); ?>">
+                            <i class="bi <?php echo e($chanMeta['icon']); ?>"></i>
+                            <span><?php echo e($chanLabel); ?></span>
+                        </span>
+                        <?php if(!empty($b->utm_campaign)): ?>
+                            <span class="badge-campaign-sub" title="<?php echo e(__('الحملة الإعلانية')); ?>: <?php echo e($b->utm_campaign); ?>">
+                                <i class="bi bi-tag-fill"></i>
+                                <span><?php echo e(Str::limit($b->utm_campaign, 12)); ?></span>
                             </span>
                         <?php endif; ?>
                     </div>
@@ -877,7 +949,7 @@
                         </div>
                         <div class="col-6">
                             <span class="text-muted"><?php echo e(__('التعديل:')); ?></span>
-                            <span class="fw-bold text-dark"><?php echo e($updatedDiff); ?></span>
+                            <span class="fw-bold text-dark" title="<?php echo e($lastUpdated?->format('Y-m-d H:i')); ?>"><?php echo e($updatedDiff); ?></span>
                         </div>
                         <div class="col-6">
                             <span class="text-muted"><?php echo e(__('الموظف:')); ?></span>

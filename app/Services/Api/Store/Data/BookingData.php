@@ -56,8 +56,10 @@ final class BookingData
         $clickId = $validated['click_id'] ?? null;
         $source = $validated['source'] ?? 'api';
 
-        $channel = $validated['marketing_channel']
-            ?? AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, $source);
+        $resolvedChannel = AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, $source);
+        $channel = (! empty($validated['marketing_channel']) && $validated['marketing_channel'] !== 'مباشر (Direct Traffic)' && $resolvedChannel === 'مباشر (Direct Traffic)')
+            ? $validated['marketing_channel']
+            : $resolvedChannel;
 
         return new self(
             car_id: (int) $validated['car_id'],

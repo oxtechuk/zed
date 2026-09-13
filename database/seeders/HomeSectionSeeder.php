@@ -226,7 +226,7 @@ class HomeSectionSeeder extends Seeder
 
         $contactSettings = [
             'footer_text' => ['ar' => '© 2026 زاد كابيتال. جميع الحقوق محفوظة.', 'en' => '© 2026 Zad Capital. All rights reserved.'],
-            'contact_phone' => '+966 55 000 0000',
+            'contact_phone' => '920018657',
             'contact_email' => 'info@zadcapital.sa',
             'contact_address' => ['ar' => 'الرياض، المملكة العربية السعودية', 'en' => 'Riyadh, Saudi Arabia'],
         ];

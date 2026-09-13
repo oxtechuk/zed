@@ -23,8 +23,10 @@ final class ContactApiService
         $referrer = $data['referrer'] ?? null;
         $clickId = $data['click_id'] ?? null;
 
-        $channel = $data['marketing_channel']
-            ?? AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, 'Contact Form');
+        $resolvedChannel = AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, 'Contact Form');
+        $channel = (! empty($data['marketing_channel']) && $data['marketing_channel'] !== 'مباشر (Direct Traffic)' && $resolvedChannel === 'مباشر (Direct Traffic)')
+            ? $data['marketing_channel']
+            : $resolvedChannel;
 
         $lead = Lead::create([
             'client_name' => $data['name'],

@@ -25,81 +25,86 @@ final class AttributionHelper
         $clickIdLower = strtolower(trim((string) $clickId));
         $sourceLower = strtolower(trim((string) $source));
 
-        // 1. Meta / Instagram / Facebook
-        if (
-            str_contains($utmSourceLower, 'meta') ||
+        // 1. Google (Ads & Search / Organic)
+        $isGoogleClick = str_contains($clickIdLower, 'gclid') ||
+            str_contains($clickIdLower, 'wbraid') ||
+            str_contains($clickIdLower, 'gbraid');
+        $isGoogleSource = str_contains($utmSourceLower, 'google') ||
+            str_contains($utmSourceLower, 'adwords') ||
+            str_contains($utmSourceLower, 'gads');
+        $isGoogleReferrer = str_contains($referrerLower, 'google.com') ||
+            str_contains($referrerLower, 'google.com.sa');
+
+        if ($isGoogleSource || $isGoogleClick || (empty($utmSourceLower) && $isGoogleReferrer)) {
+            $isPaid = str_contains($utmMediumLower, 'cpc') ||
+                str_contains($utmMediumLower, 'paid') ||
+                str_contains($utmMediumLower, 'ad') ||
+                $isGoogleClick;
+
+            return $isPaid ? 'Google Ads' : 'Google Search (Organic)';
+        }
+
+        // 2. Meta / Instagram / Facebook
+        $isMetaClick = str_contains($clickIdLower, 'fbclid') || str_starts_with($clickIdLower, 'fb.');
+        $isMetaSource = str_contains($utmSourceLower, 'meta') ||
             str_contains($utmSourceLower, 'instagram') ||
             str_contains($utmSourceLower, 'facebook') ||
-            str_contains($utmSourceLower, 'fb') ||
-            str_contains($utmSourceLower, 'ig') ||
-            str_contains($referrerLower, 'instagram.com') ||
+            $utmSourceLower === 'fb' ||
+            $utmSourceLower === 'ig' ||
+            str_starts_with($utmSourceLower, 'fb_') ||
+            str_starts_with($utmSourceLower, 'ig_');
+        $isMetaReferrer = str_contains($referrerLower, 'instagram.com') ||
             str_contains($referrerLower, 'facebook.com') ||
-            str_contains($referrerLower, 'fb.me') ||
-            str_contains($clickIdLower, 'fbclid') ||
-            str_starts_with($clickIdLower, 'fb.')
-        ) {
+            str_contains($referrerLower, 'fb.me');
+
+        if ($isMetaSource || $isMetaClick || (empty($utmSourceLower) && $isMetaReferrer)) {
             return 'Meta (Instagram / Facebook)';
         }
 
-        // 2. Snapchat
-        if (
-            str_contains($utmSourceLower, 'snapchat') ||
-            str_contains($utmSourceLower, 'snap') ||
-            str_contains($referrerLower, 'snapchat.com') ||
-            str_contains($clickIdLower, 'sc_clickid') ||
-            str_contains($clickIdLower, 'sccid') ||
-            str_contains($clickIdLower, 'snap')
-        ) {
+        // 3. Snapchat
+        $isSnapClick = str_contains($clickIdLower, 'sc_clickid') || str_contains($clickIdLower, 'sccid');
+        $isSnapSource = str_contains($utmSourceLower, 'snapchat') ||
+            $utmSourceLower === 'snap' ||
+            str_starts_with($utmSourceLower, 'snap_') ||
+            str_starts_with($utmSourceLower, 'snapchat_');
+        $isSnapReferrer = str_contains($referrerLower, 'snapchat.com');
+
+        if ($isSnapSource || $isSnapClick || (empty($utmSourceLower) && $isSnapReferrer)) {
             return 'Snapchat';
         }
 
-        // 3. TikTok
-        if (
-            str_contains($utmSourceLower, 'tiktok') ||
-            str_contains($utmSourceLower, 'tt') ||
-            str_contains($referrerLower, 'tiktok.com') ||
-            str_contains($referrerLower, 'byteoversea') ||
-            str_contains($clickIdLower, 'ttclid')
-        ) {
+        // 4. TikTok
+        $isTikTokClick = str_contains($clickIdLower, 'ttclid');
+        $isTikTokSource = str_contains($utmSourceLower, 'tiktok') ||
+            $utmSourceLower === 'tt' ||
+            str_starts_with($utmSourceLower, 'tt_') ||
+            str_starts_with($utmSourceLower, 'tiktok_');
+        $isTikTokReferrer = str_contains($referrerLower, 'tiktok.com') || str_contains($referrerLower, 'byteoversea');
+
+        if ($isTikTokSource || $isTikTokClick || (empty($utmSourceLower) && $isTikTokReferrer)) {
             return 'TikTok';
         }
 
-        // 4. Google (Ads & Search / Organic)
-        if (
-            str_contains($utmSourceLower, 'google') ||
-            str_contains($utmSourceLower, 'adwords') ||
-            str_contains($utmSourceLower, 'gads') ||
-            str_contains($referrerLower, 'google.com') ||
-            str_contains($referrerLower, 'google.com.sa') ||
-            str_contains($clickIdLower, 'gclid') ||
-            str_contains($clickIdLower, 'wbraid') ||
-            str_contains($clickIdLower, 'gbraid')
-        ) {
-            if (str_contains($utmMediumLower, 'cpc') || str_contains($utmMediumLower, 'paid') || ! empty($clickIdLower)) {
-                return 'Google Ads';
-            }
-
-            return 'Google Search (Organic)';
-        }
-
         // 5. Twitter / X
-        if (
-            str_contains($utmSourceLower, 'twitter') ||
-            str_contains($utmSourceLower, 'x') ||
-            str_contains($referrerLower, 't.co') ||
-            str_contains($referrerLower, 'twitter.com') ||
-            str_contains($referrerLower, 'x.com')
-        ) {
+        $isTwitterClick = str_contains($clickIdLower, 'twclid');
+        $isTwitterSource = str_contains($utmSourceLower, 'twitter') ||
+            $utmSourceLower === 'x' ||
+            str_starts_with($utmSourceLower, 'twitter_') ||
+            str_starts_with($utmSourceLower, 'x_');
+        $isTwitterReferrer = str_contains($referrerLower, 't.co') || str_contains($referrerLower, 'twitter.com') || str_contains($referrerLower, 'x.com');
+
+        if ($isTwitterSource || $isTwitterClick || (empty($utmSourceLower) && $isTwitterReferrer)) {
             return 'Twitter / X';
         }
 
         // 6. YouTube
-        if (
-            str_contains($utmSourceLower, 'youtube') ||
-            str_contains($utmSourceLower, 'yt') ||
-            str_contains($referrerLower, 'youtube.com') ||
-            str_contains($referrerLower, 'youtu.be')
-        ) {
+        $isYoutubeSource = str_contains($utmSourceLower, 'youtube') ||
+            $utmSourceLower === 'yt' ||
+            str_starts_with($utmSourceLower, 'yt_') ||
+            str_starts_with($utmSourceLower, 'youtube_');
+        $isYoutubeReferrer = str_contains($referrerLower, 'youtube.com') || str_contains($referrerLower, 'youtu.be');
+
+        if ($isYoutubeSource || (empty($utmSourceLower) && $isYoutubeReferrer)) {
             return 'YouTube';
         }
 
@@ -109,7 +114,7 @@ final class AttributionHelper
         }
 
         // 8. Referral from other websites
-        if (! empty($referrerLower) && ! str_contains($referrerLower, 'localhost') && ! str_contains($referrerLower, 'zad-capital.sa')) {
+        if (! empty($referrerLower) && ! str_contains($referrerLower, 'localhost') && ! str_contains($referrerLower, 'zad-capital.sa') && ! str_contains($referrerLower, 'zadcapital.sa')) {
             $parsedHost = parse_url($referrerLower, PHP_URL_HOST);
 
             return ! empty($parsedHost) ? ('إحالة: '.$parsedHost) : 'موقع خارجي (Referral)';

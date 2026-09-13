@@ -17,7 +17,7 @@ export const DEFAULT_SUBJECT_VALUE = "general_inquiry";
 
 export const FALLBACK_WHATSAPP_NUMBER = "966500000000";
 
-export const FALLBACK_PHONE_HREF = "tel:+966500000000";
+export const FALLBACK_PHONE_HREF = "tel:920018657";
 
 export const FALLBACK_EMAIL_HREF = "mailto:info@zadcapital.sa";
 

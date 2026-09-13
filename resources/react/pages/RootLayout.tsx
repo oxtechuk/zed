@@ -68,7 +68,7 @@ export default function RootLayout() {
 
       <div className="hidden md:block sticky top-0 z-40">
         <TopBar
-          phone={settings?.contact?.phone || t("topbar.phone", { defaultValue: "920000000" })}
+          phone={settings?.contact?.phone || t("topbar.phone", { defaultValue: "920018657" })}
           email={settings?.contact?.email || t("topbar.email", { defaultValue: "info@zedcapital.sa" })}
           location={settings?.contact?.address || t("topbar.location", { defaultValue: "الرياض، المملكة العربية السعودية" })}
           onLanguageToggle={handleLanguageToggle}

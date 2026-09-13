@@ -28,8 +28,10 @@ final class CalculatorApiService
         $referrer = $data['referrer'] ?? null;
         $clickId = $data['click_id'] ?? null;
 
-        $channel = $data['marketing_channel']
-            ?? AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, 'Calculator');
+        $resolvedChannel = AttributionHelper::resolveChannel($utmSource, $utmMedium, $referrer, $clickId, 'Calculator');
+        $channel = (! empty($data['marketing_channel']) && $data['marketing_channel'] !== 'مباشر (Direct Traffic)' && $resolvedChannel === 'مباشر (Direct Traffic)')
+            ? $data['marketing_channel']
+            : $resolvedChannel;
 
         $lead = CalculatorLead::create([
             'name' => $data['name'],

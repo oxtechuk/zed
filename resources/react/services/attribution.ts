@@ -32,6 +32,13 @@ function getCookie(name: string): string | null {
   return match ? decodeURIComponent(match[2]) : null;
 }
 
+function clearCookie(name: string): void {
+  if (typeof document === 'undefined') return;
+  try {
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;SameSite=Lax`;
+  } catch {}
+}
+
 /**
  * Capture and store attribution parameters from current URL or referrer.
  */
@@ -57,14 +64,14 @@ export function captureAttribution(): IAttributionData {
     const utmContent = getParam('utm_content', 'content', 'utm-content', 'ad_id', 'adname', 'ad_name');
     const utmTerm = getParam('utm_term', 'term', 'keyword', 'kw', 'utm-term');
 
-    // Platform Click IDs
-    const fbclid = getParam('fbclid') || getCookie('_fbc') || undefined;
-    const ttclid = getParam('ttclid') || getCookie('_ttclid') || undefined;
-    const scClickId = getParam('sc_clickid', 'sccid') || getCookie('_scid') || undefined;
-    const gclid = getParam('gclid', 'wbraid', 'gbraid') || getCookie('_gcl_aw') || undefined;
-    const twclid = getParam('twclid') || undefined;
-    const msclkid = getParam('msclkid') || undefined;
-    const clickId = fbclid || ttclid || scClickId || gclid || twclid || msclkid;
+    // Real URL Platform Click IDs (Query parameters only, NEVER generic pixel cookies)
+    const gclid = getParam('gclid', 'wbraid', 'gbraid');
+    const fbclid = getParam('fbclid');
+    const ttclid = getParam('ttclid');
+    const scClickId = getParam('sc_clickid', 'sccid');
+    const twclid = getParam('twclid');
+    const msclkid = getParam('msclkid');
+    const clickId = gclid || fbclid || ttclid || scClickId || twclid || msclkid;
 
     // Fallback campaign from ID if name not provided
     if (!utmCampaign) {
@@ -73,82 +80,142 @@ export function captureAttribution(): IAttributionData {
 
     // Auto-derive utm_source / utm_medium from click IDs or referrer if not explicitly set
     if (!utmSource) {
-      if (fbclid || referrer.includes('instagram.com') || referrer.includes('facebook.com') || referrer.includes('fb.me')) {
-        utmSource = 'meta';
-        utmMedium = utmMedium || (fbclid ? 'cpc' : 'social');
-      } else if (scClickId || referrer.includes('snapchat.com')) {
-        utmSource = 'snapchat';
-        utmMedium = utmMedium || (scClickId ? 'cpc' : 'social');
-      } else if (ttclid || referrer.includes('tiktok.com') || referrer.includes('byteoversea')) {
-        utmSource = 'tiktok';
-        utmMedium = utmMedium || (ttclid ? 'cpc' : 'social');
-      } else if (gclid || referrer.includes('google.com') || referrer.includes('google.com.sa')) {
+      if (gclid) {
         utmSource = 'google';
-        utmMedium = utmMedium || (gclid ? 'cpc' : 'organic');
-      } else if (twclid || referrer.includes('twitter.com') || referrer.includes('x.com') || referrer.includes('t.co')) {
+        utmMedium = utmMedium || 'cpc';
+      } else if (fbclid) {
+        utmSource = 'meta';
+        utmMedium = utmMedium || 'cpc';
+      } else if (scClickId) {
+        utmSource = 'snapchat';
+        utmMedium = utmMedium || 'cpc';
+      } else if (ttclid) {
+        utmSource = 'tiktok';
+        utmMedium = utmMedium || 'cpc';
+      } else if (twclid) {
         utmSource = 'twitter';
-        utmMedium = utmMedium || (twclid ? 'cpc' : 'social');
-      } else if (msclkid || referrer.includes('bing.com')) {
+        utmMedium = utmMedium || 'cpc';
+      } else if (msclkid) {
         utmSource = 'bing';
-        utmMedium = utmMedium || (msclkid ? 'cpc' : 'organic');
+        utmMedium = utmMedium || 'cpc';
       } else if (referrer && !referrer.includes(window.location.hostname)) {
-        try {
-          utmSource = new URL(referrer).hostname;
-          utmMedium = utmMedium || 'referral';
-        } catch {}
+        if (referrer.includes('google.com') || referrer.includes('google.com.sa')) {
+          utmSource = 'google';
+          utmMedium = utmMedium || 'organic';
+        } else if (referrer.includes('instagram.com') || referrer.includes('facebook.com') || referrer.includes('fb.me')) {
+          utmSource = 'meta';
+          utmMedium = utmMedium || 'social';
+        } else if (referrer.includes('snapchat.com')) {
+          utmSource = 'snapchat';
+          utmMedium = utmMedium || 'social';
+        } else if (referrer.includes('tiktok.com') || referrer.includes('byteoversea')) {
+          utmSource = 'tiktok';
+          utmMedium = utmMedium || 'social';
+        } else if (referrer.includes('twitter.com') || referrer.includes('x.com') || referrer.includes('t.co')) {
+          utmSource = 'twitter';
+          utmMedium = utmMedium || 'social';
+        } else if (referrer.includes('youtube.com') || referrer.includes('youtu.be')) {
+          utmSource = 'youtube';
+          utmMedium = utmMedium || 'social';
+        } else {
+          try {
+            utmSource = new URL(referrer).hostname;
+            utmMedium = utmMedium || 'referral';
+          } catch {}
+        }
       }
     }
 
     // Check if incoming tracking data exists on this visit
-    const hasIncomingTracking = Boolean(utmSource || utmCampaign || clickId || (referrer && !referrer.includes(window.location.hostname)));
+    const hasIncomingTracking = Boolean(
+      utmSource || utmCampaign || clickId || (referrer && !referrer.includes(window.location.hostname))
+    );
 
     if (hasIncomingTracking) {
       let channel = 'مباشر (Direct Traffic)';
       const srcLower = utmSource?.toLowerCase() || '';
       const medLower = utmMedium?.toLowerCase() || '';
+      const isPaidMedium = medLower.includes('cpc') || medLower.includes('paid') || medLower.includes('ad');
 
+      // 1. Google Ads & Search
       if (
+        srcLower.includes('google') ||
+        srcLower.includes('adwords') ||
+        srcLower.includes('gads') ||
+        gclid ||
+        (!utmSource && (referrer.includes('google.com') || referrer.includes('google.com.sa')))
+      ) {
+        channel = isPaidMedium || gclid ? 'Google Ads' : 'Google Search (Organic)';
+      }
+      // 2. Meta (Instagram / Facebook)
+      else if (
         srcLower.includes('meta') ||
         srcLower.includes('instagram') ||
         srcLower.includes('facebook') ||
-        srcLower.includes('fb') ||
-        srcLower.includes('ig') ||
+        srcLower === 'fb' ||
+        srcLower === 'ig' ||
+        srcLower.startsWith('fb_') ||
+        srcLower.startsWith('ig_') ||
         fbclid ||
-        referrer.includes('instagram.com') ||
-        referrer.includes('facebook.com')
+        (!utmSource &&
+          (referrer.includes('instagram.com') || referrer.includes('facebook.com') || referrer.includes('fb.me')))
       ) {
         channel = 'Meta (Instagram / Facebook)';
-      } else if (
-        srcLower.includes('snap') ||
+      }
+      // 3. Snapchat
+      else if (
+        srcLower.includes('snapchat') ||
+        srcLower === 'snap' ||
+        srcLower.startsWith('snap_') ||
+        srcLower.startsWith('snapchat_') ||
         scClickId ||
-        referrer.includes('snapchat.com')
+        (!utmSource && referrer.includes('snapchat.com'))
       ) {
         channel = 'Snapchat';
-      } else if (
+      }
+      // 4. TikTok
+      else if (
         srcLower.includes('tiktok') ||
-        srcLower.includes('tt') ||
+        srcLower === 'tt' ||
+        srcLower.startsWith('tt_') ||
+        srcLower.startsWith('tiktok_') ||
         ttclid ||
-        referrer.includes('tiktok.com')
+        (!utmSource && (referrer.includes('tiktok.com') || referrer.includes('byteoversea')))
       ) {
         channel = 'TikTok';
-      } else if (
-        srcLower.includes('google') ||
-        gclid ||
-        referrer.includes('google.com')
+      }
+      // 5. Twitter / X
+      else if (
+        srcLower.includes('twitter') ||
+        srcLower === 'x' ||
+        srcLower.startsWith('twitter_') ||
+        srcLower.startsWith('x_') ||
+        twclid ||
+        (!utmSource && (referrer.includes('t.co') || referrer.includes('twitter.com') || referrer.includes('x.com')))
       ) {
-        channel = medLower.includes('cpc') || gclid ? 'Google Ads' : 'Google Search (Organic)';
-      } else if (srcLower.includes('twitter') || srcLower.includes('x') || referrer.includes('t.co') || referrer.includes('x.com')) {
         channel = 'Twitter / X';
-      } else if (srcLower.includes('youtube') || srcLower.includes('yt') || referrer.includes('youtube.com')) {
+      }
+      // 6. YouTube
+      else if (
+        srcLower.includes('youtube') ||
+        srcLower === 'yt' ||
+        srcLower.startsWith('yt_') ||
+        srcLower.startsWith('youtube_') ||
+        (!utmSource && (referrer.includes('youtube.com') || referrer.includes('youtu.be')))
+      ) {
         channel = 'YouTube';
-      } else if (referrer && !referrer.includes(window.location.hostname)) {
+      }
+      // 7. Referral from other external websites
+      else if (referrer && !referrer.includes(window.location.hostname)) {
         try {
           const host = new URL(referrer).hostname;
           channel = `إحالة: ${host}`;
         } catch {
           channel = 'موقع خارجي (Referral)';
         }
-      } else if (utmSource) {
+      }
+      // 8. Custom UTM source
+      else if (utmSource) {
         channel = utmSource.toUpperCase();
       }
 
@@ -177,7 +244,26 @@ export function captureAttribution(): IAttributionData {
     // Fallback: Read existing stored attribution from storage or cookies
     const stored = sessionStorage.getItem(ATTRIBUTION_STORAGE_KEY) || localStorage.getItem(ATTRIBUTION_STORAGE_KEY);
     if (stored) {
-      return JSON.parse(stored);
+      try {
+        const parsed = JSON.parse(stored) as IAttributionData;
+        // Sanitize legacy bug where Snapchat was falsely attributed via _scid cookie
+        const isLegacySnapchatBug =
+          parsed.marketing_channel === 'Snapchat' &&
+          (!parsed.utm_source || parsed.utm_source === 'snapchat') &&
+          !parsed.utm_campaign &&
+          (!parsed.click_id || parsed.click_id.length > 30 || parsed.click_id.includes('-'));
+
+        if (isLegacySnapchatBug) {
+          sessionStorage.removeItem(ATTRIBUTION_STORAGE_KEY);
+          localStorage.removeItem(ATTRIBUTION_STORAGE_KEY);
+          clearCookie(`${ATTRIBUTION_COOKIE_PREFIX}source`);
+          clearCookie(`${ATTRIBUTION_COOKIE_PREFIX}campaign`);
+          clearCookie(`${ATTRIBUTION_COOKIE_PREFIX}channel`);
+          return { marketing_channel: 'مباشر (Direct Traffic)' };
+        }
+
+        return parsed;
+      } catch {}
     }
 
     const cookieSource = getCookie(`${ATTRIBUTION_COOKIE_PREFIX}source`);
@@ -185,6 +271,14 @@ export function captureAttribution(): IAttributionData {
     const cookieChannel = getCookie(`${ATTRIBUTION_COOKIE_PREFIX}channel`);
 
     if (cookieSource || cookieCampaign || cookieChannel) {
+      if (cookieChannel === 'Snapchat' && !cookieCampaign && (!cookieSource || cookieSource === 'snapchat')) {
+        // Clear corrupted legacy cookie
+        clearCookie(`${ATTRIBUTION_COOKIE_PREFIX}source`);
+        clearCookie(`${ATTRIBUTION_COOKIE_PREFIX}campaign`);
+        clearCookie(`${ATTRIBUTION_COOKIE_PREFIX}channel`);
+        return { marketing_channel: 'مباشر (Direct Traffic)' };
+      }
+
       return {
         utm_source: cookieSource || undefined,
         utm_campaign: cookieCampaign || undefined,
