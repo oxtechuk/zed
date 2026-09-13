@@ -75,6 +75,40 @@
     .badge-payment .dot {
         font-size: 8px;
     }
+    .badge-ad-platform {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 8px;
+        white-space: nowrap;
+        cursor: default;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .badge-ad-platform:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+    }
+    .badge-ad-platform i {
+        font-size: 13px;
+    }
+    .badge-campaign-sub {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 10px;
+        color: #64748B;
+        background: #F8FAFC;
+        border: 1px dashed #CBD5E1;
+        padding: 1px 6px;
+        border-radius: 4px;
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
     .btn-action-square {
         width: 34px;
         height: 34px;
@@ -360,6 +394,18 @@
                         <option value="crm_manual" {{ request('source')==='crm_manual'?'selected':'' }}>{{ __('طلبات داخلية (CRM)') }}</option>
                     </select>
 
+                    {{-- المنصة الإعلانية / مصدر الحركة --}}
+                    <select name="platform" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:170px;" onchange="this.form.submit()">
+                        <option value="">{{ __('المنصة الإعلانية — الكل') }}</option>
+                        <option value="snapchat" {{ request('platform')==='snapchat'?'selected':'' }}>{{ __('سناب شات (Snapchat)') }}</option>
+                        <option value="meta" {{ request('platform')==='meta'?'selected':'' }}>{{ __('ميتا (Facebook & Instagram)') }}</option>
+                        <option value="google_ads" {{ request('platform')==='google_ads'?'selected':'' }}>{{ __('إعلانات جوجل (Google Ads)') }}</option>
+                        <option value="google" {{ request('platform')==='google'?'selected':'' }}>{{ __('بحث جوجل (Organic)') }}</option>
+                        <option value="tiktok" {{ request('platform')==='tiktok'?'selected':'' }}>{{ __('تيك توك (TikTok)') }}</option>
+                        <option value="direct" {{ request('platform')==='direct'?'selected':'' }}>{{ __('مباشر (Direct)') }}</option>
+                        <option value="crm" {{ request('platform')==='crm'?'selected':'' }}>{{ __('CRM الداخلي') }}</option>
+                    </select>
+
                     {{-- الحالة النشطة --}}
                     <select name="status" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:160px;" onchange="this.form.submit()">
                         <option value="">{{ __('الحالة — جميع الحالات النشطة') }}</option>
@@ -626,6 +672,8 @@
                             default => __('مفتوح')
                         };
                         $isPaid = $b->down_payment > 0 || in_array($b->status, ['authorized', 'received']);
+                        $chanMeta = $b->channel_meta;
+                        $chanLabel = $b->channel_arabic_label;
                     @endphp
                     <tr class="crm-booking-row">
                         {{-- 1. Index & ID Badge (Far Right) --}}
@@ -702,18 +750,42 @@
                             </div>
                         </td>
 
-                        {{-- 4. Status & Payment --}}
+                        {{-- 4. Status & Ad Platform / Source --}}
                         <td class="px-3 py-3" style="min-width: 250px;">
                             <div class="d-flex align-items-center justify-content-between gap-3">
-                                {{-- Payment Pill --}}
-                                <div>
-                                    @if($isPaid)
-                                        <span class="badge-payment badge-paid">
-                                            <span class="dot">●</span> {{ __('مدفوع') }}
-                                        </span>
-                                    @else
-                                        <span class="badge-payment badge-unpaid">
-                                            <span class="dot">●</span> {{ __('غير مدفوع') }}
+                                {{-- Ad Platform Source Badge --}}
+                                <div class="d-flex flex-column align-items-start gap-1">
+                                    @php
+                                        $tooltipParts = [];
+                                        $tooltipParts[] = __('المنصة') . ': ' . $chanLabel;
+                                        if (!empty($b->utm_campaign)) {
+                                            $tooltipParts[] = __('الحملة') . ': ' . $b->utm_campaign;
+                                        }
+                                        if (!empty($b->utm_source)) {
+                                            $tooltipParts[] = 'Source: ' . $b->utm_source;
+                                        }
+                                        if (!empty($b->utm_medium)) {
+                                            $tooltipParts[] = 'Medium: ' . $b->utm_medium;
+                                        }
+                                        if (!empty($b->click_id)) {
+                                            $tooltipParts[] = 'Click ID: ' . $b->click_id;
+                                        }
+                                        if (!empty($b->referrer)) {
+                                            $tooltipParts[] = 'Referrer: ' . $b->referrer;
+                                        }
+                                        $fullTooltip = implode(' | ', $tooltipParts);
+                                    @endphp
+                                    <span class="badge-ad-platform"
+                                          style="background: {{ $chanMeta['bg'] }}; color: {{ $chanMeta['color'] }}; border: 1px solid {{ $chanMeta['border'] }};"
+                                          title="{{ $fullTooltip }}">
+                                        <i class="bi {{ $chanMeta['icon'] }}"></i>
+                                        <span>{{ $chanLabel }}</span>
+                                    </span>
+
+                                    @if(!empty($b->utm_campaign))
+                                        <span class="badge-campaign-sub" title="{{ __('الحملة الإعلانية') }}: {{ $b->utm_campaign }}">
+                                            <i class="bi bi-tag-fill"></i>
+                                            <span>{{ Str::limit($b->utm_campaign, 15) }}</span>
                                         </span>
                                     @endif
                                 </div>
@@ -786,9 +858,23 @@
                     default => __('مفتوح')
                 };
                 $isPaid = $b->down_payment > 0 || in_array($b->status, ['authorized', 'received']);
+                $chanMeta = $b->channel_meta;
+                $chanLabel = $b->channel_arabic_label;
+                $tooltipParts = [];
+                $tooltipParts[] = __('المنصة') . ': ' . $chanLabel;
+                if (!empty($b->utm_campaign)) {
+                    $tooltipParts[] = __('الحملة') . ': ' . $b->utm_campaign;
+                }
+                if (!empty($b->utm_source)) {
+                    $tooltipParts[] = 'Source: ' . $b->utm_source;
+                }
+                if (!empty($b->click_id)) {
+                    $tooltipParts[] = 'Click ID: ' . $b->click_id;
+                }
+                $mobileTooltip = implode(' | ', $tooltipParts);
             @endphp
             <div class="mb-3 p-3 rounded-4 shadow-sm border bg-white" style="border: 1px solid #ECEEF2 !important;">
-                {{-- Header: ID + Payment + Index --}}
+                {{-- Header: ID + Ad Platform Source + Index --}}
                 <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
                     <div class="d-flex align-items-center gap-2">
                         <span class="text-muted small fw-bold">#{{ $bookings->firstItem() + $index }}</span>
@@ -796,14 +882,17 @@
                             {{ $b->id }}
                         </a>
                     </div>
-                    <div>
-                        @if($isPaid)
-                            <span class="badge-payment badge-paid">
-                                <span class="dot">●</span> {{ __('مدفوع') }}
-                            </span>
-                        @else
-                            <span class="badge-payment badge-unpaid">
-                                <span class="dot">●</span> {{ __('غير مدفوع') }}
+                    <div class="d-flex align-items-center gap-1.5 flex-wrap justify-content-end">
+                        <span class="badge-ad-platform"
+                              style="background: {{ $chanMeta['bg'] }}; color: {{ $chanMeta['color'] }}; border: 1px solid {{ $chanMeta['border'] }}; font-size: 11px; padding: 3px 8px;"
+                              title="{{ $mobileTooltip }}">
+                            <i class="bi {{ $chanMeta['icon'] }}"></i>
+                            <span>{{ $chanLabel }}</span>
+                        </span>
+                        @if(!empty($b->utm_campaign))
+                            <span class="badge-campaign-sub" title="{{ __('الحملة الإعلانية') }}: {{ $b->utm_campaign }}">
+                                <i class="bi bi-tag-fill"></i>
+                                <span>{{ Str::limit($b->utm_campaign, 12) }}</span>
                             </span>
                         @endif
                     </div>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\AttributionHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -265,6 +266,30 @@ class Booking extends Model
     public function getProposedStatusLabelAttribute(): ?string
     {
         return self::STATUSES[$this->proposed_status]['label'] ?? null;
+    }
+
+    public function getMarketingChannelResolvedAttribute(): string
+    {
+        return $this->marketing_channel ?: AttributionHelper::resolveChannel(
+            $this->utm_source,
+            $this->utm_medium,
+            $this->referrer,
+            $this->click_id,
+            $this->source
+        );
+    }
+
+    /**
+     * @return array{icon: string, label_ar: string, bg: string, color: string, border: string, badge_class: string}
+     */
+    public function getChannelMetaAttribute(): array
+    {
+        return AttributionHelper::getChannelMeta($this->marketing_channel_resolved);
+    }
+
+    public function getChannelArabicLabelAttribute(): string
+    {
+        return $this->channel_meta['label_ar'] ?? $this->marketing_channel_resolved;
     }
 
     public function getDeliveryNoteTextAttribute(): ?string

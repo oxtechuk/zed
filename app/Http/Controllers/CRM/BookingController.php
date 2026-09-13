@@ -11,6 +11,7 @@ use App\Models\Car;
 use App\Models\Employee;
 use App\Models\Setting;
 use App\Notifications\NewBookingNotification;
+use App\Services\AttributionHelper;
 use App\Services\TwilioWhatsAppService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -46,6 +47,11 @@ class BookingController extends Controller
             }
         } elseif ($request->filled('date')) {
             $scopedQuery->whereDate('created_at', $request->date);
+        }
+
+        // Ad Platform filter
+        if ($request->filled('platform')) {
+            AttributionHelper::applyPlatformFilter($scopedQuery, $request->platform);
         }
 
         $stats = [
@@ -84,6 +90,11 @@ class BookingController extends Controller
             }
         } elseif ($request->filled('date')) {
             $query->whereDate('created_at', $request->date);
+        }
+
+        // Ad Platform filter
+        if ($request->filled('platform')) {
+            AttributionHelper::applyPlatformFilter($query, $request->platform);
         }
 
         // Source / Type filter

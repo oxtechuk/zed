@@ -123,15 +123,16 @@ final class AttributionHelper
     }
 
     /**
-     * Map channel to its brand icon and color styling.
+     * Map channel to its brand icon, Arabic label, and color styling.
      *
-     * @return array{icon: string, bg: string, color: string, border: string, badge_class: string}
+     * @return array{icon: string, label_ar: string, bg: string, color: string, border: string, badge_class: string}
      */
     public static function getChannelMeta(string $channel): array
     {
         if (str_contains($channel, 'Meta') || str_contains($channel, 'Instagram') || str_contains($channel, 'Facebook')) {
             return [
                 'icon' => 'bi-instagram',
+                'label_ar' => 'ميتا (Meta)',
                 'bg' => '#FDF2F8',
                 'color' => '#DB2777',
                 'border' => '#FBCFE8',
@@ -142,6 +143,7 @@ final class AttributionHelper
         if (str_contains($channel, 'Snapchat')) {
             return [
                 'icon' => 'bi-snapchat',
+                'label_ar' => 'سناب شات',
                 'bg' => '#FEFCE8',
                 'color' => '#CA8A04',
                 'border' => '#FEF08A',
@@ -152,6 +154,7 @@ final class AttributionHelper
         if (str_contains($channel, 'TikTok')) {
             return [
                 'icon' => 'bi-tiktok',
+                'label_ar' => 'تيك توك',
                 'bg' => '#F8FAFC',
                 'color' => '#0F172A',
                 'border' => '#CBD5E1',
@@ -162,6 +165,7 @@ final class AttributionHelper
         if (str_contains($channel, 'Google Ads')) {
             return [
                 'icon' => 'bi-google',
+                'label_ar' => 'إعلانات جوجل',
                 'bg' => '#EFF6FF',
                 'color' => '#2563EB',
                 'border' => '#BFDBFE',
@@ -172,6 +176,7 @@ final class AttributionHelper
         if (str_contains($channel, 'Google')) {
             return [
                 'icon' => 'bi-search',
+                'label_ar' => 'بحث جوجل',
                 'bg' => '#F0FDF4',
                 'color' => '#16A34A',
                 'border' => '#BBF7D0',
@@ -182,6 +187,7 @@ final class AttributionHelper
         if (str_contains($channel, 'Twitter') || str_contains($channel, 'X')) {
             return [
                 'icon' => 'bi-twitter-x',
+                'label_ar' => 'منصة X',
                 'bg' => '#F8FAFC',
                 'color' => '#000000',
                 'border' => '#E2E8F0',
@@ -192,6 +198,7 @@ final class AttributionHelper
         if (str_contains($channel, 'YouTube')) {
             return [
                 'icon' => 'bi-youtube',
+                'label_ar' => 'يوتيوب',
                 'bg' => '#FEF2F2',
                 'color' => '#DC2626',
                 'border' => '#FECACA',
@@ -202,6 +209,7 @@ final class AttributionHelper
         if (str_contains($channel, 'CRM')) {
             return [
                 'icon' => 'bi-shield-check',
+                'label_ar' => 'CRM الداخلي',
                 'bg' => '#F3E8FF',
                 'color' => '#7E22CE',
                 'border' => '#E9D5FF',
@@ -209,12 +217,97 @@ final class AttributionHelper
             ];
         }
 
+        if (str_contains($channel, 'Referral') || str_contains($channel, 'إحالة')) {
+            return [
+                'icon' => 'bi-box-arrow-up-right',
+                'label_ar' => 'إحالة خارجية',
+                'bg' => '#F1F5F9',
+                'color' => '#475569',
+                'border' => '#E2E8F0',
+                'badge_class' => 'bg-gray-100 text-gray-700',
+            ];
+        }
+
         return [
             'icon' => 'bi-globe2',
+            'label_ar' => 'مباشر',
             'bg' => '#F1F5F9',
             'color' => '#475569',
             'border' => '#E2E8F0',
             'badge_class' => 'bg-gray-100 text-gray-700',
         ];
+    }
+
+    /**
+     * Apply ad platform filter on an Eloquent query for bookings/leads.
+     */
+    public static function applyPlatformFilter(\Illuminate\Database\Eloquent\Builder $query, string $platform): \Illuminate\Database\Eloquent\Builder
+    {
+        return match ($platform) {
+            'meta' => $query->where(function ($q) {
+                $q->where('marketing_channel', 'like', '%Meta%')
+                    ->orWhere('marketing_channel', 'like', '%Instagram%')
+                    ->orWhere('marketing_channel', 'like', '%Facebook%')
+                    ->orWhere('utm_source', 'like', '%meta%')
+                    ->orWhere('utm_source', 'like', '%instagram%')
+                    ->orWhere('utm_source', 'like', '%facebook%')
+                    ->orWhere('utm_source', 'like', '%fb%')
+                    ->orWhere('utm_source', 'like', '%ig%')
+                    ->orWhere('referrer', 'like', '%instagram.com%')
+                    ->orWhere('referrer', 'like', '%facebook.com%')
+                    ->orWhere('referrer', 'like', '%fb.me%')
+                    ->orWhere('click_id', 'like', '%fbclid%');
+            }),
+            'snapchat' => $query->where(function ($q) {
+                $q->where('marketing_channel', 'like', '%Snapchat%')
+                    ->orWhere('utm_source', 'like', '%snap%')
+                    ->orWhere('referrer', 'like', '%snapchat.com%')
+                    ->orWhere('click_id', 'like', '%sccid%')
+                    ->orWhere('click_id', 'like', '%sc_clickid%');
+            }),
+            'google_ads' => $query->where(function ($q) {
+                $q->where('marketing_channel', 'like', '%Google Ads%')
+                    ->orWhere('click_id', 'like', '%gclid%')
+                    ->orWhere('click_id', 'like', '%wbraid%')
+                    ->orWhere('click_id', 'like', '%gbraid%')
+                    ->orWhere(function ($sub) {
+                        $sub->where('utm_source', 'like', '%google%')
+                            ->where(function ($m) {
+                                $m->where('utm_medium', 'like', '%cpc%')
+                                    ->orWhere('utm_medium', 'like', '%paid%');
+                            });
+                    });
+            }),
+            'google' => $query->where(function ($q) {
+                $q->where('marketing_channel', 'like', '%Google%')
+                    ->orWhere('utm_source', 'like', '%google%')
+                    ->orWhere('referrer', 'like', '%google.com%');
+            }),
+            'tiktok' => $query->where(function ($q) {
+                $q->where('marketing_channel', 'like', '%TikTok%')
+                    ->orWhere('utm_source', 'like', '%tiktok%')
+                    ->orWhere('utm_source', 'like', '%tt%')
+                    ->orWhere('referrer', 'like', '%tiktok.com%')
+                    ->orWhere('click_id', 'like', '%ttclid%');
+            }),
+            'direct' => $query->where(function ($q) {
+                $q->where('marketing_channel', 'like', '%Direct%')
+                    ->orWhere(function ($sub) {
+                        $sub->whereNull('utm_source')
+                            ->whereNull('click_id')
+                            ->where(function ($r) {
+                                $r->whereNull('referrer')
+                                    ->orWhere('referrer', 'like', '%zad-capital.sa%');
+                            });
+                    });
+            }),
+            'crm' => $query->where(function ($q) {
+                $q->where('marketing_channel', 'like', '%CRM%')
+                    ->orWhere('source', 'like', '%CRM%')
+                    ->orWhere('source', 'like', '%يدوي%')
+                    ->orWhere('source', 'like', '%manual%');
+            }),
+            default => $query,
+        };
     }
 }
