@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use Illuminate\Database\Eloquent\Builder;
+
 final class AttributionHelper
 {
     /**
@@ -241,7 +243,7 @@ final class AttributionHelper
     /**
      * Apply ad platform filter on an Eloquent query for bookings/leads.
      */
-    public static function applyPlatformFilter(\Illuminate\Database\Eloquent\Builder $query, string $platform): \Illuminate\Database\Eloquent\Builder
+    public static function applyPlatformFilter(Builder $query, string $platform): Builder
     {
         return match ($platform) {
             'meta' => $query->where(function ($q) {
