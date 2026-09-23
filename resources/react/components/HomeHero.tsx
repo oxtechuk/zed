@@ -96,11 +96,6 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                   </picture>
                 )}
 
-                {/* Gradient Contrast Overlay (Only when text content exists) */}
-                {hasTextContent && (
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#051023] via-[#051023]/70 to-[#051023]/35 sm:bg-gradient-to-r sm:from-[#051023]/95 sm:via-[#051023]/75 sm:to-transparent z-[1] pointer-events-none" />
-                )}
-
                 {/* Content Overlay Grid */}
                 {hasTextContent && (
                   <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-10 lg:px-12 w-full h-full flex flex-col justify-center items-start text-start py-4 sm:py-0">
