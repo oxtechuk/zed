@@ -103,8 +103,12 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
 
                 {/* Content Overlay Grid */}
                 {hasTextContent && (
-                  <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-10 lg:px-12 w-full h-full flex flex-col justify-end pb-5 sm:justify-center sm:pb-0 items-start text-start">
-                    <div className="max-w-xl">
+                  <div
+                    className={`relative z-10 mx-auto max-w-7xl px-4 sm:px-10 lg:px-12 w-full h-full flex flex-col justify-end pb-5 sm:justify-center sm:pb-0 ${
+                      isRTL ? "items-end sm:items-start" : "items-start"
+                    } text-start`}
+                  >
+                    <div className="max-w-xl flex flex-col items-start">
                       {slide.badge && (
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 mb-1 sm:mb-3.5 rounded-full text-[9px] sm:text-[12px] font-black bg-[#EDC98E] text-[#16254F] shadow-sm tracking-wide">
                           {slide.badge}
