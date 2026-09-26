@@ -39,7 +39,7 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
   return (
     <section className="w-full pb-4 sm:pb-8 pt-0" dir={direction}>
       {/* Full-width Slideshow Slider Container */}
-      <div className="relative w-full overflow-hidden bg-[#051023] min-h-[175px] max-h-[250px] h-[48vw] sm:min-h-[380px] sm:max-h-none sm:h-[440px] md:h-[490px] lg:h-[540px]">
+      <div className="relative w-full overflow-hidden bg-[#051023] min-h-[220px] max-h-[320px] h-[56vw] sm:min-h-[380px] sm:max-h-none sm:h-[440px] md:h-[490px] lg:h-[540px]">
         {/* Ambient Decorative Glows */}
         <div className="absolute -top-24 -start-24 w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-[#163F8B]/25 blur-[100px] pointer-events-none z-0" />
         <div className="absolute -bottom-20 end-10 w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-[#EDC98E]/10 blur-[90px] pointer-events-none z-0" />
@@ -91,41 +91,46 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                       fetchPriority={idx === 0 ? "high" : "auto"}
                       decoding="async"
                       onError={() => handleImgError(slideKey)}
-                      className="h-full w-full object-cover object-center"
+                      className="h-full w-full object-cover object-[center_28%] sm:object-center"
                     />
                   </picture>
                 )}
 
+                {/* Subtle Bottom Gradient for Mobile Contrast */}
+                {hasTextContent && (
+                  <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/70 via-black/30 to-transparent sm:hidden pointer-events-none z-[1]" />
+                )}
+
                 {/* Content Overlay Grid */}
                 {hasTextContent && (
-                  <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-10 lg:px-12 w-full h-full flex flex-col justify-center items-start text-start py-2 sm:py-0">
+                  <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-10 lg:px-12 w-full h-full flex flex-col justify-end pb-5 sm:justify-center sm:pb-0 items-start text-start">
                     <div className="max-w-xl">
                       {slide.badge && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 mb-1.5 sm:mb-3.5 rounded-full text-[9px] sm:text-[12px] font-black bg-[#EDC98E] text-[#16254F] shadow-sm tracking-wide">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 mb-1 sm:mb-3.5 rounded-full text-[9px] sm:text-[12px] font-black bg-[#EDC98E] text-[#16254F] shadow-sm tracking-wide">
                           {slide.badge}
                         </span>
                       )}
 
                       {slide.title && (
-                        <h1 className="text-[15px] sm:text-[32px] md:text-[40px] lg:text-[46px] font-black text-white leading-[1.25] sm:leading-tight drop-shadow-md">
+                        <h1 className="text-[13px] sm:text-[32px] md:text-[40px] lg:text-[46px] font-black text-white leading-tight drop-shadow-md">
                           {slide.title}
                         </h1>
                       )}
 
                       {(slide.subtitle || slide.description) && (
-                        <p className="mt-1 sm:mt-3 text-[11px] sm:text-[15px] md:text-[16px] text-gray-200/90 font-medium leading-relaxed max-w-lg line-clamp-1 sm:line-clamp-3 drop-shadow-sm">
+                        <p className="mt-0.5 sm:mt-3 text-[10px] sm:text-[15px] md:text-[16px] text-gray-200/90 font-medium leading-relaxed max-w-lg line-clamp-1 sm:line-clamp-3 drop-shadow-sm">
                           {slide.subtitle || slide.description}
                         </p>
                       )}
 
                       {/* Two CTA Action Buttons */}
-                      <div className="mt-2.5 sm:mt-7 flex flex-wrap items-center gap-2 sm:gap-4">
+                      <div className="mt-1.5 sm:mt-7 flex flex-wrap items-center gap-1.5 sm:gap-4">
                         {/* Button 1: احسب تمويلك */}
                         <Link
                           to="/finance-calculator"
-                          className="h-[30px] sm:h-[48px] px-3 sm:px-7 rounded-lg sm:rounded-2xl bg-[#EDC98E] text-[#16254F] hover:bg-[#e2bc7c] font-black text-[11px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 shadow-[0_4px_12px_rgba(237,201,142,0.25)] hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none"
+                          className="h-[28px] sm:h-[48px] px-2.5 sm:px-7 rounded-lg sm:rounded-2xl bg-[#EDC98E] text-[#16254F] hover:bg-[#e2bc7c] font-black text-[10.5px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 shadow-[0_4px_12px_rgba(237,201,142,0.25)] hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none"
                         >
-                          <Calculator size={13} strokeWidth={2.5} />
+                          <Calculator size={12} strokeWidth={2.5} />
                           <span>
                             {t("hero.calculateFinance", {
                               defaultValue: "احسب تمويلك",
@@ -136,9 +141,9 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                         {/* Button 2: تصفح السيارات */}
                         <Link
                           to="/cars"
-                          className="h-[30px] sm:h-[48px] px-2.5 sm:px-6 rounded-lg sm:rounded-2xl bg-[#0B1528]/80 hover:bg-[#16254F] border border-white/20 text-white font-bold text-[11px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none backdrop-blur-md"
+                          className="h-[28px] sm:h-[48px] px-2 sm:px-6 rounded-lg sm:rounded-2xl bg-[#0B1528]/85 hover:bg-[#16254F] border border-white/20 text-white font-bold text-[10.5px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none backdrop-blur-md"
                         >
-                          <Car size={13} className="text-[#EDC98E]" />
+                          <Car size={12} className="text-[#EDC98E]" />
                           <span>
                             {t("hero.browseCars", {
                               defaultValue: "تصفح السيارات",
