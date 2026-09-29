@@ -39,7 +39,7 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
   return (
     <section className="w-full pb-4 sm:pb-8 pt-0" dir={direction}>
       {/* Full-width Slideshow Slider Container */}
-      <div className="relative w-full overflow-hidden bg-[#051023] min-h-[220px] max-h-[320px] h-[56vw] sm:min-h-[380px] sm:max-h-none sm:h-[440px] md:h-[490px] lg:h-[540px]">
+      <div className="relative w-full overflow-hidden bg-[#051023] aspect-[1536/840]">
         {/* Ambient Decorative Glows */}
         <div className="absolute -top-24 -start-24 w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-[#163F8B]/25 blur-[100px] pointer-events-none z-0" />
         <div className="absolute -bottom-20 end-10 w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-[#EDC98E]/10 blur-[90px] pointer-events-none z-0" />
@@ -91,7 +91,7 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                       fetchPriority={idx === 0 ? "high" : "auto"}
                       decoding="async"
                       onError={() => handleImgError(slideKey)}
-                      className="h-full w-full object-cover object-[center_28%] sm:object-center"
+                      className="h-full w-full object-cover object-center"
                     />
                   </picture>
                 )}
