@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Calculator, Car } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useLanguageStore } from "../store/language.store";
