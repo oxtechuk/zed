@@ -86,15 +86,18 @@
         </div>
         <div class="col-md-4">
             <label class="form-label fw-bold">{{ __('نص الزر — عربي') }}</label>
-            <input type="text" name="button_text[ar]" class="form-control bg-light border-0" value="{{ $s?->getTranslation('button_text', 'ar', false) }}">
+            <input type="text" name="button_text[ar]" class="form-control bg-light border-0" value="{{ $s?->getTranslation('button_text', 'ar', false) }}" placeholder="{{ __('اختياري (اتركه فارغاً لإخفاء الزر)') }}">
+            <div class="form-text small text-muted">{{ __('اتركه فارغاً إذا كنت لا تريد إظهار أي أزرار فوق البانر.') }}</div>
         </div>
         <div class="col-md-4">
             <label class="form-label fw-bold">{{ __('نص الزر — EN') }}</label>
-            <input type="text" name="button_text[en]" class="form-control bg-light border-0" value="{{ $s?->getTranslation('button_text', 'en', false) }}">
+            <input type="text" name="button_text[en]" class="form-control bg-light border-0" value="{{ $s?->getTranslation('button_text', 'en', false) }}" placeholder="{{ __('Optional (leave empty to hide)') }}">
+            <div class="form-text small text-muted">{{ __('Leave empty to hide button.') }}</div>
         </div>
         <div class="col-md-4">
-            <label class="form-label fw-bold">{{ __('رابط الزر') }}</label>
+            <label class="form-label fw-bold">{{ __('رابط البانر / الزر') }}</label>
             <input type="text" name="button_url" class="form-control bg-light border-0 text-start" dir="ltr" value="{{ $s?->button_url }}" placeholder="/cars">
+            <div class="form-text small text-muted">{{ __('إذا تركت نص الزر فارغاً، سيظل البانر كاملاً قابلاً للنقر إلى هذا الرابط.') }}</div>
         </div>
         <div class="col-md-6">
             <label class="form-label fw-bold">{{ __('الشارة (Badge)') }} — {{ __('عربي') }}</label>

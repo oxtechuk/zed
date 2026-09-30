@@ -66,8 +66,9 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
             const slideSubtitle = slide.subtitle?.trim();
             const slideDesc = slide.description?.trim();
             const slideBadge = slide.badge?.trim();
+            const hasButton = Boolean(slide.button_text?.trim() && slide.button_url?.trim());
             const hasTextContent = Boolean(
-              slideTitle || slideBadge || slideSubtitle || slideDesc
+              slideTitle || slideBadge || slideSubtitle || slideDesc || hasButton
             );
             const slideLink = slide.button_url || slide.link;
 
@@ -75,7 +76,7 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
               <div
                 key={slideKey}
                 onClick={() => {
-                  if (!hasTextContent && slideLink) {
+                  if (!hasButton && slideLink) {
                     if (slideLink.startsWith("/") || slideLink.startsWith("#")) {
                       navigate(slideLink);
                     } else {
@@ -84,7 +85,7 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                   }
                 }}
                 className={`relative h-full w-full shrink-0 flex items-center justify-between text-white overflow-hidden bg-[#051023] ${
-                  !hasTextContent && slideLink ? "cursor-pointer" : ""
+                  !hasButton && slideLink ? "cursor-pointer" : ""
                 }`}
                 dir={direction}
               >
@@ -137,45 +138,28 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                         </p>
                       )}
 
-                      {/* CTA Action Buttons */}
-                      <div className="mt-1.5 sm:mt-7 flex flex-wrap items-center gap-1.5 sm:gap-4">
-                        {slide.button_text?.trim() && slide.button_url?.trim() ? (
-                          <Link
-                            to={slide.button_url}
-                            className="h-[28px] sm:h-[48px] px-2.5 sm:px-7 rounded-lg sm:rounded-2xl bg-[#EDC98E] text-[#16254F] hover:bg-[#e2bc7c] font-black text-[10.5px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 shadow-[0_4px_12px_rgba(237,201,142,0.25)] hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none"
-                          >
-                            <span>{slide.button_text}</span>
-                          </Link>
-                        ) : (
-                          <>
-                            {/* Button 1: احسب تمويلك */}
-                            <Link
-                              to="/finance-calculator"
+                      {/* CTA Action Button - Only rendered if both button_text and button_url are provided */}
+                      {hasButton && (
+                        <div className="mt-1.5 sm:mt-7 flex flex-wrap items-center gap-1.5 sm:gap-4">
+                          {slide.button_url!.startsWith("http://") || slide.button_url!.startsWith("https://") ? (
+                            <a
+                              href={slide.button_url!}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="h-[28px] sm:h-[48px] px-2.5 sm:px-7 rounded-lg sm:rounded-2xl bg-[#EDC98E] text-[#16254F] hover:bg-[#e2bc7c] font-black text-[10.5px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 shadow-[0_4px_12px_rgba(237,201,142,0.25)] hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none"
                             >
-                              <Calculator size={12} strokeWidth={2.5} />
-                              <span>
-                                {t("hero.calculateFinance", {
-                                  defaultValue: "احسب تمويلك",
-                                })}
-                              </span>
-                            </Link>
-
-                            {/* Button 2: تصفح السيارات */}
+                              <span>{slide.button_text}</span>
+                            </a>
+                          ) : (
                             <Link
-                              to="/cars"
-                              className="h-[28px] sm:h-[48px] px-2 sm:px-6 rounded-lg sm:rounded-2xl bg-[#0B1528]/85 hover:bg-[#16254F] border border-white/20 text-white font-bold text-[10.5px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none backdrop-blur-md"
+                              to={slide.button_url!}
+                              className="h-[28px] sm:h-[48px] px-2.5 sm:px-7 rounded-lg sm:rounded-2xl bg-[#EDC98E] text-[#16254F] hover:bg-[#e2bc7c] font-black text-[10.5px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 shadow-[0_4px_12px_rgba(237,201,142,0.25)] hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none"
                             >
-                              <Car size={12} className="text-[#EDC98E]" />
-                              <span>
-                                {t("hero.browseCars", {
-                                  defaultValue: "تصفح السيارات",
-                                })}
-                              </span>
+                              <span>{slide.button_text}</span>
                             </Link>
-                          </>
-                        )}
-                      </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
