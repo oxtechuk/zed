@@ -8,6 +8,7 @@ import type { IHomeHeroProps } from "../interfaces/IHomeHeroProps";
 
 export default function HomeHero({ slides = [] }: IHomeHeroProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const direction = useLanguageStore((s) => s.direction);
   const isRTL = direction === "rtl";
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -38,8 +39,8 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
 
   return (
     <section className="w-full pb-4 sm:pb-8 pt-0" dir={direction}>
-      {/* Full-width Slideshow Slider Container */}
-      <div className="relative w-full overflow-hidden bg-[#051023] aspect-[1536/840]">
+      {/* Full-width Slideshow Slider Container - Responsive 32:9 (1920x540) on desktop & 64:35 (768x420) on mobile */}
+      <div className="relative w-full overflow-hidden bg-[#051023] aspect-[768/420] md:aspect-[1920/540]">
         {/* Ambient Decorative Glows */}
         <div className="absolute -top-24 -start-24 w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-[#163F8B]/25 blur-[100px] pointer-events-none z-0" />
         <div className="absolute -bottom-20 end-10 w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-[#EDC98E]/10 blur-[90px] pointer-events-none z-0" />
@@ -60,8 +61,13 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
               : null;
             const mainImg = desktopImg || mobileImg;
             const hasImgError = imgErrors[slideKey];
+
+            const slideTitle = slide.title?.trim();
+            const slideSubtitle = slide.subtitle?.trim();
+            const slideDesc = slide.description?.trim();
+            const slideBadge = slide.badge?.trim();
             const hasTextContent = Boolean(
-              slide.title || slide.badge || slide.subtitle || slide.description
+              slideTitle || slideBadge || slideSubtitle || slideDesc
             );
             const slideLink = slide.button_url || slide.link;
 
@@ -70,7 +76,11 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                 key={slideKey}
                 onClick={() => {
                   if (!hasTextContent && slideLink) {
-                    window.location.href = slideLink;
+                    if (slideLink.startsWith("/") || slideLink.startsWith("#")) {
+                      navigate(slideLink);
+                    } else {
+                      window.location.href = slideLink;
+                    }
                   }
                 }}
                 className={`relative h-full w-full shrink-0 flex items-center justify-between text-white overflow-hidden bg-[#051023] ${
@@ -86,7 +96,7 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                     )}
                     <img
                       src={mainImg}
-                      alt={slide.title || "Banner"}
+                      alt={slideTitle || "Banner"}
                       loading={idx === 0 ? "eager" : "lazy"}
                       fetchPriority={idx === 0 ? "high" : "auto"}
                       decoding="async"
@@ -109,51 +119,62 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                     } text-start`}
                   >
                     <div className="max-w-xl flex flex-col items-start">
-                      {slide.badge && (
+                      {slideBadge && (
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 mb-1 sm:mb-3.5 rounded-full text-[9px] sm:text-[12px] font-black bg-[#EDC98E] text-[#16254F] shadow-sm tracking-wide">
-                          {slide.badge}
+                          {slideBadge}
                         </span>
                       )}
 
-                      {slide.title && (
+                      {slideTitle && (
                         <h1 className="text-[13px] sm:text-[32px] md:text-[40px] lg:text-[46px] font-black text-white leading-tight drop-shadow-md">
-                          {slide.title}
+                          {slideTitle}
                         </h1>
                       )}
 
-                      {(slide.subtitle || slide.description) && (
+                      {(slideSubtitle || slideDesc) && (
                         <p className="mt-0.5 sm:mt-3 text-[10px] sm:text-[15px] md:text-[16px] text-gray-200/90 font-medium leading-relaxed max-w-lg line-clamp-1 sm:line-clamp-3 drop-shadow-sm">
-                          {slide.subtitle || slide.description}
+                          {slideSubtitle || slideDesc}
                         </p>
                       )}
 
-                      {/* Two CTA Action Buttons */}
+                      {/* CTA Action Buttons */}
                       <div className="mt-1.5 sm:mt-7 flex flex-wrap items-center gap-1.5 sm:gap-4">
-                        {/* Button 1: احسب تمويلك */}
-                        <Link
-                          to="/finance-calculator"
-                          className="h-[28px] sm:h-[48px] px-2.5 sm:px-7 rounded-lg sm:rounded-2xl bg-[#EDC98E] text-[#16254F] hover:bg-[#e2bc7c] font-black text-[10.5px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 shadow-[0_4px_12px_rgba(237,201,142,0.25)] hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none"
-                        >
-                          <Calculator size={12} strokeWidth={2.5} />
-                          <span>
-                            {t("hero.calculateFinance", {
-                              defaultValue: "احسب تمويلك",
-                            })}
-                          </span>
-                        </Link>
+                        {slide.button_text?.trim() && slide.button_url?.trim() ? (
+                          <Link
+                            to={slide.button_url}
+                            className="h-[28px] sm:h-[48px] px-2.5 sm:px-7 rounded-lg sm:rounded-2xl bg-[#EDC98E] text-[#16254F] hover:bg-[#e2bc7c] font-black text-[10.5px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 shadow-[0_4px_12px_rgba(237,201,142,0.25)] hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none"
+                          >
+                            <span>{slide.button_text}</span>
+                          </Link>
+                        ) : (
+                          <>
+                            {/* Button 1: احسب تمويلك */}
+                            <Link
+                              to="/finance-calculator"
+                              className="h-[28px] sm:h-[48px] px-2.5 sm:px-7 rounded-lg sm:rounded-2xl bg-[#EDC98E] text-[#16254F] hover:bg-[#e2bc7c] font-black text-[10.5px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 shadow-[0_4px_12px_rgba(237,201,142,0.25)] hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none"
+                            >
+                              <Calculator size={12} strokeWidth={2.5} />
+                              <span>
+                                {t("hero.calculateFinance", {
+                                  defaultValue: "احسب تمويلك",
+                                })}
+                              </span>
+                            </Link>
 
-                        {/* Button 2: تصفح السيارات */}
-                        <Link
-                          to="/cars"
-                          className="h-[28px] sm:h-[48px] px-2 sm:px-6 rounded-lg sm:rounded-2xl bg-[#0B1528]/85 hover:bg-[#16254F] border border-white/20 text-white font-bold text-[10.5px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none backdrop-blur-md"
-                        >
-                          <Car size={12} className="text-[#EDC98E]" />
-                          <span>
-                            {t("hero.browseCars", {
-                              defaultValue: "تصفح السيارات",
-                            })}
-                          </span>
-                        </Link>
+                            {/* Button 2: تصفح السيارات */}
+                            <Link
+                              to="/cars"
+                              className="h-[28px] sm:h-[48px] px-2 sm:px-6 rounded-lg sm:rounded-2xl bg-[#0B1528]/85 hover:bg-[#16254F] border border-white/20 text-white font-bold text-[10.5px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 hover:scale-105 transition-all duration-300 active:scale-95 text-decoration-none backdrop-blur-md"
+                            >
+                              <Car size={12} className="text-[#EDC98E]" />
+                              <span>
+                                {t("hero.browseCars", {
+                                  defaultValue: "تصفح السيارات",
+                                })}
+                              </span>
+                            </Link>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

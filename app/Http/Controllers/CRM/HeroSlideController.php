@@ -26,8 +26,8 @@ class HeroSlideController extends Controller
     private function rules(bool $isCreate): array
     {
         return [
-            'title.ar' => 'required|string|max:255',
-            'title.en' => 'required|string|max:255',
+            'title.ar' => 'nullable|string|max:255',
+            'title.en' => 'nullable|string|max:255',
             'subtitle.ar' => 'nullable|string|max:255',
             'subtitle.en' => 'nullable|string|max:255',
             'description.ar' => 'nullable|string',

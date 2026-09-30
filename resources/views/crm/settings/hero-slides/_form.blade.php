@@ -2,12 +2,14 @@
 <div class="modal-body p-4">
     <div class="row g-3">
         <div class="col-md-6">
-            <label class="form-label fw-bold">{{ __('العنوان — عربي') }} <span class="text-danger">*</span></label>
-            <input type="text" name="title[ar]" class="form-control bg-light border-0" value="{{ $s?->getTranslation('title', 'ar', false) }}" required>
+            <label class="form-label fw-bold">{{ __('العنوان — عربي') }}</label>
+            <input type="text" name="title[ar]" class="form-control bg-light border-0" value="{{ $s?->getTranslation('title', 'ar', false) }}" placeholder="{{ __('اختياري (اتركه فارغاً إذا كان البانر مصمماً بالكامل)') }}">
+            <div class="form-text small text-muted">{{ __('اتركه فارغاً إذا كانت النصوص مدمجة مسبقاً داخل صورة البانر لمنع تكرارها فوق الصورة.') }}</div>
         </div>
         <div class="col-md-6">
-            <label class="form-label fw-bold">{{ __('العنوان — EN') }} <span class="text-danger">*</span></label>
-            <input type="text" name="title[en]" class="form-control bg-light border-0" value="{{ $s?->getTranslation('title', 'en', false) }}" required>
+            <label class="form-label fw-bold">{{ __('العنوان — EN') }}</label>
+            <input type="text" name="title[en]" class="form-control bg-light border-0" value="{{ $s?->getTranslation('title', 'en', false) }}" placeholder="{{ __('Optional (leave empty if banner is pre-designed)') }}">
+            <div class="form-text small text-muted">{{ __('Leave empty if texts are pre-designed inside the banner image.') }}</div>
         </div>
         <div class="col-md-6">
             <label class="form-label fw-bold">{{ __('الوصف الفرعي — عربي') }}</label>
@@ -35,11 +37,11 @@
                 <div class="row g-2 small text-secondary mt-1">
                     <div class="col-md-6">
                         <span class="badge bg-primary text-white me-1">{{ __('ديسكتوب') }}</span>
-                        <strong>1536 × 840 px</strong> <span class="opacity-75">({{ __('نسبة العرض للارتفاع القياسية لشاشات الهيرو') }})</span>
+                        <strong>1920 × 540 px</strong> <span class="opacity-75">({{ __('نسبة العرض للارتفاع 32:9 العريضة القياسية للهيرو لمنع قص الأطراف') }})</span>
                     </div>
                     <div class="col-md-6">
                         <span class="badge bg-dark text-white me-1">{{ __('موبايل') }}</span>
-                        <strong>768 × 420 px</strong> <span class="opacity-75">({{ __('أو 1080 × 600 px - مخصص للهواتف الذكية') }})</span>
+                        <strong>768 × 420 px</strong> <span class="opacity-75">({{ __('أو 1080 × 590 px - نسبة 64:35 المخصصة لشاشات الجوال') }})</span>
                     </div>
                 </div>
             </div>
@@ -51,9 +53,9 @@
                     <label class="form-label fw-bold mb-0">
                         <i class="bi bi-laptop me-1 text-primary"></i> {{ __('صورة الديسكتوب (Desktop Banner)') }} {{ $s ? '' : '*' }}
                     </label>
-                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">1536 × 840 px</span>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">1920 × 540 px</span>
                 </div>
-                <p class="text-muted small mb-2">{{ __('المقاس الموصى به: 1536×840 بكسل (أبعاد تناسب الهيرو بالكامل دون قص الصورة).') }}</p>
+                <p class="text-muted small mb-2">{{ __('المقاس الموصى به: 1920×540 بكسل (أبعاد تناسب شاشات الديسكتوب العريضة بالكامل دون قص أطراف السيارات أو النصوص).') }}</p>
                 @if($s?->image_desktop)
                     <div class="rounded-3 overflow-hidden mb-2 border position-relative" style="height:100px;">
                         <img src="{{ $s->image_desktop }}" class="w-100 h-100 object-fit-cover">
@@ -72,7 +74,7 @@
                     </label>
                     <span class="badge bg-dark-subtle text-dark border border-dark-subtle">768 × 420 px</span>
                 </div>
-                <p class="text-muted small mb-2">{{ __('المقاس الموصى به: 768×420 بكسل (في حال عدم رفعها، سيتم استخدام صورة الديسكتوب تلقائياً).') }}</p>
+                <p class="text-muted small mb-2">{{ __('المقاس الموصى به: 768×420 بكسل (أو 1080×590 بكسل، متناسق تماماً مع شاشات الجوال دون تشويه).') }}</p>
                 @if($s?->image_mobile)
                     <div class="rounded-3 overflow-hidden mb-2 border position-relative" style="height:100px;">
                         <img src="{{ $s->image_mobile }}" class="w-100 h-100 object-fit-cover">

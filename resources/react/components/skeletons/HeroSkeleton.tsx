@@ -3,7 +3,7 @@ import Skeleton from "../Skeleton";
 export default function HeroSkeleton() {
   return (
     <section className="w-full pb-4 sm:pb-8 pt-0">
-      <div className="relative w-full overflow-hidden bg-[#051023] aspect-[1536/840] flex items-center justify-between px-6 sm:px-12 md:px-20">
+      <div className="relative w-full overflow-hidden bg-[#051023] aspect-[768/420] md:aspect-[1920/540] flex items-center justify-between px-6 sm:px-12 md:px-20">
         <div className="z-10 max-w-xl flex flex-col gap-4">
           <Skeleton className="h-6 w-32 rounded-full bg-white/10" />
           <Skeleton className="h-10 sm:h-14 w-80 sm:w-96 max-w-full rounded-2xl bg-white/10" />

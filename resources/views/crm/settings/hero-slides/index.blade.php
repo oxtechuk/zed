@@ -24,7 +24,7 @@
             <div>
                 <h6 class="fw-bold mb-1 text-dark">{{ __('أبعاد ومقاسات البانرات الموصى بها') }}</h6>
                 <div class="d-flex gap-3 flex-wrap small text-muted">
-                    <span><i class="bi bi-laptop text-primary me-1"></i> {{ __('بانر الديسكتوب:') }} <strong class="text-dark">1536 × 840 px</strong></span>
+                    <span><i class="bi bi-laptop text-primary me-1"></i> {{ __('بانر الديسكتوب:') }} <strong class="text-dark">1920 × 540 px</strong></span>
                     <span><i class="bi bi-phone text-dark me-1"></i> {{ __('بانر الموبايل:') }} <strong class="text-dark">768 × 420 px</strong></span>
                 </div>
             </div>
@@ -64,7 +64,7 @@
                 </div>
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h5 class="mb-1 fw-bold text-dark">{{ $slide->getTranslation('title', 'ar', false) }}</h5>
+                        <h5 class="mb-1 fw-bold text-dark">{{ $slide->getTranslation('title', 'ar', false) ?: __('بانر إعلاني مصمم (بدون نصوص تراكبية)') }}</h5>
                         @if(!$slide->is_active)<span class="badge bg-secondary-subtle text-secondary small">{{ __('معطل') }}</span>@endif
                     </div>
                     <p class="text-muted small mb-0">{{ $slide->getTranslation('subtitle', 'ar', false) }}</p>
