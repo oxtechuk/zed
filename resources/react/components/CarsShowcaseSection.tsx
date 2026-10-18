@@ -194,6 +194,7 @@ export default function CarsShowcaseSection({
             <button
               type="button"
               onClick={isRTL ? nextSlide : prevSlide}
+              aria-label={isRTL ? "الشريحة التالية" : "الشريحة السابقة"}
               className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[var(--brand-primary-color)] text-white transition hover:opacity-90"
             >
               {isRTL ? <ArrowRight size={21} /> : <ArrowLeft size={21} />}
@@ -205,6 +206,7 @@ export default function CarsShowcaseSection({
                   key={i}
                   type="button"
                   onClick={() => goToSlide(i)}
+                  aria-label={`الانتقال إلى الشريحة ${i + 1}`}
                   className={`rounded-full transition-all duration-300 ${
                     i === currentSlide
                       ? "h-[6px] w-[24px] bg-[var(--brand-primary-color)]"
@@ -217,6 +219,7 @@ export default function CarsShowcaseSection({
             <button
               type="button"
               onClick={isRTL ? prevSlide : nextSlide}
+              aria-label={isRTL ? "الشريحة السابقة" : "الشريحة التالية"}
               className="flex h-[42px] w-[42px] items-center justify-center rounded-full bg-[var(--brand-primary-color)] text-white transition hover:opacity-90"
             >
               {isRTL ? <ArrowLeft size={21} /> : <ArrowRight size={21} />}

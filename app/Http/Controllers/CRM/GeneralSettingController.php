@@ -101,6 +101,7 @@ class GeneralSettingController extends Controller
             'twilio_sid', 'twilio_auth_token', 'twilio_whatsapp_number', 'twilio_sms_number',
             'whatsapp_template_new_lead', 'whatsapp_template_status_update',
             'google_analytics_id', 'meta_pixel_id',
+            'meta_title', 'meta_description', 'meta_keywords',
             'about_sections',
             'store_booking_sections',
         ];

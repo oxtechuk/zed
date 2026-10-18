@@ -195,6 +195,8 @@ class HomeCacheService extends BaseCacheService
     public function forgetHome(): void
     {
         Cache::forget('home.data');
+        Cache::forget('store.api.home.resolved.ar');
+        Cache::forget('store.api.home.resolved.en');
     }
 
     /**

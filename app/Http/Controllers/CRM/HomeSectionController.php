@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CRM;
 use App\Http\Controllers\Controller;
 use App\Models\HomeSection;
 use App\Services\Cache\HomeCacheService;
+use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,6 +13,7 @@ class HomeSectionController extends Controller
 {
     public function __construct(
         private readonly HomeCacheService $homeCache,
+        private readonly ImageOptimizerService $imageOptimizer,
     ) {}
 
     /**
@@ -54,8 +56,8 @@ class HomeSectionController extends Controller
             'button_text.ar' => 'nullable|string|max:100',
             'button_text.en' => 'nullable|string|max:100',
             'button_url' => 'nullable|string|max:255',
-            'image' => 'nullable|image|max:4096',
-            'background_image' => 'nullable|image|max:4096',
+            'image' => 'nullable|image|max:8192',
+            'background_image' => 'nullable|image|max:8192',
             'is_active' => 'boolean',
         ]);
         $data['is_active'] = $request->boolean('is_active');
@@ -64,14 +66,14 @@ class HomeSectionController extends Controller
             if ($homeSection->getRawOriginal('image')) {
                 Storage::disk('public')->delete($homeSection->getRawOriginal('image'));
             }
-            $data['image'] = $request->file('image')->store('home-sections', 'public');
+            $data['image'] = $this->imageOptimizer->storeAsWebp($request->file('image'), 'home-sections');
         }
 
         if ($request->hasFile('background_image')) {
             if ($homeSection->getRawOriginal('background_image')) {
                 Storage::disk('public')->delete($homeSection->getRawOriginal('background_image'));
             }
-            $data['background_image'] = $request->file('background_image')->store('home-sections', 'public');
+            $data['background_image'] = $this->imageOptimizer->storeAsWebp($request->file('background_image'), 'home-sections');
         }
 
         $homeSection->update($data);

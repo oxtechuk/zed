@@ -3,4 +3,6 @@ export interface IBrandCardProps {
   name: string;
   logo: string;
   onClick?: () => void;
+  to?: string;
 }
+

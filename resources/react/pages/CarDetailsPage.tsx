@@ -7,6 +7,7 @@ import CarDetailsHero from "../components/car-details/CarDetailsHero";
 import CarDetailsSpecs from "../components/car-details/CarDetailsSpecs";
 import FeaturedCarsSection from "../components/FeaturedCarsSection";
 import FinanceSolutionsSection from "../components/FinanceSolutionsSection";
+import CarDetailsSkeleton from "../components/skeletons/CarDetailsSkeleton";
 import { getCarBySlug } from "../services/api/cars.service";
 import { getFinanceSettings } from "../services/api";
 import { getImageUrl, APP_IMAGES } from "../constants/app-images";
@@ -66,7 +67,6 @@ function mapRelatedCar(car: ICarItem): ICarCardProps | null {
 
 export default function CarDetailsPage() {
   const { t } = useTranslation();
-  useSEO(t("nav.cars"), t("carDetails.hero.metaDescription"));
   const language = useLanguageStore((s) => s.language);
   const { slug } = useParams<{ slug: string }>();
 
@@ -82,6 +82,34 @@ export default function CarDetailsPage() {
     queryFn: getFinanceSettings,
     staleTime: 5 * 60 * 1000,
   });
+
+  const carTitle = useMemo(() => {
+    if (!car) return `${t("nav.cars")} | زاد كابيتال`;
+    const carName = (car.name || "").trim();
+    const carYear = car.year ? ` ${car.year}` : "";
+    const installment = car.min_installment
+      ? ` · قسط من ${Number(car.min_installment).toLocaleString("en-US")} ريال`
+      : "";
+    const fullTitle = `${carName}${carYear} بالتقسيط${installment}`;
+    if (fullTitle.length > 65) {
+      return `${carName}${carYear} بالتقسيط`;
+    }
+    return fullTitle;
+  }, [car, t]);
+
+  const carDescription = useMemo(() => {
+    if (!car) return t("carDetails.hero.metaDescription");
+    const carName = (car.name || "").trim();
+    const price = (car.current_price ?? car.cash_price ?? 0).toLocaleString("en-US");
+    const installment = (car.min_installment ?? 0).toLocaleString("en-US");
+    return `اشتري ${carName} بالتقسيط من زاد كابيتال. السعر ${price} ريال والقسط الشهري يبدأ من ${installment} ريال. شوف المواصفات واحسب قسطك.`;
+  }, [car, t]);
+
+  const carImage = useMemo(() => {
+    return car?.main_image ? getImageUrl(car.main_image) : undefined;
+  }, [car?.main_image]);
+
+  useSEO(carTitle, carDescription, carImage, undefined, true);
 
   useEffect(() => {
     if (car) {
@@ -104,11 +132,7 @@ export default function CarDetailsPage() {
   );
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20 text-xl font-bold text-gray-500">
-        {t("carDetails.page.loading")}
-      </div>
-    );
+    return <CarDetailsSkeleton />;
   }
 
   if (isError) {

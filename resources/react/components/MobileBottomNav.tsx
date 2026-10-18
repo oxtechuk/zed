@@ -8,6 +8,7 @@ import { APP_IMAGES, getImageUrl } from "../constants/app-images";
 import { X, Info, Phone, Newspaper, Languages, MapPin, Mail } from "lucide-react";
 import LazyImg from "./LazyImg";
 import { getSocialIcon } from "../utils/social-icons";
+import { trackContact } from "../services/analytics";
 
 const menuLinks = [
   { labelKey: "nav.about", to: "/about", icon: Info },
@@ -122,7 +123,7 @@ export default function MobileBottomNav() {
           <div className="flex items-center justify-between px-5 pt-5 pb-3">
             <LazyImg
               src={getImageUrl(settings?.header_logo ?? settings?.logo ?? null) || APP_IMAGES.LOGO}
-              alt={settings?.site_name || "Zed Capital"}
+              alt={settings?.site_name || "زاد كابيتال"}
               className="h-20 w-auto object-contain"
             />
             <button
@@ -168,7 +169,9 @@ export default function MobileBottomNav() {
               {settings?.contact?.phone && (
                 <a
                   href={`tel:${settings.contact.phone.replace(/[^\d+]/g, "")}`}
+                  onClick={() => trackContact("phone", settings.contact?.phone)}
                   className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[14px] font-medium leading-none text-[#07111F] transition hover:bg-[#F0F2F5]"
+                  aria-label={`اتصل بنا على ${settings.contact.phone}`}
                 >
                   <Phone size={18} strokeWidth={2} className="shrink-0 text-[#EDC98E]" />
                   <span dir="ltr">{settings.contact.phone}</span>

@@ -1,71 +1,44 @@
 <?php
 
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\Store\SitemapController;
 // =============================================
-//  Language Switcher
+//  Language Switcher & SEO
 // =============================================
 use Illuminate\Support\Facades\Route;
 
 Route::get('/lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang.switch');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+
+
+use App\Http\Controllers\Store\StoreSpaController;
 
 // =============================================
-//  React Single Page Application (SPA)
+//  React Single Page Application (SPA) with Server-Side Meta & HTTP 404
 // =============================================
-Route::get('/', function () {
-    return view('app');
-})->name('store.home');
-
-Route::get('/cars', function () {
-    return view('app');
-})->name('store.cars');
+Route::get('/', [StoreSpaController::class, 'home'])->name('store.home');
+Route::get('/cars', [StoreSpaController::class, 'cars'])->name('store.cars');
 
 Route::get('/cars-catalog', function () {
     return redirect()->route('store.cars');
 })->name('store.cars.index');
 
-Route::get('/cars/{slug}', function () {
-    return view('app');
-})->name('store.cars.show');
+Route::get('/cars/{slug}', [StoreSpaController::class, 'car'])->name('store.cars.show');
+Route::get('/offers', [StoreSpaController::class, 'offers'])->name('store.offers');
+Route::get('/about', [StoreSpaController::class, 'about'])->name('store.about');
+Route::get('/contact', [StoreSpaController::class, 'contact'])->name('store.contact');
+Route::get('/blog', [StoreSpaController::class, 'blogIndex'])->name('store.blog');
+Route::get('/blog/{slug}', [StoreSpaController::class, 'blogShow'])->name('store.blog.show');
+Route::get('/finance-calculator', [StoreSpaController::class, 'financeCalculator'])->name('store.finance-calculator');
+Route::get('/request-car', [StoreSpaController::class, 'requestCar'])->name('store.request-car');
+Route::get('/brands', [StoreSpaController::class, 'brands'])->name('store.brands');
+Route::get('/brands/{brandSlug}', [StoreSpaController::class, 'brand'])->name('store.brands.show');
+Route::get('/compare', [StoreSpaController::class, 'compare'])->name('store.compare');
+Route::get('/terms', [StoreSpaController::class, 'terms'])->name('store.terms');
+Route::get('/privacy', [StoreSpaController::class, 'privacy'])->name('store.privacy');
 
-Route::get('/offers', function () {
-    return view('app');
-})->name('store.offers');
-
-Route::get('/about', function () {
-    return view('app');
-})->name('store.about');
-
-Route::get('/contact', function () {
-    return view('app');
-})->name('store.contact');
-
-Route::get('/blog', function () {
-    return view('app');
-})->name('store.blog');
-
-Route::get('/blog/{slug}', function () {
-    return view('app');
-})->name('store.blog.show');
-
-Route::get('/finance-calculator', function () {
-    return view('app');
-})->name('store.finance-calculator');
-
-Route::get('/request-car', function () {
-    return view('app');
-})->name('store.request-car');
-
-Route::get('/brands', function () {
-    return view('app');
-})->name('store.brands');
-
-Route::get('/compare', function () {
-    return view('app');
-})->name('store.compare');
-
-Route::get('/{any}', function () {
-    return view('app');
-})->where('any', '^(?!crm|manager-login|api|store-api|storage).*$');
+Route::get('/{any}', [StoreSpaController::class, 'fallback'])
+    ->where('any', '^(?!crm|manager-login|api|store-api|storage).*$');
 
 // =============================================
 //  CRM (Admin Dashboard)

@@ -87,11 +87,11 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small text-muted">{{ __('اسم الموقع — عربي') }}</label>
-                                        <input type="text" name="site_name[ar]" class="form-control bg-light border-0" value="{{ $settings['site_name']['ar'] ?? '' }}" placeholder="مثال: zed Capital">
+                                        <input type="text" name="site_name[ar]" class="form-control bg-light border-0" value="{{ $settings['site_name']['ar'] ?? '' }}" placeholder="مثال: زاد كابيتال">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold small text-muted">{{ __('اسم الموقع — إنجليزي') }}</label>
-                                        <input type="text" name="site_name[en]" class="form-control bg-light border-0" value="{{ $settings['site_name']['en'] ?? '' }}" placeholder="e.g.: Knooz Car">
+                                        <input type="text" name="site_name[en]" class="form-control bg-light border-0" value="{{ $settings['site_name']['en'] ?? '' }}" placeholder="e.g.: Zad Capital">
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label fw-semibold small text-muted">{{ __('نص التذييل (Footer Text)') }}</label>

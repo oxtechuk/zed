@@ -3,6 +3,7 @@ import { Phone } from "lucide-react";
 import type { IContactCtaSectionProps } from "../interfaces/IContactCtaSectionProps";
 import { SiWhatsapp } from "react-icons/si";
 import { useSettingsStore } from "../store/settings.store";
+import { trackContact } from "../services/analytics";
 
 export default function ContactCtaSection({
   badgeText,
@@ -62,6 +63,7 @@ export default function ContactCtaSection({
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row">
               <a
                 href={phoneHref}
+                onClick={() => trackContact("phone", phone)}
                 className="flex h-[56px] min-w-[155px] items-center justify-center gap-2 rounded-[10px] bg-[var(--brand-primary-color)] px-8 text-[22px] font-medium text-white! transition hover:opacity-90"
               >
                 {phoneText}
@@ -72,6 +74,7 @@ export default function ContactCtaSection({
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackContact("whatsapp", whatsappNumber)}
                 className="flex h-[56px] min-w-[155px] items-center justify-center gap-2 rounded-[10px] bg-[#25D366] px-8 text-[22px] font-medium text-white! transition hover:opacity-90"
               >
                 {whatsappText}

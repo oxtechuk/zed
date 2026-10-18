@@ -127,9 +127,15 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                       )}
 
                       {slideTitle && (
-                        <h1 className="text-[13px] sm:text-[32px] md:text-[40px] lg:text-[46px] font-black text-white leading-tight drop-shadow-md">
-                          {slideTitle}
-                        </h1>
+                        idx === 0 ? (
+                          <h1 className="text-[13px] sm:text-[32px] md:text-[40px] lg:text-[46px] font-black text-white leading-tight drop-shadow-md">
+                            {slideTitle}
+                          </h1>
+                        ) : (
+                          <h2 className="text-[13px] sm:text-[32px] md:text-[40px] lg:text-[46px] font-black text-white leading-tight drop-shadow-md">
+                            {slideTitle}
+                          </h2>
+                        )
                       )}
 
                       {(slideSubtitle || slideDesc) && (
@@ -198,6 +204,7 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                   key={idx}
                   type="button"
                   onClick={() => setCurrentSlide(idx)}
+                  aria-label={`الانتقال إلى الشريحة ${idx + 1}`}
                   className={`h-[3px] sm:h-[6px] rounded-full transition-all duration-300 cursor-pointer ${
                     idx === currentSlide
                       ? "w-[22px] sm:w-[65px] md:w-[90px] bg-[#EDC98E]"

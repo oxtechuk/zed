@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Link, useSearchParams } from "react-router-dom";
 import CarCard from "./CarCard";
 import type { ICarsResultsGridProps } from "../interfaces/ICarsResultsGridProps";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -9,19 +10,19 @@ export default function CarsResultsGrid({
   totalPages,
   onPageChange,
 }: ICarsResultsGridProps) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const isRTL = i18n.dir() === "rtl";
+  const [searchParams] = useSearchParams();
 
-  const handlePrev = () => {
-    if (currentPage > 1) {
-      onPageChange(currentPage - 1);
+  const getPageLink = (page: number) => {
+    const params = new URLSearchParams(searchParams);
+    if (page <= 1) {
+      params.delete("page");
+    } else {
+      params.set("page", String(page));
     }
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) {
-      onPageChange(currentPage + 1);
-    }
+    const qs = params.toString();
+    return `/cars${qs ? `?${qs}` : ""}`;
   };
 
   const getPageNumbers = () => {
@@ -55,14 +56,23 @@ export default function CarsResultsGrid({
       {totalPages > 1 && (
         <div className="mt-14 flex items-center justify-center gap-2" dir={i18n.dir()}>
           {/* Previous */}
-          <button
-            type="button"
-            onClick={handlePrev}
-            disabled={currentPage === 1}
-            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#D1D5DB] bg-white text-[#16254F] transition hover:border-[#16254F] disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {isRTL ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-          </button>
+          {currentPage > 1 ? (
+            <Link
+              to={getPageLink(currentPage - 1)}
+              onClick={() => onPageChange(currentPage - 1)}
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#D1D5DB] bg-white text-[#16254F] transition hover:border-[#16254F]"
+              aria-label={t("common.previous", { defaultValue: "السابق" })}
+            >
+              {isRTL ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            </Link>
+          ) : (
+            <span
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#D1D5DB] bg-white text-[#16254F] opacity-40 cursor-not-allowed"
+              aria-disabled="true"
+            >
+              {isRTL ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            </span>
+          )}
 
           {/* Page Numbers */}
           {getPageNumbers().map((page, idx) => {
@@ -80,31 +90,44 @@ export default function CarsResultsGrid({
               );
             }
 
+            const pageNum = page as number;
+
             return (
-              <button
+              <Link
                 key={`page-${page}`}
-                type="button"
-                onClick={() => onPageChange(page as number)}
+                to={getPageLink(pageNum)}
+                onClick={() => onPageChange(pageNum)}
                 className={`flex h-11 w-11 items-center justify-center rounded-2xl border text-[14px] font-black transition ${
                   isActive
                     ? "border-[#16254F] bg-[#16254F] text-white"
                     : "border-[#D1D5DB] bg-white text-[#374151] hover:border-[#16254F] hover:text-[#16254F]"
                 }`}
+                aria-label={`صفحة ${pageNum}`}
+                aria-current={isActive ? "page" : undefined}
               >
                 {page}
-              </button>
+              </Link>
             );
           })}
 
           {/* Next */}
-          <button
-            type="button"
-            onClick={handleNext}
-            disabled={currentPage === totalPages}
-            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#D1D5DB] bg-white text-[#16254F] transition hover:border-[#16254F] disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {isRTL ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
-          </button>
+          {currentPage < totalPages ? (
+            <Link
+              to={getPageLink(currentPage + 1)}
+              onClick={() => onPageChange(currentPage + 1)}
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#D1D5DB] bg-white text-[#16254F] transition hover:border-[#16254F]"
+              aria-label={t("common.next", { defaultValue: "التالي" })}
+            >
+              {isRTL ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+            </Link>
+          ) : (
+            <span
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#D1D5DB] bg-white text-[#16254F] opacity-40 cursor-not-allowed"
+              aria-disabled="true"
+            >
+              {isRTL ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+            </span>
+          )}
         </div>
       )}
     </section>

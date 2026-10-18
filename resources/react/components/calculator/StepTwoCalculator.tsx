@@ -133,6 +133,7 @@ export default function StepTwoCalculator({
         })
             .then(() => {
                 trackCalculatorLead({
+                    carId: carId || undefined,
                     carName: selectedCar ? `${selectedCar.brand || ''} ${selectedCar.name}`.trim() : undefined,
                     salary: Number(salary),
                     monthlyInstallment: monthlyPayment,
@@ -169,6 +170,7 @@ export default function StepTwoCalculator({
 
             // Trigger Pixel & GTM Calculator Lead events
             trackCalculatorLead({
+                carId: carId || undefined,
                 carName: selectedCar ? `${selectedCar.brand || ''} ${selectedCar.name}`.trim() : undefined,
                 salary: Number(salary),
                 monthlyInstallment: monthlyPayment,

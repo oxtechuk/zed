@@ -1,10 +1,40 @@
 <!doctype html>
-<html lang="{{ app()->getLocale() }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'en' ? 'ltr' : 'rtl' }}">
 <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Zed Capital</title>
+    <title>{{ $metaTitle ?? 'زاد كابيتال | تمويل سيارات بالتقسيط في السعودية' }}</title>
+    <meta name="description" content="{{ $metaDescription ?? 'احصل على أفضل عروض تمويل وتقسيط السيارات في السعودية من زاد كابيتال. أقل قسط شهري وبدون دفعة أولى لجميع الماركات.' }}" />
+    <link rel="canonical" href="{{ $canonicalUrl ?? rtrim(url()->current(), '/') }}" />
+    <meta name="robots" content="{{ $metaRobots ?? 'index, follow' }}" />
+
+    <!-- Cairo Font (High-Performance WOFF2 Subsets with font-display: swap) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+    <meta property="og:site_name" content="زاد كابيتال" />
+    <meta property="og:title" content="{{ $metaTitle ?? 'زاد كابيتال | تمويل سيارات بالتقسيط في السعودية' }}" />
+    <meta property="og:description" content="{{ $metaDescription ?? 'احصل على أفضل عروض تمويل وتقسيط السيارات في السعودية من زاد كابيتال.' }}" />
+    <meta property="og:url" content="{{ $canonicalUrl ?? url()->current() }}" />
+    <meta property="og:type" content="{{ $ogType ?? 'website' }}" />
+    <meta property="og:image" content="{{ $ogImage ?? asset('images/og-share-zad.jpg') }}" />
+    <meta property="og:locale" content="{{ app()->getLocale() === 'en' ? 'en_US' : 'ar_SA' }}" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ $metaTitle ?? 'زاد كابيتال | تمويل سيارات بالتقسيط في السعودية' }}" />
+    <meta name="twitter:description" content="{{ $metaDescription ?? 'احصل على أفضل عروض تمويل وتقسيط السيارات في السعودية من زاد كابيتال.' }}" />
+    <meta name="twitter:image" content="{{ $ogImage ?? asset('images/og-share-zad.jpg') }}" />
+
+    @if (!empty($jsonLd))
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {!! json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+    </script>
+    @endif
 
     <!-- Marketing & Analytics Tracking (Deferred to avoid blocking page load) -->
     <script>
@@ -80,6 +110,5 @@
     <!-- End Meta Pixel (noscript) -->
 
     <div id="root"></div>
-    <script src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js" async></script>
 </body>
 </html>

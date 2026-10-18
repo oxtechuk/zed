@@ -8,13 +8,7 @@
   }
 }
 
-@font-face {
-  font-family: "Cairo";
-  src: url("./assets/Cairo-VariableFont_slnt,wght.ttf") format("truetype");
-  font-weight: 100 1000;
-  font-style: normal;
-  font-display: swap;
-}
+/* Cairo Font is served via optimized WOFF2 subsets with font-display: swap */
 
 :root {
   --brand-primary-color: #16254F;

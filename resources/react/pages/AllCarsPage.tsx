@@ -80,11 +80,22 @@ export default function AllCarsPage() {
   const navigate = useNavigate();
   const isRTL = i18n.dir() === "rtl";
   useSEO(t("nav.cars"), t("allCarsHero.description"));
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const offerId = searchParams.get("offerId");
 
   const [filters, setFilters] = useState<IFilterValues>(DEFAULT_FILTER_VALUES);
-  const [currentPage, setCurrentPage] = useState(1);
+  const pageFromUrl = parseInt(searchParams.get("page") || "1", 10);
+  const initialPage = isNaN(pageFromUrl) || pageFromUrl < 1 ? 1 : pageFromUrl;
+  const [currentPage, setCurrentPage] = useState<number>(initialPage);
+
+  useEffect(() => {
+    const p = parseInt(searchParams.get("page") || "1", 10);
+    const valid = isNaN(p) || p < 1 ? 1 : p;
+    if (valid !== currentPage) {
+      setCurrentPage(valid);
+    }
+  }, [searchParams]);
+
   const [searchValue, setSearchValue] = useState("");
   const [suggestions, setSuggestions] = useState<ICarItem[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -536,6 +547,13 @@ export default function AllCarsPage() {
               totalPages={totalPages}
               onPageChange={(p) => {
                 setCurrentPage(p);
+                const nextParams = new URLSearchParams(searchParams);
+                if (p <= 1) {
+                  nextParams.delete("page");
+                } else {
+                  nextParams.set("page", String(p));
+                }
+                setSearchParams(nextParams);
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             />

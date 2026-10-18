@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguageStore } from "../store/language.store";
 import type { IOffersSectionProps } from "../interfaces/IOffersSectionProps";
@@ -149,13 +149,12 @@ export default function OffersSection({
 
                   {/* CTA button (bottom-end) */}
                   <div className="absolute bottom-5 end-5 md:end-8 z-20">
-                    <button
-                      type="button"
-                      onClick={() => navigate(offer.buttonTo)}
-                      className="h-10 px-6 rounded-full bg-[#E5C287] text-[13px] font-black text-[#0A1628] hover:bg-[#D8B478] shadow-md transition active:scale-95 whitespace-nowrap"
+                    <Link
+                      to={offer.buttonTo}
+                      className="inline-flex items-center justify-center h-10 px-6 rounded-full bg-[#E5C287] text-[13px] font-black text-[#0A1628] hover:bg-[#D8B478] shadow-md transition active:scale-95 whitespace-nowrap"
                     >
                       {offer.buttonText || "اكتشف العرض"}
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}

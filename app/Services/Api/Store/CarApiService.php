@@ -180,7 +180,10 @@ final class CarApiService
     {
         if (! empty($filters['brands'])) {
             $brands = is_array($filters['brands']) ? $filters['brands'] : [$filters['brands']];
-            $query->whereIn('brand_id', $brands);
+            $query->where(function (Builder $bq) use ($brands) {
+                $bq->whereIn('brand_id', $brands)
+                    ->orWhereHas('brand', fn (Builder $sub) => $sub->whereIn('slug', $brands));
+            });
         }
 
         if (! empty($filters['model_id'])) {

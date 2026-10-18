@@ -12,6 +12,7 @@ import BlogDetailsPageSkeleton from "../components/skeletons/BlogDetailsPageSkel
 import ContactPageSkeleton from "../components/skeletons/ContactPageSkeleton";
 import OffersPageSkeleton from "../components/skeletons/OffersPageSkeleton";
 import CarRequestPageSkeleton from "../components/skeletons/CarRequestPageSkeleton";
+import CarDetailsSkeleton from "../components/skeletons/CarDetailsSkeleton";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const AllCarsPage = lazy(() => import("../pages/AllCarsPage"));
@@ -25,6 +26,9 @@ const ContactPage = lazy(() => import("../pages/ContactPage"));
 const FinanceCalculatorPage = lazy(() => import("../pages/FinanceCalculatorPage"));
 const CarRequestPage = lazy(() => import("../pages/CarRequestPage"));
 const BrandsPage = lazy(() => import("../pages/BrandsPage"));
+const BrandLandingPage = lazy(() => import("../pages/BrandLandingPage"));
+const TermsPage = lazy(() => import("../pages/TermsPage"));
+const PrivacyPage = lazy(() => import("../pages/PrivacyPage"));
 
 function getRouterBasename(): string | undefined {
   if (typeof window !== "undefined") {
@@ -76,7 +80,7 @@ export const router = createBrowserRouter([
       {
         path: "/cars/:slug",
         element: (
-          <Suspense fallback={<AllCarsPageSkeleton />}>
+          <Suspense fallback={<CarDetailsSkeleton />}>
             <CarDetailsPage />
           </Suspense>
         ),
@@ -150,6 +154,30 @@ export const router = createBrowserRouter([
         element: (
           <Suspense fallback={<HomePageSkeleton />}>
             <BrandsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/brands/:brandSlug",
+        element: (
+          <Suspense fallback={<AllCarsPageSkeleton />}>
+            <BrandLandingPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/terms",
+        element: (
+          <Suspense fallback={<AboutPageSkeleton />}>
+            <TermsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/privacy",
+        element: (
+          <Suspense fallback={<AboutPageSkeleton />}>
+            <PrivacyPage />
           </Suspense>
         ),
       },

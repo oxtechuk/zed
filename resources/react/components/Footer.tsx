@@ -11,6 +11,7 @@ import type { IFooterProps } from "../interfaces/IFooterProps";
 import { useSettingsStore } from "../store/settings.store";
 import { useLanguageStore } from "../store/language.store";
 import { getSocialIcon } from "../utils/social-icons";
+import { trackContact } from "../services/analytics";
 import LazyImg from "./LazyImg";
 
 interface FooterLink {
@@ -237,6 +238,8 @@ export default function Footer({
                   href={`tel:${normalizePhone(
                     phone,
                   )}`}
+                  onClick={() => trackContact("phone", phone)}
+                  ariaLabel={`اتصل بنا على ${phone}`}
                   dir="ltr"
                 />
               )}
@@ -308,17 +311,6 @@ export default function Footer({
                   {direction === "rtl" ? "ديجيتال بلس" : "Digital Plus"}
                 </a>
               </p>
-              {/* Backlink */}
-              <a
-                href="http://oxtech.uk/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="sr-only opacity-0 pointer-events-none absolute w-0 h-0 overflow-hidden"
-                tabIndex={-1}
-                aria-hidden="true"
-              >
-                OxTech UK
-              </a>
             </div>
           </div>
         </div>
@@ -372,6 +364,8 @@ interface ContactItemProps {
   icon: ReactNode;
   value: string;
   href?: string;
+  onClick?: () => void;
+  ariaLabel?: string;
   dir?: "ltr" | "rtl" | "auto";
 }
 
@@ -379,6 +373,8 @@ function ContactItem({
   icon,
   value,
   href,
+  onClick,
+  ariaLabel,
   dir = "auto",
 }: ContactItemProps) {
   const content = (
@@ -403,6 +399,8 @@ function ContactItem({
   return (
     <a
       href={href}
+      onClick={onClick}
+      aria-label={ariaLabel}
       className="inline-flex"
     >
       {content}

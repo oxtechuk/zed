@@ -12,6 +12,7 @@ import {
 import { getImageUrl, APP_IMAGES } from "../../constants/app-images";
 import { formatPrice } from "../../utils/format";
 import { useSettingsStore } from "../../store/settings.store";
+import { trackContact } from "../../services/analytics";
 import type {
     ICarColor,
     ICarDetailsHeroProps,
@@ -346,6 +347,7 @@ export default function CarDetailsHero({
                                         href={`https://wa.me/${whatsappPhone}?text=${encodeURIComponent(`مرحباً، أرغب في الاستفسار عن سيارة ${brandName || ""} ${title}`)}`}
                                         target="_blank"
                                         rel="noreferrer"
+                                        onClick={() => trackContact("whatsapp", whatsappPhone)}
                                         className="flex h-[46px] items-center justify-center gap-2 rounded-xl bg-[#25D366] text-[14px] font-bold text-white transition hover:bg-[#20ba59] hover:scale-[1.01] active:scale-95"
                                     >
                                         <MessageCircle size={16} />
@@ -353,6 +355,7 @@ export default function CarDetailsHero({
                                     </a>
                                     <a
                                         href={`tel:${rawPhone.startsWith("+") ? rawPhone : `+${rawPhone}`}`}
+                                        onClick={() => trackContact("phone", rawPhone)}
                                         className="flex h-[46px] items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 text-[14px] font-bold text-white transition hover:bg-white/10 hover:scale-[1.01] active:scale-95"
                                     >
                                         <Phone size={16} />

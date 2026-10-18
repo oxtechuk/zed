@@ -18,6 +18,12 @@
     "contact": "Contact Us",
     "requestCar": "Request Car"
   },
+  "pageTitles": {
+    "brands": "Car Brands Available for Installment",
+    "compare": "Car Comparison: Price, Specs & Installment",
+    "notFound": "Page Not Found",
+    "financeCalculator": "Finance Calculator"
+  },
   "mobileNav": {
     "newCars": "Cars",
     "offers": "Offers",
@@ -137,7 +143,7 @@
     "noCars": "No cars found matching your filters."
   },
   "rootLayout": {
-    "logoAlt": "Zed Capital",
+    "logoAlt": "Zad Capital",
     "quickLinks": [
       {
         "label": "Home",
@@ -375,7 +381,7 @@
   },
   "aboutPage": {
     "hero": {
-      "badge": "From Zed Capital",
+      "badge": "From Zad Capital",
       "titleWhite": "We build trust every time",
       "titleBlue": "",
       "subtitle": "A new definition of financing experience in the Kingdom... true speed, complete transparency, and a result you deserve.",
@@ -702,15 +708,15 @@
       "buttonText": "Ask us now",
       "items": [
         {
-          "question": "How do I apply for a car finance through Zed Car?",
+          "question": "How do I apply for a car finance through Zad Capital?",
           "answer": "Applying for finance is easy and fast. Start by filling out the finance application form on the website or contact us via WhatsApp. The application usually requires a national ID, salary statement, and bank statement for the last 3 months. The application is reviewed within 24-48 business hours."
         },
         {
-          "question": "How do I apply for a car finance through Zed Car?",
+          "question": "How do I apply for a car finance through Zad Capital?",
           "answer": "You can choose the suitable car and send the finance application directly, and our team will contact you to complete the required information."
         },
         {
-          "question": "How do I apply for a car finance through Zed Car?",
+          "question": "How do I apply for a car finance through Zad Capital?",
           "answer": "Yes, we provide multiple financing solutions based on your credit status and suitable monthly budget."
         }
       ]

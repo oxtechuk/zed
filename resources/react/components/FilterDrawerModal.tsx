@@ -167,7 +167,7 @@ export default function FilterDrawerModal({
       >
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 shrink-0">
           <h2 className="text-[15px] font-black text-[#16254F]">{t("carFinder.resetButton", { defaultValue: "الفلاتر" })}</h2>
-          <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 cursor-pointer">
+          <button type="button" onClick={onClose} aria-label={t("common.close", { defaultValue: "إغلاق" })} className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 cursor-pointer">
             <X size={18} />
           </button>
         </div>
@@ -204,7 +204,7 @@ export default function FilterDrawerModal({
         >
           <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 shrink-0">
             <h2 className="text-[15px] font-black text-[#16254F]">{t("carFinder.resetButton", { defaultValue: "الفلاتر" })}</h2>
-            <button type="button" onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 cursor-pointer">
+            <button type="button" onClick={onClose} aria-label={t("common.close", { defaultValue: "إغلاق" })} className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-100 cursor-pointer">
               <X size={18} />
             </button>
           </div>

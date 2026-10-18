@@ -7,12 +7,14 @@ use App\Models\Brand;
 use App\Models\Car;
 use App\Models\CarCategory;
 use App\Models\CarImage;
+use App\Models\CarSlugRedirect;
 use App\Models\CarType;
 use App\Models\Feature;
 use App\Models\SafetyFeature;
 use App\Models\Specification;
 use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class CarController extends Controller
@@ -246,12 +248,38 @@ class CarController extends Controller
             $data['thumbnail'] = $this->imageOptimizer->storeAndOptimize($request->file('thumbnail'), 'cars/thumbnails', ['maxWidth' => 1000, 'quality' => 82]);
         }
 
+        $oldArSlug = $car->getTranslation('slug', 'ar') ?: (is_array($car->slug) ? ($car->slug['ar'] ?? null) : $car->slug);
+        $oldEnSlug = $car->getTranslation('slug', 'en') ?: (is_array($car->slug) ? ($car->slug['en'] ?? null) : null);
+
         $data['slug'] = [
             'en' => Car::generateUniqueSlug($data['name']['en'], $data['year'], 'en', $car->id),
             'ar' => Car::generateUniqueSlug($data['name']['ar'], $data['year'], 'ar', $car->id),
         ];
 
         $car->update($data);
+
+        try {
+            if (Schema::hasTable('car_slug_redirects')) {
+                $newArSlug = $data['slug']['ar'] ?? null;
+                $newEnSlug = $data['slug']['en'] ?? null;
+
+                if ($oldArSlug && $newArSlug && $oldArSlug !== $newArSlug) {
+                    CarSlugRedirect::updateOrCreate(
+                        ['old_slug' => $oldArSlug],
+                        ['new_slug' => $newArSlug, 'car_id' => $car->id]
+                    );
+                }
+
+                if ($oldEnSlug && $newEnSlug && $oldEnSlug !== $newEnSlug) {
+                    CarSlugRedirect::updateOrCreate(
+                        ['old_slug' => $oldEnSlug],
+                        ['new_slug' => $newArSlug ?: $newEnSlug, 'car_id' => $car->id]
+                    );
+                }
+            }
+        } catch (\Throwable) {
+            // Ignore if migration has not run yet
+        }
 
         // Sync Specifications and Features
         if ($request->has('specifications')) {

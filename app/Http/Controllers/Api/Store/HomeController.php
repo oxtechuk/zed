@@ -14,6 +14,8 @@ use App\Http\Resources\Store\PartnerResource;
 use App\Http\Resources\Store\TestimonialResource;
 use App\Services\Api\Store\HomeApiService;
 
+use Illuminate\Support\Facades\Cache;
+
 final class HomeController extends ApiBaseController
 {
     public function __construct(
@@ -24,20 +26,27 @@ final class HomeController extends ApiBaseController
 
     public function __invoke()
     {
-        $data = $this->homeService->home();
+        $locale = app()->getLocale();
+        $cacheKey = "store.api.home.resolved.{$locale}";
 
-        $data['featured_cars'] = CarMiniResource::collection($data['featured_cars'])->resolve();
-        $data['active_offers'] = HomeOfferResource::collection($data['active_offers'])->resolve();
-        $data['offer_cars'] = CarMiniResource::collection($data['offer_cars'] ?? [])->resolve();
-        $data['highlighted_cars'] = CarMiniResource::collection($data['highlighted_cars'])->resolve();
-        $data['brands'] = BrandResource::collection($data['brands'])->resolve();
-        $data['filter_brands'] = BrandResource::collection($data['filter_brands'])->resolve();
-        $data['filter_categories'] = CarCategoryResource::collection($data['filter_categories'])->resolve();
-        $data['filter_types'] = CarTypeResource::collection($data['filter_types'])->resolve();
-        $data['filter_brand_types'] = BrandTypeResource::collection($data['filter_brand_types'])->resolve();
-        $data['latest_posts'] = $data['latest_posts']->toArray();
-        $data['testimonials'] = TestimonialResource::collection($data['testimonials'])->resolve();
-        $data['partners'] = PartnerResource::collection($data['partners'])->resolve();
+        $data = Cache::remember($cacheKey, 600, function () {
+            $data = $this->homeService->home();
+
+            $data['featured_cars'] = CarMiniResource::collection($data['featured_cars'])->resolve();
+            $data['active_offers'] = HomeOfferResource::collection($data['active_offers'])->resolve();
+            $data['offer_cars'] = CarMiniResource::collection($data['offer_cars'] ?? [])->resolve();
+            $data['highlighted_cars'] = CarMiniResource::collection($data['highlighted_cars'])->resolve();
+            $data['brands'] = BrandResource::collection($data['brands'])->resolve();
+            $data['filter_brands'] = BrandResource::collection($data['filter_brands'])->resolve();
+            $data['filter_categories'] = CarCategoryResource::collection($data['filter_categories'])->resolve();
+            $data['filter_types'] = CarTypeResource::collection($data['filter_types'])->resolve();
+            $data['filter_brand_types'] = BrandTypeResource::collection($data['filter_brand_types'])->resolve();
+            $data['latest_posts'] = $data['latest_posts']->toArray();
+            $data['testimonials'] = TestimonialResource::collection($data['testimonials'])->resolve();
+            $data['partners'] = PartnerResource::collection($data['partners'])->resolve();
+
+            return $data;
+        });
 
         return $this->respondSuccess($data, 'Homepage data retrieved successfully');
     }

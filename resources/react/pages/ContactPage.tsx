@@ -9,6 +9,7 @@ import { APP_IMAGES } from "../constants/app-images";
 import { getFaqs, submitContactForm } from "../services/api";
 import { useLanguageStore } from "../store/language.store";
 import { contactFormValuesToRequest } from "../utils/contact";
+import { trackContactFormLead } from "../services/analytics";
 import { useSEO } from "../utils/useSEO";
 import type { IContactFormValues } from "../interfaces/IContactFormValues";
 import type { IFaqItem } from "../interfaces/IFaqItem";
@@ -32,6 +33,7 @@ export default function ContactPage() {
       setIsSubmitting(true);
       try {
         await submitContactForm(contactFormValuesToRequest(values));
+        trackContactFormLead();
         toast.success(t("contactPage.contactUs.successToast"));
         setFormKey((key) => key + 1);
       } catch {

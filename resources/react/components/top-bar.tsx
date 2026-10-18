@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Phone, Mail, MapPin, Globe } from "lucide-react";
 import type { ITopBarProps } from "../interfaces/ITopBar";
 import { useSettingsStore } from "../store/settings.store";
+import { trackContact } from "../services/analytics";
 
 export default function TopBar({
   phone: propPhone,
@@ -22,7 +23,12 @@ export default function TopBar({
           {/* Contact Info (Phone & Email) */}
           <div className="flex items-center gap-6" dir={i18n.dir()}>
             {phone && (
-              <a href={`tel:${phone}`} className="flex items-center gap-2 hover:text-[#EDC98E] transition-colors">
+              <a
+                href={`tel:${phone}`}
+                onClick={() => trackContact("phone", phone)}
+                className="flex items-center gap-2 hover:text-[#EDC98E] transition-colors"
+                aria-label={`اتصل بنا على ${phone}`}
+              >
                 <Phone size={14} className="text-[#EDC98E]" />
                 <span dir="ltr" className="font-semibold">{phone}</span>
               </a>

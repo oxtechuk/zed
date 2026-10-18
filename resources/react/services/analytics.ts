@@ -193,6 +193,10 @@ export function trackLead(params: {
     // 4. Google Tag Manager
     if (Array.isArray(window.dataLayer)) {
       window.dataLayer.push({
+        event: 'lead_request_car',
+        car_id: params.carId,
+      });
+      window.dataLayer.push({
         event: 'generate_lead',
         event_id: eventId,
         lead_type: 'booking',
@@ -214,6 +218,7 @@ export function trackLead(params: {
  */
 export function trackCalculatorLead(params: {
   eventId?: string;
+  carId?: string | number;
   carName?: string;
   salary?: number;
   monthlyInstallment?: number;
@@ -263,6 +268,10 @@ export function trackCalculatorLead(params: {
     // 4. Google Tag Manager
     if (Array.isArray(window.dataLayer)) {
       window.dataLayer.push({
+        event: 'lead_finance_calculator',
+        car_id: params.carId,
+      });
+      window.dataLayer.push({
         event: 'calculator_lead',
         event_id: eventId,
         car_name: params.carName,
@@ -306,6 +315,11 @@ export function trackContact(type: 'whatsapp' | 'phone', target?: string): void 
 
     // 4. Google Tag Manager
     if (Array.isArray(window.dataLayer)) {
+      if (type === 'whatsapp') {
+        window.dataLayer.push({ event: 'click_whatsapp' });
+      } else if (type === 'phone') {
+        window.dataLayer.push({ event: 'click_phone' });
+      }
       window.dataLayer.push({
         event: 'contact_click',
         contact_type: type,
@@ -315,4 +329,36 @@ export function trackContact(type: 'whatsapp' | 'phone', target?: string): void 
   } catch (error) {
     console.debug('[Analytics] Error tracking Contact:', error);
   }
+}
+
+/**
+ * Track Contact Us Form Submission (Lead)
+ */
+export function trackContactFormLead(): string {
+  const eventId = generateEventId('contact');
+
+  try {
+    if (typeof window.fbq === 'function') {
+      window.fbq(
+        'track',
+        'Contact',
+        { content_name: 'Contact Form Submission', content_category: 'Contact Us' },
+        { eventID: eventId }
+      );
+    }
+
+    if (window.ttq && typeof window.ttq.track === 'function') {
+      window.ttq.track('Contact', { content_name: 'Contact Form Submission' }, { event_id: eventId });
+    }
+
+    if (Array.isArray(window.dataLayer)) {
+      window.dataLayer.push({
+        event: 'lead_contact',
+      });
+    }
+  } catch (error) {
+    console.debug('[Analytics] Error tracking Contact Form Lead:', error);
+  }
+
+  return eventId;
 }

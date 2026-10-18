@@ -69,13 +69,13 @@ export default function RootLayout() {
       <div className="hidden md:block sticky top-0 z-40">
         <TopBar
           phone={settings?.contact?.phone || t("topbar.phone", { defaultValue: "920018657" })}
-          email={settings?.contact?.email || t("topbar.email", { defaultValue: "info@zedcapital.sa" })}
+          email={settings?.contact?.email || t("topbar.email", { defaultValue: "info@zadcapital.sa" })}
           location={settings?.contact?.address || t("topbar.location", { defaultValue: "الرياض، المملكة العربية السعودية" })}
           onLanguageToggle={handleLanguageToggle}
         />
         <Header
           logoSrc={getImageUrl(settings?.header_logo ?? settings?.logo ?? null) || APP_IMAGES.LOGO}
-          logoAlt="Zed Capital"
+          logoAlt="زاد كابيتال"
           navItems={navItems}
           ctaText={t("nav.requestCar")}
           ctaPath="/request-car"
