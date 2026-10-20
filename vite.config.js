@@ -32,22 +32,5 @@ export default defineConfig({
     build: {
         outDir: 'public/build',
         emptyOutDir: true,
-        rollupOptions: {
-            output: {
-                manualChunks(id) {
-                    if (id.includes('node_modules')) {
-                        if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
-                            return 'vendor';
-                        }
-                        if (id.includes('@tanstack/react-query')) {
-                            return 'query';
-                        }
-                        if (id.includes('lucide-react') || id.includes('react-icons')) {
-                            return 'icons';
-                        }
-                    }
-                },
-            },
-        },
     },
 });

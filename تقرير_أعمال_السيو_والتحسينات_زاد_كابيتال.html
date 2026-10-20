@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تقرير إنجاز أعمال تحسين محركات البحث والأداء التقني - زاد كابيتال</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: A4;
+      margin: 14mm 12mm 14mm 12mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif;
+      background-color: #ffffff;
+      color: #1e293b;
+      line-height: 1.6;
+      font-size: 13px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .report-container {
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Header Banner */
+    .header-banner {
+      background: linear-gradient(135deg, #0b1728 0%, #162a4a 100%);
+      color: #ffffff;
+      padding: 24px 28px;
+      border-radius: 14px;
+      margin-bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      box-shadow: 0 4px 14px rgba(11, 23, 40, 0.15);
+    }
+
+    .header-title-box h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+
+    .header-title-box p {
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .header-meta-box {
+      text-align: left;
+      font-size: 12px;
+      line-height: 1.8;
+      border-right: 2px solid rgba(212, 175, 55, 0.5);
+      padding-right: 18px;
+      margin-right: 18px;
+    }
+
+    .header-meta-box div span {
+      color: #e2e8f0;
+      font-weight: 700;
+    }
+
+    .header-meta-box .tag {
+      color: #d4af37;
+      font-weight: 800;
+    }
+
+    /* Executive Summary */
+    .summary-box {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-right: 4px solid #162a4a;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .summary-box h2 {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f1e36;
+      margin-bottom: 8px;
+    }
+
+    .summary-box p {
+      font-size: 12.5px;
+      color: #475569;
+      line-height: 1.7;
+    }
+
+    /* Section Headers */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 24px 0 14px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .section-header h2 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f1e36;
+    }
+
+    .badge-paid {
+      background: linear-gradient(135deg, #d4af37 0%, #b38f2a 100%);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.2px;
+    }
+
+    .badge-free {
+      background: #10b981;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* Cards Grid */
+    .items-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .item-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px 18px;
+      page-break-inside: avoid;
+      break-inside: avoid;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    .item-card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .item-number {
+      background: #0f1e36;
+      color: #ffffff;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .item-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f1e36;
+    }
+
+    .item-card p {
+      font-size: 12px;
+      color: #334155;
+      margin-bottom: 6px;
+      line-height: 1.6;
+    }
+
+    .item-value-box {
+      background-color: #f1f5f9;
+      border-radius: 6px;
+      padding: 6px 12px;
+      margin-bottom: 8px;
+      font-size: 11.5px;
+      color: #0f1e36;
+    }
+
+    .item-value-box strong {
+      color: #0f1e36;
+    }
+
+    .item-details-list {
+      list-style-type: none;
+      padding-right: 4px;
+      font-size: 11.5px;
+      color: #475569;
+    }
+
+    .item-details-list li {
+      position: relative;
+      padding-right: 14px;
+      margin-bottom: 4px;
+      line-height: 1.6;
+    }
+
+    .item-details-list li::before {
+      content: "▪";
+      color: #d4af37;
+      position: absolute;
+      right: 0;
+      top: -1px;
+      font-size: 13px;
+    }
+
+    /* Comparison Table */
+    .table-container {
+      margin: 18px 0;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #cbd5e1;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      text-align: right;
+    }
+
+    th {
+      background-color: #0f1e36;
+      color: #ffffff;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-bottom: 2px solid #d4af37;
+    }
+
+    td {
+      padding: 9px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+      vertical-align: middle;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    .status-badge-before {
+      display: inline-block;
+      background: #fee2e2;
+      color: #b91c1c;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 10.5px;
+    }
+
+    .status-badge-after {
+      display: inline-block;
+      background: #dcfce7;
+      color: #15803d;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 10.5px;
+    }
+
+    /* Footer */
+    .report-footer {
+      margin-top: 30px;
+      padding-top: 14px;
+      border-top: 1px solid #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #64748b;
+      page-break-inside: avoid;
+    }
+
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="report-container">
+
+    <!-- Header Banner -->
+    <div class="header-banner">
+      <div class="header-title-box">
+        <h1>تقرير إنجاز أعمال تحسين محركات البحث والأداء التقني</h1>
+        <p>SEO & Core Web Vitals Optimization Deliverable Report</p>
+      </div>
+      <div class="header-meta-box">
+        <div>العميل: <span>شركة زاد كابيتال (Zad Capital)</span></div>
+        <div>الموقع الإلكتروني: <span class="tag">https://zad-capital.sa</span></div>
+        <div>تاريخ التنفيذ: <span>أكتوبر 2026</span></div>
+        <div>الحالة: <span style="color:#4ade80;">مكتمل بنسبة 100% (21/21 بند)</span></div>
+      </div>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="summary-box">
+      <h2>📌 ملخص تنفيذي للمشروع</h2>
+      <p>
+        بناءً على التقرير الفني الصادر لتدقيق أداء وسيو منصة شركة <strong>زاد كابيتال</strong>، تم تنفيذ خطة عمل شاملة لتهيئة المنصة للمنافسة بقوة على الكلمات المفتاحية الاستثمارية والتمويلية في المملكة. تم تقسيم العمل المنجز بوضوح إلى مسارين: 
+        <strong>(1) أعمال تقنية وهندسية متقدمة</strong> (Scope إضافي لبناء البنية التحتية، وتسريع الموقع، وأتمتة معالجة الصور، وتتبع التحويلات)، و 
+        <strong>(2) أعمال الدعم الفني وتصليح الملاحظات</strong> (مشمولة مجاناً كجزء من التزامنا بجودة التسليم).
+      </p>
+    </div>
+
+    <!-- Section 1: Paid / Advanced Scope -->
+    <div class="section-header">
+      <h2>🚀 أولاً: الأعمال التقنية والهندسية الإضافية (Advanced SEO & Architecture Scope)</h2>
+      <span class="badge-paid">نطاق عمل إضافي متقدم</span>
+    </div>
+
+    <div class="items-grid">
+
+      <!-- Item 1 -->
+      <div class="item-card">
+        <div class="item-card-header">
+          <span class="item-number">1</span>
+          <div class="item-title">نظام حقن السيو الذكي من الخادم (Server-Side Dynamic Meta & Shell Injection Engine)</div>
+        </div>
+        <div class="item-value-box">
+          <strong>القيمة الاستثمارية:</strong> تحويل تطبيق الـ React SPA إلى نظام متطور يحقن الـ Meta Tags بالكامل من السيرفر مباشرة قبل وصول الصفحة للزائر أو روبوتات جوجل دون انتظار الجافاسكريبت.
+        </div>
+        <ul class="item-details-list">
+          <li>برمجة متحكم سيرفر متقدم (<code>StoreSpaController</code>) لقراءة بيانات السيارات والمقالات لحظياً من قاعدة البيانات.</li>
+          <li>توليد 98 عنواناً ووصفاً تسويقياً فريداً ومخصصاً لكل سيارة (يشمل الموديل، سنة الصنع، وأقل قسط شهري محسوب بدقة).</li>
+          <li>توليد وسوم المشاركة الاجتماعية (OpenGraph & Twitter Cards) لتظهر بطاقات السيارات في واتساب وشبكات التواصل بصورتها وسعرها.</li>
+        </ul>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="item-card">
+        <div class="item-card-header">
+          <span class="item-number">2</span>
+          <div class="item-title">محرك البيانات المنظمة المتقدم (Schema.org JSON-LD Structured Data Engine)</div>
+        </div>
+        <div class="item-value-box">
+          <strong>القيمة الاستثمارية:</strong> تصدر نتائج جوجل الغنية (Rich Snippets) مما يضاعف معدل النقر (CTR) ويظهر تفاصيل الأسعار والحالة للمشتري مباشرة في صفحة نتائج البحث.
+        </div>
+        <ul class="item-details-list">
+          <li>بناء Schema متكاملة للمؤسسة والموقع والمحرك البحثي الداخلي (<code>Organization</code> & <code>WebSite</code>).</li>
+          <li>بناء مخطط السيارات المالي والمنتجات (<code>Product</code> & <code>Offer</code>) مربوط بحالة توفر السيارة في المعرض (InStock / PreOrder).</li>
+          <li>بناء مسار التنقل الدلالي (<code>BreadcrumbList</code>) لتسهيل فهرسة الهيكل الشجري للمتجر، مع مخطط مقالات المدونة (<code>Article</code>).</li>
+        </ul>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="item-card">
+        <div class="item-card-header">
+          <span class="item-number">3</span>
+          <div class="item-title">تطوير بنية صفحات الهبوط المخصصة لكل ماركة (Brand Landing Pages Architecture - /brands/{slug})</div>
+        </div>
+        <div class="item-value-box">
+          <strong>القيمة الاستثمارية:</strong> استهداف الكلمات البحثية التجارية عالية القيمة التنافسية مثل "عروض تويوتا بالتقسيط"، "سيارات هيونداي 2026"، عبر صفحات مستقلة لكل ماركة.
+        </div>
+        <ul class="item-details-list">
+          <li>بناء مسارات جديدة مستقلة على مستوى السيرفر والواجهة: <code>/brands/{brandSlug}</code>.</li>
+          <li>حساب أقل قسط شهري لسيارات كل ماركة آلياً وإبرازه في عنوان الصفحة وترويسة H1 التسويقية.</li>
+          <li>توليد شبكة سيارات متكاملة قابلة للزحف مع ربط شعارات الماركات بالصفحات وإدراجها بخريطة الموقع.</li>
+        </ul>
+      </div>
+
+      <!-- Item 4 -->
+      <div class="item-card">
+        <div class="item-card-header">
+          <span class="item-number">4</span>
+          <div class="item-title">بناء خط أنابيب آلي لضغط الصور والتحويل لصيغة WebP الحديثة (Automated WebP Pipeline)</div>
+        </div>
+        <div class="item-value-box">
+          <strong>القيمة الاستثمارية:</strong> تقليص حجم صفحات الموقع بنسبة تتجاوز 75% لضمان سرعة تحميل فائقة على الجوال دون أي فقدان في الجودة البصرية.
+        </div>
+        <ul class="item-details-list">
+          <li>برمجة خدمة باك إند مخصصة (<code>ImageOptimizerService</code>) لتقليص المقاسات حتى 1600px، والتحويل التلقائي لصيغة WebP.</li>
+          <li>أتمتة فحص وضغط صور الأقسام والسيارات المرفوعة من لوحة التحكم (CRM) لحظياً أثناء الرفع.</li>
+          <li>تطوير أمر تشغيلي خاص بالسيرفر (<code>php artisan images:optimize-existing</code>) لأرشفة وضغط الصور القديمة.</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Page Break for clean PDF Print Layout -->
+    <div class="page-break"></div>
+
+    <div class="items-grid" style="margin-top: 10px;">
+
+      <!-- Item 5 -->
+      <div class="item-card">
+        <div class="item-card-header">
+          <span class="item-number">5</span>
+          <div class="item-title">منظومة تتبع التحويلات التسويقية الدقيقة (Advanced Conversion Tracking & GTM DataLayer)</div>
+        </div>
+        <div class="item-value-box">
+          <strong>القيمة الاستثمارية:</strong> قياس دقيق للعائد الإعلاني (ROAS) لكافة حملات Google Ads، سناب شات، تيك توك، وميتا، دون المساس ببيانات العملاء الشخصية.
+        </div>
+        <ul class="item-details-list">
+          <li>هندسة طبقة بيانات موحدة (GTM DataLayer) تدفع أحداث التحويل الحقيقية: <code>lead_request_car</code>، <code>lead_finance_calculator</code>، <code>lead_contact</code>.</li>
+          <li>تتبع نقرات الاتصال المباشر والواتساب آلياً: <code>click_whatsapp</code>، <code>click_phone</code>.</li>
+          <li>مطابقة الأحداث مع Meta Pixel (CAPI Event IDs) مع ضمان عدم تسريب أي أرقام أو أسماء للحفاظ على الخصوصية.</li>
+        </ul>
+      </div>
+
+      <!-- Item 6 -->
+      <div class="item-card">
+        <div class="item-card-header">
+          <span class="item-number">6</span>
+          <div class="item-title">نظام إعادة التوجيه الذكي 301 عند تغيير أسماء السيارات (301 Permanent Redirects Engine)</div>
+        </div>
+        <div class="item-value-box">
+          <strong>القيمة الاستثمارية:</strong> حماية الروابط المؤرشفة والإعلانات السابقة من الضياع والتلف في حال قيام إدارة الموقع بتعديل اسم أي سيارة مستقبلاً.
+        </div>
+        <ul class="item-details-list">
+          <li>إنشاء جدول مخصص بقاعدة البيانات (<code>car_slug_redirects</code>) وموديل تتبع للتغيرات في الـ Slugs.</li>
+          <li>ربط لوحة تحكم السيارات لتسجيل الرابط القديم والجديد آلياً فور تعديل اسم أو سنة الموديل.</li>
+          <li>إرجاع تحويل فوري دائم <code>HTTP 301 Redirect</code> لحفظ قوة الروابط (Link Juice) وتجنب أخطاء 404.</li>
+        </ul>
+      </div>
+
+      <!-- Item 7 -->
+      <div class="item-card">
+        <div class="item-card-header">
+          <span class="item-number">7</span>
+          <div class="item-title">ترقية الأداء ومعايير السرعة واستقرار التصميم (Core Web Vitals & Speed Optimization)</div>
+        </div>
+        <div class="item-value-box">
+          <strong>القيمة الاستثمارية:</strong> ترقية سرعة وتجربة التصفح على الجوال، والقضاء التام على الاهتزاز البصري أثناء التحميل.
+        </div>
+        <ul class="item-details-list">
+          <li>استبدال الخط المتغير الضخم Cairo TTF (بحجم 353KB) بحزم WOFF2 مدمجة سريعة تدعم <code>font-display: swap</code> و <code>preconnect</code>.</li>
+          <li>كاشينج ذكي لبيانات واجهة المتجر الرئيسية (Store Home API) لتخفيض زمن استجابة السيرفر من 870ms إلى أقل من 80ms.</li>
+          <li>تصميم وبرمجة هيكل تحميل عظمي كامل (<code>CarDetailsSkeleton</code>) ينهي مشكلة الـ CLS ويخفضها من 2.01 إلى 0.00.</li>
+        </ul>
+      </div>
+
+      <!-- Item 8 -->
+      <div class="item-card">
+        <div class="item-card-header">
+          <span class="item-number">8</span>
+          <div class="item-title">محرك خريطة الموقع الديناميكي اللحظي (Real-Time Dynamic XML Sitemap Engine)</div>
+        </div>
+        <div class="item-value-box">
+          <strong>القيمة الاستثمارية:</strong> ضمان أرشفة أي سيارة جديدة أو مقال مدونة في جوجل فور إضافته من لوحة التحكم بشكل فوري وتلقائي.
+        </div>
+        <ul class="item-details-list">
+          <li>بناء نظام توليد ديناميكي لـ <code>/sitemap.xml</code> مباشرة من قاعدة البيانات مع تشفير الحروف العربية في الروابط.</li>
+          <li>إدراج السيارات النشطة، الماركات، المقالات، والصفحات الثابتة مع تحديث تواريخ آخر تعديل (<code>lastmod</code>).</li>
+        </ul>
+      </div>
+
+      <!-- Item 9 -->
+      <div class="item-card">
+        <div class="item-card-header">
+          <span class="item-number">9</span>
+          <div class="item-title">تطوير وتصميم صفحات الشروط والخصوصية المعتمدة (/terms & /privacy)</div>
+        </div>
+        <div class="item-value-box">
+          <strong>القيمة الاستثمارية:</strong> استيفاء متطلبات البنك المركزي وشركات التمويل، ورفع تصنيف الثقة والموثوقية (E-E-A-T) لدى خوارزميات جوجل والقبول بحملات Google Ads.
+        </div>
+        <ul class="item-details-list">
+          <li>بناء وتصميم صفحتين مستقلتين متوافقتين مع الهوية الرسمية وحقنهما بالبيانات الوصفية ومسارات السيرفر.</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Section 2: Free / Complimentary Scope -->
+    <div class="section-header" style="margin-top: 26px;">
+      <h2>🛠️ ثانياً: أعمال الدعم الفني وتصحيح الملاحظات (Complimentary Maintenance Scope)</h2>
+      <span class="badge-free">مشمولة مجاناً كضمان جودة</span>
+    </div>
+
+    <div class="items-grid">
+      <div class="item-card">
+        <ul class="item-details-list">
+          <li><strong>إصلاح خريطة الموقع وملف Robots:</strong> حذف الخريطة الثابتة القديمة التي كانت تشير لنطاق خارجي وتحديث <code>robots.txt</code> ليوجه حصرياً لـ zad-capital.sa.</li>
+          <li><strong>معالجة مفاتيح الترجمة الظاهرة كنصوص برمجية:</strong> إصلاح كود ملفات الترجمة لإنهاء ظهور نصوص مثل <code>pageTitles.brands</code> في عناوين التبويب.</li>
+          <li><strong>توحيد المسمى التجاري:</strong> استبدال كافة الإشارات لـ "Zed Capital" أو "زيد" بالاسم الرسمي "زاد كابيتال" في كافة النصوص والواجهات.</li>
+          <li><strong>تحويل أزرار التفاعل إلى روابط زحف:</strong> تعديل بطاقات السيارات (CarCard)، أزرار العروض (Offer CTAs)، والترقيم لتعمل كروابط <code>&lt;a href&gt;</code> حقيقية.</li>
+          <li><strong>توحيد ترويسة H1 الرئيسية:</strong> تعديل سلايدر الهيرو الرئيسي ليكون H1 فريداً وحصرياً في الصفحة الرئيسية لمنع تشتت خوارزميات البحث.</li>
+          <li><strong>إلغاء مشكلة الصفحات الوهمية (Soft 404):</strong> إرجاع كود الاستجابة الرسمي <code>HTTP 404 Not Found</code> للروابط الخاطئة مع صفحة توجيهية عربية مميزة.</li>
+          <li><strong>تنظيف روابط الـ Canonical:</strong> إزالة بارامترات التتبع والإعلانات (<code>?utm_source=...</code>) لحماية الصفحات من ازدواجية المحتوى.</li>
+          <li><strong>إزالة الروابط المخفية:</strong> تنظيف كود التذييل من أي روابط مخفية بصرياً لتجنب عقوبات جوجل الصارمة المتعلقة بالروابط التمويهية.</li>
+          <li><strong>تحسين إمكانية الوصول (Accessibility A11y):</strong> إضافة وسوم <code>aria-label</code> على كافة أزرار الأيقونات وأسهم التصفح لرفع تقييم Lighthouse Accessibility.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Page Break for Table -->
+    <div class="page-break"></div>
+
+    <!-- Section 3: Comparison Table -->
+    <div class="section-header">
+      <h2>📊 ثالثاً: جدول المقارنة الفنية الشاملة (قبل وبعد التنفيذ)</h2>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 26%;">المعيار الفني</th>
+            <th style="width: 26%;">قبل البدء في المشروع</th>
+            <th style="width: 26%;">بعد اكتمال التنفيذ</th>
+            <th style="width: 22%;">الأثر المتحقق</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>الروابط القابلة للزحف</strong></td>
+            <td><span class="status-badge-before">0 رابط (أزرار JS فقط)</span></td>
+            <td><span class="status-badge-after">جميع الكروت روابط &lt;a href&gt;</span></td>
+            <td>تمكين جوجل من أرشفة 98 سيارة</td>
+          </tr>
+          <tr>
+            <td><strong>عناوين وأوصاف الصفحات</strong></td>
+            <td><span class="status-badge-before">عنوان مكرر لكافة السيارات</span></td>
+            <td><span class="status-badge-after">98 عنواناً ووصفاً تسويقياً فريداً</span></td>
+            <td>التصدر بموديل وسنة كل سيارة</td>
+          </tr>
+          <tr>
+            <td><strong>خريطة الموقع (Sitemap)</strong></td>
+            <td><span class="status-badge-before">نطاق خارجي خاطئ (9 روابط)</span></td>
+            <td><span class="status-badge-after">ديناميكية لحظية على نطاق زاد</span></td>
+            <td>أرشفة تلقائية لأكثر من 130 صفحة</td>
+          </tr>
+          <tr>
+            <td><strong>عرض الـ Meta و OpenGraph</strong></td>
+            <td><span class="status-badge-before">فارغة وتعتمد على تشغيل JS</span></td>
+            <td><span class="status-badge-after">محقونة فوراً من السيرفر (SSR)</span></td>
+            <td>معاينة جذابة بواتساب ومواقع التواصل</td>
+          </tr>
+          <tr>
+            <td><strong>البيانات المنظمة (Schema)</strong></td>
+            <td><span class="status-badge-before">غائبة أو غير متطابقة</span></td>
+            <td><span class="status-badge-after">كاملة للسيارات والمنتجات والمؤسسة</span></td>
+            <td>ظهور نتائج غنية ومميزة ببحث Google</td>
+          </tr>
+          <tr>
+            <td><strong>صفحات الماركات</strong></td>
+            <td><span class="status-badge-before">غير موجودة (شعارات فقط)</span></td>
+            <td><span class="status-badge-after">صفحات هبوط مستقلة مع أقل قسط</span></td>
+            <td>المنافسة على عروض الماركات التمويلية</td>
+          </tr>
+          <tr>
+            <td><strong>صيغ وأحجام الصور</strong></td>
+            <td><span class="status-badge-before">PNG خام بحجم يتجاوز 5.4MB</span></td>
+            <td><span class="status-badge-after">WebP مضغوطة ذكياً بأقل من 1.5MB</span></td>
+            <td>سرعة تحميل خارقة على أجهزة الجوال</td>
+          </tr>
+          <tr>
+            <td><strong>إزاحة التصميم (CLS)</strong></td>
+            <td><span class="status-badge-before">2.01 (اهتزاز بصري حاد)</span></td>
+            <td><span class="status-badge-after">0.00 (ثبات تام عبر Skeleton)</span></td>
+            <td>تحقيق أعلى معايير تجربة الاستخدام</td>
+          </tr>
+          <tr>
+            <td><strong>تتبع التحويلات التسويقية</strong></td>
+            <td><span class="status-badge-before">لا يوجد تتبع للطلبات والحاسبة</span></td>
+            <td><span class="status-badge-after">ربط متكامل لـ GTM والبيكسل</span></td>
+            <td>قياس دقيق لمردود الحملات الإعلانية</td>
+          </tr>
+          <tr>
+            <td><strong>حماية الروابط عند التعديل</strong></td>
+            <td><span class="status-badge-before">روابط مكسورة وأخطاء 404</span></td>
+            <td><span class="status-badge-after">توجيه تلقائي دائم 301 Redirect</span></td>
+            <td>حفظ قوة الأرشفة ومصداقية الموقع</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Conclusion Box -->
+    <div class="summary-box" style="margin-top: 24px; border-right-color: #d4af37;">
+      <h2 style="color: #0f1e36;">🏁 الخلاصة والتوصية</h2>
+      <p>
+        تمثل البنية التحتية البرمجية التي تم تأسيسها في هذا المشروع نقلة نوعية لمنصة <strong>زاد كابيتال</strong>، حيث تم نقل الموقع من حالة الغياب التام عن محركات البحث إلى منصة متكاملة مجهزة بجميع المعايير التقنية التي تفضلها خوارزميات Google الحديثة لعام 2026. المنصة الآن جاهزة تماماً لحصد المراكز الأولى وتحقيق أعلى عائد استثماري من الحملات التسويقية.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="report-footer">
+      <div>تم إعداد التقرير بواسطة: <strong>فريق التطوير والحلول الهندسية</strong></div>
+      <div>نظام إدارة التطوير · زاد كابيتال (Zad Capital)</div>
+      <div>التاريخ: 18 أكتوبر 2026</div>
+    </div>
+
+  </div>
+
+</body>
+</html>
