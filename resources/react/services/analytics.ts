@@ -1,6 +1,6 @@
 /**
  * Unified Analytics & Pixel Tracking Service
- * Integrates Meta Pixel (Facebook), TikTok Pixel, Snapchat Pixel, and Google Tag Manager (GTM).
+ * Integrates Meta Pixel (Facebook), TikTok Pixel, Snapchat Pixel, Google Tag Manager (GTM) and Google Analytics 4 (gtag).
  */
 
 declare global {
@@ -15,6 +15,20 @@ declare global {
     };
     snaptr?: (action: string, eventName: string, params?: Record<string, any>) => void;
     dataLayer?: Array<Record<string, any>>;
+    gtag?: (...args: any[]) => void;
+  }
+}
+
+/**
+ * Send an event to Google Analytics 4 (gtag.js is loaded in the page head).
+ * Page views are tracked by GA4 enhanced measurement (history changes), not here.
+ * Never pass personal data (name, phone, salary) to GA4.
+ */
+function ga4Event(name: string, params: Record<string, any> = {}): void {
+  try {
+    window.gtag?.('event', name, params);
+  } catch {
+    // analytics must never break the UI
   }
 }
 
@@ -131,6 +145,13 @@ export function trackViewContent(car: {
         },
       });
     }
+
+    // 5. Google Analytics 4
+    ga4Event('view_item', {
+      currency,
+      value: price,
+      items: [{ item_id: String(car.id), item_name: car.name, item_brand: car.brand, price }],
+    });
   } catch (error) {
     console.debug('[Analytics] Error tracking ViewContent:', error);
   }
@@ -206,6 +227,15 @@ export function trackLead(params: {
         currency: currency,
       });
     }
+
+    // 5. Google Analytics 4
+    ga4Event('generate_lead', {
+      lead_type: 'request_car',
+      car_id: params.carId != null ? String(params.carId) : undefined,
+      car_name: params.carName,
+      value,
+      currency,
+    });
   } catch (error) {
     console.debug('[Analytics] Error tracking Lead:', error);
   }
@@ -279,6 +309,14 @@ export function trackCalculatorLead(params: {
         salary: params.salary,
       });
     }
+
+    // 5. Google Analytics 4 (no salary or installment details: lead source only)
+    ga4Event('generate_lead', {
+      lead_type: 'finance_calculator',
+      car_id: params.carId != null ? String(params.carId) : undefined,
+      car_name: params.carName,
+      currency,
+    });
   } catch (error) {
     console.debug('[Analytics] Error tracking Calculator Lead:', error);
   }
@@ -326,6 +364,9 @@ export function trackContact(type: 'whatsapp' | 'phone', target?: string): void 
         target: target,
       });
     }
+
+    // 5. Google Analytics 4
+    ga4Event('contact_click', { contact_type: type });
   } catch (error) {
     console.debug('[Analytics] Error tracking Contact:', error);
   }
@@ -356,6 +397,9 @@ export function trackContactFormLead(): string {
         event: 'lead_contact',
       });
     }
+
+    // 5. Google Analytics 4
+    ga4Event('generate_lead', { lead_type: 'contact_form' });
   } catch (error) {
     console.debug('[Analytics] Error tracking Contact Form Lead:', error);
   }

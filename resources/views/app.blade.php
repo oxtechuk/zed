@@ -37,6 +37,15 @@
     </script>
     @endif
 
+    <!-- Google Analytics 4 (async, does not block rendering) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GZMP4VBPHR"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GZMP4VBPHR');
+    </script>
+
     <!-- Marketing & Analytics Tracking (Deferred to avoid blocking page load) -->
     <script>
         function loadMarketingPixels() {
