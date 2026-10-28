@@ -1,6 +1,58 @@
 import { useEffect } from "react";
 import { useSettingsStore } from "../store/settings.store";
 
+const SSR_META_NAMES = [
+  "description",
+  "og:title",
+  "og:description",
+  "og:image",
+  "og:url",
+  "og:type",
+  "twitter:title",
+  "twitter:description",
+  "twitter:image",
+];
+
+interface ServerSeo {
+  path: string;
+  title: string;
+  canonical: string;
+  metas: Record<string, string>;
+}
+
+function normalizePath(path: string): string {
+  let decoded = path;
+  try {
+    decoded = decodeURIComponent(path);
+  } catch {
+    // keep the raw path if it is not valid URI encoding
+  }
+  return decoded.replace(/\/+$/, "") || "/";
+}
+
+// Snapshot of the meta tags the server rendered for the first URL, taken
+// before any component touches the document head.
+const serverSeo: ServerSeo | null = (() => {
+  if (typeof document === "undefined") return null;
+  const marker = document.querySelector<HTMLMetaElement>('meta[name="ssr-seo-path"]');
+  if (!marker) return null;
+  const metas: Record<string, string> = {};
+  for (const name of SSR_META_NAMES) {
+    const el = document.querySelector<HTMLMetaElement>(`meta[name="${name}"], meta[property="${name}"]`);
+    if (el?.content) metas[name] = el.content;
+  }
+  return {
+    path: normalizePath(marker.content),
+    title: document.title,
+    canonical: document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.getAttribute("href") ?? "",
+    metas,
+  };
+})();
+
+function isServerRenderedPath(): boolean {
+  return serverSeo !== null && normalizePath(window.location.pathname) === serverSeo.path;
+}
+
 export function useSEO(
   title: string,
   description?: string,
@@ -12,6 +64,15 @@ export function useSEO(
   const siteName = settings?.site_name || "زاد كابيتال";
 
   useEffect(() => {
+    // The server already rendered the right meta for this URL (what search
+    // engines index). Keep it, and only use the page values after in-app navigation.
+    if (isServerRenderedPath() && serverSeo) {
+      document.title = serverSeo.title;
+      for (const [name, content] of Object.entries(serverSeo.metas)) setMeta(name, content);
+      setCanonical(serverSeo.canonical);
+      return;
+    }
+
     const pageTitle = exactTitle ? title : `${siteName} | ${title}`;
     document.title = pageTitle;
 

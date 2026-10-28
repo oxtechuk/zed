@@ -8,6 +8,7 @@
     <meta name="description" content="{{ $metaDescription ?? 'احصل على أفضل عروض تمويل وتقسيط السيارات في السعودية من زاد كابيتال. أقل قسط شهري وبدون دفعة أولى لجميع الماركات.' }}" />
     <link rel="canonical" href="{{ $canonicalUrl ?? rtrim(url()->current(), '/') }}" />
     <meta name="robots" content="{{ $metaRobots ?? 'index, follow' }}" />
+    <meta name="ssr-seo-path" content="{{ rawurldecode('/' . ltrim(request()->path(), '/')) }}" />
 
     <!-- Cairo Font (High-Performance WOFF2 Subsets with font-display: swap) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

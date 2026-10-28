@@ -86,7 +86,7 @@ export default function CarDetailsPage() {
   const carTitle = useMemo(() => {
     if (!car) return `${t("nav.cars")} | زاد كابيتال`;
     const carName = (car.name || "").trim();
-    const carYear = car.year ? ` ${car.year}` : "";
+    const carYear = car.year && !carName.includes(String(car.year)) ? ` ${car.year}` : "";
     const installment = car.min_installment
       ? ` · قسط من ${Number(car.min_installment).toLocaleString("en-US")} ريال`
       : "";
@@ -155,22 +155,6 @@ export default function CarDetailsPage() {
 
   return (
     <>
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Product",
-          name: car.name,
-          description: car.description?.replace(/<[^>]*>/g, "").slice(0, 200),
-          image: getImageUrl(car.main_image),
-          brand: { "@type": "Brand", name: car.brand?.name },
-          offers: {
-            "@type": "Offer",
-            price: car.current_price,
-            priceCurrency: "SAR",
-            availability: "https://schema.org/InStock",
-          },
-        })}
-      </script>
       <CarDetailsHero
         id={car.id}
         slug={car.slug || slug}

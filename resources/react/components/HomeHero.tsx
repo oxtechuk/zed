@@ -37,8 +37,15 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
 
   if (slides.length === 0) return null;
 
+  // Exactly one H1 per page: the first slide that has a title (image-only
+  // slides have none). If no slide has a title, a visually hidden H1 is used.
+  const headingSlideIdx = slides.findIndex((slide) => Boolean(slide.title?.trim()));
+
   return (
     <section className="w-full pb-4 sm:pb-8 pt-0" dir={direction}>
+      {headingSlideIdx === -1 && (
+        <h1 className="sr-only">تمويل سيارات بالتقسيط في السعودية | زاد كابيتال</h1>
+      )}
       {/* Full-width Slideshow Slider Container - Responsive 32:9 (1920x540) on desktop & 64:35 (768x420) on mobile */}
       <div className="relative w-full overflow-hidden bg-[#051023] aspect-[768/420] md:aspect-[1920/540]">
         {/* Ambient Decorative Glows */}
@@ -127,7 +134,7 @@ export default function HomeHero({ slides = [] }: IHomeHeroProps) {
                       )}
 
                       {slideTitle && (
-                        idx === 0 ? (
+                        idx === headingSlideIdx ? (
                           <h1 className="text-[13px] sm:text-[32px] md:text-[40px] lg:text-[46px] font-black text-white leading-tight drop-shadow-md">
                             {slideTitle}
                           </h1>
