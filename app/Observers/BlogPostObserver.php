@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\BlogPost;
 use App\Services\Cache\BlogCacheService;
 use App\Services\Cache\HomeCacheService;
+use App\Services\Seo\IndexNowService;
 
 class BlogPostObserver
 {
@@ -17,6 +18,10 @@ class BlogPostObserver
     {
         $this->homeCache->forgetHome();
         $this->blogCache->forgetBlog();
+
+        if ($blogPost->is_published && $blogPost->slug) {
+            IndexNowService::notifyLater('blog/'.$blogPost->slug);
+        }
     }
 
     public function deleted(BlogPost $blogPost): void

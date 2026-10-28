@@ -7,6 +7,7 @@ use App\Services\Cache\CalculatorCacheService;
 use App\Services\Cache\CarCacheService;
 use App\Services\Cache\HomeCacheService;
 use App\Services\Cache\OfferCacheService;
+use App\Services\Seo\IndexNowService;
 
 class CarObserver
 {
@@ -23,6 +24,11 @@ class CarObserver
         $this->carCache->forgetCars();
         $this->offerCache->forgetOffers();
         $this->calculatorCache->forgetCalculator();
+
+        $slug = $car->getTranslation('slug', 'ar', false) ?: $car->getTranslation('slug', 'en', false);
+        if ($car->is_active && $slug) {
+            IndexNowService::notifyLater('cars/'.$slug);
+        }
     }
 
     public function deleted(Car $car): void
