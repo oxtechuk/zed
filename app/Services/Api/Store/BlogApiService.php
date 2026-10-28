@@ -87,6 +87,26 @@ final class BlogApiService
         return compact('post', 'related');
     }
 
+    /**
+     * Published posts whose content links to the given car page, newest first.
+     */
+    public function linkingToCar(string $carSlug, int $limit = 6): Collection
+    {
+        $needles = ['/cars/' . $carSlug, '/cars/' . rawurlencode($carSlug)];
+
+        return BlogPost::published()
+            ->with('categories', 'employee')
+            ->latest('published_at')
+            ->get()
+            ->filter(function (BlogPost $post) use ($needles) {
+                $content = (string) $post->getTranslation('content', 'ar', false);
+
+                return str_contains($content, $needles[0]) || str_contains($content, $needles[1]);
+            })
+            ->take($limit)
+            ->values();
+    }
+
     public function categories(): Collection
     {
         return $this->cache->rememberBlogCategories();

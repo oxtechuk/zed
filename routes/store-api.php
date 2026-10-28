@@ -26,6 +26,7 @@ Route::prefix('store')->name('store.api.')->group(function () {
     Route::get('/cars/search', [CarController::class, 'search'])->name('cars.search');
     Route::get('/cars/compare', [CarController::class, 'compare'])->name('cars.compare');
     Route::get('/cars/{slug}', [CarController::class, 'show'])->name('cars.show');
+    Route::get('/cars/{slug}/articles', [BlogController::class, 'forCar'])->name('cars.articles');
     Route::get('/brands', [CarController::class, 'brands'])->name('brands.index');
     Route::get('/brands/{brand}/models', [CarController::class, 'brandModels'])->name('brands.models');
     Route::get('/car-categories', [CarCategoryController::class, 'index'])->name('car-categories.index');

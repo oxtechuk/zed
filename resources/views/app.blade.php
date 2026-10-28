@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ $metaTitle ?? 'زاد كابيتال | تمويل سيارات بالتقسيط في السعودية' }}</title>
     <meta name="description" content="{{ $metaDescription ?? 'احصل على أفضل عروض تمويل وتقسيط السيارات في السعودية من زاد كابيتال. أقل قسط شهري وبدون دفعة أولى لجميع الماركات.' }}" />
+    @if (empty($is404))
     <link rel="canonical" href="{{ $canonicalUrl ?? rtrim(url()->current(), '/') }}" />
+    @endif
     <meta name="robots" content="{{ $metaRobots ?? 'index, follow' }}" />
     <meta name="ssr-seo-path" content="{{ rawurldecode('/' . ltrim(request()->path(), '/')) }}" />
 

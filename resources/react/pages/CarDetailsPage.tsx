@@ -9,6 +9,9 @@ import FeaturedCarsSection from "../components/FeaturedCarsSection";
 import FinanceSolutionsSection from "../components/FinanceSolutionsSection";
 import CarDetailsSkeleton from "../components/skeletons/CarDetailsSkeleton";
 import { getCarBySlug } from "../services/api/cars.service";
+import { getCarArticles } from "../services/api/blogs.service";
+import RelatedArticlesSection from "../components/blogs/RelatedArticlesSection";
+import { postToCardProps } from "../utils/blog";
 import { getFinanceSettings } from "../services/api";
 import { getImageUrl, APP_IMAGES } from "../constants/app-images";
 import { formatPrice } from "../utils/format";
@@ -69,6 +72,12 @@ export default function CarDetailsPage() {
   const { t } = useTranslation();
   const language = useLanguageStore((s) => s.language);
   const { slug } = useParams<{ slug: string }>();
+  const { data: carArticles = [] } = useQuery({
+    queryKey: ["car-articles", slug],
+    queryFn: () => getCarArticles(slug as string),
+    enabled: !!slug && language === "ar",
+    staleTime: 10 * 60 * 1000,
+  });
 
   const { data: car, isLoading, isError } = useQuery({
     queryKey: ["car-details", slug, language],
@@ -102,7 +111,7 @@ export default function CarDetailsPage() {
     const carName = (car.name || "").trim();
     const price = (car.current_price ?? car.cash_price ?? 0).toLocaleString("en-US");
     const installment = (car.min_installment ?? 0).toLocaleString("en-US");
-    return `اشتري ${carName} بالتقسيط من زاد كابيتال. السعر ${price} ريال والقسط الشهري يبدأ من ${installment} ريال. شوف المواصفات واحسب قسطك.`;
+    return `اشترِ ${carName} بالتقسيط من زاد كابيتال. السعر ${price} ريال والقسط الشهري يبدأ من ${installment} ريال. اطّلع على المواصفات واحسب قسطك.`;
   }, [car, t]);
 
   const carImage = useMemo(() => {
@@ -206,6 +215,13 @@ export default function CarDetailsPage() {
           </div>
         </div>
       </section>
+
+      {carArticles.length > 0 && (
+        <RelatedArticlesSection
+          title="مقالات عن هذه السيارة"
+          articles={carArticles.slice(0, 3).map((post) => postToCardProps(post, language, t))}
+        />
+      )}
 
       {relatedCars.length > 0 && (
         <FeaturedCarsSection
