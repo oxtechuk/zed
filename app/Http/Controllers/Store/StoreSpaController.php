@@ -226,9 +226,7 @@ class StoreSpaController extends Controller
     {
         $post = BlogPost::published()
             ->where(function ($q) use ($slug) {
-                $q->where('slug', $slug)
-                    ->orWhere('slug->ar', $slug)
-                    ->orWhere('slug->en', $slug);
+                $q->where('slug', $slug);
             })
             ->first();
 
