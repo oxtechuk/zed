@@ -1,21 +1,10 @@
 {{-- Plain HTML version of the page, rendered inside #root before React mounts
-     (React replaces it). Crawlers that don't run JavaScript read this. --}}
+     (React replaces it). Visually hidden, so visitors see no change; crawlers
+     that don't run JavaScript (AI search bots) read it. --}}
 <div class="ssr-page" dir="rtl" lang="ar">
     <style>
-        .ssr-page{font-family:Cairo,system-ui,sans-serif;color:#16254F;background:#F0F2F5;min-height:100vh;line-height:1.9}
-        .ssr-page a{color:#163F8B}
-        .ssr-wrap{max-width:960px;margin:0 auto;padding:16px}
-        .ssr-head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;padding:12px 0;border-bottom:1px solid #D9DEE7}
-        .ssr-head strong{font-size:20px}
-        .ssr-crumbs{font-size:14px;margin:12px 0;color:#5B6475}
-        .ssr-page h1{font-size:28px;margin:12px 0}
-        .ssr-facts{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;margin:16px 0}
-        .ssr-facts dt{font-weight:700}
-        .ssr-facts dd{margin:0}
-        .ssr-page img{max-width:100%;height:auto}
-        .ssr-page li{margin:4px 0}
-        .ssr-meta{color:#5B6475;font-size:14px}
-        .ssr-foot{margin-top:32px;padding-top:12px;border-top:1px solid #D9DEE7;font-size:14px}
+        /* Not shown to visitors (the app replaces #root on mount); kept in the HTML for crawlers. */
+        .ssr-page{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);border:0}
     </style>
     <div class="ssr-wrap">
         <header class="ssr-head">
