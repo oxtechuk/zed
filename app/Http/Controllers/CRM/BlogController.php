@@ -8,7 +8,6 @@ use App\Models\BlogPost;
 use App\Services\ImageOptimizerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -35,14 +34,15 @@ class BlogController extends Controller
         $data = $request->validate([
             'title' => 'required|array',
             'title.ar' => 'required|string|max:255',
-            'title.en' => 'required|string|max:255',
+            'title.en' => 'nullable|string|max:255',
             'excerpt' => 'nullable|array',
             'excerpt.ar' => 'nullable|string|max:500',
             'excerpt.en' => 'nullable|string|max:500',
             'content' => 'required|array',
             'content.ar' => 'required|string',
-            'content.en' => 'required|string',
+            'content.en' => 'nullable|string',
             'thumbnail' => 'nullable|image|max:8192',
+            'slug' => 'nullable|string|max:191',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string|max:255',
@@ -53,7 +53,8 @@ class BlogController extends Controller
             'tag' => 'nullable|string|in:popular,exclusive,new,limited',
         ]);
 
-        $data['slug'] = Str::slug($data['title']['en']).'-'.uniqid();
+        $data = $this->fillMissingEnglish($data);
+        $data['slug'] = $this->uniqueSlug($request->input('slug') ?: $data['title']['ar']);
         $data['employee_id'] = auth('employee')->id();
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
@@ -81,14 +82,15 @@ class BlogController extends Controller
         $data = $request->validate([
             'title' => 'required|array',
             'title.ar' => 'required|string|max:255',
-            'title.en' => 'required|string|max:255',
+            'title.en' => 'nullable|string|max:255',
             'excerpt' => 'nullable|array',
             'excerpt.ar' => 'nullable|string|max:500',
             'excerpt.en' => 'nullable|string|max:500',
             'content' => 'required|array',
             'content.ar' => 'required|string',
-            'content.en' => 'required|string',
+            'content.en' => 'nullable|string',
             'thumbnail' => 'nullable|image|max:5120',
+            'slug' => 'nullable|string|max:191',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string|max:255',
@@ -98,6 +100,12 @@ class BlogController extends Controller
             'is_featured' => 'boolean',
             'tag' => 'nullable|string|in:popular,exclusive,new,limited',
         ]);
+
+        $data = $this->fillMissingEnglish($data);
+        unset($data['slug']);
+        if ($request->filled('slug') && self::slugify($request->input('slug')) !== $blog->slug) {
+            $data['slug'] = $this->uniqueSlug($request->input('slug'), $blog->id);
+        }
 
         $data['is_published'] = $request->boolean('is_published');
         $data['is_featured'] = $request->boolean('is_featured');
@@ -133,5 +141,38 @@ class BlogController extends Controller
         $blog->update(['is_featured' => ! $blog->is_featured]);
 
         return redirect()->back()->with('success', 'تم تعديل حالة تمييز المقالة بنجاح');
+    }
+
+    /** Arabic-friendly URL slug: letters/digits in any script, words joined by "-". */
+    private static function slugify(string $text): string
+    {
+        $slug = preg_replace('/[^\p{L}\p{N}]+/u', '-', mb_strtolower(trim($text), 'UTF-8'));
+
+        return trim((string) preg_replace('/-+/', '-', (string) $slug), '-');
+    }
+
+    private function uniqueSlug(string $text, ?int $ignoreId = null): string
+    {
+        $base = self::slugify($text) ?: 'post';
+        $slug = $base;
+        $counter = 2;
+
+        while (BlogPost::where('slug', $slug)->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))->exists()) {
+            $slug = $base.'-'.$counter++;
+        }
+
+        return $slug;
+    }
+
+    /** The English fields are optional; fall back to the Arabic text so the English view is never empty. */
+    private function fillMissingEnglish(array $data): array
+    {
+        foreach (['title', 'excerpt', 'content'] as $field) {
+            if (isset($data[$field]) && is_array($data[$field]) && blank($data[$field]['en'] ?? null)) {
+                $data[$field]['en'] = $data[$field]['ar'] ?? null;
+            }
+        }
+
+        return $data;
     }
 }

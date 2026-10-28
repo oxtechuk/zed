@@ -42,7 +42,7 @@
                             <input type="text" name="title[ar]" class="form-control bg-light border-0 shadow-none fs-5 fw-bold" placeholder="{{ __('عنوان المقالة باللغة العربية...') }}" value="{{ old('title.ar', $blog->getTranslation('title', 'ar')) }}" required>
                         </div>
                         <div class="mb-4">
-                            <label class="form-label fw-bold small text-muted">{{ __('عنوان المقالة (بالإنجليزية)') }} <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold small text-muted">{{ __('عنوان المقالة (بالإنجليزية)') }} <span class="text-muted fw-normal">({{ __('اختياري') }})</span></label>
                             <input type="text" name="title[en]" class="form-control bg-light border-0 shadow-none fs-5 fw-bold" placeholder="Article title in English..." value="{{ old('title.en', $blog->getTranslation('title', 'en')) }}" required>
                         </div>
                         
@@ -174,6 +174,11 @@
                         <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-search text-success me-2"></i> {{ __('تحسين محركات البحث (SEO)') }}</h6>
                     </div>
                     <div class="card-body p-4 pt-2">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">{{ __('رابط المقالة (Slug)') }}</label>
+                            <input type="text" name="slug" dir="rtl" class="form-control bg-light border-0 shadow-none" value="{{ old('slug', $blog->slug) }}" placeholder="{{ __('مثال: قسط-لاند-كروزر-2026') }}">
+                            <div class="form-text small">{{ __('تغيير الرابط بعد النشر يكسر الروابط القديمة للمقالة، لذا غيّره عند الضرورة فقط.') }}</div>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold small text-muted">{{ __('عنوان Meta') }}</label>
                             <input type="text" name="meta_title" class="form-control bg-light border-0 shadow-none" value="{{ old('meta_title', $blog->meta_title) }}">

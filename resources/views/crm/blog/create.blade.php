@@ -41,8 +41,8 @@
                             <input type="text" name="title[ar]" class="form-control bg-light border-0 shadow-none fs-5 fw-bold" placeholder="{{ __('مثال: نصائح لشراء سيارة مستعملة...') }}" value="{{ old('title.ar') }}" required>
                         </div>
                         <div class="mb-4">
-                            <label class="form-label fw-bold small text-muted">{{ __('عنوان المقالة (بالإنجليزية)') }} <span class="text-danger">*</span></label>
-                            <input type="text" name="title[en]" class="form-control bg-light border-0 shadow-none fs-5 fw-bold" placeholder="e.g.: Tips for buying a used car..." value="{{ old('title.en') }}" required>
+                            <label class="form-label fw-bold small text-muted">{{ __('عنوان المقالة (بالإنجليزية)') }} <span class="text-muted fw-normal">({{ __('اختياري') }})</span></label>
+                            <input type="text" name="title[en]" class="form-control bg-light border-0 shadow-none fs-5 fw-bold" placeholder="e.g.: Tips for buying a used car..." value="{{ old('title.en') }}">
                         </div>
                         
                         <div class="row">
@@ -167,6 +167,11 @@
                         <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-search text-success me-2"></i> {{ __('تحسين محركات البحث (SEO)') }}</h6>
                     </div>
                     <div class="card-body p-4 pt-2">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">{{ __('رابط المقالة (Slug)') }}</label>
+                            <input type="text" name="slug" dir="rtl" class="form-control bg-light border-0 shadow-none" value="{{ old('slug') }}" placeholder="{{ __('مثال: قسط-لاند-كروزر-2026') }}">
+                            <div class="form-text small">{{ __('يُنشأ تلقائياً من العنوان العربي إذا تُرك فارغاً. حروف وأرقام وشرطات فقط.') }}</div>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold small text-muted">{{ __('عنوان Meta') }}</label>
                             <input type="text" name="meta_title" class="form-control bg-light border-0 shadow-none" value="{{ old('meta_title') }}" placeholder="{{ __('من 50 إلى 60 حرفاً') }}">
