@@ -24,13 +24,13 @@ class SeoImportCommand extends Command
             return self::FAILURE;
         }
 
-        $header = fgetcsv($handle);
+        $header = fgetcsv($handle, null, ',', '"', '');
         $header[0] = preg_replace('/^\xEF\xBB\xBF/', '', (string) $header[0]);
         $fields = ['type', 'focus_keyword', 'meta_title', 'meta_description', 'intro', 'faq', 'image_alt'];
 
         $seen = [];
         $created = $updated = $unchanged = 0;
-        while (($row = fgetcsv($handle)) !== false) {
+        while (($row = fgetcsv($handle, null, ',', '"', '')) !== false) {
             $data = array_combine($header, array_pad($row, count($header), ''));
             $path = SeoEntryResolver::normalize((string) ($data['path'] ?? ''));
             if ($path === '/' && trim((string) ($data['path'] ?? '')) === '') {
@@ -54,6 +54,9 @@ class SeoImportCommand extends Command
             }
 
             $entry = SeoEntry::firstOrNew(['path' => $path]);
+            if ($entry->exists && $entry->faq == $values['faq']) {
+                unset($values['faq']); // the JSON cast would otherwise always look changed
+            }
             $entry->fill($values);
             if (! $entry->exists) {
                 $created++;

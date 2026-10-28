@@ -124,11 +124,17 @@ final class SeoEntryResolver
         $cars = Car::where('is_active', true);
 
         return $this->globals = [
-            '{عدد_السيارات}' => (string) $cars->count(),
-            '{عدد_الماركات}' => (string) (clone $cars)->distinct()->count('brand_id'),
+            // Used as "أكثر من {عدد_السيارات} سيارة": rounded down to tens so the count reads correctly in Arabic.
+            '{عدد_السيارات}' => (string) $this->tensBelow($cars->count()),
+            '{عدد_الماركات}' => (string) $this->tensBelow((clone $cars)->distinct()->count('brand_id')),
             '{أقل_قسط}' => $this->money((clone $cars)->where('min_installment', '>', 0)->min('min_installment')),
             '{عدد_البنوك}' => (string) CalculatorBank::where('is_active', true)->count(),
         ];
+    }
+
+    private function tensBelow(int $count): int
+    {
+        return max(10, intdiv(max($count - 1, 0), 10) * 10);
     }
 
     private function money(mixed $amount): string
