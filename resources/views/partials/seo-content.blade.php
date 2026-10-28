@@ -39,10 +39,6 @@
         <main>
             <h1>{{ $seoContent['h1'] }}</h1>
 
-            @foreach ($seoContent['intro'] as $paragraph)
-                <p>{{ $paragraph }}</p>
-            @endforeach
-
             @if (! empty($seoContent['facts']))
                 <dl class="ssr-facts">
                     @foreach ($seoContent['facts'] as [$label, $value])
@@ -50,6 +46,10 @@
                     @endforeach
                 </dl>
             @endif
+
+            @foreach ($seoContent['intro'] as $paragraph)
+                <p>{{ $paragraph }}</p>
+            @endforeach
 
             @if (! empty($seoContent['html']))
                 <article>{!! $seoContent['html'] !!}</article>
