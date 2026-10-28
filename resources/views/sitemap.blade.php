@@ -22,7 +22,7 @@
 @endforeach
 @foreach ($blogs as $blog)
     @php
-        $rawBlogSlug = $blog->getTranslation('slug', 'ar') ?: (is_array($blog->slug) ? ($blog->slug['ar'] ?? reset($blog->slug)) : $blog->slug);
+        $rawBlogSlug = is_array($blog->slug) ? ($blog->slug['ar'] ?? reset($blog->slug)) : $blog->slug;
     @endphp
     @if (! empty($rawBlogSlug))
     <url>
