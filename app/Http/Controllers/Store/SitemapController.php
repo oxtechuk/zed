@@ -59,6 +59,67 @@ class SitemapController extends Controller
         ]);
     }
 
+    /**
+     * /llms.txt: a plain-text summary of the business and its key pages for AI
+     * assistants and search engines (https://llmstxt.org).
+     */
+    public function llms(): Response
+    {
+        $baseUrl = 'https://zad-capital.sa';
+        $link = fn (string $path): string => $baseUrl.'/'.self::encodeSlug($path);
+
+        $cars = Car::with(['brand', 'activeOffers'])
+            ->where('is_active', true)
+            ->get()
+            ->sortByDesc(fn (Car $car) => [(int) $car->is_featured, (int) $car->views]);
+        $minInstallment = (float) $cars->where('min_installment', '>', 0)->min('min_installment');
+        $posts = BlogPost::published()->orderByDesc('published_at')->get();
+
+        $lines = [
+            '# زاد كابيتال (Zad Capital)',
+            '',
+            '> زاد كابيتال: بيع وتمويل السيارات الجديدة بالتقسيط في المملكة العربية السعودية، مع خيارات بدون دفعة أولى وبدون كفيل أو تحويل راتب'
+                .($minInstallment > 0 ? '، وأقساط شهرية تبدأ من '.number_format($minInstallment).' ريال.' : '.'),
+            '',
+            '- المقر: الرياض، حي اليرموك، طريق الصحابة',
+            '- الهاتف الموحد: 920018657',
+            '- عدد السيارات المتاحة: '.$cars->count().' سيارة من '.$cars->pluck('brand_id')->unique()->count().' ماركة',
+            '- الأسعار والأقساط على الموقع محدثة من نظام المعرض مباشرة',
+            '',
+            '## الصفحات الأساسية',
+            '',
+            "- [كل السيارات بالتقسيط]({$baseUrl}/cars): السعر وأقل قسط شهري لكل سيارة",
+            "- [عروض التمويل]({$baseUrl}/offers): العروض السارية",
+            "- [حاسبة تمويل السيارات]({$baseUrl}/finance-calculator): احسب القسط حسب السعر والدفعة والمدة",
+            "- [الماركات]({$baseUrl}/brands): السيارات حسب الماركة",
+            "- [من نحن]({$baseUrl}/about)",
+            "- [تواصل معنا]({$baseUrl}/contact)",
+            '',
+            '## أبرز السيارات',
+            '',
+        ];
+
+        foreach ($cars->take(30) as $car) {
+            $slug = (string) ($car->getTranslation('slug', 'ar', false) ?: $car->getTranslation('slug', 'en', false));
+            $price = number_format((float) ($car->current_price ?? $car->cash_price));
+            $installment = (float) $car->min_installment > 0 ? ' · قسط من '.number_format((float) $car->min_installment).' ريال' : '';
+            $lines[] = "- [{$car->name}](".$link('cars/'.$slug)."): السعر {$price} ريال{$installment}";
+        }
+
+        if ($posts->isNotEmpty()) {
+            array_push($lines, '', '## المقالات', '');
+            foreach ($posts as $post) {
+                $title = trim((string) ($post->getTranslation('title', 'ar', false) ?: $post->title));
+                $excerpt = trim((string) ($post->getTranslation('excerpt', 'ar', false) ?: ''));
+                $lines[] = "- [{$title}](".$link('blog/'.$post->slug).')'.($excerpt !== '' ? ": {$excerpt}" : '');
+            }
+        }
+
+        array_push($lines, '', '## اختياري', '', "- [خريطة الموقع]({$baseUrl}/sitemap.xml)", '');
+
+        return response(implode("\n", $lines), 200, ['Content-Type' => 'text/plain; charset=utf-8']);
+    }
+
     public static function encodeSlug(string $slug): string
     {
         $parts = explode('/', trim($slug, '/'));

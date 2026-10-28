@@ -3,4 +3,18 @@ Allow: /
 Disallow: /crm
 Disallow: /manager-login
 
+# AI search and assistant crawlers are welcome (same rules as above)
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /crm
+Disallow: /manager-login
+
+# Summary for AI assistants: https://zad-capital.sa/llms.txt
 Sitemap: https://zad-capital.sa/sitemap.xml

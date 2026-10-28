@@ -11,6 +11,8 @@ use App\Models\Car;
 use App\Models\CarSlugRedirect;
 use App\Models\Setting;
 use App\Services\Api\Store\Helpers\SlugResolver;
+use App\Services\Api\Store\SettingApiService;
+use App\Services\Seo\SeoContentBuilder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -22,6 +24,7 @@ class StoreSpaController extends Controller
     protected string $baseUrl;
     protected string $siteName;
     protected string $defaultOgImage;
+    protected SeoContentBuilder $seo;
 
     public function __construct()
     {
@@ -33,7 +36,8 @@ class StoreSpaController extends Controller
         }
 
         $this->siteName = 'زاد كابيتال';
-        $this->defaultOgImage = $this->baseUrl . '/images/og-share-zad.jpg';
+        $this->seo = new SeoContentBuilder(app(SettingApiService::class), $this->baseUrl);
+        $this->defaultOgImage = $this->seo->logoUrl();
     }
 
     public function home(): Response
@@ -52,24 +56,7 @@ class StoreSpaController extends Controller
         $jsonLd = [
             '@context' => 'https://schema.org',
             '@graph' => [
-                [
-                    '@type' => 'Organization',
-                    '@id' => $this->baseUrl . '/#organization',
-                    'name' => 'زاد كابيتال',
-                    'alternateName' => 'Zad Capital',
-                    'url' => $this->baseUrl,
-                    'logo' => [
-                        '@type' => 'ImageObject',
-                        'url' => $this->baseUrl . '/logo.png',
-                    ],
-                    'contactPoint' => [
-                        '@type' => 'ContactPoint',
-                        'telephone' => '+966-920018657',
-                        'contactType' => 'customer service',
-                        'areaServed' => 'SA',
-                        'availableLanguage' => ['Arabic', 'English'],
-                    ],
-                ],
+                $this->seo->organization(),
                 [
                     '@type' => 'WebSite',
                     '@id' => $this->baseUrl . '/#website',
@@ -92,6 +79,7 @@ class StoreSpaController extends Controller
             'ogImage' => $this->defaultOgImage,
             'ogType' => 'website',
             'jsonLd' => $jsonLd,
+            'seoContent' => $this->seo->home($description),
         ]);
     }
 
@@ -103,12 +91,13 @@ class StoreSpaController extends Controller
             'canonicalUrl' => $this->baseUrl . '/cars',
             'ogImage' => $this->defaultOgImage,
             'ogType' => 'website',
+            'seoContent' => $this->seo->cars(),
         ]);
     }
 
     public function car(string $slug): Response|RedirectResponse
     {
-        $query = Car::with(['brand', 'images'])->where('is_active', true);
+        $query = Car::with(['brand', 'images', 'activeOffers'])->where('is_active', true);
         SlugResolver::applyCarSlug($query, $slug);
         $car = $query->first();
 
@@ -158,7 +147,7 @@ class StoreSpaController extends Controller
             '@context' => 'https://schema.org',
             '@graph' => [
                 [
-                    '@type' => 'Product',
+                    '@type' => ['Product', 'Car'],
                     'name' => "{$carName}{$carYear}",
                     'image' => $carImage,
                     'description' => $description,
@@ -166,6 +155,7 @@ class StoreSpaController extends Controller
                         '@type' => 'Brand',
                         'name' => $brandName,
                     ],
+                    ...$this->seo->vehicleProperties($car),
                     'offers' => [
                         '@type' => 'Offer',
                         'url' => $canonicalUrl,
@@ -208,6 +198,7 @@ class StoreSpaController extends Controller
             'ogImage' => $carImage,
             'ogType' => 'product',
             'jsonLd' => $jsonLd,
+            'seoContent' => $this->seo->car($car, "{$carName}{$carYear}"),
         ]);
     }
 
@@ -219,6 +210,7 @@ class StoreSpaController extends Controller
             'canonicalUrl' => $this->baseUrl . '/blog',
             'ogImage' => $this->defaultOgImage,
             'ogType' => 'blog',
+            'seoContent' => $this->seo->blogIndex(),
         ]);
     }
 
@@ -240,23 +232,49 @@ class StoreSpaController extends Controller
         $canonicalUrl = $this->baseUrl . '/blog/' . SitemapController::encodeSlug($slug);
         $postImage = $post->thumbnail ?: $this->defaultOgImage;
 
-        $jsonLd = [
-            '@context' => 'https://schema.org',
-            '@type' => 'Article',
-            'headline' => $title,
-            'description' => $description,
-            'image' => $postImage,
-            'datePublished' => optional($post->published_at ?? $post->created_at)->toAtomString(),
-            'dateModified' => optional($post->updated_at)->toAtomString(),
-            'publisher' => [
-                '@type' => 'Organization',
-                'name' => 'زاد كابيتال',
-                'logo' => [
-                    '@type' => 'ImageObject',
-                    'url' => $this->baseUrl . '/logo.png',
+        $headline = $this->seo->postTitle($post);
+        $content = (string) $post->getTranslation('content', 'ar', false);
+        $faq = $this->seo->faqFromHtml($content);
+        $category = $post->categories()->value('name');
+
+        $graph = [
+            array_filter([
+                '@type' => 'Article',
+                'headline' => $headline,
+                'description' => $description,
+                'image' => $postImage,
+                'datePublished' => optional($post->published_at ?? $post->created_at)->toAtomString(),
+                'dateModified' => optional($post->updated_at)->toAtomString(),
+                'inLanguage' => 'ar',
+                'articleSection' => is_array($category) ? ($category['ar'] ?? reset($category)) : $category,
+                'wordCount' => count(preg_split('/\s+/u', trim(strip_tags($content)), -1, PREG_SPLIT_NO_EMPTY)),
+                'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonicalUrl],
+                'author' => ['@id' => $this->baseUrl . '/#organization'],
+                'publisher' => ['@id' => $this->baseUrl . '/#organization'],
+            ], fn ($value) => $value !== null && $value !== ''),
+            $this->seo->organization(),
+            [
+                '@type' => 'BreadcrumbList',
+                'itemListElement' => [
+                    ['@type' => 'ListItem', 'position' => 1, 'name' => 'الرئيسية', 'item' => $this->baseUrl . '/'],
+                    ['@type' => 'ListItem', 'position' => 2, 'name' => 'المدونة', 'item' => $this->baseUrl . '/blog'],
+                    ['@type' => 'ListItem', 'position' => 3, 'name' => $headline, 'item' => $canonicalUrl],
                 ],
             ],
         ];
+
+        if ($faq) {
+            $graph[] = [
+                '@type' => 'FAQPage',
+                'mainEntity' => array_map(fn (array $item) => [
+                    '@type' => 'Question',
+                    'name' => $item['question'],
+                    'acceptedAnswer' => ['@type' => 'Answer', 'text' => $item['answer']],
+                ], $faq),
+            ];
+        }
+
+        $jsonLd = ['@context' => 'https://schema.org', '@graph' => $graph];
 
         return $this->renderSpa([
             'metaTitle' => $title,
@@ -265,6 +283,7 @@ class StoreSpaController extends Controller
             'ogImage' => $postImage,
             'ogType' => 'article',
             'jsonLd' => $jsonLd,
+            'seoContent' => $this->seo->article($post),
         ]);
     }
 
@@ -276,6 +295,7 @@ class StoreSpaController extends Controller
             'canonicalUrl' => $this->baseUrl . '/offers',
             'ogImage' => $this->defaultOgImage,
             'ogType' => 'website',
+            'seoContent' => $this->seo->simple('عروض تمويل السيارات', '', [['text' => 'كل السيارات المتاحة بالتقسيط', 'url' => $this->baseUrl . '/cars'], ['text' => 'حاسبة تمويل السيارات', 'url' => $this->baseUrl . '/finance-calculator']]),
         ]);
     }
 
@@ -287,6 +307,7 @@ class StoreSpaController extends Controller
             'canonicalUrl' => $this->baseUrl . '/about',
             'ogImage' => $this->defaultOgImage,
             'ogType' => 'website',
+            'seoContent' => $this->seo->simple('من نحن', '', [['text' => 'تواصل معنا', 'url' => $this->baseUrl . '/contact'], ['text' => 'السيارات المتاحة بالتقسيط', 'url' => $this->baseUrl . '/cars']]),
         ]);
     }
 
@@ -298,6 +319,7 @@ class StoreSpaController extends Controller
             'canonicalUrl' => $this->baseUrl . '/contact',
             'ogImage' => $this->defaultOgImage,
             'ogType' => 'website',
+            'seoContent' => $this->seo->simple('تواصل معنا', '', [['text' => 'حاسبة تمويل السيارات', 'url' => $this->baseUrl . '/finance-calculator'], ['text' => 'طلب تمويل سيارة', 'url' => $this->baseUrl . '/request-car']]),
         ]);
     }
 
@@ -309,6 +331,7 @@ class StoreSpaController extends Controller
             'canonicalUrl' => $this->baseUrl . '/finance-calculator',
             'ogImage' => $this->defaultOgImage,
             'ogType' => 'website',
+            'seoContent' => $this->seo->simple('حاسبة تمويل السيارات', '', [['text' => 'كل السيارات المتاحة بالتقسيط', 'url' => $this->baseUrl . '/cars'], ['text' => 'عروض تمويل السيارات', 'url' => $this->baseUrl . '/offers'], ['text' => 'كيف تحسب قسط السيارة الشهري قبل الشراء', 'url' => $this->baseUrl . '/blog/كيف-تحسب-قسط-السيارة']]),
         ]);
     }
 
@@ -320,6 +343,7 @@ class StoreSpaController extends Controller
             'canonicalUrl' => $this->baseUrl . '/brands',
             'ogImage' => $this->defaultOgImage,
             'ogType' => 'website',
+            'seoContent' => $this->seo->brands(),
         ]);
     }
 
@@ -403,6 +427,7 @@ class StoreSpaController extends Controller
             'ogImage' => $brandLogo,
             'ogType' => 'website',
             'jsonLd' => $jsonLd,
+            'seoContent' => $this->seo->brand($brand, $brandName),
         ]);
     }
 
@@ -414,6 +439,7 @@ class StoreSpaController extends Controller
             'canonicalUrl' => $this->baseUrl . '/compare',
             'ogImage' => $this->defaultOgImage,
             'ogType' => 'website',
+            'seoContent' => $this->seo->simple('مقارنة السيارات: السعر والمواصفات والقسط', '', [['text' => 'كل السيارات المتاحة بالتقسيط', 'url' => $this->baseUrl . '/cars']]),
         ]);
     }
 
@@ -425,6 +451,7 @@ class StoreSpaController extends Controller
             'canonicalUrl' => $this->baseUrl . '/terms',
             'ogImage' => $this->defaultOgImage,
             'ogType' => 'website',
+            'seoContent' => $this->seo->simple('الشروط والأحكام', '', []),
         ]);
     }
 
@@ -436,6 +463,7 @@ class StoreSpaController extends Controller
             'canonicalUrl' => $this->baseUrl . '/privacy',
             'ogImage' => $this->defaultOgImage,
             'ogType' => 'website',
+            'seoContent' => $this->seo->simple('سياسة الخصوصية', '', []),
         ]);
     }
 
@@ -476,6 +504,10 @@ class StoreSpaController extends Controller
      */
     protected function renderSpa(array $seo, int $status = 200): Response
     {
+        if (isset($seo['seoContent']) && empty($seo['seoContent']['intro']) && ! empty($seo['metaDescription'])) {
+            $seo['seoContent']['intro'] = [$seo['metaDescription']];
+        }
+
         return response()->view('app', $seo, $status);
     }
 }

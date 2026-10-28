@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/lang/{lang}', [LanguageController::class, 'switchLang'])->name('lang.switch');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/llms.txt', [SitemapController::class, 'llms'])->name('llms');
 
 
 use App\Http\Controllers\Store\StoreSpaController;
