@@ -13,6 +13,7 @@ use App\Models\Setting;
 use App\Services\Api\Store\Helpers\SlugResolver;
 use App\Services\Api\Store\SettingApiService;
 use App\Services\Seo\SeoContentBuilder;
+use App\Services\Seo\SeoEntryResolver;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -25,6 +26,7 @@ class StoreSpaController extends Controller
     protected string $siteName;
     protected string $defaultOgImage;
     protected SeoContentBuilder $seo;
+    protected SeoEntryResolver $seoEntries;
 
     public function __construct()
     {
@@ -38,6 +40,7 @@ class StoreSpaController extends Controller
         $this->siteName = 'زاد كابيتال';
         $this->seo = new SeoContentBuilder(app(SettingApiService::class), $this->baseUrl);
         $this->defaultOgImage = $this->seo->logoUrl();
+        $this->seoEntries = app(SeoEntryResolver::class);
     }
 
     public function home(): Response
@@ -504,10 +507,62 @@ class StoreSpaController extends Controller
      */
     protected function renderSpa(array $seo, int $status = 200): Response
     {
+        if ($status === 200 && ! empty($seo['canonicalUrl'])) {
+            $seo = $this->applySeoEntry($seo);
+        }
+
         if (isset($seo['seoContent']) && empty($seo['seoContent']['intro']) && ! empty($seo['metaDescription'])) {
             $seo['seoContent']['intro'] = [$seo['metaDescription']];
         }
 
         return response()->view('app', $seo, $status);
+    }
+
+    /**
+     * Overlay the SEO team's copy for this page (seo_entries): title, meta description,
+     * extra text and FAQ (also as FAQPage structured data).
+     *
+     * @param array<string, mixed> $seo
+     * @return array<string, mixed>
+     */
+    private function applySeoEntry(array $seo): array
+    {
+        $entry = $this->seoEntries->resolve((string) parse_url((string) $seo['canonicalUrl'], PHP_URL_PATH));
+        if (! $entry) {
+            return $seo;
+        }
+
+        $seo['metaTitle'] = $entry['meta_title'] ?: ($seo['metaTitle'] ?? null);
+        $seo['metaDescription'] = $entry['meta_description'] ?: ($seo['metaDescription'] ?? null);
+
+        if (isset($seo['seoContent'])) {
+            $seo['seoContent']['intro'] = array_merge($seo['seoContent']['intro'] ?? [], $entry['paragraphs']);
+            $seo['seoContent']['faq'] = $entry['faq'];
+        }
+
+        if ($entry['faq'] !== []) {
+            $faqPage = [
+                '@type' => 'FAQPage',
+                'mainEntity' => array_map(fn (array $item) => [
+                    '@type' => 'Question',
+                    'name' => $item['q'],
+                    'acceptedAnswer' => ['@type' => 'Answer', 'text' => $item['a']],
+                ], $entry['faq']),
+            ];
+
+            $jsonLd = $seo['jsonLd'] ?? null;
+            if (is_array($jsonLd) && isset($jsonLd['@graph'])) {
+                $jsonLd['@graph'][] = $faqPage;
+            } elseif (is_array($jsonLd) && $jsonLd !== []) {
+                $context = $jsonLd['@context'] ?? 'https://schema.org';
+                unset($jsonLd['@context']);
+                $jsonLd = ['@context' => $context, '@graph' => [$jsonLd, $faqPage]];
+            } else {
+                $jsonLd = ['@context' => 'https://schema.org', '@graph' => [$faqPage]];
+            }
+            $seo['jsonLd'] = $jsonLd;
+        }
+
+        return $seo;
     }
 }

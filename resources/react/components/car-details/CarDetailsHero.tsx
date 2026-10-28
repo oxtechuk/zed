@@ -13,6 +13,7 @@ import { getImageUrl, APP_IMAGES } from "../../constants/app-images";
 import { formatPrice } from "../../utils/format";
 import { useSettingsStore } from "../../store/settings.store";
 import { trackContact } from "../../services/analytics";
+import { useSeoEntry } from "../../hooks/useSeoEntry";
 import type {
     ICarColor,
     ICarDetailsHeroProps,
@@ -40,6 +41,7 @@ export default function CarDetailsHero({
 }: ICarDetailsHeroProps) {
     const { t, i18n } = useTranslation();
     const settings = useSettingsStore((s) => s.settings);
+    const imageAlt = useSeoEntry()?.image_alt || title;
     const [activeImage, setActiveImage] = useState(0);
     const [selectedColor, setSelectedColor] = useState<ICarColor | null>(null);
 
@@ -131,7 +133,7 @@ export default function CarDetailsHero({
                                 <img
                                     key={currentImage}
                                     src={currentImage}
-                                    alt={title}
+                                    alt={imageAlt}
                                     className="w-full h-full min-h-[380px] md:min-h-[480px] max-h-[540px] object-contain md:object-cover transition-all duration-500 bg-[#FAFAFC]"
                                     loading="eager"
                                     decoding="async"
@@ -174,7 +176,7 @@ export default function CarDetailsHero({
                                                         <img
                                                             src={image}
                                                             className="h-full w-full object-cover bg-white"
-                                                            alt={`${title} thumb ${index}`}
+                                                            alt={`${imageAlt} - صورة ${index + 1}`}
                                                         />
                                                     </button>
                                                 ),
@@ -253,7 +255,7 @@ export default function CarDetailsHero({
 
                                 {/* Description Paragraph */}
                                 {description && (
-                                    <p className="text-start text-[15px] md:text-[16px] leading-[1.8] text-[#475569] font-medium">
+                                    <p className="text-start text-[15px] md:text-[16px] leading-[1.8] text-[#475569] font-medium whitespace-pre-line">
                                         {description}
                                     </p>
                                 )}

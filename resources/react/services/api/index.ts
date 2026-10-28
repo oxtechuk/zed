@@ -15,3 +15,4 @@ export type { ApiResponse, HomePageData, CarItem, BrandInfo, FinanceSettingsData
 export type { BlogApiResponse, BlogPost, BlogMeta, BlogCategory, BlogDetails } from "../../types/blogs.types";
 export type { OffersApiResponse, OfferData, OffersMeta } from "../../types/offers.types";
 export type { IAboutData } from "../../interfaces/IAboutData";
+export { getSeoEntry } from "./seo.service";

@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Store\HomeController;
 use App\Http\Controllers\Api\Store\NewsletterController;
 use App\Http\Controllers\Api\Store\OfferController;
 use App\Http\Controllers\Api\Store\PartnerController;
+use App\Http\Controllers\Api\Store\SeoEntryController;
 use App\Http\Controllers\Api\Store\SettingsController;
 use App\Http\Controllers\Api\Store\TestimonialController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,9 @@ Route::prefix('store')->name('store.api.')->group(function () {
     Route::get('/brands/{brand}/models', [CarController::class, 'brandModels'])->name('brands.models');
     Route::get('/car-categories', [CarCategoryController::class, 'index'])->name('car-categories.index');
     Route::get('/car-types', [CarTypeController::class, 'index'])->name('car-types.index');
+
+    // SEO copy per page (title, extra text, FAQ)
+    Route::get('/seo-entry', [SeoEntryController::class, 'show'])->name('seo-entry.show');
 
     // Booking & Calculator (US2)
     Route::get('/booking/meta', [BookingController::class, 'meta'])->name('booking.meta');
