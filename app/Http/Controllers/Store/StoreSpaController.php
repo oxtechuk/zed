@@ -136,7 +136,7 @@ class StoreSpaController extends Controller
 
         $priceFormatted = number_format((float) ($car->current_price ?? $car->cash_price ?? 0));
         $instFormatted = number_format((float) ($car->min_installment ?? 0));
-        $description = "اشتري {$carName} بالتقسيط من زاد كابيتال. السعر {$priceFormatted} ريال والقسط الشهري يبدأ من {$instFormatted} ريال. شوف المواصفات واحسب قسطك.";
+        $description = "اشترِ {$carName} بالتقسيط من زاد كابيتال. السعر {$priceFormatted} ريال والقسط الشهري يبدأ من {$instFormatted} ريال. اطّلع على المواصفات واحسب قسطك.";
 
         $carImage = $car->main_image ?: $this->defaultOgImage;
         $canonicalUrl = $this->baseUrl . '/cars/' . SitemapController::encodeSlug($slug);
@@ -350,7 +350,7 @@ class StoreSpaController extends Controller
         ]);
     }
 
-    public function brand(string $brandSlug): Response
+    public function brand(string $brandSlug): Response|RedirectResponse
     {
         $decoded = urldecode($brandSlug);
         $brand = Brand::where('is_active', true)
@@ -365,6 +365,10 @@ class StoreSpaController extends Controller
 
         if (! $brand) {
             return $this->notFound();
+        }
+
+        if ($brand->slug && $decoded !== $brand->slug) {
+            return redirect($this->baseUrl . '/brands/' . SitemapController::encodeSlug($brand->slug), 301);
         }
 
         $brandName = trim((string) ($brand->getTranslation('name', 'ar') ?: $brand->name));
@@ -492,7 +496,6 @@ class StoreSpaController extends Controller
         return response()->view('app', [
             'metaTitle' => 'الصفحة غير موجودة | زاد كابيتال',
             'metaDescription' => 'عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها.',
-            'canonicalUrl' => $this->baseUrl . '/404',
             'ogImage' => $this->defaultOgImage,
             'ogType' => 'website',
             'metaRobots' => 'noindex, nofollow',

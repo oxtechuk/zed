@@ -7,7 +7,9 @@ use App\Http\Controllers\Api\ApiBaseController;
 use App\Http\Resources\Store\BlogCategoryResource;
 use App\Http\Resources\Store\BlogPostDetailResource;
 use App\Http\Resources\Store\BlogPostResource;
+use App\Models\Car;
 use App\Services\Api\Store\BlogApiService;
+use App\Services\Api\Store\Helpers\SlugResolver;
 use Illuminate\Http\Request;
 
 final class BlogController extends ApiBaseController
@@ -51,6 +53,21 @@ final class BlogController extends ApiBaseController
         return $this->respondSuccess(
             BlogPostDetailResource::make($result['post'])->resolve(),
             'Blog post retrieved successfully'
+        );
+    }
+
+    /** Articles that link to a car page ("مقالات عن هذه السيارة"). */
+    public function forCar(string $slug)
+    {
+        $query = Car::where('is_active', true);
+        SlugResolver::applyCarSlug($query, urldecode($slug));
+        $car = $query->first();
+
+        $posts = $car ? $this->blogService->linkingToCar((string) $car->getTranslation('slug', 'ar')) : collect();
+
+        return $this->respondSuccess(
+            BlogPostResource::collection($posts)->resolve(),
+            'Car articles retrieved successfully'
         );
     }
 
