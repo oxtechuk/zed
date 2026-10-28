@@ -110,6 +110,6 @@
     /></noscript>
     <!-- End Meta Pixel (noscript) -->
 
-    <div id="root"></div>
+    <div id="root">@if (! empty($seoContent))@include('partials.seo-content')@endif</div>
 </body>
 </html>
