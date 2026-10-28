@@ -94,7 +94,7 @@ export default function SeoBlock() {
                 أسئلة شائعة
               </span>
               <h2 className="mt-2 text-[28px] font-black text-[#0F172A]">
-                إجابات سريعة قبل ما تطلب
+                إجابات سريعة قبل طلبك
               </h2>
             </div>
             <div className="space-y-4">
