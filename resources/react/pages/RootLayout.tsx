@@ -17,6 +17,7 @@ import ScrollToTop from "../components/ScrollToTop";
 import WhatsAppWidget from "../components/WhatsAppWidget";
 import RequestCarWidget from "../components/RequestCarWidget";
 import AnalyticsTracker from "../components/AnalyticsTracker";
+import SeoBlock from "../components/seo/SeoBlock";
 
 export default function RootLayout() {
   const { t } = useTranslation();
@@ -84,6 +85,7 @@ export default function RootLayout() {
 
       <main className="pb-[96px] md:pb-0">
         <Outlet />
+        <SeoBlock />
       </main>
 
       <div className="hidden md:block">

@@ -57,6 +57,16 @@
                     </ul>
                 </section>
             @endforeach
+
+            @if (! empty($seoContent['faq']))
+                <section>
+                    <h2>أسئلة شائعة</h2>
+                    @foreach ($seoContent['faq'] as $item)
+                        <h3>{{ $item['q'] }}</h3>
+                        <p>{{ $item['a'] }}</p>
+                    @endforeach
+                </section>
+            @endif
         </main>
 
         <footer class="ssr-foot">
