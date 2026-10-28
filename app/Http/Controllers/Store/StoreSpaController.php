@@ -132,7 +132,7 @@ class StoreSpaController extends Controller
         }
 
         $carName = trim((string) ($car->getTranslation('name', 'ar') ?: $car->name));
-        $carYear = $car->year ? " {$car->year}" : '';
+        $carYear = ($car->year && ! str_contains($carName, (string) $car->year)) ? " {$car->year}" : '';
         $installmentPart = $car->min_installment
             ? ' · قسط من ' . number_format((float) $car->min_installment) . ' ريال'
             : '';
