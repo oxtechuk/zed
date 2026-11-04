@@ -56,6 +56,7 @@ final class CalculatorApiService
                 'car_ids' => $carIds,
                 'preferred_color' => $data['preferred_color'] ?? null,
                 'notes' => $data['notes'] ?? null,
+                'is_submitted' => ! empty($data['is_submitted']),
                 'utm_source' => $utmSource,
                 'utm_medium' => $utmMedium,
                 'utm_campaign' => $data['utm_campaign'] ?? null,
@@ -63,6 +64,8 @@ final class CalculatorApiService
                 'marketing_channel' => $channel,
             ],
         ]);
+
+        $isSubmitted = filter_var($data['is_submitted'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
         $this->createBookingForLead($lead, $primaryCarId, $data['email'] ?? null, $data['notes'] ?? null, [
             'utm_source' => $utmSource,
@@ -73,7 +76,7 @@ final class CalculatorApiService
             'referrer' => $referrer,
             'click_id' => $clickId,
             'marketing_channel' => $channel,
-        ]);
+        ], $isSubmitted);
 
         return $lead;
     }
@@ -110,13 +113,19 @@ final class CalculatorApiService
             ],
         ]);
 
-        $this->createBookingForLead($lead);
+        $this->createBookingForLead($lead, isSubmitted: false);
 
         return $lead;
     }
 
-    private function createBookingForLead(CalculatorLead $lead, ?int $carId = null, ?string $email = null, ?string $notes = null, array $attribution = []): void
-    {
+    private function createBookingForLead(
+        CalculatorLead $lead,
+        ?int $carId = null,
+        ?string $email = null,
+        ?string $notes = null,
+        array $attribution = [],
+        bool $isSubmitted = false
+    ): void {
         $downPayment = (float) ($lead->details['down_payment'] ?? 0);
         $periodMonths = (int) ($lead->details['period_months'] ?? 60);
         $durationYears = max(1, (int) round($periodMonths / 12));
@@ -124,7 +133,7 @@ final class CalculatorApiService
         // Prevent duplicate bookings if an active calculator booking was created recently for this client
         $existingBooking = Booking::where('client_phone', $lead->phone)
             ->where(function ($q) {
-                $q->where('source', 'calculator')->orWhereNotNull('calculator_bank_id');
+                $q->where('source', 'calculator')->orWhere('source', 'cars')->orWhereNotNull('calculator_bank_id');
             })
             ->where('status', 'new')
             ->where('created_at', '>=', now()->subHours(24))
@@ -133,6 +142,10 @@ final class CalculatorApiService
 
         if ($existingBooking) {
             $updateData = [];
+            if ($isSubmitted) {
+                $updateData['source'] = 'cars';
+                $updateData['booking_type'] = 'purchase';
+            }
             if ($lead->name) {
                 $updateData['client_name'] = $lead->name;
             }
@@ -169,6 +182,17 @@ final class CalculatorApiService
                 $existingBooking->update($updateData);
             }
 
+            if ($isSubmitted) {
+                try {
+                    $admins = Employee::where('role', 'admin')->orWhere('id', 1)->get();
+                    if ($admins->isNotEmpty()) {
+                        Notification::send($admins, new NewBookingNotification($existingBooking));
+                    }
+                } catch (\Throwable $e) {
+                    logger()->warning('Admin notification failed for converted booking '.$existingBooking->id.': '.$e->getMessage());
+                }
+            }
+
             return;
         }
 
@@ -178,7 +202,8 @@ final class CalculatorApiService
             'client_email' => $email,
             'car_id' => $carId,
             'calculator_bank_id' => $lead->details['preferred_bank_id'] ?? null,
-            'source' => 'calculator',
+            'source' => $isSubmitted ? 'cars' : 'calculator',
+            'booking_type' => $isSubmitted ? 'purchase' : null,
             'status' => 'new',
             'notes' => $notes,
             'total_price' => $carId ? (Car::find($carId)?->current_price ?? Car::find($carId)?->cash_price ?? 0) : 0,

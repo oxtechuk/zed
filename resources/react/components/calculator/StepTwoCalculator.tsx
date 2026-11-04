@@ -130,6 +130,7 @@ export default function StepTwoCalculator({
             has_personal_loan: personalInfo.hasPersonalLoan,
             has_traffic_violations: personalInfo.hasTrafficViolations,
             has_simah_default: personalInfo.hasSimahDefault,
+            is_submitted: false,
         })
             .then(() => {
                 trackCalculatorLead({
@@ -166,6 +167,7 @@ export default function StepTwoCalculator({
                 down_payment: downPayment,
                 period_months: term,
                 preferred_color: selectedColor,
+                is_submitted: true,
             });
 
             // Trigger Pixel & GTM Calculator Lead events

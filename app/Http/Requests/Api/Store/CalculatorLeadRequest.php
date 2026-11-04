@@ -31,6 +31,7 @@ final class CalculatorLeadRequest extends ApiBaseRequest
             'car_ids' => ['nullable', 'array'],
             'car_ids.*' => ['integer', 'exists:cars,id'],
             'preferred_color' => ['nullable', 'string', 'max:100'],
+            'is_submitted' => ['nullable', 'boolean'],
             'notes' => ['nullable', 'string', 'max:500'],
             'utm_source' => ['nullable', 'string', 'max:100'],
             'utm_medium' => ['nullable', 'string', 'max:100'],

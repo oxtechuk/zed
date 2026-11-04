@@ -60,7 +60,10 @@ class BookingController extends Controller
                 $q->where('source', '!=', 'calculator')->orWhereNull('source');
             })->count(),
             'calculator_leads' => (clone $scopedQuery)->where(function ($q) {
-                $q->where('source', 'calculator')->orWhereNotNull('calculator_bank_id');
+                $q->where('source', 'calculator')
+                    ->orWhere(function ($sub) {
+                        $sub->whereNull('source')->whereNotNull('calculator_bank_id');
+                    });
             })->count(),
             'pending_review' => (clone $scopedQuery)->whereIn('status', ['new', 'contacted_no_answer', 'recontact_client'])->count(),
             'under_bank' => (clone $scopedQuery)->whereIn('status', ['waiting_documents', 'bank_review', 'approved', 'authorized'])->count(),
@@ -106,7 +109,9 @@ class BookingController extends Controller
         if ($currentSource === 'calculator') {
             $query->where(function ($q) {
                 $q->where('source', 'calculator')
-                    ->orWhereNotNull('calculator_bank_id');
+                    ->orWhere(function ($sub) {
+                        $sub->whereNull('source')->whereNotNull('calculator_bank_id');
+                    });
             });
         } elseif ($currentSource === 'cars' || $currentSource === 'booking') {
             $query->where(function ($q) {
@@ -233,7 +238,9 @@ class BookingController extends Controller
             if ($request->source === 'calculator') {
                 $query->where(function ($q) {
                     $q->where('source', 'calculator')
-                        ->orWhereNotNull('calculator_bank_id');
+                        ->orWhere(function ($sub) {
+                            $sub->whereNull('source')->whereNotNull('calculator_bank_id');
+                        });
                 });
             } elseif ($request->source === 'cars' || $request->source === 'booking') {
                 $query->where(function ($q) {
@@ -379,7 +386,9 @@ class BookingController extends Controller
             if ($request->source === 'calculator') {
                 $query->where(function ($q) {
                     $q->where('source', 'calculator')
-                        ->orWhereNotNull('calculator_bank_id');
+                        ->orWhere(function ($sub) {
+                            $sub->whereNull('source')->whereNotNull('calculator_bank_id');
+                        });
                 });
             } elseif ($request->source === 'cars' || $request->source === 'booking') {
                 $query->where(function ($q) {
@@ -500,7 +509,9 @@ class BookingController extends Controller
             if ($request->source === 'calculator') {
                 $query->where(function ($q) {
                     $q->where('source', 'calculator')
-                        ->orWhereNotNull('calculator_bank_id');
+                        ->orWhere(function ($sub) {
+                            $sub->whereNull('source')->whereNotNull('calculator_bank_id');
+                        });
                 });
             } elseif ($request->source === 'cars' || $request->source === 'booking') {
                 $query->where(function ($q) {

@@ -352,7 +352,11 @@ class Booking extends Model
 
     public function isCalculatorLead(): bool
     {
-        return $this->source === 'calculator' || ! empty($this->calculator_bank_id);
+        if ($this->source === 'cars' || $this->source === 'booking') {
+            return false;
+        }
+
+        return $this->source === 'calculator' || (empty($this->source) && ! empty($this->calculator_bank_id));
     }
 
     public function setClientPhoneAttribute($value)

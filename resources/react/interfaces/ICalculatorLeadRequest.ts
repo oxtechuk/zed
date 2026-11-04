@@ -20,6 +20,7 @@ export interface ICalculatorLeadRequest {
   has_traffic_violations?: boolean;
   has_simah_default?: boolean;
   preferred_color?: string;
+  is_submitted?: boolean;
 }
 
 export interface ICalculatorLeadResponse {

@@ -518,7 +518,7 @@
                             <div style="font-size:12px;color:var(--crm-text-muted);" dir="ltr">{{ $pa->client_phone }}</div>
                         </td>
                         <td class="px-3 py-3">
-                            @if($pa->source === 'calculator' || $pa->calculator_bank_id)
+                            @if($pa->isCalculatorLead())
                                 <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 11px; padding: 3px 7px; border-radius: 6px; font-weight: 700;">
                                     <i class="bi bi-calculator me-1"></i>{{ __('حاسبة تمويل') }}
                                 </span>
@@ -623,7 +623,7 @@
                     <div>
                         <div class="d-flex align-items-center gap-2 flex-wrap">
                             <a href="{{ route('crm.bookings.show', $pa) }}" class="fw-bold text-decoration-none" style="color:var(--crm-red);font-size:14px;">#{{ $pa->id }}</a>
-                            @if($pa->source === 'calculator' || $pa->calculator_bank_id)
+                            @if($pa->isCalculatorLead())
                                 <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 10px; padding: 3px 6px; border-radius: 6px; font-weight: bold;">
                                     <i class="bi bi-calculator me-1"></i>{{ __('حاسبة تمويل') }}
                                 </span>
@@ -722,7 +722,7 @@
                         $updatedDiff = $lastUpdated ? $lastUpdated->diffForHumans() : '—';
                         $createdDiff = $b->created_at ? $b->created_at->diffForHumans() : '—';
                         $employeeName = $b->employee?->name ?? __('لايوجد');
-                        $isCalculator = ($b->source === 'calculator' || !empty($b->calculator_bank_id));
+                        $isCalculator = $b->isCalculatorLead();
                         $isRepeated = !empty($b->client_phone) && isset($repeatedCounts[$b->client_phone]) && $repeatedCounts[$b->client_phone] > 1;
                         $sourceName = match(true) {
                             $isCalculator => __('حاسبة تمويل'),
@@ -934,7 +934,7 @@
                 $updatedDiff = $lastUpdated ? $lastUpdated->diffForHumans() : '—';
                 $createdDiff = $b->created_at ? $b->created_at->diffForHumans() : '—';
                 $employeeName = $b->employee?->name ?? __('لايوجد');
-                $isCalculator = ($b->source === 'calculator' || !empty($b->calculator_bank_id));
+                $isCalculator = $b->isCalculatorLead();
                 $isRepeated = !empty($b->client_phone) && isset($repeatedCounts[$b->client_phone]) && $repeatedCounts[$b->client_phone] > 1;
                 $sourceName = match(true) {
                     $isCalculator => __('حاسبة تمويل'),
