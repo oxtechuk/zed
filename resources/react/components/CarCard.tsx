@@ -85,8 +85,9 @@ export default function CarCard({
                         src={image}
                         alt={`${brand} ${name}`}
                         loading={loading}
+                        containerClassName="h-full w-full flex items-center justify-center"
                         fallbackSrc={APP_IMAGES.CAR_PLACEHOLDER}
-                        className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+                        className="h-full w-full object-contain p-2 transition-transform duration-300 group-hover:scale-105"
                     />
 
                     {/* Hover / Touch "عرض الآن" Overlay Pill */}

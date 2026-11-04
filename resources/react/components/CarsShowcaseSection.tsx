@@ -110,6 +110,17 @@ export default function CarsShowcaseSection({
     return () => clearInterval(id);
   }, [isPaused, totalSlides]);
 
+  // Pre-fetch car images in background so sliding/flipping is instant
+  useEffect(() => {
+    if (!cars?.length) return;
+    cars.forEach((car) => {
+      if (car.image) {
+        const img = new Image();
+        img.src = car.image;
+      }
+    });
+  }, [cars]);
+
   const filters = useFilters(t);
 
   if (!cars.length) return null;
@@ -180,7 +191,7 @@ export default function CarsShowcaseSection({
                     className="shrink-0"
                     style={{ width: cardWidth }}
                   >
-                    <CarCard {...car} />
+                    <CarCard {...car} loading={sIdx <= 2 ? "eager" : "lazy"} />
                   </div>
                 ))}
               </div>

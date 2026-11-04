@@ -8,6 +8,9 @@ import {
 
 type LazyImgStatus = "idle" | "loading" | "revealed";
 
+// Global in-memory cache of already loaded images to prevent re-flashing
+const loadedImagesCache = new Set<string>();
+
 export interface ILazyImgProps extends ImgHTMLAttributes<HTMLImageElement> {
   skeletonClassName?: string;
   containerClassName?: string;
@@ -24,24 +27,33 @@ export default function LazyImg({
   onError,
   skeletonClassName = "",
   loading = "lazy",
-  rootMargin = "250px",
+  rootMargin = "1000px 600px",
   fallbackSrc,
   ...rest
 }: ILazyImgProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
-  const [inView, setInView] = useState(() => loading === "eager");
-  const [status, setStatus] = useState<LazyImgStatus>(() => (loading === "eager" ? "loading" : "idle"));
+
+  const isCached = Boolean(src && loadedImagesCache.has(src));
+  const isEager = loading === "eager" || isCached;
+
+  const [inView, setInView] = useState(() => isEager);
+  const [status, setStatus] = useState<LazyImgStatus>(() =>
+    isCached ? "revealed" : isEager ? "loading" : "idle"
+  );
   const [currentSrc, setCurrentSrc] = useState<string | undefined>(src);
 
   useEffect(() => {
     setCurrentSrc(src);
+    if (src && loadedImagesCache.has(src)) {
+      setInView(true);
+      setStatus("revealed");
+    }
   }, [src]);
 
   useEffect(() => {
-    if (loading === "eager") {
+    if (isEager) {
       setInView(true);
-      setStatus("loading");
       return;
     }
 
@@ -59,27 +71,31 @@ export default function LazyImg({
       ([entry]) => {
         if (entry.isIntersecting) {
           setInView(true);
-          setStatus("loading");
+          setStatus((prev) => (prev === "revealed" ? "revealed" : "loading"));
           observer.disconnect();
         }
       },
-      { rootMargin, threshold: 0.01 }
+      { rootMargin, threshold: 0 }
     );
 
     observer.observe(el);
 
     return () => observer.disconnect();
-  }, [loading, inView, rootMargin]);
+  }, [isEager, inView, rootMargin]);
 
   useEffect(() => {
     if (!inView || !currentSrc) return;
     const el = imgRef.current;
     if (el && el.complete && el.naturalWidth > 0) {
+      loadedImagesCache.add(currentSrc);
       setStatus("revealed");
     }
   }, [currentSrc, inView]);
 
   const handleLoad = (event: SyntheticEvent<HTMLImageElement>) => {
+    if (currentSrc) {
+      loadedImagesCache.add(currentSrc);
+    }
     setStatus("revealed");
     onLoad?.(event);
   };
@@ -109,7 +125,7 @@ export default function LazyImg({
           decoding="async"
           onLoad={handleLoad}
           onError={handleError}
-          className={`${className} transition-opacity duration-500 ${status === "revealed" ? "opacity-100" : "opacity-0"}`}
+          className={`${className} transition-opacity duration-200 ease-out ${status === "revealed" ? "opacity-100" : "opacity-0"}`}
           style={style}
         />
       )}

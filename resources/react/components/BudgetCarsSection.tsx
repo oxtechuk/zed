@@ -107,6 +107,17 @@ export default function BudgetCarsSection({
     setCurrentSlide(0);
   }, [activeRange, cars.length]);
 
+  // Pre-fetch car images in background so sliding/flipping is instant
+  useEffect(() => {
+    if (!cars?.length) return;
+    cars.forEach((car) => {
+      if (car.image) {
+        const img = new Image();
+        img.src = car.image;
+      }
+    });
+  }, [cars]);
+
   if (!cars.length) return null;
 
   return (
@@ -242,7 +253,7 @@ export default function BudgetCarsSection({
                     className="shrink-0"
                     style={{ width: cardWidth }}
                   >
-                    <CarCard {...car} />
+                    <CarCard {...car} loading={sIdx <= 2 ? "eager" : "lazy"} />
                   </div>
                 ))}
               </div>

@@ -85,6 +85,17 @@ export default function FeaturedCarsSection({
         return () => clearInterval(id);
     }, [isPaused, cars.length, itemsPerPage, maxSlideIndex]);
 
+    // Pre-fetch car images in background so sliding/flipping is instant
+    useEffect(() => {
+        if (!cars?.length) return;
+        cars.forEach((car) => {
+            if (car.image) {
+                const img = new Image();
+                img.src = car.image;
+            }
+        });
+    }, [cars]);
+
     if (!cars.length) {
         if (emptyMessage) {
             return (
@@ -171,7 +182,7 @@ export default function FeaturedCarsSection({
                                 className="h-full shrink-0"
                                 style={{ width: cardWidth }}
                             >
-                                <CarCard {...car} />
+                                <CarCard {...car} loading={idx < 8 ? "eager" : "lazy"} />
                             </div>
                         ))}
                     </div>
