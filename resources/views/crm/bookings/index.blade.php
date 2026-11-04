@@ -285,12 +285,59 @@
         </div>
     </div>
 
+    {{-- Main View Switcher (سوتش تحديد مسار العرض) --}}
+    <div class="card border-0 shadow-sm rounded-4 mb-4" style="border: 1px solid var(--crm-border)!important; background: #FFFFFF;">
+        <div class="card-body p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-2">
+                <span class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width:36px;height:36px;background:#EFF6FF;color:#2563EB;font-size:16px;">
+                    <i class="bi bi-toggles2"></i>
+                </span>
+                <div>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size:14px;">{{ __('مسار العرض والتصفية السريعة') }}</h6>
+                    <span class="text-muted" style="font-size:12px;">{{ __('التبديل بين طلبات السيارات الفعلية وعملاء الحاسبة أو عرض الكل معاً') }}</span>
+                </div>
+            </div>
+
+            <div class="btn-group p-1 bg-light rounded-3 shadow-none flex-wrap" style="border: 1px solid var(--crm-border);">
+                {{-- 1. طلبات السيارات (الافتراضي) --}}
+                <a href="{{ route('crm.bookings.index', array_merge(request()->except('page', 'source'), ['source' => 'cars'])) }}"
+                   class="btn btn-sm fw-bold px-3 py-2 text-decoration-none transition-all {{ ($currentSource ?? 'cars') === 'cars' ? 'btn-primary text-white shadow-sm' : 'btn-light text-dark' }}"
+                   style="border-radius: 6px; font-size: 13px;">
+                    <i class="bi bi-car-front-fill me-1.5"></i>{{ __('طلبات السيارات (الافتراضي)') }}
+                    <span class="badge ms-1.5 {{ ($currentSource ?? 'cars') === 'cars' ? 'bg-white text-primary' : 'bg-white text-secondary border' }} rounded-pill" style="font-size: 11px; padding: 3px 8px;">
+                        {{ number_format($stats['car_requests']) }}
+                    </span>
+                </a>
+
+                {{-- 2. عملاء حاسبة فقط --}}
+                <a href="{{ route('crm.bookings.index', array_merge(request()->except('page', 'source'), ['source' => 'calculator'])) }}"
+                   class="btn btn-sm fw-bold px-3 py-2 text-decoration-none transition-all {{ ($currentSource ?? '') === 'calculator' ? 'btn-primary text-white shadow-sm' : 'btn-light text-dark' }}"
+                   style="border-radius: 6px; font-size: 13px;">
+                    <i class="bi bi-calculator-fill me-1.5"></i>{{ __('عملاء حاسبة فقط') }}
+                    <span class="badge ms-1.5 {{ ($currentSource ?? '') === 'calculator' ? 'bg-white text-primary' : 'bg-white text-secondary border' }} rounded-pill" style="font-size: 11px; padding: 3px 8px;">
+                        {{ number_format($stats['calculator_leads']) }}
+                    </span>
+                </a>
+
+                {{-- 3. عملاء حاسبة وطلبات معاً --}}
+                <a href="{{ route('crm.bookings.index', array_merge(request()->except('page', 'source'), ['source' => 'all'])) }}"
+                   class="btn btn-sm fw-bold px-3 py-2 text-decoration-none transition-all {{ ($currentSource ?? '') === 'all' ? 'btn-primary text-white shadow-sm' : 'btn-light text-dark' }}"
+                   style="border-radius: 6px; font-size: 13px;">
+                    <i class="bi bi-collection-fill me-1.5"></i>{{ __('عملاء حاسبة وطلبات معاً') }}
+                    <span class="badge ms-1.5 {{ ($currentSource ?? '') === 'all' ? 'bg-white text-primary' : 'bg-white text-secondary border' }} rounded-pill" style="font-size: 11px; padding: 3px 8px;">
+                        {{ number_format($stats['total']) }}
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+
     {{-- Stat Cards --}}
     <div class="row g-3 mb-4">
         {{-- 1. All Active --}}
         <div class="col-6 col-xl-2 col-md-4">
-            <a href="{{ route('crm.bookings.index') }}" class="text-decoration-none d-block h-100">
-                <div class="stat-card-clean {{ !request('source') ? 'active' : '' }}">
+            <a href="{{ route('crm.bookings.index', array_merge(request()->query(), ['source' => 'all'])) }}" class="text-decoration-none d-block h-100">
+                <div class="stat-card-clean {{ ($currentSource ?? '') === 'all' ? 'active' : '' }}">
                     <div class="stat-card-info">
                         <span class="stat-card-label">{{ __('إجمالي الطلبات النشطة') }}</span>
                         <span class="stat-card-value">{{ number_format($stats['total']) }}</span>
@@ -305,7 +352,7 @@
         {{-- 2. Car Requests --}}
         <div class="col-6 col-xl-2 col-md-4">
             <a href="{{ route('crm.bookings.index', array_merge(request()->query(), ['source' => 'cars'])) }}" class="text-decoration-none d-block h-100">
-                <div class="stat-card-clean {{ request('source') === 'cars' ? 'active' : '' }}">
+                <div class="stat-card-clean {{ ($currentSource ?? 'cars') === 'cars' ? 'active' : '' }}">
                     <div class="stat-card-info">
                         <span class="stat-card-label">{{ __('طلبات السيارات') }}</span>
                         <span class="stat-card-value" style="color: #0284C7;">{{ number_format($stats['car_requests']) }}</span>
@@ -320,7 +367,7 @@
         {{-- 3. Calculator Leads --}}
         <div class="col-6 col-xl-3 col-md-4">
             <a href="{{ route('crm.bookings.index', array_merge(request()->query(), ['source' => 'calculator'])) }}" class="text-decoration-none d-block h-100">
-                <div class="stat-card-clean {{ request('source') === 'calculator' ? 'active' : '' }}">
+                <div class="stat-card-clean {{ ($currentSource ?? '') === 'calculator' ? 'active' : '' }}">
                     <div class="stat-card-info">
                         <span class="stat-card-label">{{ __('عملاء حاسبة التمويل') }}</span>
                         <span class="stat-card-value" style="color: #7C3AED;">{{ number_format($stats['calculator_leads']) }}</span>
@@ -388,10 +435,10 @@
 
                     {{-- مصدر ونوع الطلب --}}
                     <select name="source" style="border:1px solid var(--crm-border);border-radius:8px;padding:8px 14px;font-size:13px;outline:none;font-family:'Cairo',sans-serif;min-width:180px;" onchange="this.form.submit()">
-                        <option value="">{{ __('المصدر والنوع — الكل') }}</option>
-                        <option value="cars" {{ request('source')==='cars'?'selected':'' }}>{{ __('طلبات السيارات (حجز وشراء)') }}</option>
-                        <option value="calculator" {{ request('source')==='calculator'?'selected':'' }}>{{ __('عملاء حاسبة التمويل') }}</option>
-                        <option value="crm_manual" {{ request('source')==='crm_manual'?'selected':'' }}>{{ __('طلبات داخلية (CRM)') }}</option>
+                        <option value="cars" {{ ($currentSource ?? 'cars')==='cars'?'selected':'' }}>{{ __('طلبات السيارات (الافتراضي)') }}</option>
+                        <option value="calculator" {{ ($currentSource ?? '')==='calculator'?'selected':'' }}>{{ __('عملاء حاسبة التمويل فقط') }}</option>
+                        <option value="all" {{ ($currentSource ?? '')==='all'?'selected':'' }}>{{ __('عملاء حاسبة وطلبات معاً (الكل)') }}</option>
+                        <option value="crm_manual" {{ ($currentSource ?? '')==='crm_manual'?'selected':'' }}>{{ __('طلبات داخلية (CRM)') }}</option>
                     </select>
 
                     {{-- المنصة الإعلانية / مصدر الحركة --}}
@@ -503,8 +550,7 @@
                                     <i class="bi bi-eye me-1 text-primary"></i>{{ __('عرض الطلب') }}
                                 </a>
                                 {{-- موافقة --}}
-                                <form action="{{ route('crm.bookings.approve', $pa) }}" method="POST" class="m-0"
-                                      onsubmit="return confirm('{{ __('هل تريد الموافقة على إغلاق هذا الطلب؟') }}')">
+                                <form action="{{ route('crm.bookings.approve', $pa) }}" method="POST" class="m-0">
                                     @csrf @method('PATCH')
                                     <button type="submit" class="btn btn-sm btn-success fw-bold rounded-2" style="font-size:12px;padding:5px 12px;">
                                         <i class="bi bi-check-lg me-1"></i>{{ __('موافقة') }}
@@ -613,8 +659,7 @@
                     <a href="{{ route('crm.bookings.show', $pa) }}" class="btn btn-sm btn-light border fw-bold rounded-2 flex-grow-1" style="font-size:12px;padding:6px 12px;">
                         <i class="bi bi-eye me-1 text-primary"></i>{{ __('عرض الطلب') }}
                     </a>
-                    <form action="{{ route('crm.bookings.approve', $pa) }}" method="POST" class="m-0"
-                          onsubmit="return confirm('{{ __('هل تريد الموافقة على إغلاق هذا الطلب؟') }}')">
+                    <form action="{{ route('crm.bookings.approve', $pa) }}" method="POST" class="m-0">
                         @csrf @method('PATCH')
                         <button type="submit" class="btn btn-sm btn-success fw-bold rounded-2" style="font-size:12px;padding:6px 12px;">
                             <i class="bi bi-check-lg me-1"></i>{{ __('موافقة') }}
@@ -643,9 +688,27 @@
 
     {{-- Active Bookings Table --}}
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="border:1px solid var(--crm-border)!important;">
-        <div class="card-header bg-white border-0 px-4 py-3 d-flex justify-content-between align-items-center" style="border-bottom:1px solid var(--crm-border)!important;">
-            <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-lightning-charge-fill me-1 text-primary"></i> {{ __('قائمة كافة الطلبات النشطة') }}</h6>
-            <span style="font-size:12px;color:var(--crm-text-muted);">{{ __('إجمالي الطلبات') }}: <strong>{{ $bookings->total() }}</strong></span>
+        <div class="card-header bg-white border-0 px-4 py-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="border-bottom:1px solid var(--crm-border)!important;">
+            <div class="d-flex align-items-center gap-2">
+                <h6 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-lightning-charge-fill me-1 text-primary"></i>
+                    @if(($currentSource ?? '') === 'calculator')
+                        {{ __('عملاء حاسبة التمويل') }}
+                    @elseif(($currentSource ?? '') === 'all')
+                        {{ __('كافة طلبات السيارات وعملاء الحاسبة معاً') }}
+                    @else
+                        {{ __('طلبات السيارات (الطلبات الفعلية)') }}
+                    @endif
+                </h6>
+                @if(($currentSource ?? '') === 'calculator')
+                    <span class="badge" style="background:#F5F3FF;color:#7C3AED;border:1px solid #DDD6FE;font-size:11px;font-weight:700;">{{ __('عملاء حاسبة فقط') }}</span>
+                @elseif(($currentSource ?? '') === 'all')
+                    <span class="badge" style="background:#F1F5F9;color:#475569;border:1px solid #CBD5E1;font-size:11px;font-weight:700;">{{ __('طلبات + حاسبة معاً') }}</span>
+                @else
+                    <span class="badge" style="background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE;font-size:11px;font-weight:700;">{{ __('طلبات فعلية') }}</span>
+                @endif
+            </div>
+            <span style="font-size:12px;color:var(--crm-text-muted);">{{ __('إجمالي المعروض') }}: <strong>{{ $bookings->total() }}</strong></span>
         </div>
 
         {{-- Desktop Table --}}
@@ -659,7 +722,15 @@
                         $updatedDiff = $lastUpdated ? $lastUpdated->diffForHumans() : '—';
                         $createdDiff = $b->created_at ? $b->created_at->diffForHumans() : '—';
                         $employeeName = $b->employee?->name ?? __('لايوجد');
-                        $sourceName = $b->source ?: ($b->calculator_bank_id ? __('حاسبة تمويل') : __('لايوجد'));
+                        $isCalculator = ($b->source === 'calculator' || !empty($b->calculator_bank_id));
+                        $isRepeated = !empty($b->client_phone) && isset($repeatedCounts[$b->client_phone]) && $repeatedCounts[$b->client_phone] > 1;
+                        $sourceName = match(true) {
+                            $isCalculator => __('حاسبة تمويل'),
+                            $b->source === 'cars' => __('طلب سيارة'),
+                            str_contains($b->source ?? '', 'CRM') => __('CRM (يدوي)'),
+                            empty($b->source) => __('طلب سيارة'),
+                            default => $b->source,
+                        };
                         $brandName = $b->car?->brand?->name ?? __('لايوجد');
                         $modelName = $b->car?->carModel?->name ?? ($b->car?->model ?? ($b->car?->name ?? __('لايوجد')));
                         $categoryName = $b->car?->category?->name ?? ($b->car?->type ?? __('لايوجد'));
@@ -676,15 +747,33 @@
                         $chanLabel = $b->channel_arabic_label;
                     @endphp
                     <tr class="crm-booking-row">
-                        {{-- 1. Index & ID Badge (Far Right) --}}
-                        <td class="px-4 py-3" style="width: 140px;">
-                            <div class="d-flex align-items-center gap-3">
-                                <span class="text-muted fw-bold" style="font-size:14px; min-width: 16px;">
-                                    {{ $bookings->firstItem() + $index }}
-                                </span>
-                                <a href="{{ route('crm.bookings.show', $b) }}" class="booking-id-badge" title="{{ __('عرض تفاصيل الطلب') }}">
-                                    {{ $b->id }}
-                                </a>
+                        {{-- 1. Index & ID Badge + Type Tag (Far Right) --}}
+                        <td class="px-4 py-3" style="min-width: 155px;">
+                            <div class="d-flex flex-column gap-1.5">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted fw-bold" style="font-size:13px; min-width: 16px;">
+                                        {{ $bookings->firstItem() + $index }}
+                                    </span>
+                                    <a href="{{ route('crm.bookings.show', $b) }}" class="booking-id-badge" title="{{ __('عرض تفاصيل الطلب') }}">
+                                        #{{ $b->id }}
+                                    </a>
+                                </div>
+                                <div class="d-flex align-items-center gap-1 flex-wrap">
+                                    @if($isCalculator)
+                                        <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 11px; padding: 2px 7px; border-radius: 6px; font-weight: 700;">
+                                            <i class="bi bi-calculator me-1"></i>{{ __('عميل حاسبة') }}
+                                        </span>
+                                    @else
+                                        <span class="badge" style="background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-size: 11px; padding: 2px 7px; border-radius: 6px; font-weight: 700;">
+                                            <i class="bi bi-car-front me-1"></i>{{ __('طلب سيارة') }}
+                                        </span>
+                                    @endif
+                                    @if($isRepeated)
+                                        <span class="badge" style="background-color: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700;" title="{{ __('هذا العميل لديه :count طلبات مسجلة', ['count' => $repeatedCounts[$b->client_phone]]) }}">
+                                            <i class="bi bi-arrow-repeat me-0.5"></i>{{ __('مكرر') }} ({{ $repeatedCounts[$b->client_phone] }})
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                         </td>
 
@@ -845,7 +934,15 @@
                 $updatedDiff = $lastUpdated ? $lastUpdated->diffForHumans() : '—';
                 $createdDiff = $b->created_at ? $b->created_at->diffForHumans() : '—';
                 $employeeName = $b->employee?->name ?? __('لايوجد');
-                $sourceName = $b->source ?: ($b->calculator_bank_id ? __('حاسبة تمويل') : __('لايوجد'));
+                $isCalculator = ($b->source === 'calculator' || !empty($b->calculator_bank_id));
+                $isRepeated = !empty($b->client_phone) && isset($repeatedCounts[$b->client_phone]) && $repeatedCounts[$b->client_phone] > 1;
+                $sourceName = match(true) {
+                    $isCalculator => __('حاسبة تمويل'),
+                    $b->source === 'cars' => __('طلب سيارة'),
+                    str_contains($b->source ?? '', 'CRM') => __('CRM (يدوي)'),
+                    empty($b->source) => __('طلب سيارة'),
+                    default => $b->source,
+                };
                 $brandName = $b->car?->brand?->name ?? __('لايوجد');
                 $modelName = $b->car?->carModel?->name ?? ($b->car?->model ?? ($b->car?->name ?? __('لايوجد')));
                 $categoryName = $b->car?->category?->name ?? ($b->car?->type ?? __('لايوجد'));
@@ -874,13 +971,27 @@
                 $mobileTooltip = implode(' | ', $tooltipParts);
             @endphp
             <div class="mb-3 p-3 rounded-4 shadow-sm border bg-white" style="border: 1px solid #ECEEF2 !important;">
-                {{-- Header: ID + Ad Platform Source + Index --}}
-                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                    <div class="d-flex align-items-center gap-2">
+                {{-- Header: ID + Type Badge + Ad Platform Source + Index --}}
+                <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-1.5 flex-wrap">
                         <span class="text-muted small fw-bold">#{{ $bookings->firstItem() + $index }}</span>
                         <a href="{{ route('crm.bookings.show', $b) }}" class="booking-id-badge">
-                            {{ $b->id }}
+                            #{{ $b->id }}
                         </a>
+                        @if($isCalculator)
+                            <span class="badge" style="background-color: #F5F3FF; color: #7C3AED; border: 1px solid #DDD6FE; font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700;">
+                                <i class="bi bi-calculator me-1"></i>{{ __('عميل حاسبة') }}
+                            </span>
+                        @else
+                            <span class="badge" style="background-color: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700;">
+                                <i class="bi bi-car-front me-1"></i>{{ __('طلب سيارة') }}
+                            </span>
+                        @endif
+                        @if($isRepeated)
+                            <span class="badge" style="background-color: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; font-size: 10px; padding: 2px 5px; border-radius: 6px; font-weight: 700;" title="{{ __('هذا العميل لديه :count طلبات مسجلة', ['count' => $repeatedCounts[$b->client_phone]]) }}">
+                                <i class="bi bi-arrow-repeat me-0.5"></i>{{ __('مكرر') }} ({{ $repeatedCounts[$b->client_phone] }})
+                            </span>
+                        @endif
                     </div>
                     <div class="d-flex align-items-center gap-1.5 flex-wrap justify-content-end">
                         <span class="badge-ad-platform"

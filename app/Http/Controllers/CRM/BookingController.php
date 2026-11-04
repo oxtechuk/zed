@@ -97,25 +97,30 @@ class BookingController extends Controller
             AttributionHelper::applyPlatformFilter($query, $request->platform);
         }
 
-        // Source / Type filter
-        if ($request->filled('source')) {
-            if ($request->source === 'calculator') {
-                $query->where(function ($q) {
-                    $q->where('source', 'calculator')
-                        ->orWhereNotNull('calculator_bank_id');
-                });
-            } elseif ($request->source === 'cars' || $request->source === 'booking') {
-                $query->where(function ($q) {
-                    $q->where('source', '!=', 'calculator')
-                        ->orWhereNull('source');
-                });
-            } elseif ($request->source === 'test_drive') {
-                $query->where('booking_type', 'test_drive');
-            } elseif ($request->source === 'purchase') {
-                $query->where('booking_type', 'purchase');
-            } elseif ($request->source === 'crm_manual') {
-                $query->where('source', 'like', '%CRM%');
-            }
+        // Source / Type filter - default to 'cars' (طلبات السيارات الفعلية)
+        $currentSource = $request->input('source', 'cars');
+        if (empty($currentSource)) {
+            $currentSource = 'cars';
+        }
+
+        if ($currentSource === 'calculator') {
+            $query->where(function ($q) {
+                $q->where('source', 'calculator')
+                    ->orWhereNotNull('calculator_bank_id');
+            });
+        } elseif ($currentSource === 'cars' || $currentSource === 'booking') {
+            $query->where(function ($q) {
+                $q->where('source', '!=', 'calculator')
+                    ->orWhereNull('source');
+            });
+        } elseif ($currentSource === 'all') {
+            // All sources: both car requests and calculator leads together
+        } elseif ($currentSource === 'test_drive') {
+            $query->where('booking_type', 'test_drive');
+        } elseif ($currentSource === 'purchase') {
+            $query->where('booking_type', 'purchase');
+        } elseif ($currentSource === 'crm_manual') {
+            $query->where('source', 'like', '%CRM%');
         }
 
         // Status filter (within active statuses)
@@ -140,12 +145,22 @@ class BookingController extends Controller
         }
 
         $bookings = $query->paginate(20)->withQueryString();
+
+        $phones = $bookings->pluck('client_phone')->filter()->unique();
+        $repeatedCounts = $phones->isNotEmpty()
+            ? Booking::whereIn('client_phone', $phones)
+                ->select('client_phone', DB::raw('count(*) as aggregate'))
+                ->groupBy('client_phone')
+                ->having('aggregate', '>', 1)
+                ->pluck('aggregate', 'client_phone')
+            : collect();
+
         $employees = Employee::where('is_active', true)->get();
         $statuses = collect(Booking::STATUSES)->only($activeStatuses)->toArray();
         $cars = Car::with('brand')->where('is_active', true)->get();
 
         return view('crm.bookings.index', compact(
-            'bookings', 'employees', 'statuses', 'cars', 'stats', 'pendingApprovals', 'isAdmin'
+            'bookings', 'employees', 'statuses', 'cars', 'stats', 'pendingApprovals', 'isAdmin', 'currentSource', 'repeatedCounts'
         ));
     }
 

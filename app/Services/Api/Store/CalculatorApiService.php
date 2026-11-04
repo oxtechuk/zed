@@ -121,6 +121,57 @@ final class CalculatorApiService
         $periodMonths = (int) ($lead->details['period_months'] ?? 60);
         $durationYears = max(1, (int) round($periodMonths / 12));
 
+        // Prevent duplicate bookings if an active calculator booking was created recently for this client
+        $existingBooking = Booking::where('client_phone', $lead->phone)
+            ->where(function ($q) {
+                $q->where('source', 'calculator')->orWhereNotNull('calculator_bank_id');
+            })
+            ->where('status', 'new')
+            ->where('created_at', '>=', now()->subHours(24))
+            ->latest()
+            ->first();
+
+        if ($existingBooking) {
+            $updateData = [];
+            if ($lead->name) {
+                $updateData['client_name'] = $lead->name;
+            }
+            if ($email) {
+                $updateData['client_email'] = $email;
+            }
+            if ($carId) {
+                $updateData['car_id'] = $carId;
+                $car = Car::find($carId);
+                $updateData['total_price'] = $car?->current_price ?? $car?->cash_price ?? $existingBooking->total_price;
+            }
+            if (! empty($lead->details['preferred_bank_id'])) {
+                $updateData['calculator_bank_id'] = $lead->details['preferred_bank_id'];
+            }
+            if ($notes) {
+                $updateData['notes'] = $notes;
+            }
+            if ($downPayment > 0) {
+                $updateData['down_payment'] = $downPayment;
+            }
+            if ($durationYears > 0) {
+                $updateData['duration_years'] = $durationYears;
+            }
+            if (! empty($lead->details['monthly_installment'])) {
+                $updateData['monthly_installment'] = (float) $lead->details['monthly_installment'];
+            }
+            foreach (['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'referrer', 'click_id', 'marketing_channel'] as $field) {
+                if (! empty($attribution[$field])) {
+                    $updateData[$field] = $attribution[$field];
+                }
+            }
+
+            if (! empty($updateData)) {
+                $existingBooking->update($updateData);
+            }
+
+            return;
+        }
+
         $booking = Booking::create([
             'client_name' => $lead->name,
             'client_phone' => $lead->phone,

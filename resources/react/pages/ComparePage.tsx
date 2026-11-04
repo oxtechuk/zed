@@ -258,7 +258,7 @@ export default function ComparePage() {
                                     type="button"
                                     onClick={() =>
                                         navigate(
-                                            `/finance-calculator?carId=${car1.id}`,
+                                            `/request-car?car_id=${car1.id}`,
                                         )
                                     }
                                     className="flex-1 h-[48px] sm:h-[52px] rounded-2xl sm:rounded-[18px] bg-[#F3C77C] hover:bg-[#E2B66B] text-[14px] sm:text-[16px] font-black text-[#0B1736] transition-all duration-200 active:scale-95 flex items-center justify-center cursor-pointer shadow-sm font-bold"
@@ -328,7 +328,7 @@ export default function ComparePage() {
                                     type="button"
                                     onClick={() =>
                                         navigate(
-                                            `/finance-calculator?carId=${car2.id}`,
+                                            `/request-car?car_id=${car2.id}`,
                                         )
                                     }
                                     className="flex-1 h-[48px] sm:h-[52px] rounded-2xl sm:rounded-[18px] bg-[#F3C77C] hover:bg-[#E2B66B] text-[14px] sm:text-[16px] font-black text-[#0B1736] transition-all duration-200 active:scale-95 flex items-center justify-center cursor-pointer shadow-sm font-bold"

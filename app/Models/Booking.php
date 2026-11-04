@@ -350,6 +350,11 @@ class Booking extends Model
         return $query->where('status', 'received');
     }
 
+    public function isCalculatorLead(): bool
+    {
+        return $this->source === 'calculator' || ! empty($this->calculator_bank_id);
+    }
+
     public function setClientPhoneAttribute($value)
     {
         $this->attributes['client_phone'] = $this->normalizeSaudiPhone($value);
